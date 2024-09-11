@@ -1,162 +1,84 @@
-import 'package:dart_minilog/dart_minilog.dart';
-import 'package:flame/components.dart';
+import 'dart:math';
 
-import 'core/common.dart';
-import 'core/screens.dart';
-import 'game/game_dialog.dart';
-import 'game/game_state.dart';
-import 'game/soundboard.dart';
-import 'help_screen.dart';
-import 'util/bitmap_button.dart';
-import 'util/delayed.dart';
-import 'util/effects.dart';
-import 'util/extensions.dart';
-import 'util/game_script.dart';
-import 'util/shortcuts.dart';
+import 'package:flame/components.dart';
+import 'package:voxone/core/screens.dart';
+import 'package:voxone/game/shadows.dart';
+import 'package:voxone/game/space.dart';
+import 'package:voxone/game/stacked_entity.dart';
+import 'package:voxone/util/game_script.dart';
+import 'package:voxone/util/shortcuts.dart';
 
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
-  static const x = game_width;
-
-  static bool seen = false;
-  static bool music = false;
-  static bool first_time_playing = false;
+  final _shadows = Shadows()..isVisible = false;
 
   @override
   onLoad() async {
-    if (help_triggered_at_first_start) {
-      help_triggered_at_first_start = false;
-      if (music) soundboard.fade_out_music();
-      showScreen(Screen.game);
-      return;
-    }
+    super.onLoad();
 
-    fadeIn(await spriteXY('title.png', center_x, center_y));
+    await add(Space());
+    await add(_shadows);
+    await add(_TitleShip(_shadows));
 
-    final delta = seen ? 0.0 : 0.2;
-    // at(delta, () async => await add(fadeIn(await _video())));
-    at(delta, () async => await add(fadeIn(await _hiscore())));
-    at(delta, () async => await add(fadeIn(await _audio())));
-    at(delta, () async => await add(fadeIn(await _credits())));
-    // at(delta, () async => await add(fadeIn(await _controls())));
-    at(delta, () async => await added(await _insert_coin()).add(BlinkEffect()));
+    textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
+    textXY('A Flutter Flame Experiment', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
-    try {
-      await state.preload();
-    } catch (ignored) {
-      logError('error loading game state: $ignored');
-    }
+    textXY('Controls', 16, 350, anchor: Anchor.topLeft, scale: 1);
+    textXY('Arrow Keys Left / Right - Strafe', 16, 360, anchor: Anchor.topLeft, scale: 1);
+    textXY('Space - Primary Fire', 16, 370, anchor: Anchor.topLeft, scale: 1);
+    textXY('Control - Secondary Fire', 16, 380, anchor: Anchor.topLeft, scale: 1);
+    textXY('Shift - Roll', 16, 390, anchor: Anchor.topLeft, scale: 1);
 
-    try {
-      first_time_playing = await first_time();
-      logInfo('first time playing? $first_time_playing');
-      if (first_time_playing || state.level_number_starting_at_1 == 1) {
-        await state.delete();
-        state.reset();
-      }
-    } catch (ignored) {
-      logError('error loading first time playing state: $ignored');
-    }
+    // textXY('Esc / Control-t - Back To Title', 16, 410, anchor: Anchor.topLeft, scale: 1);
+    // textXY('Control-m - Toggle Mute Sound', 16, 420, anchor: Anchor.topLeft, scale: 1);
+    // textXY('Control-p - Toggle Pause Game', 16, 430, anchor: Anchor.topLeft, scale: 1);
+    // textXY('Control-v - Toggle Full Pixelate', 16, 440, anchor: Anchor.topLeft, scale: 1);
+
+    textXY('Press Space To Play', 16, 460, anchor: Anchor.topLeft, scale: 1);
+
+    textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
+    textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
   }
 
   @override
   void onMount() {
     super.onMount();
-    if (!seen) music = true;
 
-    final play_jingle = !seen;
-    soundboard.preload().then((_) {
-      if (play_jingle) soundboard.play_one_shot_sample('commando.ogg');
-    });
+    onKey('<Space>', () => showScreen(Screen.stage1));
+  }
+}
 
-    if (!seen) add(Delayed(1.0, () => soundboard.play_music('music/title.ogg')));
+class _TitleShip extends Component {
+  _TitleShip(this._shadows);
 
-    seen = true;
+  final Shadows _shadows;
+
+  late final StackedEntity _entity;
+
+  double _time = 0;
+
+  @override
+  onLoad() async {
+    super.onLoad();
+
+    _entity = StackedEntity('entities/dual_striker.png', 16, _shadows);
+
+    _entity.scale_x = 1.4;
+    _entity.scale_y = 4.5;
+    _entity.scale_z = 1.4;
+    _entity.scale.setAll(0.3);
+    _entity.size.setAll(256);
+    _entity.position.setValues(400, 350);
+
+    add(_entity);
   }
 
-  // Implementation
-
-  void _showScreen(Screen it) {
-    if (children.whereType<GameDialog>().isNotEmpty) return;
-
-    if (it == Screen.game) {
-      if (state.level_number_starting_at_1 > 1) {
-        // add(GameDialog(
-        //   {
-        //     GameKey.soft1: () async {
-        //       await state.delete();
-        //       await state.reset();
-        //       if (music) soundboard.fade_out_music();
-        //       showScreen(Screen.game);
-        //     },
-        //     GameKey.soft2: () {
-        //       if (music) soundboard.fade_out_music();
-        //       showScreen(Screen.game);
-        //     },
-        //   },
-        //   'Game in progress.\n\nResume game?\n\nOr start new game?',
-        //   'New Game',
-        //   'Resume Game',
-        //   flow_text: true,
-        //   shortcuts: true,
-        // ));
-        // return;
-      } else if (false && first_time_playing) {
-        help_triggered_at_first_start = true;
-        showScreen(Screen.help);
-        return;
-      }
-    }
-
-    if (it == Screen.game) if (music) soundboard.fade_out_music();
-    showScreen(it);
+  @override
+  void update(double dt) {
+    _time += dt;
+    _entity.scale.setAll(1 + sin(_time / 2) / 4);
+    _entity.rot_x = -0.15;
+    _entity.rot_y = pi * 0 + sin(_time) * 1.75;
+    _entity.rot_z = _time;
+    _entity.position.setValues(400, 250);
   }
-
-  Future<BitmapButton> _hiscore() => button(
-        text: '   Hiscore   ',
-        position: Vector2(x, 80),
-        anchor: Anchor.topRight,
-        shortcuts: ['h'],
-        onTap: (_) => _showScreen(Screen.hiscore),
-      );
-
-  Future<BitmapButton> _audio() => button(
-        text: '     Audio     ',
-        position: Vector2(x, 125),
-        anchor: Anchor.centerRight,
-        shortcuts: ['a'],
-        onTap: (_) => _showScreen(Screen.audio_menu),
-      );
-
-  Future<BitmapButton> _credits() => button(
-        text: '   Credits   ',
-        position: Vector2(x, 160),
-        anchor: Anchor.centerRight,
-        shortcuts: ['c'],
-        onTap: (_) => _showScreen(Screen.credits),
-      );
-
-  // Future<BitmapButton> _controls() async => await button(
-  //   text: 'How To Play',
-  //   position: Vector2(x, y),
-  //   anchor: Anchor.topRight,
-  //   shortcuts: ['p', '?'],
-  //   onTap: (_) => _showScreen(Screen.help),
-  // );
-  //
-  // Future<BitmapButton> _video() => button(
-  //   text: '     Video     ',
-  //   position: Vector2(x, y + 48),
-  //   anchor: Anchor.centerRight,
-  //   shortcuts: ['v'],
-  //   onTap: (_) => _showScreen(Screen.options),
-  // );
-
-  Future<BitmapButton> _insert_coin() => button(
-        text: 'Insert coin',
-        fontScale: 2,
-        position: Vector2(center_x, 0),
-        anchor: Anchor.topCenter,
-        shortcuts: ['<Space>'],
-        onTap: (_) => _showScreen(Screen.game),
-      );
 }

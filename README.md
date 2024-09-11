@@ -1,22 +1,11 @@
-### Commando 24
+### TBD
 
-Inspired by Commando as seen on the C64 in 1985
+Not sure what this is... :-D
 
-### To Do
+I have seen https://stevieg.itch.io/gunstar-release by Stevie G. Awesome looking game. Check it out!
 
-- [ ] prisoners
-- [ ] enemies
-- [ ] health
+Check out his other games: https://stevieg.itch.io/ All pretty cool!
 
-- [ ] level complete
-- [ ] top level game logic
+It inspired me to try recreating it. Failed miserably... :-D
 
-- [ ] animate destruction of non-exploding objects somehow
-- [ ] apply opacity consistently to adjacent tiles of same "height"
-- [ ] fire should quickly climb up the visual height
-- [ ] flammable needs resistance to overcome first
-- [ ] bounce grenades of elevated tiles and solids etc?
-
-- [X] bazooka explosion
-- [X] bazooka smoke
-- [X] grenades
+"Playable" (not, actually) current state: https://intensicode.github.io/voxone/

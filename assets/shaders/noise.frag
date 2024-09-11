@@ -33,7 +33,6 @@ float Noise(in vec2 p, in float scale)
 
     p *= scale;
 
-
     f = fract(p);// Separate integer from fractional
     p = floor(p);
 
@@ -52,16 +51,16 @@ float fBm(in vec2 p)
     p += vec2(sin(iTime * .7), cos(iTime * .45))*(.1);//  + iMouse.xy*.1/iResolution.xy;
     float f = 0.0;
     // Change starting scale to any integer value...
-    float scale = 10.;
+    float scale = 13.;
     p = mod(p, scale);
-    float amp   = 0.6;
+    float amp   = 0.9;
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 12; i++)
     {
         f += Noise(p, scale) * amp;
-        amp *= .5;
+        amp *= .2;
         // Scale must be multiplied by an integer value...
-        scale *= 2.;
+        scale *= 4.;
     }
     // Clamp it just in case....
     return min(f, 1.0);
@@ -74,12 +73,11 @@ void main()
 
     // Do the noise cloud (fractal Brownian motion)
     float bri = fBm(uv);
-    float h = bri.x * 10;
+    float h = bri.x;
+    h *= 10;
     h = h - fract(h);
     h /= 10;
-
-    bri = pow(bri, 1.2);// ...cranked up the contrast for demo.
-    vec3 col = vec3(bri);
+//    h = 1.4 - h * 1.5;
 
     fragColor = vec4(0.1 + h * 0.9, 0.05 + h * 0.6, 0.01 + h * 0.2, 1.0);
 }

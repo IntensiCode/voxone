@@ -1,17 +1,9 @@
-import 'package:flame/game.dart';
-
 import 'common.dart';
 
 enum Screen {
-  audio_menu,
-  credits,
-  enter_hiscore,
-  game,
-  help,
-  hiscore,
-  options,
-  splash,
-  the_end,
+  stage1,
+  stage2,
+  stage3,
   title,
 }
 
@@ -30,16 +22,16 @@ abstract interface class ScreenNavigation {
 }
 
 void popScreen() {
-  final world = (game as FlameGame).world;
+  final world = game.world;
   (world as ScreenNavigation).popScreen();
 }
 
 void pushScreen(Screen it) {
-  final world = (game as FlameGame).world;
+  final world = game.world;
   (world as ScreenNavigation).pushScreen(it);
 }
 
 void showScreen(Screen it, {bool skip_fade_out = false, bool skip_fade_in = false}) {
-  final world = (game as FlameGame).world;
+  final world = game.world;
   (world as ScreenNavigation).showScreen(it, skip_fade_out: skip_fade_out, skip_fade_in: skip_fade_in);
 }

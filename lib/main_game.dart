@@ -1,19 +1,18 @@
 import 'dart:async';
 
-import 'package:voxone/game/hud.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
-
-import 'core/common.dart';
-import 'game/soundboard.dart';
-import 'main_controller.dart';
-import 'util/fonts.dart';
-import 'util/messaging.dart';
-import 'util/performance.dart';
-import 'util/shortcuts.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/game/hud.dart';
+import 'package:voxone/game/soundboard.dart';
+import 'package:voxone/main_controller.dart';
+import 'package:voxone/util/fonts.dart';
+import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/performance.dart';
+import 'package:voxone/util/shortcuts.dart';
 
 class MainGame extends FlameGame<MainController>
     with HasKeyboardHandlerComponents, Messaging, Shortcuts, HasPerformanceTracker, ScrollDetector {

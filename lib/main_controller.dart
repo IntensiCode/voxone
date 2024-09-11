@@ -1,58 +1,58 @@
-import 'dart:ui';
-
 import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
-
-import 'audio_menu_screen.dart';
-import 'core/common.dart';
-import 'core/screens.dart';
-import 'credits_screen.dart';
-import 'enter_hiscore_screen.dart';
-import 'game/game_screen.dart';
-import 'game/visual_configuration.dart';
-import 'help_screen.dart';
-import 'hiscore_screen.dart';
-import 'options_screen.dart';
-import 'splash_screen.dart';
-import 'the_end_screen.dart';
-import 'title_screen.dart';
-import 'util/auto_dispose.dart';
-import 'util/extensions.dart';
-import 'util/messaging.dart';
-import 'util/shortcuts.dart';
-import 'web_play_screen.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/core/screens.dart';
+import 'package:voxone/game/stage1.dart';
+import 'package:voxone/game/stage2.dart';
+import 'package:voxone/game/stage3.dart';
+import 'package:voxone/game/visual.dart';
+import 'package:voxone/title_screen.dart';
+import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/shortcuts.dart';
+import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World with AutoDispose, HasAutoDisposeShortcuts implements ScreenNavigation {
   final _stack = <Screen>[];
 
   @override
-  onLoad() async => messaging.listen<ShowScreen>((it) => showScreen(it.screen));
+  onLoad() async {
+    visual.load();
+    messaging.listen<ShowScreen>((it) => showScreen(it.screen));
+  }
 
   @override
   void onMount() {
     if (dev && !kIsWeb) {
-      showScreen(Screen.game);
+      showScreen(Screen.stage1);
     } else if (kIsWeb) {
       add(WebPlayScreen());
     } else {
-      add(SplashScreen());
+      add(TitleScreen());
     }
-    onKey('<A-a>', () => showScreen(Screen.audio_menu));
-    onKey('<A-c>', () => showScreen(Screen.credits));
-    onKey('<A-e>', () => showScreen(Screen.the_end));
-    onKey('<A-h>', () => showScreen(Screen.hiscore));
-    onKey('<A-s>', () => showScreen(Screen.splash, skip_fade_in: true));
-    onKey('<A-l>', () => showScreen(Screen.splash, skip_fade_in: true));
-    onKey('<A-t>', () => showScreen(Screen.title));
+
+    if (dev) {
+      onKey('<C-1>', () => showScreen(Screen.stage1));
+      onKey('<C-2>', () => showScreen(Screen.stage2));
+      onKey('<C-3>', () => showScreen(Screen.stage3));
+    }
+
+    onKey('<C-t>', () => showScreen(Screen.title));
+
+    onKey('<C-v>', () {
+      visual.pixelate_screen = !visual.pixelate_screen;
+      logInfo('pixelate_screen = ${visual.pixelate_screen}');
+    });
   }
 
   @override
   void popScreen() {
     logVerbose('pop screen with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
     _stack.removeLastOrNull();
-    showScreen(_stack.lastOrNull ?? Screen.title);
+    showScreen(_stack.lastOrNull ?? Screen.stage1);
   }
 
   @override
@@ -93,38 +93,16 @@ class MainController extends World with AutoDispose, HasAutoDisposeShortcuts imp
       });
     } else {
       final it = added(_makeScreen(screen));
-      if (screen != Screen.game && !skip_fade_in) {
+      if (screen != Screen.stage1 && !skip_fade_in) {
         it.mounted.then((_) => it.fadeInDeep());
       }
     }
   }
 
   Component _makeScreen(Screen it) => switch (it) {
-        Screen.audio_menu => AudioMenuScreen(),
-        Screen.credits => CreditsScreen(),
-        Screen.enter_hiscore => EnterHiscoreScreen(),
-        Screen.game => GameScreen(),
-        Screen.help => HelpScreen(),
-        Screen.hiscore => HiscoreScreen(),
-        Screen.options => OptionsScreen(),
-        Screen.splash => SplashScreen(),
-        Screen.the_end => TheEndScreen(),
+        Screen.stage1 => Stage1(),
+        Screen.stage2 => Stage2(),
+        Screen.stage3 => Stage3(),
         Screen.title => TitleScreen(),
       };
-
-  @override
-  void renderTree(Canvas canvas) {
-    // visual.pixelate_screen = true;
-    if (visual.pixelate_screen) {
-      final recorder = PictureRecorder();
-      super.renderTree(Canvas(recorder));
-      final picture = recorder.endRecording();
-      final image = picture.toImageSync(game_width ~/ 1, game_height ~/ 1);
-      canvas.drawImage(image, Offset.zero, pixel_paint());
-      image.dispose();
-      picture.dispose();
-    } else {
-      super.renderTree(canvas);
-    }
-  }
 }

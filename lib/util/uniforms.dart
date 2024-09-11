@@ -1,5 +1,10 @@
 import 'dart:ui';
 
+Future<FragmentShader> loadShader(String name) async {
+  final program = await FragmentProgram.fromAsset('assets/shaders/$name');
+  return program.fragmentShader();
+}
+
 class Uniforms<T> {
   Uniforms(this.shader, Iterable<T> all) {
     all.forEach(define);

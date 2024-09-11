@@ -10,6 +10,7 @@ enum GameKey {
   down,
   fire1,
   fire2,
+  fire3,
   inventory,
   useOrExecute,
   soft1,
@@ -19,12 +20,13 @@ enum GameKey {
 mixin HasGameKeys on KeyboardHandler {
   late final keyboard = HardwareKeyboard.instance;
 
-  static final leftKeys = ['Arrow Left', 'A', 'H'];
-  static final rightKeys = ['Arrow Right', 'D', 'L'];
+  static final leftKeys = ['Arrow Left', 'A'];
+  static final rightKeys = ['Arrow Right', 'D'];
   static final downKeys = ['Arrow Down', 'S'];
   static final upKeys = ['Arrow Up', 'W'];
   static final fireKeys1 = ['Space', 'J'];
   static final fireKeys2 = ['Shift', 'K'];
+  static final fireKeys3 = ['Control', 'L'];
   static final inventoryKeys = ['Tab', 'I'];
   static final useOrExecuteKeys = ['U'];
   static final softKeys1 = ['Backspace', 'Escape'];
@@ -37,6 +39,7 @@ mixin HasGameKeys on KeyboardHandler {
     GameKey.down: downKeys,
     GameKey.fire1: fireKeys1,
     GameKey.fire2: fireKeys2,
+    GameKey.fire3: fireKeys3,
     GameKey.inventory: inventoryKeys,
     GameKey.useOrExecute: useOrExecuteKeys,
     GameKey.soft1: softKeys1,
@@ -69,6 +72,8 @@ mixin HasGameKeys on KeyboardHandler {
   bool get fire1 => held[GameKey.fire1] == true;
 
   bool get fire2 => held[GameKey.fire2] == true;
+
+  bool get fire3 => held[GameKey.fire3] == true;
 
   bool get soft1 => held[GameKey.soft1] == true;
 

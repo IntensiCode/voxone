@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -14,18 +13,11 @@ enum Uniform {
   image_height,
 }
 
-class Ground extends Component {
-  final _rng = Random(0);
-
-  final _hole = pixel_paint()
-    ..blendMode = BlendMode.multiply
-    ..color = const Color(0xF0e0d0b0);
-
+class Ground extends Component with HasPaint {
   final _rect = const Rect.fromLTWH(0, 0, game_width, game_height);
-  final _pixel_paint = pixel_paint();
 
-  late final _width = game_width * 4;
-  late final _height = game_height * 4;
+  late final _width = game_width * 8;
+  late final _height = game_height * 8;
 
   late final Image _ground;
   late final FragmentShader _shader;
@@ -37,6 +29,9 @@ class Ground extends Component {
 
   @override
   Future<void> onLoad() async {
+    paint.filterQuality = FilterQuality.none;
+    paint.isAntiAlias = false;
+
     final recorder = PictureRecorder();
 
     final noise = pixel_paint();
@@ -72,7 +67,7 @@ class Ground extends Component {
     super.update(dt);
     _time += dt;
     _pos.x = 0 + _time * 100;
-    _pos.y = 0 + _time * 100;
+    _pos.y = 0 - _time * 33;
     _uniforms.set(Uniform.scr_x, _pos.x);
     _uniforms.set(Uniform.scr_y, _pos.y);
   }
@@ -86,7 +81,7 @@ class Ground extends Component {
 
     final picture = recorder.endRecording();
     final image = picture.toImageSync(game_width.toInt(), game_height.toInt());
-    canvas.drawImage(image, Offset.zero, _pixel_paint);
+    canvas.drawImage(image, Offset.zero, paint);
     image.dispose();
     picture.dispose();
   }

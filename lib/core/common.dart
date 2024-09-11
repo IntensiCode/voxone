@@ -11,8 +11,8 @@ bool dev = kDebugMode;
 
 const tps = 60;
 
-const double game_width = 320;
-const double game_height = 240;
+const double game_width = 800;
+const double game_height = 480;
 final Vector2 game_size = Vector2(game_width, game_height);
 final Vector2 game_center = game_size / 2;
 

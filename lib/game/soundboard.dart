@@ -1,30 +1,21 @@
 import 'dart:async';
 
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart' hide Timer;
 import 'package:flutter/foundation.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/util/auto_dispose.dart';
 
-import 'game_data.dart';
+import '../util/game_data.dart';
 import 'soundboard_soloud.dart' if (dart.library.html) 'soundboard_web.dart';
-import 'storage.dart';
+import '../util/storage.dart';
 // import 'soundboard_mixed.dart' if (dart.library.html) 'soundboard_web.dart';
 
 enum Sound {
-  burst_machine_gun,
-  collect,
-  empty_click,
-  explosion_1,
-  explosion_2,
+  explosion,
   explosion_hollow,
-  flamethrower(limit: 1),
   hit_crack,
   hit_metal,
-  prisoner_death,
-  prisoner_freed,
-  prisoner_ouch,
-  prisoner_oh_oh,
   shot_assault_rifle,
   shot_assault_rifle_real,
   shot_bazooka,
@@ -36,10 +27,6 @@ enum Sound {
   shot_smg,
   shot_smg_real,
   ;
-
-  final int? limit;
-
-  const Sound({this.limit});
 }
 
 final soundboard = SoundboardImpl();

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -26,18 +25,19 @@ enum Uniform {
   v_x,
   v_y,
   v_z,
+  shadow,
 }
 
-class StackedSprite extends PositionComponent {
-  StackedSprite(this._asset, this._frames) {
-    anchor = Anchor.center;
+class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
+  StackedSprite(this._asset, this._frames, {this.shadow = false}) {
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
   }
 
   final String _asset;
   final int _frames;
 
   final _rect = MutRect(0, 0, 0, 0);
-  final _pixel_paint = pixel_paint();
 
   late final Image _image;
   late final FragmentShader _shader;
@@ -60,6 +60,8 @@ class StackedSprite extends PositionComponent {
   double rot_x = 0;
   double rot_y = 0;
   double rot_z = 0;
+
+  bool shadow;
 
   @override
   Future onLoad() async {
@@ -109,6 +111,7 @@ class StackedSprite extends PositionComponent {
     _u_dir.normalize();
     _v_dir.normalize();
 
+    _uniforms.set(Uniform.shadow, shadow ? 1 : 0);
     _uniforms.set(Uniform.scr_width, width);
     _uniforms.set(Uniform.scr_height, height);
     _uniforms.set(Uniform.scale_x, scale_x);
@@ -133,7 +136,7 @@ class StackedSprite extends PositionComponent {
 
     final picture = recorder.endRecording();
     final image = picture.toImageSync(width.toInt(), height.toInt());
-    canvas.drawImage(image, Offset.zero, _pixel_paint);
+    canvas.drawImage(image, Offset.zero, paint);
     image.dispose();
     picture.dispose();
   }

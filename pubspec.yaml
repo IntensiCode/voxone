@@ -40,14 +40,14 @@ dev_dependencies:
 flutter:
   assets:
     - assets/audio/
-    - assets/audio/music/
     - assets/audio/sound/
-    - assets/data/
     - assets/fonts/
     - assets/images/
     - assets/images/fonts/
-    - assets/tiles/
+    - assets/images/entities/
   shaders:
+    - assets/shaders/checkerboard.frag
     - assets/shaders/ground.frag
     - assets/shaders/noise.frag
+    - assets/shaders/space.frag
     - assets/shaders/voxel.frag

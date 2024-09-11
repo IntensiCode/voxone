@@ -14,6 +14,7 @@ uniform vec3 iScale;
 uniform vec3 iRayDir;
 uniform vec3 iUDir;
 uniform vec3 iVDir;
+uniform float iShadow;
 
 out vec4 fragColor;
 
@@ -37,9 +38,9 @@ vec4 tex3D(vec3 pos, vec2 uv) {
     float x = xyz.x * iScale.x + 0.5;
     if (x < 0) return oob;
     if (x >= 1) return oob;
-    x *= iFrameSize.x;
-    x -= fract(xy.x);
-    x /= iFrameSize.x;
+//    x *= iFrameSize.x / 128;
+//    x -= fract(xy.x);
+//    x /= iFrameSize.x / 128;
     xy.x = x;
 
     float frame = (xyz.y * iScale.y + 0.5) * iFrames;
@@ -52,9 +53,9 @@ vec4 tex3D(vec3 pos, vec2 uv) {
     float d = xyz.z * iScale.z + 0.5;
     if (d < 0) return oob;
     if (d >= 1) return oob;
-    d *= iFrameSize.y;
-    d -= fract(d);
-    d /= iFrameSize.y;
+//    d *= iFrameSize.y;
+//    d -= fract(d);
+//    d /= iFrameSize.y;
     xy.y += d / iFrames;
 
     return texture(iImage, xy);
@@ -83,6 +84,13 @@ void main() {
     for (int i = 0; i < steps; i++) {
         vec4 c = tex3D(pos, uv);
         if (c.x > 0 || c.y > 0 || c.z > 0) {
+            if (iShadow != 0) {
+                fragColor.x = 0;
+                fragColor.y = 0;
+                fragColor.z = 0;
+                fragColor.a = 0.5;
+                return;
+            }
             fragColor = c;
             vec4 s = tex3D(pos, uvd);
             if (s.a == 0) {

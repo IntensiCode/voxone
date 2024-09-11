@@ -14,11 +14,14 @@ out vec4 fragColor;
 
 const int steps = 32;
 
-float u_step = 1 / iScrSize.x / 2;
-float v_step = 1 / iScrSize.y;
+float u_step = 1 / iScrSize.x / 4;
+float v_step = 1 / iScrSize.y / 2;
 
 void main() {
     vec2 uv = FlutterFragCoord().xy;
+
+//    uv.y = uv.y + sqrt(uv.y) * 25;
+
     uv.x *= 1;
     uv.y *= 2;
     uv.x = mod(uv.x + iScrOffset.x, iImageSize.x);
@@ -33,7 +36,7 @@ void main() {
 
     uv.y += v_step;
     vec4 c2 = texture(iImage, uv);
-    if (c1.x < c2.x) {
+    if (c1.x > c2.x) {
         fragColor.x *= 0.5;
         fragColor.y *= 0.5;
         fragColor.z *= 0.5;
@@ -42,7 +45,7 @@ void main() {
 
     uv.x += u_step;
     vec4 c3 = texture(iImage, uv);
-    if (c1.x < c3.x) {
+    if (c1.x > c3.x) {
         fragColor.x *= 0.5;
         fragColor.y *= 0.5;
         fragColor.z *= 0.5;
