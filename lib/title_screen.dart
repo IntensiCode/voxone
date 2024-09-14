@@ -65,7 +65,7 @@ class _TitleShip extends Component {
     _entity.scale_x = 1.4;
     _entity.scale_y = 4.5;
     _entity.scale_z = 1.4;
-    _entity.scale.setAll(0.3);
+    _entity.scale.setAll(1);
     _entity.size.setAll(256);
     _entity.position.setValues(400, 350);
 

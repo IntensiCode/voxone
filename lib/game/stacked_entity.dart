@@ -7,11 +7,11 @@ class StackedEntity extends PositionComponent {
 
   StackedEntity(String asset, int frames, this._shadows) {
     anchor = Anchor.center;
-    _shadow = StackedSprite(asset, frames, shadow: true);
-    _sprite = StackedSprite(asset, frames, shadow: false);
+    _shadow = StackedSprite(asset, frames, highlight_mode: HighlightMode.shadow);
+    sprite = StackedSprite(asset, frames, highlight_mode: HighlightMode.none);
     size.addListener(() {
       _update_shadow();
-      _sprite.size.setFrom(this.size);
+      sprite.size.setFrom(this.size);
     });
     scale.addListener(() {
       _update_shadow();
@@ -19,7 +19,7 @@ class StackedEntity extends PositionComponent {
     position.addListener(() {
       _update_shadow();
     });
-    add(_sprite);
+    add(sprite);
   }
 
   set shadow(bool value) => _shadow.isVisible = value;
@@ -33,42 +33,42 @@ class StackedEntity extends PositionComponent {
     _shadow.y += 50;
   }
 
-  late final StackedSprite _sprite;
+  late final StackedSprite sprite;
   late final StackedSprite _shadow;
 
   set scale_x(double value) {
-    _sprite.scale_x = value;
+    sprite.scale_x = value;
     _shadow.scale_x = value;
   }
 
   set scale_y(double value) {
-    _sprite.scale_y = value;
+    sprite.scale_y = value;
     _shadow.scale_y = value;
   }
 
   set scale_z(double value) {
-    _sprite.scale_z = value;
+    sprite.scale_z = value;
     _shadow.scale_z = value;
   }
 
-  double get rot_x => _sprite.rot_x;
+  double get rot_x => sprite.rot_x;
 
-  double get rot_y => _sprite.rot_y;
+  double get rot_y => sprite.rot_y;
 
-  double get rot_z => _sprite.rot_z;
+  double get rot_z => sprite.rot_z;
 
   set rot_x(double value) {
-    _sprite.rot_x = value;
+    sprite.rot_x = value;
     _shadow.rot_x = value;
   }
 
   set rot_y(double value) {
-    _sprite.rot_y = value;
+    sprite.rot_y = value;
     _shadow.rot_y = value;
   }
 
   set rot_z(double value) {
-    _sprite.rot_z = value;
+    sprite.rot_z = value;
     _shadow.rot_z = value;
   }
 

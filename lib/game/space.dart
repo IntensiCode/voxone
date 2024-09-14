@@ -40,7 +40,7 @@ class Space extends Component with HasPaint {
   void update(double dt) {
     super.update(dt);
     _time += dt;
-    _uniforms!.set(Uniform.time, _time);
+    _uniforms!.set(Uniform.time, _time / 7);
   }
 
   @override

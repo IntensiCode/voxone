@@ -28,8 +28,14 @@ enum Uniform {
   shadow,
 }
 
+enum HighlightMode {
+  none,
+  shadow,
+  hit,
+}
+
 class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
-  StackedSprite(this._asset, this._frames, {this.shadow = false}) {
+  StackedSprite(this._asset, this._frames, {this.highlight_mode = HighlightMode.none}) {
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
   }
@@ -61,7 +67,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   double rot_y = 0;
   double rot_z = 0;
 
-  bool shadow;
+  HighlightMode highlight_mode;
 
   @override
   Future onLoad() async {
@@ -111,7 +117,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _u_dir.normalize();
     _v_dir.normalize();
 
-    _uniforms.set(Uniform.shadow, shadow ? 1 : 0);
+    _uniforms.set(Uniform.shadow, highlight_mode.index.toDouble());
     _uniforms.set(Uniform.scr_width, width);
     _uniforms.set(Uniform.scr_height, height);
     _uniforms.set(Uniform.scale_x, scale_x);

@@ -1,13 +1,21 @@
 import 'package:flame/components.dart';
 import 'package:voxone/game/configuration.dart';
+import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/game_phase.dart';
 import 'package:voxone/game/game_screen.dart';
 import 'package:voxone/game/game_state.dart';
+import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
 import 'package:voxone/game/visual.dart';
 import 'package:voxone/util/keys.dart';
 
 // to make these available to the tiny components, singletons are just fine:
+
+late Component stage;
+
+late Decals decals;
+
+late HorizontalPlayer h_player;
 
 mixin Context on Component {
   GameScreen? _model;

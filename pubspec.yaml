@@ -47,6 +47,7 @@ flutter:
     - assets/images/entities/
   shaders:
     - assets/shaders/checkerboard.frag
+    - assets/shaders/explosion.frag
     - assets/shaders/ground.frag
     - assets/shaders/noise.frag
     - assets/shaders/space.frag

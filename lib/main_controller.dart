@@ -15,7 +15,10 @@ import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/web_play_screen.dart';
 
-class MainController extends World with AutoDispose, HasAutoDisposeShortcuts implements ScreenNavigation {
+class MainController extends World
+    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection
+    implements ScreenNavigation {
+  //
   final _stack = <Screen>[];
 
   @override
