@@ -75,10 +75,10 @@ class _TitleShip extends Component {
   @override
   void update(double dt) {
     _time += dt;
-    _entity.scale.setAll(1 + sin(_time / 2) / 4);
-    _entity.rot_x = -0.15;
-    _entity.rot_y = pi * 0 + sin(_time) * 1.75;
+    // _entity.scale.setAll(1 + sin(_time / 2) / 4);
+    _entity.rot_x = -0.00;
+    _entity.rot_y = sin(_time) * 1.75;
     _entity.rot_z = _time;
-    _entity.position.setValues(400, 250);
+    _entity.position.setValues(400 + cos(pi + _time) * 200, 250);
   }
 }

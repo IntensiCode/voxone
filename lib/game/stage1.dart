@@ -34,9 +34,7 @@ class Stage1 extends GameScreen {
 
       case GamePhase.intro:
         add(shadows = Shadows());
-        final player = HorizontalPlayer();
-        add(player);
-        add(HorizontalExhaust(player));
+        add(HorizontalPlayer());
         shadows.isVisible = false;
 
       case GamePhase.playing:

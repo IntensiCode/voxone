@@ -1,17 +1,12 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stacked_entity.dart';
-import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/particle_recycler.dart';
-import 'package:voxone/util/random.dart';
 
 enum PlayerState {
   incoming,
@@ -147,59 +142,4 @@ class HorizontalPlayer extends Component with Context {
     _entity.rot_x = -0.95 - _strafe_speed / 10;
     _entity.position.setValues(100 + _strafe / 4, 280 + _strafe);
   }
-}
-
-class HorizontalExhaust extends Component with HasPaint {
-  HorizontalExhaust(this._player);
-
-  final HorizontalPlayer _player;
-
-  final _emission = ParticleRecycler<Emission>(() => Emission());
-
-  double _emit_time = 0;
-
-  @override
-  void update(double dt) {
-    if (_emit_time <= 0) {
-      _emit_time = 0.01;
-      for (int i = 0; i < 10; i++) {
-        final it = _emission.acquire();
-        it.pos.setFrom(_player.position);
-        final off = rng.nextDoublePM(10) * cos(_player._rot);
-        it.pos.x -= 25 - off / 3;
-        it.pos.y += 8 + off;
-        it.time = rng.nextDoubleLimit(0.5) + off.abs()/40;
-        it.speed = 1 + rng.nextDoubleLimit(0.5) - off.abs()/40;
-      }
-    } else {
-      _emit_time -= dt;
-    }
-    for (final it in _emission.active) {
-      it.pos.x -= dt * 220 * it.speed;
-      it.pos.y += dt * 60;
-      it.time += dt * 2;
-      if (it.time >= 1) it.active = false;
-    }
-  }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    for (final it in _emission.active) {
-      paint.color = it.color;
-      paint.strokeWidth = 2 + it.speed * 2;
-      canvas.drawLine(it.pos.toOffset(), Offset(it.pos.x - 12, it.pos.y + 3), paint);
-    }
-  }
-}
-
-class Emission with Particle {
-  static final _colors = [white, yellow, orange, red, black, transparent];
-
-  final pos = Vector2.zero();
-
-  double time = 0;
-  double speed = 0;
-
-  Color get color => _colors[(time * (_colors.length - 1)).toInt()];
 }
