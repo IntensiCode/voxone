@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/game/checkerboard.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
@@ -35,7 +34,6 @@ class Decals extends Component {
     priority = 10000;
   }
 
-  late final SpriteAnimation _mini_explosion;
   late final SpriteSheet _explosions;
 
   final _instances = <Decal, List<_Decal>>{};
@@ -47,7 +45,6 @@ class Decals extends Component {
 
   @override
   onLoad() async {
-    _mini_explosion = await animCR('explosion_small.png', 5, 1);
     _explosions = await sheetI('explosions.png', 7, 8);
   }
 

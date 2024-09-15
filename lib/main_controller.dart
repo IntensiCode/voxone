@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
@@ -16,7 +17,7 @@ import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World
-    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection
+    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>
     implements ScreenNavigation {
   //
   final _stack = <Screen>[];
@@ -41,14 +42,17 @@ class MainController extends World
       onKey('<C-1>', () => showScreen(Screen.stage1));
       onKey('<C-2>', () => showScreen(Screen.stage2));
       onKey('<C-3>', () => showScreen(Screen.stage3));
+      onKey('<C-d>', () {
+        visual.debug = !visual.debug;
+        logInfo('debug = ${visual.debug}');
+      });
+      onKey('<C-v>', () {
+        visual.pixelate_screen = !visual.pixelate_screen;
+        logInfo('pixelate_screen = ${visual.pixelate_screen}');
+      });
     }
 
     onKey('<C-t>', () => showScreen(Screen.title));
-
-    onKey('<C-v>', () {
-      visual.pixelate_screen = !visual.pixelate_screen;
-      logInfo('pixelate_screen = ${visual.pixelate_screen}');
-    });
   }
 
   @override

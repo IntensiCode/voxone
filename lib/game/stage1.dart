@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/decals.dart';
+import 'package:voxone/game/extras.dart';
 import 'package:voxone/game/game_phase.dart';
 import 'package:voxone/game/game_screen.dart';
 import 'package:voxone/game/info_overlay.dart';
@@ -37,6 +38,7 @@ class Stage1 extends GameScreen {
     add(Space());
     _change_phase(phase);
     add(decals = Decals());
+    add(extras = Extras());
     add(InfoOverlay());
   }
 
@@ -173,12 +175,10 @@ enum MarauderState {
   defeated,
 }
 
-class Marauder extends Component with Context, EnemyHitPoints {
+class Marauder extends PositionComponent with Context, EnemyHitPoints {
   late final StackedEntity _entity;
 
   MarauderState _state = MarauderState.incoming;
-
-  Vector2 get position => _entity.position;
 
   final target_position = Vector2.zero();
 
@@ -187,7 +187,7 @@ class Marauder extends Component with Context, EnemyHitPoints {
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,
-        _ => true,
+        _ => _incoming_time > 0.9,
       };
 
   @override
@@ -195,6 +195,7 @@ class Marauder extends Component with Context, EnemyHitPoints {
     if (_state == MarauderState.exploding) return;
     _state = MarauderState.exploding;
     _entity.add(EnemyExplosion());
+    if (_sweep_time > 0) _can_sweep = true;
   }
 
   @override
@@ -221,13 +222,17 @@ class Marauder extends Component with Context, EnemyHitPoints {
     _entity.scale_x = 1.2;
     _entity.scale_y = 3.5;
     _entity.scale_z = 1.2;
-    _entity.position.setFrom(target_position);
+    position.setFrom(target_position);
 
     add(_entity);
 
-    _entity.add(RectangleHitbox(size: Vector2.all(128), collisionType: CollisionType.passive)
-      ..position.setAll(64)
-      ..size.setAll(128));
+    size.setAll(180);
+    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    add(MarauderGun(this));
   }
 
   double _incoming_time = 0;
@@ -259,9 +264,13 @@ class Marauder extends Component with Context, EnemyHitPoints {
         _on_exploding(dt);
 
       case MarauderState.defeated:
+        if (!_spawned) extras.spawn(position);
+        _spawned = true;
         removeFromParent();
     }
   }
+
+  bool _spawned = false;
 
   void _on_incoming(double dt) {
     _incoming_time += dt * 2 / 3;
@@ -269,25 +278,25 @@ class Marauder extends Component with Context, EnemyHitPoints {
       _incoming_time = 1;
       _state = MarauderState.active;
     }
-    _entity.scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
-    priority = (_entity.scale.x * 1000).toInt();
+    scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
+    priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(_incoming_time);
-    _entity.position.setFrom(target_position);
-    _entity.position.x += 350;
-    _entity.position.x -= 350 * i;
+    position.setFrom(target_position);
+    position.x += 350;
+    position.x -= 350 * i;
   }
 
   void _on_active(double dt) {
-    _entity.scale.setAll(sin(_active_time / 3) * 0.025 + 0.2);
-    priority = (_entity.scale.x * 1000).toInt();
+    scale.setAll(sin(_active_time / 3) * 0.025 + 0.2);
+    priority = (scale.x * 1000).toInt();
     _entity.rot_x = -pi / 8 + sin(_active_time / 7) * 0.2;
     _entity.rot_y = -pi / 2 + pi / 8;
     _entity.rot_z = -pi / 8 + sin(_active_time) * 0.2;
     _active_time += dt * 3;
-    _entity.position.setFrom(target_position);
-    _entity.position.x += sin(_active_time / 1.2345) * 10;
-    _entity.position.y += sin(_active_time) * 10;
+    position.setFrom(target_position);
+    position.x += sin(_active_time / 1.2345) * 10;
+    position.y += sin(_active_time) * 10;
 
     if (_state != MarauderState.active) {
       return;
@@ -319,10 +328,10 @@ class Marauder extends Component with Context, EnemyHitPoints {
 
     final t = Curves.easeInOutCubic.transform(_sweep_time / 10);
     final x = sin(t * pi) * _sweep_dist;
-    _entity.position.x += x;
-    _entity.scale.x += sin(t * pi) / 10;
-    _entity.scale.y += sin(t * pi) / 10;
-    priority = (_entity.scale.x * 1000).toInt();
+    position.x += x;
+    scale.x += sin(t * pi) / 10;
+    scale.y += sin(t * pi) / 10;
+    priority = (scale.x * 1000).toInt();
 
     double mm = _sweep_time < 5 ? 0 : 0.5 + (_sweep_time - 5) / 10;
     double m = Curves.easeInOut.transform(mm);
@@ -340,13 +349,13 @@ class Marauder extends Component with Context, EnemyHitPoints {
       _state = MarauderState.left;
     }
 
-    _entity.scale.x += _leaving_time * 0.5;
-    _entity.scale.y += _leaving_time * 0.5;
-    priority = (_entity.scale.x * 1000).toInt();
+    scale.x += _leaving_time * 0.5;
+    scale.y += _leaving_time * 0.5;
+    priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(_leaving_time / 2);
-    _entity.position.y -= 550 * i;
-    _entity.position.x -= 550 * i / 4;
+    position.y -= 550 * i;
+    position.x -= 550 * i / 4;
   }
 
   void _on_exploding(double dt) {
@@ -359,8 +368,8 @@ class Marauder extends Component with Context, EnemyHitPoints {
     _entity.rot_x += dt;
     _entity.rot_y += dt * 2;
     _entity.rot_z += dt * 0.5;
-    _entity.position.x -= dt * 100;
-    _entity.position.y += dt * 100 / 4;
+    position.x -= dt * 100;
+    position.y += dt * 100 / 4;
 
     _entity.sprite.opacity = 1 - _leaving_time / 2;
   }
@@ -468,5 +477,71 @@ class EnemyHealthBar extends PositionComponent {
     _paint.style = PaintingStyle.fill;
     _health.right = max(3, min(96, percent));
     canvas.drawRect(_health, _paint);
+  }
+}
+
+class MarauderGun extends Component with Context {
+  MarauderGun(this.source);
+
+  final Marauder source;
+
+  double _cool_down = rng.nextDouble();
+
+  @override
+  void update(double dt) {
+    if (source._state == MarauderState.exploding) removeFromParent();
+    if (source._state == MarauderState.defeated) removeFromParent();
+    if (source._state == MarauderState.left) removeFromParent();
+    if (source._state != MarauderState.active) return;
+
+    if (_cool_down > 0) {
+      _cool_down -= dt;
+      return;
+    }
+
+    _cool_down += 0.4 + rng.nextDoubleLimit(0.9);
+
+    final it = MarauderShot();
+    it.position.setFrom(source.position);
+    it.x -= 25;
+    it.y += 25 / 4;
+    stage.add(it);
+  }
+}
+
+class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
+  static const _blue1 = Color(0xFFffa0a0);
+  static const _blue2 = Color(0xFF9f2020);
+
+  MarauderShot() {
+    size.setAll(4);
+    add(CircleHitbox(radius: 4, anchor: Anchor.center)
+      ..renderShape = debug
+      ..paint.opacity = 0.2);
+  }
+
+  @override
+  void update(double dt) {
+    x -= 300 * dt;
+    y += 300 / 4 * dt;
+    if (x < -100) removeFromParent();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    paint.color = _blue2;
+    canvas.drawCircle(Offset.zero, 3.5, paint);
+    paint.color = _blue1;
+    canvas.drawCircle(Offset.zero, 3, paint);
+    paint.color = white;
+    canvas.drawCircle(Offset.zero, 2, paint);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other case HorizontalPlayer it) {
+      removeFromParent();
+    }
   }
 }

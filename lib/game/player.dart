@@ -20,7 +20,7 @@ enum PlayerState {
   destroyed,
 }
 
-class HorizontalPlayer extends Component with Context {
+class HorizontalPlayer extends PositionComponent with Context {
   HorizontalPlayer() {
     h_player = this;
   }
@@ -43,8 +43,6 @@ class HorizontalPlayer extends Component with Context {
     _state = value;
   }
 
-  Vector2 get position => _entity.position;
-
   Component? _weapon;
 
   @override
@@ -61,9 +59,31 @@ class HorizontalPlayer extends Component with Context {
     _entity.scale_z = 1.2;
     _entity.scale.setAll(0.3);
     _entity.size.setAll(256);
-    _entity.position.setValues(100, 280);
+    position.setValues(100, 280);
 
     add(_entity);
+
+    size.setAll(256 * 0.3);
+
+    add(CircleHitbox(
+      radius: 16,
+      position: Vector2(-10, 2),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    add(CircleHitbox(
+      radius: 8,
+      position: Vector2(15, -5),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
 
     _weapon = PlasmaGun();
     parent?.add(_weapon!);
@@ -102,7 +122,7 @@ class HorizontalPlayer extends Component with Context {
     _entity.size.setAll(256);
 
     final i = Curves.easeOut.transform(_incoming_time);
-    _entity.position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
+    position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
   }
 
   double _rot = 0;
@@ -155,7 +175,7 @@ class HorizontalPlayer extends Component with Context {
     }
 
     _entity.rot_x = -0.95 - _strafe_speed / 10;
-    _entity.position.setValues(100 + _strafe / 4, 280 + _strafe);
+    position.setValues(100 + _strafe / 4, 280 + _strafe);
   }
 }
 
@@ -174,8 +194,8 @@ class PlasmaGun extends Component with Context {
 
       final it = PlasmaShot();
       it.position.setFrom(h_player.position);
-      it.x += 20;
-      it.y -= 5;
+      it.x += 25;
+      it.y -= 25 / 4;
       stage.add(it);
     }
   }
@@ -184,6 +204,8 @@ class PlasmaGun extends Component with Context {
 class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
   static const _blue1 = Color(0xFFa0a0ff);
   static const _blue2 = Color(0xFF20209f);
+
+  double _start_time = 1;
 
   PlasmaShot() {
     size.setAll(4);
@@ -194,6 +216,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
 
   @override
   void update(double dt) {
+    if (_start_time > 0) _start_time -= dt;
     x += 500 * dt;
     y -= 500 / 4 * dt;
     if (x > 900) removeFromParent();
@@ -202,7 +225,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
   @override
   void render(Canvas canvas) {
     paint.color = _blue2;
-    canvas.drawCircle(Offset.zero, 3.5, paint);
+    canvas.drawCircle(Offset.zero, 3.5 + _start_time * 4, paint);
     paint.color = _blue1;
     canvas.drawCircle(Offset.zero, 3, paint);
     paint.color = white;
@@ -212,7 +235,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other.parent case EnemyHitPoints it) {
+    if (other case EnemyHitPoints it) {
       if (it.volatile) {
         it.on_hit();
         removeFromParent();

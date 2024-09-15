@@ -40,13 +40,18 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     paint.filterQuality = FilterQuality.none;
   }
 
-  final String _asset;
+  StackedSprite.image(this._image, this._frames, {this.highlight_mode = HighlightMode.none}) : _asset = null {
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
+  }
+
+  final String? _asset;
   final int _frames;
 
   final _rect = MutRect(0, 0, 0, 0);
 
   late final Image _image;
-  late final FragmentShader _shader;
+  FragmentShader? _shader;
   late final Uniforms _uniforms;
   late final Paint _paint;
 
@@ -69,17 +74,19 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   HighlightMode highlight_mode;
 
+  void change_image(Image image) => _shader?.setImageSampler(0, image);
+
   @override
   Future onLoad() async {
     super.onLoad();
 
-    _image = await images.load(_asset);
+    if (_asset != null) _image = await images.load(_asset);
 
     final program = await FragmentProgram.fromAsset('assets/shaders/voxel.frag');
     _shader = program.fragmentShader();
-    _shader.setImageSampler(0, _image);
+    _shader!.setImageSampler(0, _image);
 
-    _uniforms = Uniforms(_shader, Uniform.values);
+    _uniforms = Uniforms(_shader!, Uniform.values);
     _uniforms.set(Uniform.scr_x, 0);
     _uniforms.set(Uniform.scr_y, 0);
     _uniforms.set(Uniform.frame_width, _image.width.toDouble());
