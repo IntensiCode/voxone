@@ -4,7 +4,8 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/sprite.dart';
+import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/decals.dart';
@@ -39,6 +40,7 @@ class Stage1 extends GameScreen {
     _change_phase(phase);
     add(decals = Decals());
     add(extras = Extras());
+    add(mines = MarauderMines());
     add(InfoOverlay());
   }
 
@@ -57,7 +59,8 @@ class Stage1 extends GameScreen {
 
       case GamePhase.intro:
         add(shadows = Shadows());
-        add(HorizontalPlayer());
+        final p = added(HorizontalPlayer());
+        add(PlayerHud(p));
         shadows.isVisible = false;
 
       case GamePhase.playing:
@@ -128,6 +131,10 @@ mixin EnemyWave on Component {
 class MaraudersWave extends Component with EnemyWave {
   static const enemies_in_wave = 8;
 
+  MaraudersWave() {
+    Marauder._can_sweep = true;
+  }
+
   bool _info_shown = false;
   bool _active = false;
   double _next_time = 0;
@@ -139,7 +146,7 @@ class MaraudersWave extends Component with EnemyWave {
       return;
     }
     if (!_info_shown) {
-      sendMessage(ShowInfoText(text: 'Enemy Marauder Wave Incoming', when_done: () => _active = true));
+      sendMessage(ShowInfoText(text: 'Enemy Wave Incoming', when_done: () => _active = true));
       _info_shown = true;
       _active = true;
     }
@@ -208,12 +215,12 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
   double _hit_time = 0;
 
   @override
-  onLoad() async {
+  Future onLoad() async {
     super.onLoad();
 
     _entity = StackedEntity('entities/transstellar.png', 14, shadows);
     // _entity.sprite.add(EnemyHealthBar(this));
-    _entity.add(EnemyHealthBar(this));
+    await _entity.add(EnemyHealthBar(this));
     _entity.size.setAll(256);
 
     _entity.rot_x = -pi / 8;
@@ -224,15 +231,15 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     _entity.scale_z = 1.2;
     position.setFrom(target_position);
 
-    add(_entity);
+    await add(_entity);
 
     size.setAll(180);
-    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)
+    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
 
-    add(MarauderGun(this));
+    await add(MarauderGun(this));
   }
 
   double _incoming_time = 0;
@@ -314,6 +321,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
 
   double _sweep_time = 0;
   double _sweep_dist = 0;
+  bool _planted = false;
 
   void _on_sweeping(double dt) {
     _on_active(dt);
@@ -321,9 +329,16 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     _sweep_time += dt;
     if (_sweep_time >= 10) {
       _can_sweep = true;
+      _planted = false;
       _sweep_time = 0;
       _state = MarauderState.active;
       return;
+    }
+
+    if (_sweep_time >= 5 && !_planted) {
+      _planted = true;
+      logInfo('plant mine');
+      mines.spawn(position);
     }
 
     final t = Curves.easeInOutCubic.transform(_sweep_time / 10);
@@ -389,7 +404,7 @@ class EnemyExplosion extends CircleComponent {
     _explosion!.setFloat(0, width);
     _explosion!.setFloat(1, height);
     _anim ??= await animCR('explosion96.png', 12, 1, 0.1);
-    paint.color = Colors.white;
+    paint.color = white;
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
     paint.shader = _explosion!;
@@ -510,8 +525,9 @@ class MarauderGun extends Component with Context {
 }
 
 class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
-  static const _blue1 = Color(0xFFffa0a0);
-  static const _blue2 = Color(0xFF9f2020);
+  static const _inner = Color(0xFFa0ffa0);
+  static const _outer = Color(0xFF209f20);
+  static const _core = Color(0xFFffffff);
 
   MarauderShot() {
     size.setAll(4);
@@ -529,11 +545,11 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
 
   @override
   void render(Canvas canvas) {
-    paint.color = _blue2;
+    paint.color = _outer;
     canvas.drawCircle(Offset.zero, 3.5, paint);
-    paint.color = _blue1;
+    paint.color = _inner;
     canvas.drawCircle(Offset.zero, 3, paint);
-    paint.color = white;
+    paint.color = _core;
     canvas.drawCircle(Offset.zero, 2, paint);
   }
 
@@ -543,6 +559,109 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
     if (other case FriendlyTarget it) {
       if (it.susceptible) {
         it.on_hit(1);
+        removeFromParent();
+      }
+    }
+  }
+}
+
+class MarauderMines extends Component with Context {
+  late final SpriteSheet _sheet;
+
+  late final Future<List<Image>> _animation;
+
+  void spawn(Vector2 position) {
+    _animation.then((animation) {
+      final it = _MarauderMine(animation, shadows);
+      it.position.setFrom(position);
+      stage.add(it);
+    });
+  }
+
+  @override
+  onLoad() async {
+    _sheet = await sheetI('acid_bomb.png', 8, 2);
+    _animation = _make_animation();
+  }
+
+  Future<List<Image>> _make_animation() async {
+    final result = List<Image>.empty(growable: true);
+    for (int a = 0; a < 8; a++) {
+      final recorder = PictureRecorder();
+      final canvas = Canvas(recorder);
+      for (int i = 0; i < 8; i++) {
+        final src = _sheet.getSprite(a == i ? 1 : 0, i);
+        src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
+      }
+      // final anim = _sheet.getSprite(0, a);
+      // anim.render(canvas, position: Vector2.zero());
+      // anim.render(canvas, position: Vector2(0, 240));
+      final picture = recorder.endRecording();
+      final image = picture.toImageSync(16, 128);
+      picture.dispose();
+      result.add(image);
+    }
+    return result;
+  }
+}
+
+class _MarauderMine extends PositionComponent with CollisionCallbacks, HasPaint {
+  _MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
+    entity.scale_x = 1.2;
+    entity.scale_y = 1.8;
+    entity.scale_z = 1.2;
+    entity.size.setAll(16);
+
+    add(entity);
+
+    size.setAll(16);
+    add(RectangleHitbox(anchor: Anchor.center)
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+  }
+
+  final List<Image> animation;
+  final StackedEntity entity;
+
+  late ExtraId which;
+
+  double _anim_time = 0;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _anim_time += dt;
+
+    if (_anim_time >= 1) _anim_time -= 1;
+
+    final anim_frame = (_anim_time * (animation.length - 1)).toInt();
+
+    entity.sprite.change_image(animation[anim_frame]);
+
+    entity.rot_x += dt;
+    entity.rot_y += dt / 2;
+    entity.rot_z += dt * 3;
+    position.x -= 100 * dt;
+    position.y += 100 / 4 * dt;
+    if (position.x < -100) {
+      removeFromParent();
+    }
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other case FriendlyTarget it) {
+      if (it.susceptible) {
+        it.on_hit(10);
+        position.x -= 10;
+        position.y += 10 / 4;
+        for (int i = 0; i < 5; i++) {
+          final d = decals.spawn(Decal.mini_explosion, position);
+          d.velocity.setValues(-10.0 * i, 10 / 4 * i);
+          d.time = rng.nextDoubleLimit(0.2);
+        }
         removeFromParent();
       }
     }

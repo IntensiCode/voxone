@@ -8,6 +8,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
+import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
 import 'package:voxone/game/stacked_entity.dart';
@@ -89,6 +90,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasPaint {
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (other is HorizontalPlayer) {
+      decals.spawn(Decal.teleport, position);
       removeFromParent();
       logInfo('collect extra $which');
     }

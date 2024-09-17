@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import 'bitmap_font.dart';
 import 'fonts.dart';
 
-class BitmapText extends PositionComponent with HasPaint, HasVisibility {
+class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapshot {
   final String text;
   final BitmapFont font;
   final double fontScale;
@@ -29,6 +29,7 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility {
     this.position.x -= x;
     this.position.y -= y;
     size.setValues(w, h);
+    renderSnapshot = false;
   }
 
   @override

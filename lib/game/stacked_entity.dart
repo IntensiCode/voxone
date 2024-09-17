@@ -92,7 +92,7 @@ class StackedEntity extends PositionComponent {
   }
 
   @override
-  void onLoad() {
-    _shadows.add(_shadow);
+  Future onLoad() async {
+    await _shadows.add(_shadow);
   }
 }

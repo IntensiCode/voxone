@@ -10,8 +10,10 @@ import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stage1.dart';
+import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/mut_rect.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
@@ -22,7 +24,7 @@ enum PlayerState {
   destroyed,
 }
 
-class HorizontalPlayer extends PositionComponent with Context {
+class HorizontalPlayer extends PositionComponent with Context, FriendlyTarget {
   HorizontalPlayer() {
     h_player = this;
   }
@@ -45,11 +47,22 @@ class HorizontalPlayer extends PositionComponent with Context {
     _state = value;
   }
 
-  Component? _weapon;
-  Component? _shield;
+  Component? weapon;
+  DeflectorShield? shield;
+
+  double integrity = 1;
 
   @override
-  onLoad() async {
+  bool get susceptible => true;
+
+  @override
+  void on_hit(double damage) {
+    integrity -= damage / 50;
+    if (integrity < 0) integrity = 0;
+  }
+
+  @override
+  Future onLoad() async {
     super.onLoad();
 
     _entity = StackedEntity('entities/star_runner.png', 16, shadows);
@@ -64,11 +77,11 @@ class HorizontalPlayer extends PositionComponent with Context {
     _entity.size.setAll(256);
     position.setValues(100, 280);
 
-    add(_entity);
+    await add(_entity);
 
     size.setAll(256 * 0.3);
 
-    add(CircleHitbox(
+    await add(CircleHitbox(
       radius: 16,
       position: Vector2(-10, 2),
       anchor: Anchor.center,
@@ -78,7 +91,7 @@ class HorizontalPlayer extends PositionComponent with Context {
       ..opacity = 0.2
       ..renderShape = debug);
 
-    add(CircleHitbox(
+    await add(CircleHitbox(
       radius: 8,
       position: Vector2(15, -5),
       anchor: Anchor.center,
@@ -88,11 +101,11 @@ class HorizontalPlayer extends PositionComponent with Context {
       ..opacity = 0.2
       ..renderShape = debug);
 
-    _weapon = PlasmaGun();
-    add(_weapon!);
+    weapon = PlasmaGun();
+    await add(weapon!);
 
-    _shield = DeflectorShield();
-    add(_shield!);
+    shield = DeflectorShield();
+    await add(shield!);
 
     priority = 100;
   }
@@ -262,17 +275,17 @@ class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
     priority = -1;
   }
 
-  double _energy = 1;
+  double energy = 1;
   double _deflect_time = 0;
 
   @override
-  bool get susceptible => _energy > 0.1;
+  bool get susceptible => energy > 0.1;
 
   @override
   void on_hit(double damage) {
-    _deflect_time += 0.1;
-    _energy -= damage / 33;
-    _energy = max(0, _energy);
+    _deflect_time = 0.3;
+    energy -= damage / 25;
+    energy = max(0, energy);
   }
 
   late final FragmentShader _shader;
@@ -288,30 +301,33 @@ class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
     _shader.setFloat(1, size.y);
   }
 
-  double _anim_time = 0;
-
   @override
   void update(double dt) {
     super.update(dt);
 
-    if (_energy < 1) _energy += dt / 3;
+    if (energy < 1) energy += dt / 3;
 
     if (_deflect_time > 0) _deflect_time -= dt;
 
-    _anim_time += dt;
-    _shader.setFloat(4, _anim_time);
+    _shader.setFloat(4, _deflect_time);
   }
+
+  final _rect = MutRect(0, 0, 0, 0);
+  Offset? _offset;
 
   @override
   void render(Canvas canvas) {
     if (_deflect_time <= 0) return;
 
-    final image = pixelate(128, 128, (canvas) {
-      canvas.drawRect(const Rect.fromLTWH(0, 0, 96, 96), paint);
+    final image = pixelate(size.x.toInt(), size.y.toInt(), (canvas) {
+      _rect.right = size.x;
+      _rect.bottom = size.y;
+      canvas.drawRect(_rect, paint);
     });
 
+    _offset ??= Offset(-size.x / 2, -size.y / 2);
     _paint.opacity = _deflect_time > 0 ? 0.75 : 0.05;
-    canvas.drawImage(image, const Offset(-48, -48), _paint);
+    canvas.drawImage(image, _offset!, _paint);
     image.dispose();
   }
 
@@ -322,4 +338,52 @@ mixin FriendlyTarget {
   bool get susceptible;
 
   void on_hit(double damage);
+}
+
+class PlayerHud extends Component with HasPaint {
+  PlayerHud(this._player) {
+    add(BitmapText(text: 'SHIELD', position: Vector2(16, 16))..renderSnapshot = true);
+    add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32))..renderSnapshot = true);
+    // add(BitmapText(text: 'OVERHEAT', position: Vector2(16, 48))..renderSnapshot = true);
+  }
+
+  final HorizontalPlayer _player;
+
+  @override
+  void render(Canvas canvas) {
+    final e = _player.shield?.energy;
+    if (e != null) {
+      paint.color = switch (e) {
+        > .7 => _good,
+        > .5 => _damaged,
+        > .2 => _danger,
+        _ => _critical,
+      };
+      _rect.left = 16;
+      _rect.top = 26;
+      _rect.right = 16 + e * 100;
+      _rect.bottom = 30;
+      canvas.drawRect(_rect, paint);
+    }
+
+    final i = _player.integrity;
+    paint.color = switch (i) {
+      > .6 => _good,
+      > .5 => _damaged,
+      > .2 => _danger,
+      _ => _critical,
+    };
+    _rect.left = 16;
+    _rect.top = 26 + 16;
+    _rect.right = 16 + i * 100;
+    _rect.bottom = 30 + 16;
+    canvas.drawRect(_rect, paint);
+  }
+
+  final _rect = MutRect(0, 0, 0, 0);
+
+  final _good = white;
+  final _damaged = const Color(0xFFf0f060);
+  final _danger = const Color(0xFFf0a060);
+  final _critical = const Color(0xF0ff4040);
 }

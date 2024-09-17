@@ -8,6 +8,7 @@ import 'package:voxone/game/game_screen.dart';
 import 'package:voxone/game/game_state.dart';
 import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
+import 'package:voxone/game/stage1.dart';
 import 'package:voxone/game/visual.dart';
 import 'package:voxone/main_controller.dart';
 import 'package:voxone/util/keys.dart';
@@ -42,9 +43,11 @@ mixin Context on Component {
 
   Shadows get shadows => _shadows ??= model.shadows;
 
-  Decals get decals => model.decals;
+  // Decals get decals => model.decals;
 
   Extras get extras => model.extras;
+
+  MarauderMines get mines => model.mines;
 
   CollisionDetection<ShapeHitbox, Sweep<ShapeHitbox>> get collision =>
       _collision ??= (model.parent as MainController).collisionDetection;
