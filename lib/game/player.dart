@@ -285,6 +285,10 @@ class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
   void on_hit(double damage) {
     _deflect_time = 0.3;
     energy -= damage / 25;
+    if (energy < 0) {
+      double remaining = energy.abs();
+      if (remaining > 0) h_player.on_hit(remaining * 25);
+    }
     energy = max(0, energy);
   }
 

@@ -186,6 +186,11 @@ enum MarauderState {
 class Marauder extends PositionComponent with Context, EnemyHitPoints {
   late final StackedEntity _entity;
 
+  Marauder() {
+    hit_points = 25;
+    remaining = 25;
+  }
+
   MarauderState _state = MarauderState.incoming;
 
   bool get defeated => _state == MarauderState.defeated || _state == MarauderState.left;
