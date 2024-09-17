@@ -106,7 +106,7 @@ class Stage1 extends GameScreen {
 }
 
 class EnemiesStage1 extends Component {
-  final _waves = [MaraudersWave()];
+  final _waves = [MarauderWave(), MinefieldWave()];
 
   EnemyWave? _active_wave;
 
@@ -128,10 +128,10 @@ mixin EnemyWave on Component {
   bool defeated = false;
 }
 
-class MaraudersWave extends Component with EnemyWave {
+class MarauderWave extends Component with EnemyWave {
   static const enemies_in_wave = 8;
 
-  MaraudersWave() {
+  MarauderWave() {
     Marauder._can_sweep = true;
   }
 
@@ -154,6 +154,7 @@ class MaraudersWave extends Component with EnemyWave {
       return;
     }
     if (_wave.length >= enemies_in_wave) {
+      defeated = _wave.every((it) => it.defeated);
       return;
     }
     if (_next_time > 0) {
@@ -186,6 +187,8 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
   late final StackedEntity _entity;
 
   MarauderState _state = MarauderState.incoming;
+
+  bool get defeated => _state == MarauderState.defeated || _state == MarauderState.left;
 
   final target_position = Vector2.zero();
 
@@ -570,11 +573,12 @@ class MarauderMines extends Component with Context {
 
   late final Future<List<Image>> _animation;
 
-  void spawn(Vector2 position) {
-    _animation.then((animation) {
-      final it = _MarauderMine(animation, shadows);
+  Future<MarauderMine> spawn(Vector2 position) {
+    return _animation.then((animation) {
+      final it = MarauderMine(animation, shadows);
       it.position.setFrom(position);
       stage.add(it);
+      return it;
     });
   }
 
@@ -605,8 +609,8 @@ class MarauderMines extends Component with Context {
   }
 }
 
-class _MarauderMine extends PositionComponent with CollisionCallbacks, HasPaint {
-  _MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
+class MarauderMine extends PositionComponent with CollisionCallbacks, Context, EnemyHitPoints, HasPaint {
+  MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
     entity.scale_z = 1.2;
@@ -619,6 +623,9 @@ class _MarauderMine extends PositionComponent with CollisionCallbacks, HasPaint 
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
+
+    hit_points = 10;
+    remaining = 10;
   }
 
   final List<Image> animation;
@@ -626,11 +633,36 @@ class _MarauderMine extends PositionComponent with CollisionCallbacks, HasPaint 
 
   late ExtraId which;
 
+  bool _destroyed = false;
   double _anim_time = 0;
+
+  @override
+  bool get volatile => !_destroyed;
+
+  @override
+  void on_destroyed() {
+    if (_destroyed) return;
+    _destroyed = true;
+    decals.spawn(Decal.nuke_explosion, position);
+    removeFromParent();
+  }
+
+  @override
+  void on_hit() {
+    super.on_hit();
+    decals.spawn(Decal.mini_explosion, position);
+    _hit_time += 0.05;
+  }
+
+  double _hit_time = 0;
 
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (_hit_time > 0) _hit_time -= dt;
+    entity.sprite.highlight_mode = _hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
+
     _anim_time += dt;
 
     if (_anim_time >= 1) _anim_time -= 1;
@@ -666,4 +698,46 @@ class _MarauderMine extends PositionComponent with CollisionCallbacks, HasPaint 
       }
     }
   }
+}
+
+class MinefieldWave extends Component with Context, EnemyWave {
+  static const enemies_in_wave = 64;
+
+  MinefieldWave() {
+    delay = 3;
+  }
+
+  bool _info_shown = false;
+  bool _active = false;
+  double _next_time = 0;
+
+  @override
+  void update(double dt) {
+    if (delay > 0) {
+      delay -= dt;
+      return;
+    }
+    if (!_info_shown) {
+      sendMessage(ShowInfoText(text: 'Approaching Minefield', when_done: () => _active = true));
+      _info_shown = true;
+      _active = true;
+    }
+    if (!_active) {
+      return;
+    }
+    if (_wave.length >= enemies_in_wave) {
+      defeated = _wave.every((it) => it.isRemoved);
+      return;
+    }
+    if (_next_time > 0) {
+      _next_time -= dt;
+      return;
+    }
+    _next_time = 0.2;
+
+    final it = mines.spawn(Vector2(850, -150 + rng.nextDoubleLimit(500)));
+    it.then((it) => _wave.add(it));
+  }
+
+  final _wave = List<MarauderMine>.empty(growable: true);
 }

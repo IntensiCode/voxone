@@ -10,6 +10,7 @@ late Decals decals;
 
 enum Decal {
   mini_explosion(1.0),
+  nuke_explosion(1.0),
   teleport(0.3),
   ;
 
@@ -46,6 +47,7 @@ class Decals extends Component {
 
   late final SpriteSheet _explosions;
   late final SpriteAnimation _teleport;
+  late final SpriteAnimation _nuke;
 
   final _instances = <Decal, List<DecalObj>>{};
 
@@ -64,6 +66,7 @@ class Decals extends Component {
   onLoad() async {
     _explosions = await sheetI('explosions.png', 7, 8);
     _teleport = await animCR('teleport.png', 5, 1);
+    _nuke = await animCR('explosion.png', 14, 1);
   }
 
   @override
@@ -80,6 +83,9 @@ class Decals extends Component {
 
     final teleports = _instances[Decal.teleport];
     if (teleports != null) _update_default(Decal.teleport, dt, teleports);
+
+    final nukes = _instances[Decal.nuke_explosion];
+    if (nukes != null) _update_default(Decal.nuke_explosion, dt, nukes);
   }
 
   void _update_default(Decal decal, double dt, List<DecalObj> decals) {
@@ -104,13 +110,16 @@ class Decals extends Component {
     }
 
     final teleports = _instances[Decal.teleport];
-    if (teleports != null) _render_default(Decal.teleport, canvas, teleports);
+    if (teleports != null) _render_default(Decal.teleport, canvas, teleports, _teleport);
+
+    final nukes = _instances[Decal.nuke_explosion];
+    if (nukes != null) _render_default(Decal.nuke_explosion, canvas, nukes, _nuke);
   }
 
-  void _render_default(Decal decal, Canvas canvas, List<DecalObj> decals) {
+  void _render_default(Decal decal, Canvas canvas, List<DecalObj> decals, SpriteAnimation animation) {
     for (final it in decals) {
-      final column = (it.time * (_teleport.frames.length - 1) / decal.anim_time).toInt();
-      final f = _teleport.frames[column];
+      final column = (it.time * (animation.frames.length - 1) / decal.anim_time).toInt();
+      final f = animation.frames[column];
       f.sprite.render(canvas, position: it.position, anchor: Anchor.center, size: _default_decal_size);
     }
   }
