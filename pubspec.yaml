@@ -49,6 +49,8 @@ flutter:
     - assets/shaders/checkerboard.frag
     - assets/shaders/explosion.frag
     - assets/shaders/ground.frag
+    - assets/shaders/hex_shield.frag
     - assets/shaders/noise.frag
+    - assets/shaders/plasma_shield.frag
     - assets/shaders/space.frag
     - assets/shaders/voxel.frag

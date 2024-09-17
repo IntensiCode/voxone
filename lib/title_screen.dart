@@ -5,6 +5,7 @@ import 'package:voxone/core/screens.dart';
 import 'package:voxone/game/shadows.dart';
 import 'package:voxone/game/space.dart';
 import 'package:voxone/game/stacked_entity.dart';
+import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/shortcuts.dart';
 
@@ -33,7 +34,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     // textXY('Control-p - Toggle Pause Game', 16, 430, anchor: Anchor.topLeft, scale: 1);
     // textXY('Control-v - Toggle Full Pixelate', 16, 440, anchor: Anchor.topLeft, scale: 1);
 
-    textXY('Press Space To Play', 16, 460, anchor: Anchor.topLeft, scale: 1);
+    textXY('Press Space To Play', 16, 460, anchor: Anchor.topLeft, scale: 1).add(BlinkEffect());
 
     textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
     textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);

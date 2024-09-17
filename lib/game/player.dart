@@ -12,6 +12,8 @@ import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stage1.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/pixelate.dart';
+import 'package:voxone/util/uniforms.dart';
 
 enum PlayerState {
   incoming,
@@ -44,6 +46,7 @@ class HorizontalPlayer extends PositionComponent with Context {
   }
 
   Component? _weapon;
+  Component? _shield;
 
   @override
   onLoad() async {
@@ -86,7 +89,10 @@ class HorizontalPlayer extends PositionComponent with Context {
       ..renderShape = debug);
 
     _weapon = PlasmaGun();
-    parent?.add(_weapon!);
+    add(_weapon!);
+
+    _shield = DeflectorShield();
+    add(_shield!);
 
     priority = 100;
   }
@@ -242,4 +248,78 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
       }
     }
   }
+}
+
+class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
+  DeflectorShield() {
+    size.setAll(96);
+    add(CircleHitbox(anchor: Anchor.center)
+      ..paint.color = red
+      ..opacity = 0.1
+      ..renderShape = debug);
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
+    priority = -1;
+  }
+
+  double _energy = 1;
+  double _deflect_time = 0;
+
+  @override
+  bool get susceptible => _energy > 0.1;
+
+  @override
+  void on_hit(double damage) {
+    _deflect_time += 0.1;
+    _energy -= damage / 33;
+    _energy = max(0, _energy);
+  }
+
+  late final FragmentShader _shader;
+
+  @override
+  onLoad() async {
+    _shader = await loadShader('plasma_shield.frag');
+    paint.shader = _shader;
+    priority = 1;
+    opacity = 0.5;
+    angle = -0.2;
+    _shader.setFloat(0, size.x);
+    _shader.setFloat(1, size.y);
+  }
+
+  double _anim_time = 0;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    if (_energy < 1) _energy += dt / 3;
+
+    if (_deflect_time > 0) _deflect_time -= dt;
+
+    _anim_time += dt;
+    _shader.setFloat(4, _anim_time);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (_deflect_time <= 0) return;
+
+    final image = pixelate(128, 128, (canvas) {
+      canvas.drawRect(const Rect.fromLTWH(0, 0, 96, 96), paint);
+    });
+
+    _paint.opacity = _deflect_time > 0 ? 0.75 : 0.05;
+    canvas.drawImage(image, const Offset(-48, -48), _paint);
+    image.dispose();
+  }
+
+  final _paint = pixel_paint();
+}
+
+mixin FriendlyTarget {
+  bool get susceptible;
+
+  void on_hit(double damage);
 }

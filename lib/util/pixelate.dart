@@ -4,6 +4,15 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/visual.dart';
 
+Image pixelate(int width, int height, void Function(Canvas) draw) {
+  final recorder = PictureRecorder();
+  draw(Canvas(recorder));
+  final picture = recorder.endRecording();
+  final result = picture.toImageSync(width, height);
+  picture.dispose();
+  return result;
+}
+
 mixin Pixelate on Component {
   @override
   void renderTree(Canvas canvas) {

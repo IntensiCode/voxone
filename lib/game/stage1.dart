@@ -306,7 +306,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
       _sweep_dist = 300 - target_position.x;
       _state = MarauderState.sweeping;
     } else if (_active_time > 120) {
-      _state = MarauderState.leaving;
+      if (!dev) _state = MarauderState.leaving;
     }
   }
 
@@ -540,8 +540,11 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other case HorizontalPlayer it) {
-      removeFromParent();
+    if (other case FriendlyTarget it) {
+      if (it.susceptible) {
+        it.on_hit(1);
+        removeFromParent();
+      }
     }
   }
 }
