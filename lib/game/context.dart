@@ -1,14 +1,13 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/game/configuration.dart';
-import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/extras.dart';
 import 'package:voxone/game/game_phase.dart';
 import 'package:voxone/game/game_screen.dart';
 import 'package:voxone/game/game_state.dart';
 import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
-import 'package:voxone/game/stage1.dart';
+import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/game/visual.dart';
 import 'package:voxone/main_controller.dart';
 import 'package:voxone/util/keys.dart';

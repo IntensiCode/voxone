@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/screens.dart';
-import 'package:voxone/game/stage1.dart';
+import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2.dart';
 import 'package:voxone/game/stage3.dart';
 import 'package:voxone/game/visual.dart';

@@ -9,7 +9,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stacked_entity.dart';
-import 'package:voxone/game/stage1.dart';
+import 'package:voxone/game/stage1/enemy_hit_points.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';

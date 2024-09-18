@@ -1,12 +1,11 @@
 import 'package:flame/components.dart';
-import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/extras.dart';
 import 'package:voxone/game/game_phase.dart';
 import 'package:voxone/game/game_state.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/particles.dart';
 import 'package:voxone/game/shadows.dart';
-import 'package:voxone/game/stage1.dart';
+import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
@@ -24,6 +23,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   late final Shadows shadows;
   late final Particles particles;
+
   // late final Decals decals;
   late final Extras extras;
   late final MarauderMines mines;
