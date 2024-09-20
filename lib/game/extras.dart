@@ -42,7 +42,7 @@ enum ExtraId {
 
 class _Extra extends PositionComponent with CollisionCallbacks, HasPaint {
   _Extra(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 16, shadows) {
-    priority = 10000;
+    // priority = 0;
 
     entity.scale_x = 1.2;
     entity.scale_y = 4.2;

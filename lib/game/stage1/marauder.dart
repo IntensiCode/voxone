@@ -121,8 +121,6 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
         _on_exploding(dt);
 
       case MarauderState.defeated:
-        if (!_spawned) extras.spawn(position);
-        _spawned = true;
         removeFromParent();
     }
   }
@@ -225,6 +223,10 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
 
   void _on_exploding(double dt) {
     _leaving_time += dt;
+    if (_leaving_time >= 1) {
+      if (!_spawned) extras.spawn(position);
+      _spawned = true;
+    }
     if (_leaving_time >= 2) {
       _leaving_time = 2;
       state = MarauderState.defeated;
