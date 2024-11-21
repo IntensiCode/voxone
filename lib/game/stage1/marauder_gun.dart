@@ -1,23 +1,23 @@
 import 'package:flame/components.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/stage1/sweeping_marauder.dart';
 import 'package:voxone/game/stage1/marauder_shot.dart';
+import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
 class MarauderGun extends Component with Context {
   MarauderGun(this.source);
 
-  final SweepingMarauder source;
+  final Marauder source;
 
   double _cool_down = rng.nextDouble();
 
   @override
   void update(double dt) {
-    if (source.state == SweepingMarauderState.exploding) removeFromParent();
-    if (source.state == SweepingMarauderState.defeated) removeFromParent();
-    if (source.state == SweepingMarauderState.left) removeFromParent();
-    if (source.state != SweepingMarauderState.active) return;
+    if (source.state == MarauderState.exploding) removeFromParent();
+    if (source.state == MarauderState.defeated) removeFromParent();
+    if (source.state == MarauderState.left) removeFromParent();
+    if (source.state != MarauderState.active) return;
 
     if (_cool_down > 0) {
       _cool_down -= dt;

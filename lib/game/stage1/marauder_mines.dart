@@ -11,7 +11,7 @@ import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stacked_sprite.dart';
-import 'package:voxone/game/stage1/enemy_hit_points.dart';
+import 'package:voxone/game/stage1/marauder_hit_points.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
@@ -57,7 +57,7 @@ class MarauderMines extends Component with Context {
   }
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, Context, EnemyHitPoints, HasPaint {
+class MarauderMine extends PositionComponent with CollisionCallbacks, Context, MarauderHitPoints, HasPaint {
   MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
@@ -88,6 +88,9 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, Context, E
   bool get volatile => !_destroyed;
 
   @override
+  set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
+
+  @override
   void on_destroyed() {
     if (_destroyed) return;
     _destroyed = true;
@@ -96,20 +99,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, Context, E
   }
 
   @override
-  void on_hit() {
-    super.on_hit();
-    decals.spawn(Decal.mini_explosion, position);
-    _hit_time += 0.05;
-  }
-
-  double _hit_time = 0;
-
-  @override
   void update(double dt) {
     super.update(dt);
-
-    if (_hit_time > 0) _hit_time -= dt;
-    entity.sprite.highlight_mode = _hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
 
     _anim_time += dt;
 

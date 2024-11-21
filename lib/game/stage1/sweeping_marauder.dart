@@ -6,26 +6,16 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
 import 'package:voxone/game/stage1/enemy_health_bar.dart';
-import 'package:voxone/game/stage1/enemy_hit_points.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
+import 'package:voxone/game/stage1/marauder_hit_points.dart';
+import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/random.dart';
 
-enum SweepingMarauderState {
-  incoming,
-  active,
-  sweeping,
-  leaving,
-  left,
-  exploding,
-  defeated,
-}
-
-class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
+class SweepingMarauder extends PositionComponent with Context, Marauder, MarauderHitPoints {
   late final StackedEntity _entity;
 
   SweepingMarauder() {
@@ -33,44 +23,38 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
     remaining = 25;
   }
 
-  SweepingMarauderState state = SweepingMarauderState.incoming;
+  @override
+  MarauderState state = MarauderState.incoming;
 
-  bool get defeated => state == SweepingMarauderState.defeated || state == SweepingMarauderState.left;
+  bool get defeated => state == MarauderState.defeated || state == MarauderState.left;
 
   final target_position = Vector2.zero();
 
   @override
   bool get volatile => switch (state) {
-        SweepingMarauderState.left => false,
-        SweepingMarauderState.exploding => false,
-        SweepingMarauderState.defeated => false,
+        MarauderState.left => false,
+        MarauderState.exploding => false,
+        MarauderState.defeated => false,
         _ => _incoming_time > 0.9,
       };
 
   @override
+  set highlight_mode(HighlightMode mode) => _entity.sprite.highlight_mode = mode;
+
+  @override
   void on_destroyed() {
-    if (state == SweepingMarauderState.exploding) return;
-    state = SweepingMarauderState.exploding;
+    if (state == MarauderState.exploding) return;
+    state = MarauderState.exploding;
     _entity.add(EnemyExplosion());
     if (_sweep_time > 0) can_sweep = true;
   }
-
-  @override
-  void on_hit() {
-    super.on_hit();
-    decals.spawn(Decal.mini_explosion, position);
-    _hit_time += 0.05;
-  }
-
-  double _hit_time = 0;
 
   @override
   Future onLoad() async {
     super.onLoad();
 
     _entity = StackedEntity('entities/transstellar.png', 14, shadows);
-    // _entity.sprite.add(EnemyHealthBar(this));
-    await _entity.add(EnemyHealthBar(this));
+    await _entity.add(MarauderHealthBar(this));
     _entity.size.setAll(256);
 
     _entity.rot_x = -pi / 8;
@@ -98,29 +82,27 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
 
   @override
   void update(double dt) {
-    if (_hit_time > 0) _hit_time -= dt;
-    _entity.sprite.highlight_mode = _hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
-
+    super.update(dt);
     switch (state) {
-      case SweepingMarauderState.incoming:
+      case MarauderState.incoming:
         _on_incoming(dt);
 
-      case SweepingMarauderState.active:
+      case MarauderState.active:
         _on_active(dt);
 
-      case SweepingMarauderState.sweeping:
+      case MarauderState.sweeping:
         _on_sweeping(dt);
 
-      case SweepingMarauderState.leaving:
+      case MarauderState.leaving:
         _on_leaving(dt);
 
-      case SweepingMarauderState.left:
+      case MarauderState.left:
         removeFromParent();
 
-      case SweepingMarauderState.exploding:
+      case MarauderState.exploding:
         _on_exploding(dt);
 
-      case SweepingMarauderState.defeated:
+      case MarauderState.defeated:
         removeFromParent();
     }
   }
@@ -131,7 +113,7 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
     _incoming_time += dt * 2 / 3;
     if (_incoming_time >= 1) {
       _incoming_time = 1;
-      state = SweepingMarauderState.active;
+      state = MarauderState.active;
     }
     scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
     priority = (scale.x * 1000).toInt();
@@ -153,15 +135,15 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
     position.x += sin(_active_time / 1.2345) * 10;
     position.y += sin(_active_time) * 10;
 
-    if (state != SweepingMarauderState.active) {
+    if (state != MarauderState.active) {
       return;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
       _sweep_time = 0;
       _sweep_dist = 300 - target_position.x;
-      state = SweepingMarauderState.sweeping;
+      state = MarauderState.sweeping;
     } else if (_active_time > 120) {
-      if (!dev) state = SweepingMarauderState.leaving;
+      if (!dev) state = MarauderState.leaving;
     }
   }
 
@@ -179,7 +161,7 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
       can_sweep = true;
       _planted = false;
       _sweep_time = 0;
-      state = SweepingMarauderState.active;
+      state = MarauderState.active;
       return;
     }
 
@@ -209,7 +191,7 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
     _leaving_time += dt;
     if (_leaving_time >= 2) {
       _leaving_time = 2;
-      state = SweepingMarauderState.left;
+      state = MarauderState.left;
     }
 
     scale.x += _leaving_time * 0.5;
@@ -229,7 +211,7 @@ class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
     }
     if (_leaving_time >= 2) {
       _leaving_time = 2;
-      state = SweepingMarauderState.defeated;
+      state = MarauderState.defeated;
     }
 
     _entity.rot_x += dt;
