@@ -15,7 +15,7 @@ import 'package:voxone/game/stage1/enemy_hit_points.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/util/random.dart';
 
-enum MarauderState {
+enum SweepingMarauderState {
   incoming,
   active,
   sweeping,
@@ -25,32 +25,32 @@ enum MarauderState {
   defeated,
 }
 
-class Marauder extends PositionComponent with Context, EnemyHitPoints {
+class SweepingMarauder extends PositionComponent with Context, EnemyHitPoints {
   late final StackedEntity _entity;
 
-  Marauder() {
+  SweepingMarauder() {
     hit_points = 25;
     remaining = 25;
   }
 
-  MarauderState state = MarauderState.incoming;
+  SweepingMarauderState state = SweepingMarauderState.incoming;
 
-  bool get defeated => state == MarauderState.defeated || state == MarauderState.left;
+  bool get defeated => state == SweepingMarauderState.defeated || state == SweepingMarauderState.left;
 
   final target_position = Vector2.zero();
 
   @override
   bool get volatile => switch (state) {
-        MarauderState.left => false,
-        MarauderState.exploding => false,
-        MarauderState.defeated => false,
+        SweepingMarauderState.left => false,
+        SweepingMarauderState.exploding => false,
+        SweepingMarauderState.defeated => false,
         _ => _incoming_time > 0.9,
       };
 
   @override
   void on_destroyed() {
-    if (state == MarauderState.exploding) return;
-    state = MarauderState.exploding;
+    if (state == SweepingMarauderState.exploding) return;
+    state = SweepingMarauderState.exploding;
     _entity.add(EnemyExplosion());
     if (_sweep_time > 0) can_sweep = true;
   }
@@ -102,25 +102,25 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     _entity.sprite.highlight_mode = _hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
 
     switch (state) {
-      case MarauderState.incoming:
+      case SweepingMarauderState.incoming:
         _on_incoming(dt);
 
-      case MarauderState.active:
+      case SweepingMarauderState.active:
         _on_active(dt);
 
-      case MarauderState.sweeping:
+      case SweepingMarauderState.sweeping:
         _on_sweeping(dt);
 
-      case MarauderState.leaving:
+      case SweepingMarauderState.leaving:
         _on_leaving(dt);
 
-      case MarauderState.left:
+      case SweepingMarauderState.left:
         removeFromParent();
 
-      case MarauderState.exploding:
+      case SweepingMarauderState.exploding:
         _on_exploding(dt);
 
-      case MarauderState.defeated:
+      case SweepingMarauderState.defeated:
         removeFromParent();
     }
   }
@@ -131,7 +131,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     _incoming_time += dt * 2 / 3;
     if (_incoming_time >= 1) {
       _incoming_time = 1;
-      state = MarauderState.active;
+      state = SweepingMarauderState.active;
     }
     scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
     priority = (scale.x * 1000).toInt();
@@ -153,15 +153,15 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     position.x += sin(_active_time / 1.2345) * 10;
     position.y += sin(_active_time) * 10;
 
-    if (state != MarauderState.active) {
+    if (state != SweepingMarauderState.active) {
       return;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
       _sweep_time = 0;
       _sweep_dist = 300 - target_position.x;
-      state = MarauderState.sweeping;
+      state = SweepingMarauderState.sweeping;
     } else if (_active_time > 120) {
-      if (!dev) state = MarauderState.leaving;
+      if (!dev) state = SweepingMarauderState.leaving;
     }
   }
 
@@ -179,7 +179,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
       can_sweep = true;
       _planted = false;
       _sweep_time = 0;
-      state = MarauderState.active;
+      state = SweepingMarauderState.active;
       return;
     }
 
@@ -209,7 +209,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     _leaving_time += dt;
     if (_leaving_time >= 2) {
       _leaving_time = 2;
-      state = MarauderState.left;
+      state = SweepingMarauderState.left;
     }
 
     scale.x += _leaving_time * 0.5;
@@ -229,7 +229,7 @@ class Marauder extends PositionComponent with Context, EnemyHitPoints {
     }
     if (_leaving_time >= 2) {
       _leaving_time = 2;
-      state = MarauderState.defeated;
+      state = SweepingMarauderState.defeated;
     }
 
     _entity.rot_x += dt;

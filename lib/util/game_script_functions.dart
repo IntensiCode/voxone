@@ -47,10 +47,10 @@ mixin GameScriptFunctions on Component, AutoDispose {
     removeAll(what);
   }
 
-  void delay(double seconds) async {
-    final millis = (seconds * 1000).toInt();
-    await Stream.periodic(Duration(milliseconds: millis)).first;
-  }
+  // void delay(double seconds) async {
+  //   final millis = (seconds * 1000).toInt();
+  //   await Stream.periodic(Duration(milliseconds: millis)).first;
+  // }
 
   DebugText? debugXY(String Function() text, double x, double y, [Anchor? anchor, double? scale]) {
     if (kReleaseMode) return null;

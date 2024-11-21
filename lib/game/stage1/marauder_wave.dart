@@ -4,14 +4,14 @@ import 'package:flame/components.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
-import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/stage1/sweeping_marauder.dart';
 import 'package:voxone/util/messaging.dart';
 
 class MarauderWave extends Component with EnemyWave {
   static const enemies_in_wave = 8;
 
   MarauderWave() {
-    Marauder.can_sweep = true;
+    SweepingMarauder.can_sweep = true;
   }
 
   bool _info_shown = false;
@@ -42,12 +42,12 @@ class MarauderWave extends Component with EnemyWave {
     }
     _next_time = 0.5;
 
-    final it = Marauder();
+    final it = SweepingMarauder();
     it.target_position.x = 600 + sin(_wave.length * 2 * pi / enemies_in_wave) * 100;
     it.target_position.y = 160 + cos(_wave.length * 2 * pi / enemies_in_wave) * 100;
     _wave.add(it);
     stage.add(it);
   }
 
-  final _wave = List<Marauder>.empty(growable: true);
+  final _wave = List<SweepingMarauder>.empty(growable: true);
 }
