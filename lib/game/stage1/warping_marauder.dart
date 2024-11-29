@@ -18,8 +18,7 @@ class WarpingMarauder extends PositionComponent with Context, Marauder, Marauder
   late final StackedEntity _entity;
 
   WarpingMarauder() {
-    hit_points = 25;
-    remaining = 25;
+    reset_hit_points_to(25);
   }
 
   @override

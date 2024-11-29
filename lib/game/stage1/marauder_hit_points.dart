@@ -14,6 +14,11 @@ mixin MarauderHitPoints on Component {
 
   set highlight_mode(HighlightMode mode);
 
+  void reset_hit_points_to(double hp) {
+    hit_points = hp;
+    remaining = hp;
+  }
+
   void on_destroyed();
 
   void on_hit() {

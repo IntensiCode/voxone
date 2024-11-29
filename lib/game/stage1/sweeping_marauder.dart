@@ -10,17 +10,16 @@ import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
 import 'package:voxone/game/stage1/enemy_health_bar.dart';
+import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_hit_points.dart';
-import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/random.dart';
 
 class SweepingMarauder extends PositionComponent with Context, Marauder, MarauderHitPoints {
   late final StackedEntity _entity;
 
   SweepingMarauder() {
-    hit_points = 25;
-    remaining = 25;
+    reset_hit_points_to(25);
   }
 
   @override
