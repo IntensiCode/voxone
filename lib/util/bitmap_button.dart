@@ -12,7 +12,7 @@ import 'nine_patch_image.dart';
 import 'shortcuts.dart';
 
 Future<BitmapButton> button({
-  Image? bgNinePatch,
+  Sprite? bgNinePatch,
   required String text,
   int cornerSize = 8,
   Vector2? position,
@@ -25,7 +25,7 @@ Future<BitmapButton> button({
   required Function(BitmapButton) onTap,
 }) async =>
     BitmapButton(
-      bg_nine_patch: bgNinePatch ?? await image('button_plain.png'),
+      bg_nine_patch: bgNinePatch ?? await sprite('button_plain.png'),
       text: text,
       cornerSize: cornerSize,
       position: position,
@@ -50,7 +50,7 @@ class BitmapButton extends PositionComponent
   final List<String> shortcuts;
 
   BitmapButton({
-    Image? bg_nine_patch,
+    Sprite? bg_nine_patch,
     required this.text,
     this.cornerSize = 8,
     Vector2? position,

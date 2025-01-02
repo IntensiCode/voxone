@@ -13,7 +13,7 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
 
   @override
   onLoad() async {
-    final button = await images.load('button_plain.png');
+    final button = Sprite(await images.load('button_plain.png'));
     const scale = 0.5;
     add(BitmapButton(
       bg_nine_patch: button,

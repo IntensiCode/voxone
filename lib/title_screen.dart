@@ -43,6 +43,14 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   void onMount() {
     super.onMount();
+    soundboard.play_music('music/voxone_title.ogg');
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    soundboard.stop_active_music();
+  }
 
     onKey('<Space>', () => showScreen(Screen.stage1));
   }

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/util/auto_dispose.dart';
 
-import '../core/common.dart';
-import '../util/auto_dispose.dart';
 import 'soundboard.dart';
 
 class SoundboardImpl extends Soundboard {

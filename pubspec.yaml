@@ -40,6 +40,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/audio/
+    - assets/audio/music/
     - assets/audio/sound/
     - assets/fonts/
     - assets/images/

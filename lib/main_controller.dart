@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/screens.dart';
+import 'package:voxone/game/audio_menu.dart';
 import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2.dart';
 import 'package:voxone/game/stage3.dart';
@@ -42,7 +43,7 @@ class MainController extends World
       onKey('<C-1>', () => showScreen(Screen.stage1));
       onKey('<C-2>', () => showScreen(Screen.stage2));
       onKey('<C-3>', () => showScreen(Screen.stage3));
-      onKey('<C-d>', () {
+      onKeys(['<C-d>', '<C-9>'], () {
         visual.debug = !visual.debug;
         logInfo('debug = ${visual.debug}');
       });
@@ -52,7 +53,8 @@ class MainController extends World
       });
     }
 
-    onKey('<C-t>', () => showScreen(Screen.title));
+    onKeys(['<C-a>', '<C-0>'], () => showScreen(Screen.audio));
+    onKeys(['<C-t>', '<C-0>'], () => showScreen(Screen.title));
   }
 
   @override
@@ -107,6 +109,7 @@ class MainController extends World
   }
 
   Component _makeScreen(Screen it) => switch (it) {
+        Screen.audio => AudioMenu(show_back: true),
         Screen.stage1 => Stage1(),
         Screen.stage2 => Stage2(),
         Screen.stage3 => Stage3(),

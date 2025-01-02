@@ -5,10 +5,10 @@ import 'package:flame/components.dart' hide Timer;
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/game_data.dart';
+import 'package:voxone/util/storage.dart';
 
-import '../util/game_data.dart';
 import 'soundboard_soloud.dart' if (dart.library.html) 'soundboard_web.dart';
-import '../util/storage.dart';
 // import 'soundboard_mixed.dart' if (dart.library.html) 'soundboard_web.dart';
 
 enum Sound {
@@ -234,7 +234,7 @@ abstract class Soundboard extends Component {
   @override
   void onMount() {
     super.onMount();
-    if (dev) preload();
+    if (dev && !kIsWeb && !kIsWasm) preload();
   }
 
   @override

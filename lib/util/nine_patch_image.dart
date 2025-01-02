@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-
-import '../core/common.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/util/mutable_rect.dart';
 
 class NinePatchComponent extends PositionComponent with HasPaint {
-  final Image image;
+  final Sprite image;
   final int cornerSize;
 
   NinePatchComponent({
@@ -40,7 +40,7 @@ class NinePatchComponent extends PositionComponent with HasPaint {
 }
 
 class NinePatchImage {
-  final Image image;
+  final Sprite image;
   final int cornerSize;
 
   late final double _size = cornerSize.toDouble();
@@ -87,7 +87,6 @@ class NinePatchImage {
     final yLast = yTiles - 1;
     final xLast = xTiles - 1;
 
-    Rect dst;
     for (var y = 0; y < yTiles; y++) {
       for (var x = 0; x < xTiles; x++) {
         final Rect src;
@@ -113,10 +112,18 @@ class NinePatchImage {
 
         final yy = top + y * cornerSize;
         final xx = left + x * cornerSize;
-        dst = Rect.fromLTWH(xx, yy, _size, _size);
+        _dst.left = xx;
+        _dst.top = yy;
+        _dst.right = xx + _size;
+        _dst.bottom = yy + _size;
 
-        canvas.drawImageRect(image, src, dst, paint ?? this.paint);
+        _src.copy(src);
+        _src.add(image.srcPosition);
+        canvas.drawImageRect(image.image, _src, _dst, paint ?? this.paint);
       }
     }
   }
+
+  final _src = MutableRect.fromRect(Rect.zero);
+  final _dst = MutableRect.fromRect(Rect.zero);
 }
