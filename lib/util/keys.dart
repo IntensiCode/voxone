@@ -1,12 +1,27 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:voxone/core/common.dart';
 
-import '../core/common.dart';
+import 'auto_dispose.dart';
 import 'game_keys.dart';
-
+import 'game_pads.dart' if (dart.library.html) 'game_pads_web.dart';
 export 'game_keys.dart';
 
-class Keys extends Component with KeyboardHandler, HasGameKeys {
+class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGamePads {
+  static int _instances = 0;
+
+  Keys() {
+    _instances++;
+    logInfo('Keys instances: $_instances');
+  }
+
+  @override
+  void onRemove() {
+    _instances--;
+    logInfo('Keys instances: $_instances');
+  }
+
   static const _do_not_repeat = {GameKey.fire1, GameKey.fire2, GameKey.soft1, GameKey.soft2};
   static const _repeat_delay_ticks = tps ~/ 4;
   static const _repeat_interval_ticks = tps ~/ 20;
@@ -30,11 +45,13 @@ class Keys extends Component with KeyboardHandler, HasGameKeys {
     super.onMount();
     onPressed = (it) => _update(it, true);
     onReleased = (it) => _update(it, false);
+    autoDispose("gamepads", observe_gamepads());
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+    tick_game_pads();
     _repeat_ticks.updateAll((it, ticks) {
       if (ticks > 0) {
         return ticks - 1;
@@ -47,12 +64,14 @@ class Keys extends Component with KeyboardHandler, HasGameKeys {
 
   void _update(GameKey it, bool pressed) {
     if (pressed) {
+      held[it] = true;
       _pressed.add(it);
       if (!_repeat.contains(it) && !_do_not_repeat.contains(it)) {
         _repeat.add(it);
         _repeat_ticks[it] = _repeat_delay_ticks;
       }
     } else {
+      held[it] = false;
       _pressed.remove(it);
       _repeat.remove(it);
       _repeat_ticks.remove(it);

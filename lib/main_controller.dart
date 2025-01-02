@@ -26,7 +26,7 @@ class MainController extends World
   @override
   onLoad() async {
     visual.load();
-    messaging.listen<ShowScreen>((it) => showScreen(it.screen));
+    autoDispose("ShowScreen", messaging.listen<ShowScreen>((it) => showScreen(it.screen)));
   }
 
   @override
@@ -102,7 +102,7 @@ class MainController extends World
       });
     } else {
       final it = added(_makeScreen(screen));
-      if (screen != Screen.stage1 && !skip_fade_in) {
+      if (/*screen != Screen.stage1 && */!skip_fade_in) {
         it.mounted.then((_) => it.fadeInDeep());
       }
     }

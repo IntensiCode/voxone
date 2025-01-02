@@ -3,19 +3,23 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:voxone/core/screens.dart';
 import 'package:voxone/game/shadows.dart';
+import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/space.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/game_script.dart';
+import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   final _shadows = Shadows()..isVisible = false;
+  final _keys = Keys();
 
   @override
   onLoad() async {
     super.onLoad();
 
+    await add(_keys);
     await add(Space());
     await add(_shadows);
     await add(_TitleShip(_shadows));
@@ -52,7 +56,12 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     soundboard.stop_active_music();
   }
 
-    onKey('<Space>', () => showScreen(Screen.stage1));
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_keys.any([GameKey.fire1, GameKey.fire2, GameKey.use, GameKey.inventory, GameKey.select, GameKey.start])) {
+      showScreen(Screen.stage1);
+    }
   }
 }
 

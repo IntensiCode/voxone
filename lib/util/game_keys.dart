@@ -10,11 +10,12 @@ enum GameKey {
   down,
   fire1,
   fire2,
-  fire3,
+  use,
   inventory,
-  useOrExecute,
   soft1,
   soft2,
+  start,
+  select,
 }
 
 mixin HasGameKeys on KeyboardHandler {
@@ -24,11 +25,12 @@ mixin HasGameKeys on KeyboardHandler {
   static final rightKeys = ['Arrow Right', 'D'];
   static final downKeys = ['Arrow Down', 'S'];
   static final upKeys = ['Arrow Up', 'W'];
-  static final fireKeys1 = ['Space', 'J'];
-  static final fireKeys2 = ['Shift', 'K'];
-  static final fireKeys3 = ['Control', 'L'];
-  static final inventoryKeys = ['Tab', 'I'];
-  static final useOrExecuteKeys = ['U'];
+  static final fireKeys1 = ['Space', 'J', 'Z'];
+  static final fireKeys2 = ['Shift', 'K', 'X'];
+  static final fireKeys3 = ['Control', 'H', 'C'];
+  static final fireKeys4 = ['L', 'V'];
+  static final selectKeys = ['Tab', 'I'];
+  static final startKeys = ['U'];
   static final softKeys1 = ['Backspace', 'Escape'];
   static final softKeys2 = ['Delete', 'Enter'];
 
@@ -39,15 +41,16 @@ mixin HasGameKeys on KeyboardHandler {
     GameKey.down: downKeys,
     GameKey.fire1: fireKeys1,
     GameKey.fire2: fireKeys2,
-    GameKey.fire3: fireKeys3,
-    GameKey.inventory: inventoryKeys,
-    GameKey.useOrExecute: useOrExecuteKeys,
+    GameKey.use: fireKeys3,
+    GameKey.inventory: fireKeys4,
     GameKey.soft1: softKeys1,
     GameKey.soft2: softKeys2,
+    GameKey.select: selectKeys,
+    GameKey.start: startKeys,
   };
 
-  void Function(GameKey) onPressed = (_) {};
-  void Function(GameKey) onReleased = (_) {};
+  late void Function(GameKey) onPressed = (it) => held[it] = true;
+  late void Function(GameKey) onReleased = (it) => held[it] = false;
 
   // held states
 
@@ -73,11 +76,17 @@ mixin HasGameKeys on KeyboardHandler {
 
   bool get fire2 => held[GameKey.fire2] == true;
 
-  bool get fire3 => held[GameKey.fire3] == true;
+  bool get fire3 => held[GameKey.use] == true;
+
+  bool get fire4 => held[GameKey.inventory] == true;
 
   bool get soft1 => held[GameKey.soft1] == true;
 
   bool get soft2 => held[GameKey.soft2] == true;
+
+  bool get select => held[GameKey.select] == true;
+
+  bool get start => held[GameKey.start] == true;
 
   bool isHeld(GameKey key) => held[key] == true;
 
@@ -95,7 +104,6 @@ mixin HasGameKeys on KeyboardHandler {
         final key = entry.key;
         final keys = entry.value;
         if (keys.any((it) => labels.contains(it))) {
-          held[key] = true;
           onPressed(key);
         }
       }
@@ -106,7 +114,6 @@ mixin HasGameKeys on KeyboardHandler {
         final key = entry.key;
         final keys = entry.value;
         if (keys.any((it) => labels.contains(it))) {
-          held[key] = false;
           onReleased(key);
         }
       }

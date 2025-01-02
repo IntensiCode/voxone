@@ -11,30 +11,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audioplayers: ^6.0.0
+  audioplayers: ^6.1.0
   collection: ^1.18.0
   dart_extensions_methods: ^2.0.0
   dart_minilog: ^0.0.2
   flame: ^1.18.0
   flame_audio: ^2.10.2
+  flame_forge2d: ^0.18.1
+  flame_tiled: ^1.20.2
   flutter_animate: ^4.5.0
+  flutter_soloud: ^2.1.7
+  gamepads: ^0.1.4
   get: ^4.6.6
   kart: ^1.0.8
   kt_dart: ^1.1.0
   list_operators: ^0.5.0
   mp_audio_stream: ^0.1.5
   rxdart: ^0.27.7
+  shared_preferences: ^2.2.3
   stream_transform: ^2.1.0
   supercharged: ^2.1.1
-  shared_preferences: ^2.2.3
-  flutter_soloud: ^2.0.2
-  flame_forge2d: ^0.18.1
-  flame_tiled: ^1.20.2
+  web: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   test: ^1.24.9
 
 flutter:
