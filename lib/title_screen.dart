@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:voxone/core/screens.dart';
 import 'package:voxone/game/shadows.dart';
-import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/space.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/util/effects.dart';
@@ -42,18 +41,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
 
     textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
     textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
-  }
-
-  @override
-  void onMount() {
-    super.onMount();
-    soundboard.play_music('music/voxone_title.ogg');
-  }
-
-  @override
-  void onRemove() {
-    super.onRemove();
-    soundboard.stop_active_music();
   }
 
   @override

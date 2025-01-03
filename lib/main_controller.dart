@@ -102,9 +102,10 @@ class MainController extends World
       });
     } else {
       final it = added(_makeScreen(screen));
-      if (/*screen != Screen.stage1 && */!skip_fade_in) {
+      if (/*screen != Screen.stage1 && */ !skip_fade_in) {
         it.mounted.then((_) => it.fadeInDeep());
       }
+      messaging.send(ScreenShowing(screen));
     }
   }
 

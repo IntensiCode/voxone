@@ -14,6 +14,12 @@ class ShowScreen with Message {
   final Screen screen;
 }
 
+class ScreenShowing with Message {
+  ScreenShowing(this.screen);
+
+  final Screen screen;
+}
+
 abstract interface class ScreenNavigation {
   void popScreen();
 

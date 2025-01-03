@@ -7,6 +7,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/hud.dart';
+import 'package:voxone/game/music_score.dart';
 import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/main_controller.dart';
 import 'package:voxone/util/fonts.dart';
@@ -53,6 +54,7 @@ class MainGame extends FlameGame<MainController>
   Future onLoad() async {
     super.onLoad();
     await add(soundboard);
+    await add(music_score);
     await loadFonts(assets);
   }
 

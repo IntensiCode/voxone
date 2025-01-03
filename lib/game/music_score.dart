@@ -1,9 +1,53 @@
-import 'package:flame/components.dart';
+import 'package:dart_minilog/dart_minilog.dart';
+import 'package:voxone/core/screens.dart';
+import 'package:voxone/game/soundboard.dart';
+import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/messaging.dart';
 
-class MusicScore extends Component {
+final music_score = MusicScore();
+
+class MusicScore extends AutoDisposeComponent {
+  String? _target_score;
+
+  String? _current_score;
+
+  Screen? _current_screen;
+
   @override
-  void onMount() {
-    // TODO: implement onMount
-    super.onMount();
+  onLoad() {
+    messaging.listen<ScreenShowing>((it) {
+      _current_screen = it.screen;
+
+      final score = _target_score_for(it.screen);
+      if (score == null) return;
+
+      if (_target_score == score) return;
+      _target_score = score;
+      logInfo('target screen: ${it.screen} => score: $_target_score');
+    });
+  }
+
+  String? _target_score_for(Screen screen) => switch (screen) {
+        Screen.title => 'music/voxone_title.ogg',
+        Screen.audio => null,
+        _ => 'music/voxone_background.ogg',
+      };
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_current_score == _target_score) {
+      return;
+    } else if (_current_score == null && _target_score != null) {
+      if (soundboard.fade_out_volume == null) {
+        logInfo('play music $_target_score');
+        soundboard.play_music(_target_score!);
+        _current_score = _target_score;
+      }
+    } else if (_current_score != null) {
+      logInfo('fade out music $_current_score');
+      soundboard.fade_out_music();
+      _current_score = null;
+    }
   }
 }
