@@ -10,6 +10,13 @@ class InfoOverlay extends GameScriptComponent {
   @override
   void onMount() {
     super.onMount();
+
+    onMessage<ClearInfoText>((it) {
+      clearScript();
+      removeAll(children);
+      executeScript();
+    });
+
     onMessage<ShowInfoText>((it) {
       clearScript();
       removeAll(children);

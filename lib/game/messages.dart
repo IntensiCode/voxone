@@ -1,6 +1,8 @@
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/game_phase.dart';
 
+class ClearInfoText with Message {}
+
 class EnemiesDefeated with Message {}
 
 class GamePhaseUpdate with Message {

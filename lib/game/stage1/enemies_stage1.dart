@@ -1,6 +1,9 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
+import 'package:voxone/game/stage1/marauder_hit_points.dart';
 import 'package:voxone/game/stage1/marauder_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
 import 'package:voxone/game/stage1/minefield_wave.dart';
@@ -17,7 +20,13 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts {
   @override
   onLoad() {
     if (dev) {
-      onKey('<C-w>', () => _active_wave?.removeFromParent());
+      onKey('<C-w>', () {
+        logInfo("Skip wave");
+        _active_wave?.defeated = true;
+        _active_wave?.removeFromParent();
+        messaging.send(ClearInfoText());
+        stage.children.whereType<MarauderHitPoints>().forEach((it) => it.removeFromParent());
+      });
     }
   }
 
@@ -26,9 +35,11 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts {
     if (_active_wave?.defeated == false) {
       return;
     } else if (_waves.isEmpty) {
+      logInfo("All waves defeated");
       removeFromParent();
       sendMessage(EnemiesDefeated());
     } else {
+      logInfo("Next wave");
       _active_wave?.removeFromParent();
       _active_wave = added(_waves.removeAt(0));
     }
