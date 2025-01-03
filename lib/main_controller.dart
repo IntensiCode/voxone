@@ -53,22 +53,23 @@ class MainController extends World
       });
     }
 
-    onKeys(['<C-a>', '<C-0>'], () => showScreen(Screen.audio));
+    onKeys(['<C-a>', '<C-0>'], () => pushScreen(Screen.audio));
     onKeys(['<C-t>', '<C-0>'], () => showScreen(Screen.title));
   }
 
   @override
   void popScreen() {
-    logVerbose('pop screen with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
-    _stack.removeLastOrNull();
-    showScreen(_stack.lastOrNull ?? Screen.stage1);
+    logInfo('pop screen with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
+    showScreen(_stack.removeLastOrNull() ?? Screen.title);
   }
 
   @override
   void pushScreen(Screen it) {
-    logVerbose('push screen $it with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
+    logInfo('push screen $it with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
+    logInfo('triggered: $_triggered');
     if (_stack.lastOrNull == it) throw 'stack already contains $it';
-    _stack.add(it);
+    // _stack.add(it);
+    if (_triggered != null) _stack.add(_triggered!);
     showScreen(it);
   }
 
@@ -102,7 +103,7 @@ class MainController extends World
       });
     } else {
       final it = added(_makeScreen(screen));
-      if (/*screen != Screen.stage1 && */ !skip_fade_in) {
+      if (!skip_fade_in) {
         it.mounted.then((_) => it.fadeInDeep());
       }
       messaging.send(ScreenShowing(screen));

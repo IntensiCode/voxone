@@ -46,7 +46,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   void update(double dt) {
     super.update(dt);
-    if (_keys.any([GameKey.fire1, GameKey.fire2, GameKey.use, GameKey.inventory, GameKey.select, GameKey.start])) {
+    if (_keys.any([GameKey.select, GameKey.start])) {
       showScreen(Screen.stage1);
     }
   }
