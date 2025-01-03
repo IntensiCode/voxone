@@ -9,6 +9,7 @@ import 'package:voxone/game/decals.dart';
 import 'package:voxone/game/extras.dart';
 import 'package:voxone/game/player.dart';
 import 'package:voxone/game/shadows.dart';
+import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/marauder_hit_points.dart';
@@ -96,6 +97,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, Context, M
     _destroyed = true;
     decals.spawn(Decal.nuke_explosion, position);
     removeFromParent();
+
+    soundboard.play(Sound.explosion_hollow);
   }
 
   @override
@@ -134,6 +137,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, Context, M
           d.time = rng.nextDoubleLimit(0.2);
         }
         removeFromParent();
+
+        soundboard.play(Sound.explosion_hollow);
       }
     }
   }

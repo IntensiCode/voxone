@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:voxone/game/context.dart';
+import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/stage1/marauder_shot.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/extensions.dart';
@@ -31,5 +32,7 @@ class MarauderGun extends Component with Context {
     it.x -= 25;
     it.y += 25 / 4;
     stage.add(it);
+
+    soundboard.play(Sound.shot, volume_factor: 0.5);
   }
 }

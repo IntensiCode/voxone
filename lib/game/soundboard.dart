@@ -12,20 +12,12 @@ import 'soundboard_soloud.dart' if (dart.library.html) 'soundboard_web.dart';
 // import 'soundboard_mixed.dart' if (dart.library.html) 'soundboard_web.dart';
 
 enum Sound {
+  clash,
   explosion,
   explosion_hollow,
-  hit_crack,
-  hit_metal,
-  shot_assault_rifle,
-  shot_assault_rifle_real,
-  shot_bazooka,
-  shot_machine_gun,
-  shot_machine_gun_real,
-  shot_nine_mm,
-  shot_shotgun,
-  shot_shotgun_real,
-  shot_smg,
-  shot_smg_real,
+  plasma,
+  shot,
+  teleport,
   ;
 }
 

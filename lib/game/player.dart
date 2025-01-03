@@ -8,8 +8,10 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
+import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder_hit_points.dart';
+import 'package:voxone/game/stage1/marauder_shot.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
@@ -209,13 +211,15 @@ class PlasmaGun extends Component with Context {
     }
 
     if (keys.fire1) {
-      _cool_down += 0.1;
+      _cool_down += 0.2;
 
       final it = PlasmaShot();
       it.position.setFrom(h_player.position);
       it.x += 25;
       it.y -= 25 / 4;
       stage.add(it);
+
+      soundboard.play(Sound.shot, volume_factor: 0.5);
     }
   }
 }
@@ -260,6 +264,12 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
         removeFromParent();
       }
     }
+    if (other is MarauderShot) {
+      removeFromParent();
+      other.removeFromParent();
+
+      soundboard.play(Sound.teleport, volume_factor: 0.1);
+    }
   }
 }
 
@@ -290,6 +300,7 @@ class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
       if (remaining > 0) h_player.on_hit(remaining * 25);
     }
     energy = max(0, energy);
+    soundboard.play(Sound.teleport, volume_factor: 0.25);
   }
 
   late final FragmentShader _shader;

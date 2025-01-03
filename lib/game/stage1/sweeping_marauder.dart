@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
+import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/game/stacked_entity.dart';
 import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
@@ -46,6 +47,8 @@ class SweepingMarauder extends PositionComponent with Context, Marauder, Maraude
     state = MarauderState.exploding;
     _entity.add(EnemyExplosion());
     if (_sweep_time > 0) can_sweep = true;
+    soundboard.play(Sound.explosion);
+    logInfo('play explosion');
   }
 
   @override
