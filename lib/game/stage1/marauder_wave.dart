@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
@@ -27,7 +28,7 @@ class MarauderWave extends Component with EnemyWave {
     if (!_info_shown) {
       sendMessage(ShowInfoText(text: 'Enemy Wave Incoming', when_done: () => _active = true));
       _info_shown = true;
-      _active = true;
+      if (dev) _active = true;
     }
     if (!_active) {
       return;

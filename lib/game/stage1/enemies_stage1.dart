@@ -13,7 +13,8 @@ import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts {
-  final _waves = [MarauderWave(), MarauderWaveWithCaptain(), MinefieldWave()];
+  final _waves = [MarauderWaveWithCaptain(), MinefieldWave()];
+  // final _waves = [MarauderWave(), MarauderWaveWithCaptain(), MinefieldWave()];
 
   EnemyWave? _active_wave;
 

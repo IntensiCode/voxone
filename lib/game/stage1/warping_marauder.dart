@@ -1,8 +1,9 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/decals.dart';
@@ -14,7 +15,7 @@ import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_hit_points.dart';
 
-class WarpingMarauder extends PositionComponent with Context, Marauder, MarauderHitPoints {
+class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder, MarauderHitPoints {
   late final StackedEntity _entity;
 
   WarpingMarauder() {
@@ -118,14 +119,22 @@ class WarpingMarauder extends PositionComponent with Context, Marauder, Marauder
     if (_incoming_time >= 1) {
       _incoming_time = 1;
       state = MarauderState.active;
+      _entity.sprite.paint.imageFilter = null;
+      _entity.sprite.paint.colorFilter = null;
     }
-    scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
+    scale.setAll(0.2);
+    scale.x += 4 - _incoming_time * 4;
     priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(_incoming_time);
     position.setFrom(target_position);
-    position.x += 350;
-    position.x -= 350 * i;
+    position.x += 550;
+    position.x -= 550 * i;
+
+    _entity.sprite.opacity = _incoming_time;
+
+    _entity.sprite.paint.imageFilter = ImageFilter.blur(sigmaX: 32 * (1 - i), sigmaY: 32 * (1 - i));
+    _entity.sprite.paint.colorFilter = ColorFilter.mode(Colors.white, BlendMode.modulate);
   }
 
   void _on_active(double dt) {

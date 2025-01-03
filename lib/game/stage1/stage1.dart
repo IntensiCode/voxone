@@ -41,7 +41,7 @@ class Stage1 extends GameScreen {
         t1.fadeInDeep();
         t2.fadeInDeep();
         clearScript();
-        at(2.0, () => t1.fadeOutDeep());
+        at(dev ? 0.5 : 2.0, () => t1.fadeOutDeep());
         at(0.0, () => t2.fadeOutDeep());
         _show_time = 0;
 
@@ -74,7 +74,7 @@ class Stage1 extends GameScreen {
     switch (phase) {
       case GamePhase.show_stage:
         _show_time += dt;
-        if (_show_time >= 2.5) {
+        if (_show_time >= (dev ? 0.5 : 2.5)) {
           phase = GamePhase.intro;
         }
 

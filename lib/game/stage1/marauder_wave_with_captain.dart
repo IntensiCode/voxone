@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/context.dart';
 import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
@@ -17,16 +18,15 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave {
   @override
   onLoad() async {
     at(delay, () => sendMessage(ShowInfoText(text: 'Enemy Wave Incoming')));
-    at(4.0, _warp_in_marauders);
-  }
-
-  _warp_in_marauders() {
+    if (!dev) at(3.0, () {});
     marauders_in_wave.forEach((idx) {
-      final it = WarpingMarauder();
-      it.target_position.x = 600 + sin(_wave.length * 2 * pi / marauders_in_wave) * 100;
-      it.target_position.y = 160 + cos(_wave.length * 2 * pi / marauders_in_wave) * 100;
-      _wave.add(it);
-      stage.add(it);
+      at(0.5, () {
+        final it = WarpingMarauder();
+        it.target_position.x = 600 + sin(_wave.length * 2 * pi / marauders_in_wave) * 100;
+        it.target_position.y = 160 + cos(_wave.length * 2 * pi / marauders_in_wave) * 100;
+        _wave.add(it);
+        stage.add(it);
+      });
     });
   }
 
