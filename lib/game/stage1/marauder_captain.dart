@@ -12,14 +12,13 @@ import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
 import 'package:voxone/game/stage1/enemy_health_bar.dart';
 import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_hit_points.dart';
 
-class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder, MarauderHitPoints {
+class MarauderCaptain extends PositionComponent with Context, HasPaint, Marauder, MarauderHitPoints {
   late final StackedEntity _entity;
 
-  WarpingMarauder() {
-    reset_hit_points_to(25);
+  MarauderCaptain() {
+    reset_hit_points_to(100);
   }
 
   @override
@@ -55,7 +54,7 @@ class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder
   Future onLoad() async {
     super.onLoad();
 
-    _entity = StackedEntity('entities/transstellar.png', 14, shadows);
+    _entity = StackedEntity('entities/camo_stellar_jet.png', 16, shadows);
     await _entity.add(MarauderHealthBar(this));
     _entity.size.setAll(256);
 
@@ -75,7 +74,7 @@ class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder
       ..opacity = 0.2
       ..renderShape = debug);
 
-    await add(MarauderGun(this));
+    // await add(MarauderGun(this));
   }
 
   double _incoming_time = 0;
@@ -120,7 +119,7 @@ class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder
       _entity.sprite.paint.imageFilter = null;
       _entity.sprite.paint.colorFilter = null;
     }
-    scale.setAll(0.2);
+    scale.setAll(0.3);
     scale.x += 4 - _incoming_time * 4;
     priority = (scale.x * 1000).toInt();
 
@@ -136,7 +135,7 @@ class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder
   }
 
   void _on_active(double dt) {
-    scale.setAll(sin(_active_time / 3) * 0.025 + 0.2);
+    scale.setAll(sin(_active_time / 3) * 0.025 + 0.3);
     priority = (scale.x * 1000).toInt();
     _entity.rot_x = -pi / 8 + sin(_active_time / 7) * 0.2;
     _entity.rot_y = -pi / 2 + pi / 8;

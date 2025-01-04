@@ -26,8 +26,6 @@ class SweepingMarauder extends PositionComponent with Context, Marauder, Maraude
   @override
   MarauderState state = MarauderState.incoming;
 
-  bool get defeated => state == MarauderState.defeated || state == MarauderState.left;
-
   final target_position = Vector2.zero();
 
   @override
@@ -145,7 +143,8 @@ class SweepingMarauder extends PositionComponent with Context, Marauder, Maraude
       _sweep_dist = 300 - target_position.x;
       state = MarauderState.sweeping;
     } else if (_active_time > 120) {
-      if (!dev) state = MarauderState.leaving;
+      state = MarauderState.leaving;
+      // if (!dev) state = MarauderState.leaving;
     }
   }
 
