@@ -1,7 +1,7 @@
-import 'package:voxone/game/ground.dart';
+import 'package:voxone/background/ground.dart';
+import 'package:voxone/core/shadows.dart';
 import 'package:voxone/game/game_screen.dart';
-import 'package:voxone/game/player.dart';
-import 'package:voxone/game/shadows.dart';
+import 'package:voxone/game/player/horizontal_player.dart';
 
 class Stage2 extends GameScreen {
   @override

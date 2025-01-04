@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/visual.dart';
+import 'package:voxone/core/visual.dart';
 
 Image pixelate(int width, int height, void Function(Canvas) draw) {
   final recorder = PictureRecorder();

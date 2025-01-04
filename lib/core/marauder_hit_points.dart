@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:voxone/game/decals.dart';
-import 'package:voxone/game/stacked_sprite.dart';
+import 'package:voxone/core/decals.dart';
+import 'package:voxone/core/stacked_sprite.dart';
 
 mixin MarauderHitPoints on Component {
   double hit_time = 0;

@@ -4,8 +4,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
-
-import '../core/common.dart';
+import 'package:voxone/core/common.dart';
 
 RectangleComponent rect(double x, double y, double w, double h, Paint paint) =>
     RectangleComponent(position: Vector2(x, y), size: Vector2(w, h), paint: paint);

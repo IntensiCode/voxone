@@ -1,14 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/game/configuration.dart';
+import 'package:voxone/core/configuration.dart';
+import 'package:voxone/core/game_phase.dart';
+import 'package:voxone/core/shadows.dart';
+import 'package:voxone/core/visual.dart';
 import 'package:voxone/game/extras.dart';
-import 'package:voxone/game/game_phase.dart';
 import 'package:voxone/game/game_screen.dart';
-import 'package:voxone/game/game_state.dart';
-import 'package:voxone/game/player.dart';
-import 'package:voxone/game/shadows.dart';
-import 'package:voxone/game/stage1/marauder_mines.dart';
-import 'package:voxone/game/visual.dart';
 import 'package:voxone/main_controller.dart';
 import 'package:voxone/util/keys.dart';
 
@@ -16,9 +13,15 @@ import 'package:voxone/util/keys.dart';
 
 late GameScreen stage;
 
-late HorizontalPlayer h_player;
+mixin HasContext on Component {
+  Context? _context;
+
+  Context get context => _context ??= findParent<Context>(includeSelf: true)!;
+}
 
 mixin Context on Component {
+  final cache = <String, Object>{};
+
   GameScreen? _model;
   Keys? _keys;
   Shadows? _shadows;
@@ -36,17 +39,13 @@ mixin Context on Component {
 
   GamePhase get phase => model.phase;
 
-  GameState get game_state => model.state;
-
   Keys get keys => _keys ??= model.keys;
 
-  Shadows get shadows => _shadows ??= model.shadows;
+  // Shadows get shadows => _shadows ??= model.shadows;
 
   // Decals get decals => model.decals;
 
   Extras get extras => model.extras;
-
-  MarauderMines get mines => model.mines;
 
   CollisionDetection<ShapeHitbox, Sweep<ShapeHitbox>> get collision =>
       _collision ??= (model.parent as MainController).collisionDetection;

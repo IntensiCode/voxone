@@ -1,6 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/screens.dart';
-import 'package:voxone/game/soundboard.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/messaging.dart';
 

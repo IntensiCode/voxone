@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/messages.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/sweeping_marauder.dart';
 import 'package:voxone/util/messaging.dart';

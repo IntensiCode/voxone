@@ -4,16 +4,18 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
+import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/marauder_hit_points.dart';
+import 'package:voxone/core/shadows.dart';
+import 'package:voxone/core/stacked_entity.dart';
+import 'package:voxone/core/stacked_sprite.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/soundboard.dart';
-import 'package:voxone/game/stacked_entity.dart';
-import 'package:voxone/game/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
 import 'package:voxone/game/stage1/enemy_health_bar.dart';
+import 'package:voxone/game/stage1/extensions.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
-import 'package:voxone/game/stage1/marauder_hit_points.dart';
 import 'package:voxone/util/random.dart';
 
 class SweepingMarauder extends PositionComponent with Context, Marauder, MarauderHitPoints {

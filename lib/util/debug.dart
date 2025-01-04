@@ -1,8 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-
-import '../core/common.dart';
+import 'package:voxone/core/common.dart';
 
 Color? debugHitboxColor = const Color(0x80ff0000);
 

@@ -1,7 +1,8 @@
 import 'package:flame/components.dart';
+import 'package:voxone/core/messages.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
+import 'package:voxone/game/stage1/extensions.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';

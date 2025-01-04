@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-
-import '../core/common.dart';
-import '../util/auto_dispose.dart';
-import 'soundboard.dart';
+import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/util/auto_dispose.dart';
 
 class SoundboardImpl extends Soundboard {
   late final SoLoud soloud;

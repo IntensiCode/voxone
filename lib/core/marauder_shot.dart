@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player.dart';
+import 'package:voxone/core/friendly_target.dart';
 import 'package:voxone/util/extensions.dart';
 
 class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {

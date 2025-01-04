@@ -7,11 +7,11 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/decals.dart';
+import 'package:voxone/core/shadows.dart';
+import 'package:voxone/core/stacked_entity.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/decals.dart';
-import 'package:voxone/game/player.dart';
-import 'package:voxone/game/shadows.dart';
-import 'package:voxone/game/stacked_entity.dart';
+import 'package:voxone/game/player/horizontal_player.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 

@@ -3,13 +3,12 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
-
-import '../util/auto_dispose.dart';
-import 'bitmap_font.dart';
-import 'fonts.dart';
-import 'functions.dart';
-import 'nine_patch_image.dart';
-import 'shortcuts.dart';
+import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/bitmap_font.dart';
+import 'package:voxone/util/fonts.dart';
+import 'package:voxone/util/functions.dart';
+import 'package:voxone/util/nine_patch_image.dart';
+import 'package:voxone/util/shortcuts.dart';
 
 Future<BitmapButton> button({
   Sprite? bgNinePatch,

@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/messages.dart';
 import 'package:voxone/game/context.dart';
-import 'package:voxone/game/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_captain.dart';

@@ -6,6 +6,7 @@ import 'package:voxone/core/common.dart';
 import 'auto_dispose.dart';
 import 'game_keys.dart';
 import 'game_pads.dart' if (dart.library.html) 'game_pads_web.dart';
+
 export 'game_keys.dart';
 
 class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGamePads {
