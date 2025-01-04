@@ -5,29 +5,6 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/util/mut_rect.dart';
 import 'package:voxone/util/uniforms.dart';
 
-enum Uniform {
-  scr_x,
-  scr_y,
-  scr_width,
-  scr_height,
-  frame_width,
-  frame_height,
-  frames,
-  scale_x,
-  scale_y,
-  scale_z,
-  ray_x,
-  ray_y,
-  ray_z,
-  u_x,
-  u_y,
-  u_z,
-  v_x,
-  v_y,
-  v_z,
-  shadow,
-}
-
 enum HighlightMode {
   none,
   shadow,
@@ -86,12 +63,12 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _shader = program.fragmentShader();
     _shader!.setImageSampler(0, _image);
 
-    _uniforms = Uniforms(_shader!, Uniform.values);
-    _uniforms.set(Uniform.scr_x, 0);
-    _uniforms.set(Uniform.scr_y, 0);
-    _uniforms.set(Uniform.frame_width, _image.width.toDouble());
-    _uniforms.set(Uniform.frame_height, _image.height / _frames);
-    _uniforms.set(Uniform.frames, _frames.toDouble());
+    _uniforms = Uniforms(_shader!, _Uniform.values);
+    _uniforms.set(_Uniform.scr_x, 0);
+    _uniforms.set(_Uniform.scr_y, 0);
+    _uniforms.set(_Uniform.frame_width, _image.width.toDouble());
+    _uniforms.set(_Uniform.frame_height, _image.height / _frames);
+    _uniforms.set(_Uniform.frames, _frames.toDouble());
 
     _paint = pixel_paint();
     _paint.shader = _shader;
@@ -124,21 +101,21 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _u_dir.normalize();
     _v_dir.normalize();
 
-    _uniforms.set(Uniform.shadow, highlight_mode.index.toDouble());
-    _uniforms.set(Uniform.scr_width, width);
-    _uniforms.set(Uniform.scr_height, height);
-    _uniforms.set(Uniform.scale_x, scale_x);
-    _uniforms.set(Uniform.scale_y, scale_y);
-    _uniforms.set(Uniform.scale_z, scale_z);
-    _uniforms.set(Uniform.ray_x, _ray_dir.x);
-    _uniforms.set(Uniform.ray_y, _ray_dir.y);
-    _uniforms.set(Uniform.ray_z, _ray_dir.z);
-    _uniforms.set(Uniform.u_x, _u_dir.x);
-    _uniforms.set(Uniform.u_y, _u_dir.y);
-    _uniforms.set(Uniform.u_z, _u_dir.z);
-    _uniforms.set(Uniform.v_x, _v_dir.x);
-    _uniforms.set(Uniform.v_y, _v_dir.y);
-    _uniforms.set(Uniform.v_z, _v_dir.z);
+    _uniforms.set(_Uniform.shadow, highlight_mode.index.toDouble());
+    _uniforms.set(_Uniform.scr_width, width);
+    _uniforms.set(_Uniform.scr_height, height);
+    _uniforms.set(_Uniform.scale_x, scale_x);
+    _uniforms.set(_Uniform.scale_y, scale_y);
+    _uniforms.set(_Uniform.scale_z, scale_z);
+    _uniforms.set(_Uniform.ray_x, _ray_dir.x);
+    _uniforms.set(_Uniform.ray_y, _ray_dir.y);
+    _uniforms.set(_Uniform.ray_z, _ray_dir.z);
+    _uniforms.set(_Uniform.u_x, _u_dir.x);
+    _uniforms.set(_Uniform.u_y, _u_dir.y);
+    _uniforms.set(_Uniform.u_z, _u_dir.z);
+    _uniforms.set(_Uniform.v_x, _v_dir.x);
+    _uniforms.set(_Uniform.v_y, _v_dir.y);
+    _uniforms.set(_Uniform.v_z, _v_dir.z);
 
     final recorder = PictureRecorder();
 
@@ -153,4 +130,27 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     image.dispose();
     picture.dispose();
   }
+}
+
+enum _Uniform {
+  scr_x,
+  scr_y,
+  scr_width,
+  scr_height,
+  frame_width,
+  frame_height,
+  frames,
+  scale_x,
+  scale_y,
+  scale_z,
+  ray_x,
+  ray_y,
+  ray_z,
+  u_x,
+  u_y,
+  u_z,
+  v_x,
+  v_y,
+  v_z,
+  shadow,
 }

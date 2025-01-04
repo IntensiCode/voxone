@@ -7,13 +7,17 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/decals.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/core/stacked_entity.dart';
-import 'package:voxone/game/context.dart';
 import 'package:voxone/game/player/horizontal_player.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
+
+extension HasContextExtensions on HasContext {
+  Extras get extras => cache.putIfAbsent('extras', () => Extras()) as Extras;
+}
 
 enum ExtraId {
   triple_plasma(8, when_random: true),
@@ -40,7 +44,51 @@ enum ExtraId {
   const ExtraId(this.sheet_index, {this.when_random = false});
 }
 
-class _Extra extends PositionComponent with CollisionCallbacks, HasPaint {
+class Extras extends Component with HasContext {
+  Extras() {
+    priority = 10000;
+  }
+
+  late final SpriteSheet _sheet;
+
+  final _animations = <ExtraId, List<Image>>{};
+
+  void spawn(Vector2 position) {
+    final which = ExtraId.values.random(rng);
+    final animation = _animations[which] ??= _make_animation(which);
+    final extra = _Extra(animation, shadows);
+    extra.which = which;
+    extra.position.setFrom(position);
+    stage.add(extra);
+  }
+
+  List<Image> _make_animation(ExtraId which) {
+    final result = List<Image>.empty(growable: true);
+    for (int a = 0; a < 1; a++) {
+      final src = _sheet.getSpriteById(which.sheet_index);
+      final recorder = PictureRecorder();
+      final canvas = Canvas(recorder);
+      for (int i = 0; i < 16; i++) {
+        src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
+      }
+      // final anim = _sheet.getSprite(0, a);
+      // anim.render(canvas, position: Vector2.zero());
+      // anim.render(canvas, position: Vector2(0, 240));
+      final picture = recorder.endRecording();
+      final image = picture.toImageSync(16, 256);
+      picture.dispose();
+      result.add(image);
+    }
+    return result;
+  }
+
+  @override
+  onLoad() async {
+    _sheet = await sheetI('extras.png', 8, 4);
+  }
+}
+
+class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint {
   _Extra(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 16, shadows) {
     // priority = 0;
 
@@ -94,49 +142,5 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasPaint {
       removeFromParent();
       logInfo('collect extra $which');
     }
-  }
-}
-
-class Extras extends Component with Context {
-  Extras() {
-    priority = 10000;
-  }
-
-  late final SpriteSheet _sheet;
-
-  final _animations = <ExtraId, List<Image>>{};
-
-  void spawn(Vector2 position) {
-    final which = ExtraId.values.random(rng);
-    final animation = _animations[which] ??= _make_animation(which);
-    final extra = _Extra(animation, shadows);
-    extra.which = which;
-    extra.position.setFrom(position);
-    stage.add(extra);
-  }
-
-  List<Image> _make_animation(ExtraId which) {
-    final result = List<Image>.empty(growable: true);
-    for (int a = 0; a < 1; a++) {
-      final src = _sheet.getSpriteById(which.sheet_index);
-      final recorder = PictureRecorder();
-      final canvas = Canvas(recorder);
-      for (int i = 0; i < 16; i++) {
-        src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
-      }
-      // final anim = _sheet.getSprite(0, a);
-      // anim.render(canvas, position: Vector2.zero());
-      // anim.render(canvas, position: Vector2(0, 240));
-      final picture = recorder.endRecording();
-      final image = picture.toImageSync(16, 256);
-      picture.dispose();
-      result.add(image);
-    }
-    return result;
-  }
-
-  @override
-  onLoad() async {
-    _sheet = await sheetI('extras.png', 8, 4);
   }
 }

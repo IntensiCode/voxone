@@ -7,7 +7,7 @@ import 'package:voxone/components/basic_menu.dart';
 import 'package:voxone/components/soft_keys.dart';
 import 'package:voxone/components/volume_component.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/screens.dart';
+import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/fonts.dart';
 import 'package:voxone/util/functions.dart';

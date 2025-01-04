@@ -1,4 +1,4 @@
-import 'common.dart';
+import '../../core/common.dart';
 
 enum Screen {
   audio,

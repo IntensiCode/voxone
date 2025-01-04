@@ -5,19 +5,23 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/decals.dart';
-import 'package:voxone/core/friendly_target.dart';
-import 'package:voxone/core/marauder_hit_points.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/core/stacked_entity.dart';
-import 'package:voxone/core/stacked_sprite.dart';
-import 'package:voxone/game/context.dart';
-import 'package:voxone/game/extras.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/stacked_sprite.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
-class MarauderMines extends Component with Context {
+extension HasContextExtensions on HasContext {
+  MarauderMines get mines => cache.putIfAbsent('mines', () => MarauderMines()) as MarauderMines;
+}
+
+class MarauderMines extends Component with HasContext {
   late final SpriteSheet _sheet;
 
   late final Future<List<Image>> _animation;
@@ -58,7 +62,7 @@ class MarauderMines extends Component with Context {
   }
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, Context, MarauderHitPoints, HasPaint {
+class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, MarauderHitPoints, HasPaint {
   MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;

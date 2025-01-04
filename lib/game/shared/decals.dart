@@ -1,12 +1,16 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
-late Decals decals;
+extension HasContextExtensions on HasContext {
+  Decals get decals => cache.putIfAbsent('decals', () => Decals()) as Decals;
+}
 
 enum Decal {
   mini_explosion(1.0),
@@ -43,6 +47,7 @@ class _MiniExplosion extends DecalObj {
 class Decals extends Component {
   Decals() {
     priority = 10000;
+    logInfo('Decals created');
   }
 
   late final SpriteSheet _explosions;

@@ -5,22 +5,18 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/friendly_target.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/core/stacked_entity.dart';
-import 'package:voxone/game/context.dart';
 import 'package:voxone/game/player/deflector_shield.dart';
-import 'package:voxone/game/player/globals.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
+import 'package:voxone/game/player/player_target.dart';
+import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/messaging.dart';
 
-class HorizontalPlayer extends PositionComponent with Context, FriendlyTarget {
-  HorizontalPlayer() {
-    h_player = this;
-  }
-
+class HorizontalPlayer extends PositionComponent with HasContext, FriendlyTarget, PlayerTarget {
   late final StackedEntity _entity;
 
   static const _strafe_accel = 10.0;

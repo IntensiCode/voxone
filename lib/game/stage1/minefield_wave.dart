@@ -1,14 +1,13 @@
 import 'package:flame/components.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/game/context.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
-import 'package:voxone/game/stage1/extensions.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/random.dart';
 
-class MinefieldWave extends Component with Context, EnemyWave {
+class MinefieldWave extends Component with EnemyWave, HasContext {
   static const enemies_in_wave = 64;
 
   MinefieldWave() {

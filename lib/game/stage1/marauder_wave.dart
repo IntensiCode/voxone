@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/game/context.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/sweeping_marauder.dart';
 import 'package:voxone/util/messaging.dart';
 
-class MarauderWave extends Component with EnemyWave {
+class MarauderWave extends Component with EnemyWave, HasContext {
   static const enemies_in_wave = 8;
 
   MarauderWave() {

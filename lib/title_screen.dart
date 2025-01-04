@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
-import 'package:voxone/core/screens.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/core/stacked_entity.dart';
+import 'package:voxone/game/shared/screens.dart';
+import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';

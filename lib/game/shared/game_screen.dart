@@ -1,11 +1,8 @@
 import 'package:flame/components.dart';
-import 'package:voxone/core/game_phase.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/core/particles.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/game/extras.dart';
-import 'package:voxone/game/game_state.dart';
-import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/game/shared/game_phase.dart';
+import 'package:voxone/game/shared/game_state.dart';
+import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/stage_cache.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
@@ -14,19 +11,14 @@ import 'package:voxone/util/shortcuts.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasVisibility, Pixelate {
   GameScreen() {
-    add(keys);
+    add(stage_keys);
+    add(stage_cache);
   }
 
-  final keys = Keys();
+  final stage_keys = Keys();
+  final stage_cache = StageCache();
 
   final state = GameState.instance;
-
-  late final Shadows shadows;
-  late final Particles particles;
-
-  // late final Decals decals;
-  late final Extras extras;
-  late final MarauderMines mines;
 
   GamePhase _phase = GamePhase.show_stage;
 

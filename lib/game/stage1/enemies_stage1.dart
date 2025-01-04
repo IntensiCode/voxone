@@ -1,8 +1,8 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/marauder_hit_points.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/game/context.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
 import 'package:voxone/game/stage1/minefield_wave.dart';
@@ -11,8 +11,8 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
 
-class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts {
-  final _waves = [MarauderWaveWithCaptain(), MinefieldWave()];
+class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, HasContext {
+  final List<EnemyWave> _waves = [MarauderWaveWithCaptain(), MinefieldWave()];
 
   // final _waves = [MarauderWave(), MarauderWaveWithCaptain(), MinefieldWave()];
 

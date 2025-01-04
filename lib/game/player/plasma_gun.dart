@@ -4,13 +4,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/marauder_hit_points.dart';
-import 'package:voxone/core/marauder_shot.dart';
-import 'package:voxone/game/context.dart';
-import 'package:voxone/game/player/globals.dart';
+import 'package:voxone/game/player/player_target.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/marauder_shot.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaGun extends Component with Context {
+class PlasmaGun extends Component with HasContext {
   double _cool_down = 0;
 
   @override
@@ -24,7 +24,7 @@ class PlasmaGun extends Component with Context {
       _cool_down += 0.2;
 
       final it = PlasmaShot();
-      it.position.setFrom(h_player.position);
+      it.position.setFrom(player.position);
       it.x += 25;
       it.y -= 25 / 4;
       stage.add(it);

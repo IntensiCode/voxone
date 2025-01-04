@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/game/context.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_captain.dart';
@@ -11,7 +11,7 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
 
-class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave {
+class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasContext {
   static const marauders_in_wave = 7;
   static const enemies_in_wave = marauders_in_wave + 1;
 

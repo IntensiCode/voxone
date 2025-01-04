@@ -5,18 +5,19 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/decals.dart';
-import 'package:voxone/core/marauder_hit_points.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/core/stacked_entity.dart';
-import 'package:voxone/core/stacked_sprite.dart';
-import 'package:voxone/game/context.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/stacked_sprite.dart';
 import 'package:voxone/game/stage1/enemy_explosion.dart';
 import 'package:voxone/game/stage1/enemy_health_bar.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 
-class WarpingMarauder extends PositionComponent with Context, HasPaint, Marauder, MarauderHitPoints {
+class WarpingMarauder extends PositionComponent with HasContext, HasPaint, Marauder, MarauderHitPoints {
   late final StackedEntity _entity;
 
   WarpingMarauder() {

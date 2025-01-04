@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/marauder_hit_points.dart';
+import 'package:voxone/game/shared/marauder_hit_points.dart';
 import 'package:voxone/util/mut_rect.dart';
 
 class MarauderHealthBar extends PositionComponent {

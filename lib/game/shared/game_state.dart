@@ -1,13 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
-import 'package:voxone/game/context.dart';
 import 'package:voxone/util/game_data.dart';
 import 'package:voxone/util/storage.dart';
-
-// final state = GameState.instance;
-
-extension ContextExtensions on Context {
-  GameState get game_state => model.state;
-}
 
 class GameState with HasGameData {
   static final instance = GameState._();

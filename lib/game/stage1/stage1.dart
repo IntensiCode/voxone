@@ -1,35 +1,31 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/decals.dart';
-import 'package:voxone/core/game_phase.dart';
-import 'package:voxone/core/messages.dart';
-import 'package:voxone/core/shadows.dart';
-import 'package:voxone/game/context.dart';
-import 'package:voxone/game/extras.dart';
-import 'package:voxone/game/game_screen.dart';
-import 'package:voxone/game/info_overlay.dart';
 import 'package:voxone/game/player/horizontal_player.dart';
 import 'package:voxone/game/player/player_hud.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/game_phase.dart';
+import 'package:voxone/game/shared/game_screen.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/info_overlay.dart';
+import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/stage1/enemies_stage1.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/on_message.dart';
 
-class Stage1 extends GameScreen {
-  Stage1() {
-    stage = this;
-  }
-
+class Stage1 extends GameScreen with HasContext {
   double _show_time = 0;
 
   @override
   onLoad() async {
     add(Space());
     _change_phase(phase);
-    add(decals = Decals());
-    add(extras = Extras());
-    add(mines = MarauderMines());
+    add(decals);
+    add(extras);
+    add(mines);
     add(InfoOverlay());
   }
 
@@ -47,7 +43,8 @@ class Stage1 extends GameScreen {
         _show_time = 0;
 
       case GamePhase.intro:
-        add(shadows = Shadows());
+        add(shadows);
+
         final p = added(HorizontalPlayer());
         add(PlayerHud(p));
         shadows.isVisible = false;

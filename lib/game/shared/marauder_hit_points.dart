@@ -1,9 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:voxone/core/decals.dart';
-import 'package:voxone/core/stacked_sprite.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/stacked_sprite.dart';
 
-mixin MarauderHitPoints on Component {
+mixin MarauderHitPoints on Component, HasContext {
   double hit_time = 0;
   double hit_points = 10;
   double remaining = 10;

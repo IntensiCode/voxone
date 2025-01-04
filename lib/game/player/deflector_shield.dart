@@ -5,14 +5,15 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/friendly_target.dart';
-import 'package:voxone/game/player/globals.dart';
+import 'package:voxone/game/player/player_target.dart';
+import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mut_rect.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
+class DeflectorShield extends PositionComponent with HasContext, HasPaint, FriendlyTarget {
   DeflectorShield() {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
@@ -36,7 +37,7 @@ class DeflectorShield extends PositionComponent with HasPaint, FriendlyTarget {
     energy -= damage / 25;
     if (energy < 0) {
       double remaining = energy.abs();
-      if (remaining > 0) h_player.on_hit(remaining * 25);
+      if (remaining > 0) player.on_hit(remaining * 25);
     }
     energy = max(0, energy);
     soundboard.play(Sound.teleport, volume_factor: 0.25);

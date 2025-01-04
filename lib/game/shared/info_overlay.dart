@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/messages.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
