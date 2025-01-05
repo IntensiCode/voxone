@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 
 class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
@@ -38,11 +39,12 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasPaint {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other case FriendlyTarget it) {
-      if (it.susceptible) {
+    if (other.hasTrait<Friendly>()) {
+      other.onTraits<Target>((it) {
+        if (!it.susceptible) return;
         it.on_hit(1);
         removeFromParent();
-      }
+      });
     }
   }
 }

@@ -1,20 +1,19 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/player_target.dart';
-import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/energy_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mut_rect.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class DeflectorShield extends PositionComponent with HasContext, HasPaint, FriendlyTarget {
-  DeflectorShield() {
+class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits {
+  DeflectorShield._(Target target) {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
       ..paint.color = red
@@ -23,25 +22,17 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, Frien
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
     priority = -1;
+
+    addTrait(EnergyShield(this, target, () => _deflect_time = 0.3));
   }
 
-  double energy = 1;
+  factory DeflectorShield(Target target, {required bool friendly}) {
+    final it = DeflectorShield._(target);
+    if (friendly) it.addTrait(Friendly());
+    return it;
+  }
+
   double _deflect_time = 0;
-
-  @override
-  bool get susceptible => energy > 0.1;
-
-  @override
-  void on_hit(double damage) {
-    _deflect_time = 0.3;
-    energy -= damage / 25;
-    if (energy < 0) {
-      double remaining = energy.abs();
-      if (remaining > 0) player.on_hit(remaining * 25);
-    }
-    energy = max(0, energy);
-    soundboard.play(Sound.teleport, volume_factor: 0.25);
-  }
 
   late final FragmentShader _shader;
 
@@ -56,11 +47,14 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, Frien
     _shader.setFloat(1, size.y);
   }
 
+  EnergyShield? _shield;
+
   @override
   void update(double dt) {
     super.update(dt);
 
-    if (energy < 1) energy += dt / 3;
+    _shield ??= singleTrait<EnergyShield>();
+    if (_shield!.energy < 1) _shield!.energy += dt / 3;
 
     if (_deflect_time > 0) _deflect_time -= dt;
 

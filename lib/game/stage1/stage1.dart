@@ -43,9 +43,10 @@ class Stage1 extends GameScreen with HasContext {
         _show_time = 0;
 
       case GamePhase.intro:
+        final player = ZaxxonPlayer();
         add(shadows);
-        add(ZaxxonPlayer());
-        add(ZaxxonHud());
+        add(player);
+        add(ZaxxonHud(player));
         shadows.isVisible = false;
 
       case GamePhase.playing:

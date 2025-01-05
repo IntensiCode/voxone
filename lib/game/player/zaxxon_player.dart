@@ -5,18 +5,18 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/deflector_shield.dart';
+import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
-import 'package:voxone/game/shared/friendly_target.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/messaging.dart';
 
-class ZaxxonPlayer extends PositionComponent with HasContext, FriendlyTarget, PlayerTarget {
+class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implements Friendly, Player, Target {
   late final StackedEntity _entity;
 
   static const _strafe_accel = 10.0;
@@ -36,8 +36,8 @@ class ZaxxonPlayer extends PositionComponent with HasContext, FriendlyTarget, Pl
   }
 
   Component? weapon;
-  DeflectorShield? shield;
 
+  @override
   double integrity = 1;
 
   @override
@@ -89,11 +89,12 @@ class ZaxxonPlayer extends PositionComponent with HasContext, FriendlyTarget, Pl
       ..opacity = 0.2
       ..renderShape = debug);
 
-    weapon = PlasmaGun();
+    weapon = PlasmaGun(this);
     await add(weapon!);
 
-    shield = DeflectorShield();
-    await add(shield!);
+    final shield = DeflectorShield(this, friendly: true);
+    await add(shield);
+    addTrait(shield);
 
     priority = 100;
   }

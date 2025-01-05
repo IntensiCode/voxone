@@ -5,20 +5,21 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/friendly_target.dart';
-import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
 extension HasContextExtensions on HasContext {
-  MarauderMines get mines => cache.putIfAbsent('mines', () => MarauderMines()) as MarauderMines;
+  MarauderMines get mines => cache.putIfAbsent('mines', () => MarauderMines());
 }
 
 class MarauderMines extends Component with HasContext {
@@ -130,20 +131,23 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other case FriendlyTarget it) {
-      if (it.susceptible) {
-        it.on_hit(10);
-        position.x -= 10;
-        position.y += 10 / 4;
-        for (int i = 0; i < 5; i++) {
-          final d = decals.spawn(Decal.mini_explosion, position);
-          d.velocity.setValues(-10.0 * i, 10 / 4 * i);
-          d.time = rng.nextDoubleLimit(0.2);
-        }
-        removeFromParent();
 
-        soundboard.play(Sound.explosion_hollow);
+    if (!other.hasTrait<Friendly>()) return;
+
+    other.onTraits<Target>((it) {
+      if (!it.susceptible) return;
+
+      it.on_hit(10);
+      position.x -= 10;
+      position.y += 10 / 4;
+      for (int i = 0; i < 5; i++) {
+        final d = decals.spawn(Decal.mini_explosion, position);
+        d.velocity.setValues(-10.0 * i, 10 / 4 * i);
+        d.time = rng.nextDoubleLimit(0.2);
       }
-    }
+      removeFromParent();
+
+      soundboard.play(Sound.explosion_hollow);
+    });
   }
 }
