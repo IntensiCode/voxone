@@ -8,15 +8,15 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/deflector_shield.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
-import 'package:voxone/game/player/player_target.dart';
 import 'package:voxone/game/shared/friendly_target.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/messaging.dart';
 
-class HorizontalPlayer extends PositionComponent with HasContext, FriendlyTarget, PlayerTarget {
+class ZaxxonPlayer extends PositionComponent with HasContext, FriendlyTarget, PlayerTarget {
   late final StackedEntity _entity;
 
   static const _strafe_accel = 10.0;

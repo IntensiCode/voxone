@@ -5,7 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/player_target.dart';
+import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/game/shared/friendly_target.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/extensions.dart';

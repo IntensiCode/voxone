@@ -2,18 +2,20 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/horizontal_player.dart';
+import 'package:voxone/game/player/zaxxon_player.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/mut_rect.dart';
 
-class PlayerHud extends Component with HasPaint {
-  PlayerHud(this._player) {
+class ZaxxonHud extends Component with HasContext, HasPaint {
+  ZaxxonHud() {
     add(BitmapText(text: 'SHIELD', position: Vector2(16, 16))..renderSnapshot = true);
     add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32))..renderSnapshot = true);
-    add(BitmapText(text: 'OVERHEAT', position: Vector2(16, 48))..renderSnapshot = true);
+    // add(BitmapText(text: 'OVERHEAT', position: Vector2(16, 48))..renderSnapshot = true);
   }
 
-  final HorizontalPlayer _player;
+  ZaxxonPlayer get _player => player as ZaxxonPlayer;
 
   @override
   void render(Canvas canvas) {

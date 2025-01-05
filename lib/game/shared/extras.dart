@@ -7,16 +7,16 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/horizontal_player.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
 extension HasContextExtensions on HasContext {
-  Extras get extras => cache.putIfAbsent('extras', () => Extras()) as Extras;
+  Extras get extras => cache.putIfAbsent('extras', () => Extras());
 }
 
 enum ExtraId {
@@ -137,7 +137,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other is HorizontalPlayer) {
+    if (other is PlayerTarget) {
       decals.spawn(Decal.teleport, position);
       removeFromParent();
       logInfo('collect extra $which');
