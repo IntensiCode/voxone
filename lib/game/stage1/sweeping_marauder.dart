@@ -20,7 +20,7 @@ import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/random.dart';
 
 class SweepingMarauder extends PositionComponent with HasContext, Marauder, EnemyHitPoints {
-  late final StackedEntity _entity;
+  late final StackedEntity entity;
 
   SweepingMarauder() {
     reset_hit_points_to(25);
@@ -36,17 +36,17 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,
-        _ => _incoming_time > 0.9,
+        _ => incoming_time > 0.9,
       };
 
   @override
-  set highlight_mode(HighlightMode mode) => _entity.sprite.highlight_mode = mode;
+  set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
 
   @override
   void on_destroyed() {
     if (state == MarauderState.exploding) return;
     state = MarauderState.exploding;
-    _entity.add(EnemyExplosion());
+    entity.add(EnemyExplosion());
     if (_sweep_time > 0) can_sweep = true;
     soundboard.play(Sound.explosion);
     logInfo('play explosion');
@@ -56,19 +56,19 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
   Future onLoad() async {
     super.onLoad();
 
-    _entity = StackedEntity('entities/transstellar.png', 14, shadows);
-    await _entity.add(EnemyHealthBar(this));
-    _entity.size.setAll(256);
+    entity = StackedEntity('entities/transstellar.png', 14, shadows);
+    await entity.add(EnemyHealthBar(this));
+    entity.size.setAll(256);
 
-    _entity.rot_x = -pi / 8;
-    _entity.rot_y = -pi / 2 + pi / 8;
-    _entity.rot_z = -pi / 8;
-    _entity.scale_x = 1.2;
-    _entity.scale_y = 3.5;
-    _entity.scale_z = 1.2;
+    entity.rot_x = -pi / 8;
+    entity.rot_y = -pi / 2 + pi / 8;
+    entity.rot_z = -pi / 8;
+    entity.scale_x = 1.2;
+    entity.scale_y = 3.5;
+    entity.scale_z = 1.2;
     position.setFrom(target_position);
 
-    await add(_entity);
+    await add(entity);
 
     size.setAll(180);
     await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)
@@ -79,7 +79,7 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
     await add(MarauderGun(this));
   }
 
-  double _incoming_time = 0;
+  double incoming_time = 0;
   double _active_time = 0;
   double _leaving_time = 0;
 
@@ -88,7 +88,7 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
     super.update(dt);
     switch (state) {
       case MarauderState.incoming:
-        _on_incoming(dt);
+        on_incoming(dt);
 
       case MarauderState.active:
         _on_active(dt);
@@ -112,16 +112,16 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
 
   bool _spawned = false;
 
-  void _on_incoming(double dt) {
-    _incoming_time += dt * 2 / 3;
-    if (_incoming_time >= 1) {
-      _incoming_time = 1;
+  void on_incoming(double dt) {
+    incoming_time += dt * 2 / 3;
+    if (incoming_time >= 1) {
+      incoming_time = 1;
       state = MarauderState.active;
     }
-    scale.setAll((1 - _incoming_time) * 0.5 + 0.2);
+    scale.setAll((1 - incoming_time) * 0.5 + 0.2);
     priority = (scale.x * 1000).toInt();
 
-    final i = Curves.easeInOut.transform(_incoming_time);
+    final i = Curves.easeInOut.transform(incoming_time);
     position.setFrom(target_position);
     position.x += 350;
     position.x -= 350 * i;
@@ -130,9 +130,9 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
   void _on_active(double dt) {
     scale.setAll(sin(_active_time / 3) * 0.025 + 0.2);
     priority = (scale.x * 1000).toInt();
-    _entity.rot_x = -pi / 8 + sin(_active_time / 7) * 0.2;
-    _entity.rot_y = -pi / 2 + pi / 8;
-    _entity.rot_z = -pi / 8 + sin(_active_time) * 0.2;
+    entity.rot_x = -pi / 8 + sin(_active_time / 7) * 0.2;
+    entity.rot_y = -pi / 2 + pi / 8;
+    entity.rot_z = -pi / 8 + sin(_active_time) * 0.2;
     _active_time += dt * 3;
     position.setFrom(target_position);
     position.x += sin(_active_time / 1.2345) * 10;
@@ -184,9 +184,9 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
 
     double mm = _sweep_time < 5 ? 0 : 0.5 + (_sweep_time - 5) / 10;
     double m = Curves.easeInOut.transform(mm);
-    _entity.rot_x -= sin(m * pi * 8 / 4) * pi / 4;
-    _entity.rot_y -= sin(m * pi * 8 / 4) * pi / 1;
-    _entity.rot_z += sin(m * pi * 8 / 4) * pi / 2;
+    entity.rot_x -= sin(m * pi * 8 / 4) * pi / 4;
+    entity.rot_y -= sin(m * pi * 8 / 4) * pi / 1;
+    entity.rot_z += sin(m * pi * 8 / 4) * pi / 2;
   }
 
   void _on_leaving(double dt) {
@@ -218,12 +218,12 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
       state = MarauderState.defeated;
     }
 
-    _entity.rot_x += dt;
-    _entity.rot_y += dt * 2;
-    _entity.rot_z += dt * 0.5;
+    entity.rot_x += dt;
+    entity.rot_y += dt * 2;
+    entity.rot_z += dt * 0.5;
     position.x -= dt * 100;
     position.y += dt * 100 / 4;
 
-    _entity.sprite.opacity = 1 - _leaving_time / 2;
+    entity.sprite.opacity = 1 - _leaving_time / 2;
   }
 }
