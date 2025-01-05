@@ -6,7 +6,7 @@ import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/player_target.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/marauder_shot.dart';
 import 'package:voxone/util/extensions.dart';
 
@@ -68,7 +68,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other case MarauderHitPoints it) {
+    if (other case EnemyHitPoints it) {
       if (it.volatile) {
         it.on_hit();
         removeFromParent();

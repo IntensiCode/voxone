@@ -1,7 +1,7 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
@@ -26,7 +26,7 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
         _active_wave?.defeated = true;
         _active_wave?.removeFromParent();
         messaging.send(ClearInfoText());
-        stage.children.whereType<MarauderHitPoints>().forEach((it) => it.removeFromParent());
+        stage.children.whereType<EnemyHitPoints>().forEach((it) => it.removeFromParent());
       });
     }
   }

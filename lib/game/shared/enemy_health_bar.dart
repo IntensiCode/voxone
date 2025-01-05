@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/util/mut_rect.dart';
 
-class MarauderHealthBar extends PositionComponent {
-  MarauderHealthBar(this._hit_points);
+class EnemyHealthBar extends PositionComponent {
+  EnemyHealthBar(this._hit_points);
 
-  final MarauderHitPoints _hit_points;
+  final EnemyHitPoints _hit_points;
 
   static const _good = Color(0xA0ffffff);
   static const _half = Color(0xA0ffff00);

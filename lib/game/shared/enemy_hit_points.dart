@@ -4,7 +4,7 @@ import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
 
-mixin MarauderHitPoints on Component, HasContext {
+mixin EnemyHitPoints on Component, HasContext {
   double hit_time = 0;
   double hit_points = 10;
   double remaining = 10;

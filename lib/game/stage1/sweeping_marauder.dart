@@ -6,20 +6,20 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/enemy_explosion.dart';
+import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/marauder_hit_points.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
-import 'package:voxone/game/stage1/enemy_explosion.dart';
-import 'package:voxone/game/stage1/enemy_health_bar.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/random.dart';
 
-class SweepingMarauder extends PositionComponent with HasContext, Marauder, MarauderHitPoints {
+class SweepingMarauder extends PositionComponent with HasContext, Marauder, EnemyHitPoints {
   late final StackedEntity _entity;
 
   SweepingMarauder() {
@@ -57,7 +57,7 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Mara
     super.onLoad();
 
     _entity = StackedEntity('entities/transstellar.png', 14, shadows);
-    await _entity.add(MarauderHealthBar(this));
+    await _entity.add(EnemyHealthBar(this));
     _entity.size.setAll(256);
 
     _entity.rot_x = -pi / 8;

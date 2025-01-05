@@ -9,7 +9,7 @@ import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/friendly_target.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/marauder_hit_points.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
@@ -62,7 +62,7 @@ class MarauderMines extends Component with HasContext {
   }
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, MarauderHitPoints, HasPaint {
+class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, EnemyHitPoints, HasPaint {
   MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
