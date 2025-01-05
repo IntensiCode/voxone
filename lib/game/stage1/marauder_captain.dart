@@ -5,6 +5,8 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -13,9 +15,10 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 
-class MarauderCaptain extends PositionComponent with HasContext, HasPaint, Marauder, EnemyHitPoints {
+class MarauderCaptain extends PositionComponent with HasContext, HasPaint, HasTraits, Marauder, EnemyHitPoints {
   late final StackedEntity _entity;
 
   MarauderCaptain() {
@@ -113,6 +116,13 @@ class MarauderCaptain extends PositionComponent with HasContext, HasPaint, Marau
       state = MarauderState.active;
       _entity.sprite.paint.imageFilter = null;
       _entity.sprite.paint.colorFilter = null;
+
+      final shield = DeflectorShield(this);
+      shield.scale.setAll(4);
+      shield.auto_recharge = false;
+      shield.addTrait(Hostile());
+      add(shield);
+      addTrait(shield);
     }
     scale.setAll(0.3);
     scale.x += 4 - _incoming_time * 4;
@@ -144,7 +154,6 @@ class MarauderCaptain extends PositionComponent with HasContext, HasPaint, Marau
       return;
     } else if (_active_time > 120) {
       state = MarauderState.leaving;
-      // if (!dev) state = MarauderState.leaving;
     }
   }
 

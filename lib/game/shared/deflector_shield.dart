@@ -13,7 +13,7 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits {
-  DeflectorShield._(Target target) {
+  DeflectorShield(Target target) {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
       ..paint.color = red
@@ -26,11 +26,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     addTrait(EnergyShield(this, target, () => _deflect_time = 0.3));
   }
 
-  factory DeflectorShield(Target target, {required bool friendly}) {
-    final it = DeflectorShield._(target);
-    if (friendly) it.addTrait(Friendly());
-    return it;
-  }
+  bool auto_recharge = true;
 
   double _deflect_time = 0;
 
@@ -53,8 +49,10 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   void update(double dt) {
     super.update(dt);
 
-    _shield ??= singleTrait<EnergyShield>();
-    if (_shield!.energy < 1) _shield!.energy += dt / 3;
+    if (auto_recharge) {
+      _shield ??= singleTrait<EnergyShield>();
+      if (_shield!.energy < 1) _shield!.energy += dt / 3;
+    }
 
     if (_deflect_time > 0) _deflect_time -= dt;
 

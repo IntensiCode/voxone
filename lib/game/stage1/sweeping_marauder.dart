@@ -140,14 +140,13 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
 
     if (state != MarauderState.active) {
       return;
+    } else if (_active_time > 120) {
+      state = MarauderState.leaving;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
       _sweep_time = 0;
       _sweep_dist = 300 - target_position.x;
       state = MarauderState.sweeping;
-    } else if (_active_time > 120) {
-      state = MarauderState.leaving;
-      // if (!dev) state = MarauderState.leaving;
     }
   }
 

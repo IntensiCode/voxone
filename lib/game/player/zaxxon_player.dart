@@ -92,7 +92,8 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
     weapon = PlasmaGun(this);
     await add(weapon!);
 
-    final shield = DeflectorShield(this, friendly: true);
+    final shield = DeflectorShield(this);
+    shield.addTrait(Friendly());
     await add(shield);
     addTrait(shield);
 
