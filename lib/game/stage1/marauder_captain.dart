@@ -17,12 +17,15 @@ import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/random.dart';
 
 class MarauderCaptain extends PositionComponent with HasContext, HasPaint, HasTraits, Marauder, EnemyHitPoints {
   late final StackedEntity _entity;
 
   MarauderCaptain() {
-    reset_hit_points_to(100);
+    reset_hit_points_to(40);
   }
 
   @override
@@ -139,6 +142,10 @@ class MarauderCaptain extends PositionComponent with HasContext, HasPaint, HasTr
     _entity.sprite.paint.colorFilter = ColorFilter.mode(Colors.white, BlendMode.modulate);
   }
 
+  bool get _last_remaining => stage.children.whereType<Marauder>().singleOrNull == this;
+
+  double _mine_spawn_time = 0;
+
   void _on_active(double dt) {
     scale.setAll(sin(_active_time / 3) * 0.025 + 0.3);
     priority = (scale.x * 1000).toInt();
@@ -150,10 +157,15 @@ class MarauderCaptain extends PositionComponent with HasContext, HasPaint, HasTr
     position.x += sin(_active_time / 1.2345) * 10;
     position.y += sin(_active_time) * 10;
 
-    if (state != MarauderState.active) {
-      return;
-    } else if (_active_time > 120) {
-      state = MarauderState.leaving;
+    if (_last_remaining) {
+      if (_mine_spawn_time <= 0) {
+        _mine_spawn_time = 0.5;
+        mines.spawn(position).then((it) {
+          it.drift = rng.nextDoublePM(40);
+        });
+      } else {
+        _mine_spawn_time -= dt;
+      }
     }
   }
 

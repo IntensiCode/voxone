@@ -86,6 +86,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
 
   late ExtraId which;
 
+  double drift = 0.0;
+
   bool _destroyed = false;
   double _anim_time = 0;
 
@@ -122,6 +124,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     entity.rot_z += dt * 3;
     position.x -= 100 * dt;
     position.y += 100 / 4 * dt;
+    position.x -= drift / 4 * dt;
+    position.y -= drift * dt;
     if (position.x < -100) {
       removeFromParent();
     }
