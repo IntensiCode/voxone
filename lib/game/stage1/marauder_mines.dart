@@ -14,6 +14,7 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
@@ -23,12 +24,9 @@ extension HasContextExtensions on HasContext {
 }
 
 class MarauderMines extends Component with HasContext {
-  static bool _loaded = false;
-  static late final SpriteSheet _sheet;
-  static late final Future<List<Image>> _animation;
-
   Future<MarauderMine> spawn(Vector2 position) {
-    return _animation.then((animation) {
+    final animation = cache.require<Future<List<Image>>>('mines_animation');
+    return animation.then((animation) {
       final it = MarauderMine(animation, shadows);
       it.position.setFrom(position);
       stage.add(it);
@@ -38,25 +36,27 @@ class MarauderMines extends Component with HasContext {
 
   @override
   onLoad() async {
-    if (_loaded) return;
-    _loaded = true;
-    _sheet = await sheetI('acid_bomb.png', 8, 2);
-    _animation = _make_animation();
+    cache.putIfAbsent('mines_animation', () async {
+      final sheet = await sheetI('acid_bomb.png', 8, 2);
+      return _make_animation(sheet);
+    });
   }
 
-  Future<List<Image>> _make_animation() async {
+  Future<List<Image>> _make_animation(SpriteSheet sheet) async {
     final result = List<Image>.empty(growable: true);
     for (int a = 0; a < 8; a++) {
       final recorder = PictureRecorder();
       final canvas = Canvas(recorder);
       for (int i = 0; i < 8; i++) {
-        final src = _sheet.getSprite(a == i ? 1 : 0, i);
+        final src = sheet.getSprite(a == i ? 1 : 0, i);
         src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
       }
       final picture = recorder.endRecording();
       final image = picture.toImageSync(16, 128);
       picture.dispose();
       result.add(image);
+
+      cache.addDisposable(Disposable.wrap(() => image.dispose()));
     }
     return result;
   }

@@ -68,6 +68,12 @@ class Stage1 extends GameScreen with HasContext {
   }
 
   @override
+  void onRemove() {
+    super.onRemove();
+    cache.dispose();
+  }
+
+  @override
   void update(double dt) {
     switch (phase) {
       case GamePhase.show_stage:
