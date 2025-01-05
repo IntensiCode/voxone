@@ -23,9 +23,9 @@ extension HasContextExtensions on HasContext {
 }
 
 class MarauderMines extends Component with HasContext {
-  late final SpriteSheet _sheet;
-
-  late final Future<List<Image>> _animation;
+  static bool _loaded = false;
+  static late final SpriteSheet _sheet;
+  static late final Future<List<Image>> _animation;
 
   Future<MarauderMine> spawn(Vector2 position) {
     return _animation.then((animation) {
@@ -38,6 +38,8 @@ class MarauderMines extends Component with HasContext {
 
   @override
   onLoad() async {
+    if (_loaded) return;
+    _loaded = true;
     _sheet = await sheetI('acid_bomb.png', 8, 2);
     _animation = _make_animation();
   }
@@ -51,9 +53,6 @@ class MarauderMines extends Component with HasContext {
         final src = _sheet.getSprite(a == i ? 1 : 0, i);
         src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
       }
-      // final anim = _sheet.getSprite(0, a);
-      // anim.render(canvas, position: Vector2.zero());
-      // anim.render(canvas, position: Vector2(0, 240));
       final picture = recorder.endRecording();
       final image = picture.toImageSync(16, 128);
       picture.dispose();
@@ -63,7 +62,7 @@ class MarauderMines extends Component with HasContext {
   }
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, EnemyHitPoints, HasPaint {
+class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints {
   MarauderMine(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
@@ -91,7 +90,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
   double _anim_time = 0;
 
   @override
-  bool get volatile => !_destroyed;
+  bool get susceptible => !_destroyed;
 
   @override
   set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;

@@ -3,13 +3,17 @@ import 'package:flame/game.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/game/shared/traits.dart';
 
-mixin EnemyHitPoints on Component, HasContext {
+mixin EnemyHitPoints on Component, HasContext implements Hostile, Target {
+  bool mini_explosions_on_hit = true;
+
   double hit_time = 0;
   double hit_points = 10;
   double remaining = 10;
 
-  bool get volatile;
+  @override
+  bool get susceptible;
 
   NotifyingVector2 get position;
 
@@ -22,10 +26,11 @@ mixin EnemyHitPoints on Component, HasContext {
 
   void on_destroyed();
 
-  void on_hit() {
+  @override
+  void on_hit([double damage = 1]) {
     if (remaining > 0) remaining--;
     if (remaining == 0) on_destroyed();
-    decals.spawn(Decal.mini_explosion, position);
+    if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, position);
     hit_time += 0.05;
   }
 

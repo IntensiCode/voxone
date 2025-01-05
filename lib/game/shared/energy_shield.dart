@@ -16,7 +16,7 @@ class EnergyShield extends Trait implements Target {
   bool get susceptible => energy > 0.1;
 
   @override
-  void on_hit(double damage) {
+  void on_hit([double damage = 1]) {
     _on_hit();
     energy -= damage / 25;
     if (energy < 0) {

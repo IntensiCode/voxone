@@ -32,7 +32,7 @@ class SweepingMarauder extends PositionComponent with HasContext, Marauder, Enem
   final target_position = Vector2.zero();
 
   @override
-  bool get volatile => switch (state) {
+  bool get susceptible => switch (state) {
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,

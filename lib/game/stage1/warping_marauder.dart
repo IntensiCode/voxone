@@ -5,12 +5,11 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/stacked_sprite.dart';
@@ -30,7 +29,7 @@ class WarpingMarauder extends PositionComponent with HasContext, HasPaint, Marau
   final target_position = Vector2.zero();
 
   @override
-  bool get volatile => switch (state) {
+  bool get susceptible => switch (state) {
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,
@@ -45,12 +44,6 @@ class WarpingMarauder extends PositionComponent with HasContext, HasPaint, Marau
     if (state == MarauderState.exploding) return;
     state = MarauderState.exploding;
     _entity.add(EnemyExplosion());
-  }
-
-  @override
-  void on_hit() {
-    super.on_hit();
-    decals.spawn(Decal.mini_explosion, position);
   }
 
   @override

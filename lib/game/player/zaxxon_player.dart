@@ -44,7 +44,7 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
   bool get susceptible => true;
 
   @override
-  void on_hit(double damage) {
+  void on_hit([double damage = 1]) {
     integrity -= damage / 50;
     if (integrity < 0) integrity = 0;
   }

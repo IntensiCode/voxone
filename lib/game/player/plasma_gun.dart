@@ -73,16 +73,16 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (other case EnemyHitPoints it) {
-      if (it.volatile) {
+      if (it.susceptible) {
         it.on_hit();
         removeFromParent();
       }
     }
-    if (other is MarauderShot) {
-      removeFromParent();
-      other.removeFromParent();
-
-      soundboard.play(Sound.teleport, volume_factor: 0.1);
-    }
+    // if (other is MarauderShot) {
+    //   removeFromParent();
+    //   other.removeFromParent();
+    //
+    //   soundboard.play(Sound.teleport, volume_factor: 0.1);
+    // }
   }
 }
