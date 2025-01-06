@@ -3,14 +3,15 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
+import 'package:voxone/core/atlas.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/fonts.dart';
-import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/nine_patch_image.dart';
 import 'package:voxone/util/shortcuts.dart';
 
-Future<BitmapButton> button({
+BitmapButton button({
   Sprite? bgNinePatch,
   required String text,
   int cornerSize = 8,
@@ -22,9 +23,9 @@ Future<BitmapButton> button({
   double fontScale = 1,
   Color? tint,
   required Function(BitmapButton) onTap,
-}) async =>
+}) =>
     BitmapButton(
-      bg_nine_patch: bgNinePatch ?? await sprite('button_plain.png'),
+      bg_nine_patch: bgNinePatch ?? atlas.sprite('button_plain.png'),
       text: text,
       cornerSize: cornerSize,
       position: position,
@@ -47,6 +48,8 @@ class BitmapButton extends PositionComponent
   final int cornerSize;
   final Function(BitmapButton) onTap;
   final List<String> shortcuts;
+
+  bool snapshot = true;
 
   BitmapButton({
     Sprite? bg_nine_patch,
@@ -85,8 +88,25 @@ class BitmapButton extends PositionComponent
     onKeys(shortcuts, () => onTap(this));
   }
 
+  Image? _snapshot;
+
   @override
   render(Canvas canvas) {
+    if (snapshot) {
+      if (_snapshot == null) {
+        final recorder = PictureRecorder();
+        _render(Canvas(recorder), pixel_paint());
+        final picture = recorder.endRecording();
+        _snapshot = picture.toImageSync(size.x.round(), size.y.round());
+        picture.dispose();
+      }
+      canvas.drawImage(_snapshot!, Offset.zero, paint);
+    } else {
+      _render(canvas, paint);
+    }
+  }
+
+  void _render(Canvas canvas, Paint paint) {
     background?.draw(canvas, 0, 0, size.x, size.y, paint);
 
     font.scale = font_scale;

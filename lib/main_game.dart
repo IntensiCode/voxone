@@ -54,11 +54,12 @@ class MainGame extends FlameGame<MainController>
   @override
   Future onLoad() async {
     super.onLoad();
+
+    atlas = await game.loadTextureAtlas();
+
     await add(soundboard);
     await add(music_score);
     await loadFonts(assets);
-
-    atlas = await game.loadTextureAtlas();
   }
 
   @override
