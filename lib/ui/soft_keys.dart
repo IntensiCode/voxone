@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/extensions.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
@@ -12,7 +12,7 @@ import 'package:voxone/util/game_script_functions.dart';
 import 'package:voxone/util/nine_patch_image.dart';
 
 extension GameScriptFunctionsExtension on GameScriptFunctions {
-  Future<SoftKeys> softkeys(
+  SoftKeys softkeys(
     String? left,
     String? right,
     Function(SoftKey) onTap, {
@@ -21,8 +21,8 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
     bool at_top = false,
     bool insets = true,
     bool shortcuts = true,
-  }) async =>
-      added(await SoftKeys.soft(
+  }) =>
+      added(SoftKeys.soft(
         left: left,
         right: right,
         font: font,
@@ -33,7 +33,7 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
         shortcuts: shortcuts,
       ));
 
-  Future<SoftKeys> softkeys_plain(
+  SoftKeys softkeys_plain(
     String? left,
     String? right,
     Function(SoftKey) onTap, {
@@ -42,8 +42,8 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
     bool at_top = false,
     bool insets = false,
     bool shortcuts = true,
-  }) async =>
-      added(await SoftKeys.plain(
+  }) =>
+      added(SoftKeys.plain(
         left: left,
         right: right,
         onTap: onTap,
@@ -56,13 +56,13 @@ enum SoftKey {
 }
 
 class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasGameKeys {
-  static Future<SoftKeys> plain({
+  static SoftKeys plain({
     String? left,
     String? right,
     required Function(SoftKey) onTap,
-  }) async =>
+  }) =>
       SoftKeys(
-        image: await images.load('button_plain.png'),
+        image: atlas.sprite('button_plain.png'),
         font: tiny_font,
         left: left,
         right: right,
@@ -70,7 +70,7 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
         image_size: false,
       );
 
-  static Future<SoftKeys> soft({
+  static SoftKeys soft({
     String? left,
     String? right,
     BitmapFont? font,
@@ -79,9 +79,9 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
     bool at_top = false,
     bool insets = true,
     bool shortcuts = true,
-  }) async =>
+  }) =>
       SoftKeys(
-        image: await images.load('button_soft.png'),
+        image: atlas.sprite('button_soft.png'),
         font: font ?? tiny_font,
         font_scale: font_scale,
         left: left,
@@ -97,7 +97,7 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
 
   SoftKeys({
     Vector2? insets,
-    required Image image,
+    required Sprite image,
     required BitmapFont font,
     required this.on_tap,
     String? left,
@@ -147,7 +147,7 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
 }
 
 class SoftKeyButton extends PositionComponent with TapCallbacks {
-  final Image _image;
+  final Sprite _image;
   final BitmapFont _font;
   final Vector2 _padding;
   final double _font_scale;
@@ -177,11 +177,11 @@ class SoftKeyButton extends PositionComponent with TapCallbacks {
     this.size.setFrom(bg.size);
   }
 
-  PositionComponent _background(Image image, Vector2? size) {
-    if (size == null || size == image.size) {
-      return added(SpriteComponent(sprite: Sprite(image)));
+  PositionComponent _background(Sprite image, Vector2? size) {
+    if (size == null || size == image.srcSize) {
+      return added(SpriteComponent(sprite: image));
     } else {
-      return added(NinePatchComponent(image: Sprite(image), size: size));
+      return added(NinePatchComponent(image: image, size: size));
     }
   }
 
