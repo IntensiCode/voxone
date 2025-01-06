@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
-import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';

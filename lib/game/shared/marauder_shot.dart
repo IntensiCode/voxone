@@ -7,9 +7,9 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/util/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 
 class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints {
   static const _inner = Color(0xFFa0ffa0);

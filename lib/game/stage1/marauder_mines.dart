@@ -12,12 +12,12 @@ import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/util/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 
 extension HasContextExtensions on HasContext {
   MarauderMines get mines => cache.putIfAbsent('mines', () => MarauderMines());
