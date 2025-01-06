@@ -1,74 +1,32 @@
-import 'dart:ui';
-
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 class StackedEntity extends PositionComponent {
-  final Shadows _shadows;
-
   StackedEntity.image(Image image, int frames, this._shadows) {
     anchor = Anchor.center;
-    _shadow = StackedSprite.image(image, frames, highlight_mode: HighlightMode.shadow);
     sprite = StackedSprite.image(image, frames, highlight_mode: HighlightMode.none);
-    size.addListener(() {
-      _update_shadow();
-      sprite.size.setFrom(this.size);
-    });
-    scale.addListener(() {
-      _update_shadow();
-    });
-    position.addListener(() {
-      _update_shadow();
-    });
+    size.addListener(() => sprite.size.setFrom(this.size));
     add(sprite);
   }
 
   StackedEntity(String asset, int frames, this._shadows) {
     anchor = Anchor.center;
-    _shadow = StackedSprite(asset, frames, highlight_mode: HighlightMode.shadow);
     sprite = StackedSprite(asset, frames, highlight_mode: HighlightMode.none);
-    size.addListener(() {
-      _update_shadow();
-      sprite.size.setFrom(this.size);
-    });
-    scale.addListener(() {
-      _update_shadow();
-    });
-    position.addListener(() {
-      _update_shadow();
-    });
+    size.addListener(() => sprite.size.setFrom(this.size));
     add(sprite);
   }
 
-  set shadow(bool value) => _shadow.isVisible = value;
-
-  void _update_shadow() {
-    _shadow.anchor = Anchor.center;
-    _shadow.size.setFrom(this.size);
-    _shadow.scale.setFrom(scale);
-    _shadow.position.setFrom(position);
-    _shadow.x += 25;
-    _shadow.y += 50;
-  }
-
+  final Shadows _shadows;
   late final StackedSprite sprite;
-  late final StackedSprite _shadow;
+  late final _Shadow _shadow;
 
-  set scale_x(double value) {
-    sprite.scale_x = value;
-    _shadow.scale_x = value;
-  }
+  set scale_x(double value) => sprite.scale_x = value;
 
-  set scale_y(double value) {
-    sprite.scale_y = value;
-    _shadow.scale_y = value;
-  }
+  set scale_y(double value) => sprite.scale_y = value;
 
-  set scale_z(double value) {
-    sprite.scale_z = value;
-    _shadow.scale_z = value;
-  }
+  set scale_z(double value) => sprite.scale_z = value;
 
   double get rot_x => sprite.rot_x;
 
@@ -76,23 +34,33 @@ class StackedEntity extends PositionComponent {
 
   double get rot_z => sprite.rot_z;
 
-  set rot_x(double value) {
-    sprite.rot_x = value;
-    _shadow.rot_x = value;
-  }
+  set rot_x(double value) => sprite.rot_x = value;
 
-  set rot_y(double value) {
-    sprite.rot_y = value;
-    _shadow.rot_y = value;
-  }
+  set rot_y(double value) => sprite.rot_y = value;
 
-  set rot_z(double value) {
-    sprite.rot_z = value;
-    _shadow.rot_z = value;
-  }
+  set rot_z(double value) => sprite.rot_z = value;
 
   @override
-  Future onLoad() async {
-    await _shadows.add(_shadow);
+  onLoad() {
+    _shadow = _Shadow(this);
+    _shadows.add(_shadow);
+  }
+}
+
+class _Shadow extends Component with HasVisibility {
+  _Shadow(this._entity);
+
+  final StackedEntity _entity;
+
+  @override
+  void render(Canvas canvas) {
+    if (_entity.parent is! PositionComponent) return;
+
+    final pp = (_entity.parent as PositionComponent);
+    canvas.save();
+    canvas.translate(pp.x, pp.y);
+    canvas.scaleVector(pp.scale);
+    _entity.sprite.renderShadow(canvas);
+    canvas.restore();
   }
 }

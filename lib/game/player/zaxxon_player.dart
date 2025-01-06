@@ -61,7 +61,7 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
     _entity.scale_x = 1.2;
     _entity.scale_y = 2.5;
     _entity.scale_z = 1.2;
-    _entity.scale.setAll(0.3);
+    scale.setAll(0.3);
     _entity.size.setAll(256);
     position.setValues(100, 280);
 
@@ -128,7 +128,7 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
       state = PlayerState.playing;
       sendMessage(PlayerReady());
     }
-    _entity.scale.setAll(0.3);
+    scale.setAll(0.3);
     _entity.size.setAll(256);
 
     final i = Curves.easeOut.transform(_incoming_time);

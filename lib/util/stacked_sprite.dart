@@ -39,6 +39,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   FragmentShader? _shader;
   late final Uniforms _uniforms;
   late final Paint _paint;
+  late final Paint _shadow;
 
   final _x_rot_mat = Matrix3.identity();
   final _y_rot_mat = Matrix3.identity();
@@ -84,6 +85,9 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
     _paint = pixel_paint();
     _paint.shader = _shader;
+
+    _shadow = pixel_paint();
+    _shadow.colorFilter = ColorFilter.mode(Color(0x80000000), BlendMode.srcIn);
   }
 
   @override
@@ -136,11 +140,28 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _rect.bottom = height;
     c.drawRect(_rect, _paint);
 
+    _last?.dispose();
     final picture = recorder.endRecording();
-    final image = picture.toImageSync(width.toInt(), height.toInt());
-    canvas.drawImage(image, Offset.zero, paint);
-    image.dispose();
+    _last = picture.toImageSync(width.toInt(), height.toInt());
+    canvas.drawImage(_last!, Offset.zero, paint);
     picture.dispose();
+
+    _src ??= Rect.fromLTWH(0, 0, width, height);
+    _dst ??= MutRect(0, 0, width, height);
+  }
+
+  Image? _last;
+  Rect? _src;
+  MutRect? _dst;
+
+  void renderShadow(Canvas canvas) {
+    if (_last == null) return;
+
+    paint.colorFilter = _shadow.colorFilter;
+    _dst!.right = width / scale.x;
+    _dst!.bottom = height / scale.y;
+    canvas.drawImageRect(_last!, _src!, _dst!, paint);
+    paint.colorFilter = null;
   }
 }
 
