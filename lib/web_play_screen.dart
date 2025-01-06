@@ -1,10 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
+import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_button.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/fonts.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {

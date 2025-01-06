@@ -1,10 +1,10 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
+import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/fonts.dart';
 import 'package:voxone/util/nine_patch_image.dart';
 import 'package:voxone/util/shortcuts.dart';
 
