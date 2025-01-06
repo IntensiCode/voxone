@@ -93,6 +93,7 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
     await add(weapon!);
 
     final shield = DeflectorShield(this);
+    shield.scale.setAll(4);
     shield.addTrait(Friendly());
     await add(shield);
     addTrait(shield);

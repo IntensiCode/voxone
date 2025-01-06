@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/mut_rect.dart';
 import 'package:voxone/util/uniforms.dart';
@@ -17,7 +18,14 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     paint.filterQuality = FilterQuality.none;
   }
 
-  StackedSprite.image(this._image, this._frames, {this.highlight_mode = HighlightMode.none}) : _asset = null {
+  StackedSprite.image(Image image, this._frames, {this.highlight_mode = HighlightMode.none})
+      : _asset = null,
+        _sprite = Sprite(image) {
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
+  }
+
+  StackedSprite.sprite(this._sprite, this._frames, {this.highlight_mode = HighlightMode.none}) : _asset = null {
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
   }
@@ -27,7 +35,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   final _rect = MutRect(0, 0, 0, 0);
 
-  late final Image _image;
+  late final Sprite _sprite;
   FragmentShader? _shader;
   late final Uniforms _uniforms;
   late final Paint _paint;
@@ -57,18 +65,22 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   Future onLoad() async {
     super.onLoad();
 
-    if (_asset != null) _image = await images.load(_asset);
+    if (_asset != null) _sprite = atlas.sprite(_asset);
 
     final program = await FragmentProgram.fromAsset('assets/shaders/voxel.frag');
     _shader = program.fragmentShader();
-    _shader!.setImageSampler(0, _image);
-
     _uniforms = Uniforms(_shader!, _Uniform.values);
     _uniforms.set(_Uniform.scr_x, 0);
     _uniforms.set(_Uniform.scr_y, 0);
-    _uniforms.set(_Uniform.frame_width, _image.width.toDouble());
-    _uniforms.set(_Uniform.frame_height, _image.height / _frames);
+    _uniforms.set(_Uniform.tex_width, _sprite.image.width.toDouble());
+    _uniforms.set(_Uniform.tex_height, _sprite.image.height.toDouble());
+    _uniforms.set(_Uniform.frame_x, _sprite.srcPosition.x / _sprite.image.width);
+    _uniforms.set(_Uniform.frame_y, _sprite.srcPosition.y / _sprite.image.height);
+    _uniforms.set(_Uniform.frame_width, _sprite.srcSize.x);
+    _uniforms.set(_Uniform.frame_height, _sprite.srcSize.y / _frames);
     _uniforms.set(_Uniform.frames, _frames.toDouble());
+
+    _shader!.setImageSampler(0, _sprite.image);
 
     _paint = pixel_paint();
     _paint.shader = _shader;
@@ -137,6 +149,10 @@ enum _Uniform {
   scr_y,
   scr_width,
   scr_height,
+  tex_width,
+  tex_height,
+  frame_x,
+  frame_y,
   frame_width,
   frame_height,
   frames,

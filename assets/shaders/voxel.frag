@@ -8,6 +8,8 @@ uniform sampler2D iImage;
 
 uniform vec2 iScrOffset;
 uniform vec2 iScrSize;
+uniform vec2 iTexSize;
+uniform vec2 iFrameOffset;
 uniform vec2 iFrameSize;
 uniform float iFrames;
 uniform vec3 iScale;
@@ -57,6 +59,11 @@ vec4 tex3D(vec3 pos, vec2 uv) {
     //    d -= fract(d);
     //    d /= iFrameSize.y;
     xy.y += d / iFrames;
+
+    xy.x /= iTexSize.x / iFrameSize.x;
+    xy.y /= iTexSize.y / iFrameSize.y / iFrames;
+    xy.x += iFrameOffset.x;
+    xy.y += iFrameOffset.y;
 
     return texture(iImage, xy);
 }
