@@ -35,7 +35,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   final _rect = MutRect(0, 0, 0, 0);
 
-  late final Sprite _sprite;
+  late Sprite _sprite;
   FragmentShader? _shader;
   late final Uniforms _uniforms;
   late final Paint _paint;
@@ -59,6 +59,18 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   double rot_z = 0;
 
   HighlightMode highlight_mode;
+
+  void change_sprite(Sprite sprite) {
+    _sprite = sprite;
+    _uniforms.set(_Uniform.tex_width, _sprite.image.width.toDouble());
+    _uniforms.set(_Uniform.tex_height, _sprite.image.height.toDouble());
+    _uniforms.set(_Uniform.frame_x, _sprite.srcPosition.x / _sprite.image.width);
+    _uniforms.set(_Uniform.frame_y, _sprite.srcPosition.y / _sprite.image.height);
+    _uniforms.set(_Uniform.frame_width, _sprite.srcSize.x);
+    _uniforms.set(_Uniform.frame_height, _sprite.srcSize.y / _frames);
+
+    _shader!.setImageSampler(0, _sprite.image);
+  }
 
   void change_image(Image image) => _shader?.setImageSampler(0, image);
 
