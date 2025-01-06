@@ -44,8 +44,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
     textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
 
-    final button = atlas.sprite('button_plain.png');
-    add_button(button, 'Audio', game_width - 16, 16, Anchor.topRight, () => pushScreen(Screen.audio));
+    buttonIXY('Audio', game_width - 16, 16, Anchor.topRight, onTap: () => pushScreen(Screen.audio));
   }
 
   @override

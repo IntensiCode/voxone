@@ -9,7 +9,7 @@ import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
 extension HasContextExtensions on HasContext {
-  Decals get decals => cache.putIfAbsent('decals', () => Decals()) as Decals;
+  Decals get decals => cache.putIfAbsent('decals', () => Decals());
 }
 
 enum Decal {
@@ -22,8 +22,6 @@ enum Decal {
 
   final double anim_time;
 }
-
-// TODO all these should be pooled... bullets, too, ofc.. and atlas instead... but for now this is just fine...
 
 class DecalObj {
   DecalObj(this.position);
@@ -68,10 +66,10 @@ class Decals extends Component {
   }
 
   @override
-  onLoad() async {
-    _explosions = await sheetI('explosions.png', 7, 8);
-    _teleport = await animCR('teleport.png', 5, 1);
-    _nuke = await animCR('explosion.png', 14, 1);
+  onLoad() {
+    _explosions = sheetI('explosions.png', 7, 8);
+    _teleport = animCR('teleport.png', 5, 1);
+    _nuke = animCR('explosion.png', 14, 1);
   }
 
   @override

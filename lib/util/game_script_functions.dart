@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:voxone/core/common.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_button.dart';
@@ -20,26 +19,23 @@ import 'package:voxone/util/functions.dart';
 // should be replaced by what you need for your game.
 
 mixin GameScriptFunctions on Component, AutoDispose {
-  Future<BitmapButton> add_button(
-    Sprite bg,
+  BitmapButton buttonIXY(
     String text,
     double x,
     double y,
-    Anchor anchor,
-    Function() onTap,
-  ) async {
-    final it = BitmapButton(
-      bg_nine_patch: bg,
-      text: text,
-      font: menu_font,
-      font_scale: 0.5,
-      position: Vector2(x, y),
-      anchor: anchor,
-      onTap: (_) => onTap(),
-    );
-    await add(it);
-    return it;
-  }
+    Anchor anchor, {
+    Sprite? bg,
+    required Function() onTap,
+  }) =>
+      added(BitmapButton(
+        bg_nine_patch: bg ?? atlas.sprite('button_plain.png'),
+        text: text,
+        font: menu_font,
+        font_scale: 0.5,
+        position: Vector2(x, y),
+        anchor: anchor,
+        onTap: (_) => onTap(),
+      ));
 
   void clearByType(List types) {
     final what = types.isEmpty ? children : children.where((it) => types.contains(it.runtimeType));
@@ -69,24 +65,21 @@ mixin GameScriptFunctions on Component, AutoDispose {
     fontScale = scale;
   }
 
-  Future<SpriteComponent> sprite({
+  SpriteComponent sprite({
     required String filename,
     Vector2? position,
     Anchor? anchor,
-  }) async =>
-      added(await sprite_comp(filename, position: position, anchor: anchor));
+  }) =>
+      added(sprite_comp(filename, position: position, anchor: anchor));
 
-  Future<SpriteComponent> spriteSXY(Sprite sprite, double x, double y, [Anchor anchor = Anchor.center]) async {
-    final it = SpriteComponent(sprite: sprite, position: Vector2(x, y), anchor: anchor);
-    await add(it);
-    return it;
-  }
+  SpriteComponent spriteSXY(Sprite sprite, double x, double y, [Anchor anchor = Anchor.center]) =>
+      added(SpriteComponent(sprite: sprite, position: Vector2(x, y), anchor: anchor));
 
   SpriteComponent spriteIXY(Image image, double x, double y, [Anchor anchor = Anchor.center]) =>
       added(SpriteComponent(sprite: Sprite(image), position: Vector2(x, y), anchor: anchor));
 
-  Future<SpriteComponent> spriteXY(String filename, double x, double y, [Anchor anchor = Anchor.center]) async =>
-      added(await sprite_comp(filename, position: Vector2(x, y), anchor: anchor));
+  SpriteComponent spriteXY(String filename, double x, double y, [Anchor anchor = Anchor.center]) =>
+      added(sprite_comp(filename, position: Vector2(x, y), anchor: anchor));
 
   void fadeInByType<T extends Component>([bool reset = false]) async {
     children.whereType<T>().forEach((it) => it.fadeInDeep(restart: reset));
@@ -102,7 +95,7 @@ mixin GameScriptFunctions on Component, AutoDispose {
     }
   }
 
-  Future<SpriteAnimationComponent> makeAnimCRXY(
+  SpriteAnimationComponent makeAnimCRXY(
     String filename,
     int columns,
     int rows,
@@ -111,8 +104,8 @@ mixin GameScriptFunctions on Component, AutoDispose {
     Anchor anchor = Anchor.center,
     bool loop = true,
     double stepTime = 0.1,
-  }) async {
-    final animation = await animCR(filename, columns, rows, stepTime, loop);
+  }) {
+    final animation = animCR(filename, columns, rows, stepTime, loop);
     return makeAnim(animation, Vector2(x, y), anchor);
   }
 
@@ -126,7 +119,7 @@ mixin GameScriptFunctions on Component, AutoDispose {
         anchor: anchor,
       ));
 
-  Future<BitmapButton> menuButtonXY(
+  BitmapButton menuButtonXY(
     String text,
     double x,
     double y, [
@@ -137,14 +130,14 @@ mixin GameScriptFunctions on Component, AutoDispose {
     return menuButton(text: text, pos: Vector2(x, y), anchor: anchor, bgNinePatch: bgNinePatch, onTap: onTap);
   }
 
-  Future<BitmapButton> menuButton({
+  BitmapButton menuButton({
     required String text,
     Vector2? pos,
     Anchor? anchor,
     String? bgNinePatch,
     void Function(BitmapButton)? onTap,
-  }) async {
-    final button = Sprite(await images.load(bgNinePatch ?? 'button_plain.png'));
+  }) {
+    final button = atlas.sprite(bgNinePatch ?? 'button_plain.png');
     final it = BitmapButton(
       bg_nine_patch: button,
       text: text,
