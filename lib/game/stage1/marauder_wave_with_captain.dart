@@ -18,9 +18,13 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
   final _wave = List<Marauder>.empty(growable: true);
 
   @override
-  onLoad() async {
+  void onLoad() {
+    can_sweep = true;
+
     at(delay, () => sendMessage(ShowInfoText(text: 'Enemy Wave Incoming')));
-    if (!dev) at(3.0, () {});
+
+    if (!dev) pause(info_time);
+
     marauders_in_wave.forEach((idx) {
       at(0.5, () {
         final it = WarpingMarauder();
@@ -41,9 +45,6 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
 
   @override
   void update(double dt) {
-    if (_wave.length >= enemies_in_wave) {
-      defeated = _wave.every((it) => it.defeated);
-      return;
-    }
+    defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
   }
 }

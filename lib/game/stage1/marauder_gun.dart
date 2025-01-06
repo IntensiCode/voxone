@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/marauder_shot.dart';
+import 'package:voxone/game/stage1/marauder_shot.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';

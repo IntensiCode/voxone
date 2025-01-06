@@ -102,12 +102,6 @@ extension ListExtensions<T> on List<T> {
   List<T> operator -(List<T> other) => whereNot((it) => other.contains(it)).toList();
 }
 
-extension RandomExtensions on Random {
-  double nextDoubleLimit(double limit) => nextDouble() * limit;
-
-  double nextDoublePM(double limit) => (nextDouble() - nextDouble()) * limit;
-}
-
 extension FragmentShaderExtensions on FragmentShader {
   setVec4(int index, Color color) {
     final r = color.r / 255 * color.a;

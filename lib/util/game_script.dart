@@ -16,6 +16,8 @@ mixin GameScript on GameScriptFunctions {
     script = [];
   }
 
+  void pause(double deltaSeconds) => at(deltaSeconds, () {});
+
   void at(double deltaSeconds, Function() execute) {
     script.add(() async {
       final millis = (deltaSeconds * 1000).toInt();

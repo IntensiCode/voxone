@@ -1,54 +1,41 @@
 import 'dart:math';
 
-import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
+import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/sweeping_marauder.dart';
+import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
 
-class MarauderWave extends Component with EnemyWave, HasContext {
+class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 8;
 
-  MarauderWave() {
-    SweepingMarauder.can_sweep = true;
-  }
+  final _wave = List<Marauder>.empty(growable: true);
 
-  bool _info_shown = false;
-  bool _active = false;
-  double _next_time = 0;
+  @override
+  void onLoad() {
+    can_sweep = true;
+
+    at(delay, () => sendMessage(ShowInfoText(text: 'Enemy Wave Incoming')));
+
+    if (!dev) pause(info_time);
+
+    enemies_in_wave.forEach((idx) {
+      at(0.5, () {
+        final it = SweepingMarauder();
+        it.target_position.x = 600 + sin(_wave.length * 2 * pi / enemies_in_wave) * 100;
+        it.target_position.y = 160 + cos(_wave.length * 2 * pi / enemies_in_wave) * 100;
+        _wave.add(it);
+        stage.add(it);
+      });
+    });
+  }
 
   @override
   void update(double dt) {
-    if (delay > 0) {
-      delay -= dt;
-      return;
-    }
-    if (!_info_shown) {
-      sendMessage(ShowInfoText(text: 'Enemy Wave Incoming', when_done: () => _active = true));
-      _info_shown = true;
-      if (dev) _active = true;
-    }
-    if (!_active) {
-      return;
-    }
-    if (_wave.length >= enemies_in_wave) {
-      defeated = _wave.every((it) => it.defeated);
-      return;
-    }
-    if (_next_time > 0) {
-      _next_time -= dt;
-      return;
-    }
-    _next_time = 0.5;
-
-    final it = SweepingMarauder();
-    it.target_position.x = 600 + sin(_wave.length * 2 * pi / enemies_in_wave) * 100;
-    it.target_position.y = 160 + cos(_wave.length * 2 * pi / enemies_in_wave) * 100;
-    _wave.add(it);
-    stage.add(it);
+    defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
   }
-
-  final _wave = List<SweepingMarauder>.empty(growable: true);
 }
