@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 
 class StackedEntity extends PositionComponent {
   final Shadows _shadows;

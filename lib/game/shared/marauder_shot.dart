@@ -7,7 +7,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 

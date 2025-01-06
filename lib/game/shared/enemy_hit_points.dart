@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 import 'package:voxone/game/shared/traits.dart';
 
 mixin EnemyHitPoints on Component, HasContext implements Hostile, Target {

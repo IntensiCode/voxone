@@ -13,7 +13,7 @@ import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/game/shared/stacked_sprite.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
