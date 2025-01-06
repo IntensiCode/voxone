@@ -110,13 +110,13 @@ extension RandomExtensions on Random {
 
 extension FragmentShaderExtensions on FragmentShader {
   setVec4(int index, Color color) {
-    final r = color.red / 255 * color.opacity;
-    final g = color.green / 255 * color.opacity;
-    final b = color.blue / 255 * color.opacity;
+    final r = color.r / 255 * color.a;
+    final g = color.g / 255 * color.a;
+    final b = color.b / 255 * color.a;
     setFloat(index + 0, r);
     setFloat(index + 1, g);
     setFloat(index + 2, b);
-    setFloat(index + 3, color.opacity);
+    setFloat(index + 3, color.a);
   }
 }
 
@@ -129,7 +129,7 @@ extension IntExtensions on int {
 }
 
 extension PaintExtensions on Paint {
-  double get opacity => color.opacity;
+  double get opacity => color.a;
 
   set opacity(double progress) {
     color = Color.fromARGB((255 * progress).toInt(), 255, 255, 255);

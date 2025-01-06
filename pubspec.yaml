@@ -32,6 +32,7 @@ dependencies:
   stream_transform: ^2.1.0
   supercharged: ^2.1.1
   web: ^1.1.0
+  flame_texturepacker: ^4.1.4
 
 dev_dependencies:
   flutter_test:
