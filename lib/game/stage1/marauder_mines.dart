@@ -37,7 +37,7 @@ class MarauderMines extends Component with HasContext {
   @override
   onLoad() async {
     cache.putIfAbsent('mines_animation', () async {
-      final sheet = await sheetI('acid_bomb.png', 8, 2);
+      final sheet = sheetI('acid_bomb.png', 8, 2);
       return _make_animation(sheet);
     });
   }

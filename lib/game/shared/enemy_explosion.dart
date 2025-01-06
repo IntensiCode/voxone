@@ -18,7 +18,7 @@ class EnemyExplosion extends CircleComponent {
     _explosion ??= await loadShader('explosion.frag');
     _explosion!.setFloat(0, width);
     _explosion!.setFloat(1, height);
-    _anim ??= await animCR('explosion96.png', 12, 1, 0.1);
+    _anim ??= animCR('explosion96.png', 12, 1, 0.1);
     paint.color = white;
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;

@@ -85,7 +85,7 @@ class Extras extends Component with HasContext {
 
   @override
   onLoad() async {
-    _sheet = await sheetI('extras.png', 8, 4);
+    _sheet = sheetI('extras.png', 8, 4);
   }
 }
 
