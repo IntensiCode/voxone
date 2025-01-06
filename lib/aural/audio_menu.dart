@@ -4,13 +4,13 @@ import 'package:flame/extensions.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/aural/volume_component.dart';
 import 'package:voxone/background/space.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/game_script.dart';
 
 enum AudioMenuEntry {
@@ -39,46 +39,45 @@ class AudioMenu extends GameScriptComponent {
     textXY('Audio Mode', game_center.x, 20, scale: 2, anchor: Anchor.topCenter);
 
     // bg_nine_patch: atlas.image('button_plain.png'),
-    sprite('button_plain.png').then((button) {
-      add(_master = VolumeComponent(
-        bg_nine_patch: button,
-        label: 'Master Volume - / +',
-        position: Vector2(16, 46),
-        anchor: Anchor.topLeft,
-        size: Vector2(96 * 2, 32 * 2),
-        key_down: '-',
-        key_up: '+',
-        change: (volume) => soundboard.master = volume,
-        volume: () => soundboard.master,
-      ));
-      add(_music = VolumeComponent(
-        bg_nine_patch: button,
-        label: 'Music Volume [ / ]',
-        position: Vector2(16, 46 + 34 * 2),
-        anchor: Anchor.topLeft,
-        size: Vector2(96 * 2, 32 * 2),
-        key_down: '[',
-        key_up: ']',
-        change: (volume) => soundboard.music = volume,
-        volume: () => soundboard.music,
-      ));
-      add(_sound = VolumeComponent(
-        bg_nine_patch: button,
-        label: 'Sound Volume { / }',
-        position: Vector2(16, 46 + 34 * 4),
-        anchor: Anchor.topLeft,
-        size: Vector2(96 * 2, 32 * 2),
-        key_down: '{',
-        key_up: '}',
-        change: (volume) {
-          soundboard.sound = volume;
-          _make_sound();
-        },
-        volume: () => soundboard.sound,
-      ));
-    });
+    final button = atlas.sprite('button_plain.png');
+    add(_master = VolumeComponent(
+      bg_nine_patch: button,
+      label: 'Master Volume - / +',
+      position: Vector2(16, 46),
+      anchor: Anchor.topLeft,
+      size: Vector2(96 * 2, 32 * 2),
+      key_down: '-',
+      key_up: '+',
+      change: (volume) => soundboard.master = volume,
+      volume: () => soundboard.master,
+    ));
+    add(_music = VolumeComponent(
+      bg_nine_patch: button,
+      label: 'Music Volume [ / ]',
+      position: Vector2(16, 46 + 34 * 2),
+      anchor: Anchor.topLeft,
+      size: Vector2(96 * 2, 32 * 2),
+      key_down: '[',
+      key_up: ']',
+      change: (volume) => soundboard.music = volume,
+      volume: () => soundboard.music,
+    ));
+    add(_sound = VolumeComponent(
+      bg_nine_patch: button,
+      label: 'Sound Volume { / }',
+      position: Vector2(16, 46 + 34 * 4),
+      anchor: Anchor.topLeft,
+      size: Vector2(96 * 2, 32 * 2),
+      key_down: '{',
+      key_up: '}',
+      change: (volume) {
+        soundboard.sound = volume;
+        _make_sound();
+      },
+      volume: () => soundboard.sound,
+    ));
 
-    final buttonSheet = await sheetI('button_option.png', 1, 2);
+    final buttonSheet = atlas.sheetI('button_option.png', 1, 2);
     menu = added(BasicMenu<AudioMenuEntry>(
       button: buttonSheet,
       font: mini_font,
