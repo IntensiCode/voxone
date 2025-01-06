@@ -14,7 +14,6 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
@@ -82,7 +81,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
     entity.scale_z = 1.2;
-    entity.size.setAll(20);
+    entity.size.setAll(16);
 
     add(entity);
 
