@@ -24,21 +24,15 @@ class MarauderCaptain extends MarauderEntity
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding {
-//   @override
-//   void on_destroyed() {
-//     if (state == MarauderState.exploding) return;
-//     state = MarauderState.exploding;
-//     _entity.add(EnemyExplosion());
-//   }
-
+  //
   @override
   createEntity() async {
     reset_hit_points_to(40);
 
-    size.setAll(180);
+    size.setAll(256);
 
     entity = StackedEntity('entities/camo_stellar_jet.png', 16, shadows);
-    entity.size.setAll(256);
+    entity.size.setAll(512);
 
     entity.rot_x = -pi / 8;
     entity.rot_y = -pi / 2 + pi / 8;
