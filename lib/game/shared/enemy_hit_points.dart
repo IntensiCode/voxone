@@ -30,10 +30,11 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
   void on_destroyed();
 
   @override
-  void on_hit([double damage = 1]) {
+  void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     if (remaining > 0) remaining--;
     if (remaining == 0) on_destroyed();
-    if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, position);
+    final p = intersections?.firstOrNull ?? position;
+    if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, p);
     hit_time += 0.05;
   }
 

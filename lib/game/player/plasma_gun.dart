@@ -74,7 +74,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit();
+          it.on_hit(intersections: intersectionPoints);
           removeFromParent();
         }
       });

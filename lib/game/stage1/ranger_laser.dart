@@ -54,7 +54,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
 
     final target = result.hitbox?.parent;
     target?.onTraits<Target>((it) {
-      it.on_hit(0.1);
+      it.on_hit(damage: 0.1);
       if (_heard) return;
       _heard = true;
       soundboard.play(Sound.plasma, volume_factor: 0.1);

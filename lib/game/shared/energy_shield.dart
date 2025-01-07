@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flame/components.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -20,12 +21,12 @@ class EnergyShield extends Trait implements Target {
   bool get susceptible => _energy > 0.1;
 
   @override
-  void on_hit([double damage = 1]) {
+  void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     _on_hit();
     _energy -= damage / 25;
     if (_energy < 0) {
       double remaining = _energy.abs();
-      if (remaining > 0) _target.on_hit(remaining * 25);
+      if (remaining > 0) _target.on_hit(damage: remaining * 25);
     }
     _energy = max(0, _energy);
     if (damage >= 1) {

@@ -156,7 +156,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     other.onTraits<Target>((it) {
       if (!it.susceptible) return;
 
-      it.on_hit(10);
+      it.on_hit(damage: 10);
+
       position.x -= 10;
       position.y += 10 / 4;
       for (int i = 0; i < 5; i++) {
