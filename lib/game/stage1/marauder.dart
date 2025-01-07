@@ -66,7 +66,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   void on_destroyed() {
     if (state == MarauderState.exploding) return;
     state = MarauderState.exploding;
-    entity.add(EnemyExplosion());
+    entity.add(EnemyExplosion()..radius = entity.size.x / 2);
     if (sweep_time > 0) can_sweep = true;
     soundboard.play(Sound.explosion);
   }
