@@ -27,6 +27,13 @@ class MarauderCaptain extends MarauderEntity
         SpawnExtrasOnExploding {
   //
   @override
+  void createEntity() {
+    super.createEntity();
+    random_extras_count = 5;
+    required_extras = {ExtraId.triple_plasma};
+  }
+
+  @override
   void shield_added() {
     super.shield_added();
     shield.scale.setAll(6);
@@ -38,8 +45,6 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
   @override
   createEntity() async {
     reset_hit_points_to(40);
-    random_extras_count = 5;
-    required_extras = {ExtraId.triple_plasma};
 
     size.setAll(256);
 

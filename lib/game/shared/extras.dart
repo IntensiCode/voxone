@@ -30,7 +30,7 @@ class Extras extends Component with HasContext {
 
   final _animations = <ExtraId, List<Image>>{};
 
-  void spawn(Vector2 position, {required Set<ExtraId> choices}) {
+  void spawn(Vector2 position, {required Set<ExtraId> choices, int? index, int? count}) {
     final pick = _pick_power_up(choices);
     if (pick == null) return;
 
@@ -40,6 +40,13 @@ class Extras extends Component with HasContext {
     extra.which = pick;
     extra.position.setFrom(position);
     stage.add(extra);
+
+    if (index != null && count != null && count > 1) {
+      final angle = 2 * pi * index / count;
+      final distance = 32;
+      extra.position.x += cos(angle) * distance;
+      extra.position.y += sin(angle) * distance;
+    }
   }
 
   ExtraId? _pick_power_up(Set<ExtraId> allowed) {
@@ -108,7 +115,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
 
   late ExtraId which;
 
-  double _anim_time = 0;
+  double _anim_time = rng.nextDouble();
 
   @override
   void update(double dt) {

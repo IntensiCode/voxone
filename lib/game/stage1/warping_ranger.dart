@@ -20,7 +20,6 @@ class WarpingRanger extends MarauderEntity
         SpawnExtrasOnExploding {}
 
 mixin _CreateWarpingRangerEntity on MarauderEntity {
-  //
   @override
   createEntity() async {
     can_sweep = true;

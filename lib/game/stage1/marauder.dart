@@ -91,9 +91,6 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   double sweep_time = 0;
   double sweep_dist = 0;
   bool mine_planted = false;
-  int random_extras_count = 1;
-  Set<ExtraId> allowed_random_extras = ExtraId.restore;
-  Set<ExtraId>? required_extras;
 
   @override
   void update(double dt) {
@@ -333,22 +330,29 @@ mixin TumbleOnExploding on MarauderEntity {
 }
 
 mixin SpawnExtrasOnExploding on MarauderEntity {
-  bool extras_spawned = false;
+  int random_extras_count = 1;
+  Set<ExtraId> allowed_random_extras = ExtraId.restore;
+  Set<ExtraId>? required_extras;
+
+  bool _extras_spawned = false;
 
   @override
   void on_exploding(double dt) {
     super.on_exploding(dt);
 
-    if (leaving_time < 1 || extras_spawned) return;
+    if (leaving_time < 1 || _extras_spawned) return;
 
-    for (final e in required_extras ?? {}) {
-      extras.spawn(position, choices: {e});
+    final required = required_extras ?? {};
+    final all_count = required.length + random_extras_count;
+    var index = 0;
+    for (final e in required) {
+      extras.spawn(position, choices: {e}, index: index++, count: all_count);
     }
     random_extras_count.forEach((_) {
-      extras.spawn(position, choices: allowed_random_extras);
+      extras.spawn(position, choices: allowed_random_extras, index: index++, count: all_count);
     });
 
-    extras_spawned = true;
+    _extras_spawned = true;
   }
 }
 
