@@ -53,18 +53,36 @@ class MarauderCaptain extends MarauderEntity
 }
 
 mixin _AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
+  Component? _shield;
+  Component? _health_bar;
+
   @override
   void on_incoming(double dt) {
     super.on_incoming(dt);
 
     if (incoming_time < 1) return;
 
-    final shield = DeflectorShield(this);
+    final shield = _shield = DeflectorShield(this);
     shield.scale.setAll(6);
-    shield.auto_recharge = null;
+    shield.auto_recharge = 0.05;
     shield.addTrait(Hostile());
     add(shield);
     addTrait(shield);
+
+    entity.add(_health_bar = EnemyHealthBar(shield)
+      ..anchor = Anchor.topLeft
+      ..position.setValues(0, -64));
+  }
+
+  @override
+  void on_destroyed() {
+    super.on_destroyed();
+    if (state.is_inactive && _shield != null) {
+      _shield?.removeFromParent();
+      _shield = null;
+      _health_bar?.removeFromParent();
+      _health_bar = null;
+    }
   }
 }
 

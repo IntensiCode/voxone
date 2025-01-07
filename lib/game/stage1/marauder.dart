@@ -38,6 +38,9 @@ enum MarauderState {
   left,
   exploding,
   defeated,
+  ;
+
+  bool get is_inactive => [defeated, exploding, leaving, left].contains(this);
 }
 
 abstract class MarauderEntity extends PositionComponent with HasContext, Marauder, EnemyHitPoints {
