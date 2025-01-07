@@ -53,6 +53,23 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
   @override
   void on_collect_extra(ExtraId which) {
     logInfo('collect extra $which');
+    switch (which) {
+      case ExtraId.full_integrity:
+        info('Integrity restored', hud: true);
+        integrity = 1;
+        break;
+      case ExtraId.integrity:
+        info('Integrity boost', hud: true);
+        integrity = min(1, integrity + 0.25);
+        break;
+      case ExtraId.shield:
+        info('Shield boost', hud: true);
+        onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
+        break;
+      case ExtraId.triple_plasma:
+        info('Triple Plasma', hud: true);
+        logWarn('triple plasma not implemented');
+    }
   }
 
   @override

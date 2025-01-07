@@ -34,7 +34,6 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
         logInfo("Skip wave");
         _active_wave?.defeated = true;
         _active_wave?.removeFromParent();
-        messaging.send(ClearInfoText());
         stage.children.whereType<Hostile>().forEach((it) => (it as Component).removeFromParent());
       });
     }
