@@ -60,7 +60,7 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
       ..opacity = 0.2
       ..renderShape = debug);
 
-    await add(RangerLaser(this)..damage = 1);
+    await add(RangerLaser(this)..damage = 0.3);
   }
 }
 
@@ -79,7 +79,7 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
 
   void _on_release_mine(double dt) {
     if (_mine_spawn_time <= 0) {
-      _mine_spawn_time = 0.5;
+      _mine_spawn_time = 0.75;
       mines.spawn(position).then((it) => it.drift = rng.nextDoublePM(40));
     } else {
       _mine_spawn_time -= dt;

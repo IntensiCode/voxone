@@ -193,7 +193,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
     if (incoming_time < 1) return;
 
     shield = DeflectorShield(this, shader_name: shader_name);
-    shield.auto_recharge = 0.05;
+    shield.auto_recharge = 0.01;
     shield.addTrait(Hostile());
     add(shield);
     addTrait(shield);
