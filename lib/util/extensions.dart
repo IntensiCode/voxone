@@ -158,3 +158,9 @@ extension SpriteSheetExtensions on SpriteSheet {
 
   Sprite by_progress(double progress) => getSpriteById(((columns - 1) * progress).toInt());
 }
+
+extension SetExtensions<T> on Set<T> {
+  T random(Random rng) => elementAt(rng.nextInt(length));
+
+  Set<T> operator +(T it) => <T>{...this, it};
+}

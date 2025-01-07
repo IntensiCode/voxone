@@ -9,6 +9,7 @@ import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -20,31 +21,6 @@ extension HasContextExtensions on HasContext {
   Extras get extras => cache.putIfAbsent('extras', () => Extras());
 }
 
-enum ExtraId {
-  triple_plasma(8, when_random: true),
-  acid_blast(9, when_random: true),
-  ion_pulse(10, when_random: true),
-  phosphor_swirl(11, when_random: true),
-  yin_yang(12, when_random: true),
-  plasma_ring(13, when_random: true),
-  cluster_bomb(14, when_random: true),
-  nuke_missile(15, when_random: true),
-  health(16, when_random: true),
-  shield(17, when_random: true),
-  weapon(18, when_random: true),
-  full_health(19),
-  full_shield(20),
-  full_weapon(21),
-  full_clear(22),
-  half_clear(23),
-  ;
-
-  final int sheet_index;
-  final bool when_random;
-
-  const ExtraId(this.sheet_index, {this.when_random = false});
-}
-
 class Extras extends Component with HasContext {
   Extras() {
     priority = 10000;
@@ -54,13 +30,36 @@ class Extras extends Component with HasContext {
 
   final _animations = <ExtraId, List<Image>>{};
 
-  void spawn(Vector2 position) {
-    final which = ExtraId.values.random(rng);
-    final animation = _animations[which] ??= _make_animation(which);
+  void spawn(Vector2 position, {required Set<ExtraId> choices}) {
+    final pick = _pick_power_up(choices);
+    if (pick == null) return;
+
+    logInfo('picked $pick from $choices');
+    final animation = _animations[pick] ??= _make_animation(pick);
     final extra = _Extra(animation, shadows);
-    extra.which = which;
+    extra.which = pick;
     extra.position.setFrom(position);
     stage.add(extra);
+  }
+
+  ExtraId? _pick_power_up(Set<ExtraId> allowed) {
+    if (allowed.isEmpty) return null;
+
+    // pick random power up, based on probabilities in _extras:
+
+    final extras = <(ExtraId, double)>[];
+    var added_probability = 0.0;
+    for (final it in allowed) {
+      added_probability += it.probability;
+      extras.add((it, added_probability));
+    }
+
+    final all = extras.last.$2;
+    final pick = rng.nextDoubleLimit(all);
+    for (final it in extras) {
+      if (pick < it.$2) return it.$1;
+    }
+    throw 'oh really?';
   }
 
   List<Image> _make_animation(ExtraId which) {
@@ -72,9 +71,6 @@ class Extras extends Component with HasContext {
       for (int i = 0; i < 16; i++) {
         src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
       }
-      // final anim = _sheet.getSprite(0, a);
-      // anim.render(canvas, position: Vector2.zero());
-      // anim.render(canvas, position: Vector2(0, 240));
       final picture = recorder.endRecording();
       final image = picture.toImageSync(16, 256);
       picture.dispose();
@@ -118,13 +114,6 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
   void update(double dt) {
     super.update(dt);
     _anim_time += dt;
-
-    // if (_anim_time >= 1) _anim_time -= 1;
-    //
-    // final anim_frame = (_anim_time * (animation.length - 1)).toInt();
-    //
-    // entity.sprite.change_image(animation[anim_frame]);
-
     entity.rot_x = sin(_anim_time * 2 * pi) * pi / 4 + pi / 2;
     entity.rot_y = sin(_anim_time * 2 * pi * 0.24569) * pi / 8;
     entity.rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
@@ -141,7 +130,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     other.onTraits<Friendly>((it) {
       decals.spawn(Decal.teleport, position);
       removeFromParent();
-      logInfo('collect extra $which');
+      player.on_collect_extra(which);
     });
   }
 }

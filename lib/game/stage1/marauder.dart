@@ -12,6 +12,7 @@ import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
@@ -19,6 +20,7 @@ import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
@@ -89,7 +91,9 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   double sweep_time = 0;
   double sweep_dist = 0;
   bool mine_planted = false;
-  bool extra_spawned = false;
+  int random_extras_count = 1;
+  Set<ExtraId> allowed_random_extras = ExtraId.restore;
+  Set<ExtraId>? required_extras;
 
   @override
   void update(double dt) {
@@ -310,11 +314,20 @@ mixin SweepOutOnLeaving on MarauderEntity {
 }
 
 mixin TumbleOnExploding on MarauderEntity {
+  bool extra_spawned = false;
+
   @override
   void on_exploding(double dt) {
     leaving_time += dt;
     if (leaving_time >= 1) {
-      if (!extra_spawned) extras.spawn(position);
+      if (!extra_spawned) {
+        for (final e in required_extras ?? {}) {
+          extras.spawn(position, choices: {e});
+        }
+        random_extras_count.forEach((_) {
+          extras.spawn(position, choices: allowed_random_extras);
+        });
+      }
       extra_spawned = true;
     }
     if (leaving_time >= 2) {

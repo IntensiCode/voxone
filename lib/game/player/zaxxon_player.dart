@@ -9,6 +9,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
@@ -47,6 +48,11 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     integrity -= damage / 50;
     if (integrity < 0) integrity = 0;
+  }
+
+  @override
+  void on_collect_extra(ExtraId which) {
+    logInfo('collect extra $which');
   }
 
   @override

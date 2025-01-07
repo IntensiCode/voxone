@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
@@ -35,6 +36,8 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
   @override
   createEntity() async {
     reset_hit_points_to(40);
+    random_extras_count = 5;
+    required_extras = {ExtraId.triple_plasma};
 
     size.setAll(256);
 

@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/game.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 
 class Friendly {}
@@ -15,6 +16,8 @@ abstract interface class Player {
   NotifyingVector2 get position;
 
   double get integrity;
+
+  void on_collect_extra(ExtraId which);
 }
 
 abstract class Target {
