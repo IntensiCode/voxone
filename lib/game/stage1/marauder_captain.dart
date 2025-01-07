@@ -18,7 +18,7 @@ class MarauderCaptain extends MarauderEntity
         WarpInOnIncoming,
         AddShieldAfterOnIncoming,
         FloatOnActive,
-        _SpamMinesWhenAlone,
+        _ReleaseMinesWhenInDanger,
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding {
@@ -58,17 +58,20 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
   }
 }
 
-mixin _SpamMinesWhenAlone on MarauderEntity {
+mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
   bool get _last_remaining => stage.children.whereType<Marauder>().singleOrNull == this;
+
+  bool get _shield_low => shield.energy < 0.25;
 
   double _mine_spawn_time = 0;
 
   @override
   void on_active(double dt) {
     super.on_active(dt);
+    if (_last_remaining || _shield_low) _on_release_mine(dt);
+  }
 
-    if (!_last_remaining) return;
-
+  void _on_release_mine(double dt) {
     if (_mine_spawn_time <= 0) {
       _mine_spawn_time = 0.5;
       mines.spawn(position).then((it) => it.drift = rng.nextDoublePM(40));

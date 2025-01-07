@@ -41,6 +41,8 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   EnergyShield get shield => _shield ??= singleTrait<EnergyShield>();
 
+  double get energy => shield.energy;
+
   @override
   double get integrity_in_percent => shield.energy.clamp(0, 1) * 100;
 
