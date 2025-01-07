@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -223,7 +222,6 @@ mixin PlantMineOnSweeping on MarauderEntity {
 
     if (sweep_time >= 5 && !mine_planted) {
       mine_planted = true;
-      logInfo('plant mine');
       mines.spawn(position);
     }
 
