@@ -6,9 +6,7 @@ import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class EnemyExplosion extends CircleComponent {
-  EnemyExplosion() {
-    radius = 128;
-  }
+  EnemyExplosion();
 
   static FragmentShader? _explosion;
   static SpriteAnimation? _anim;
@@ -16,14 +14,25 @@ class EnemyExplosion extends CircleComponent {
   @override
   Future onLoad() async {
     _explosion ??= await loadShader('explosion.frag');
-    _explosion!.setFloat(0, width);
-    _explosion!.setFloat(1, height);
     _anim ??= animCR('explosion96.png', 12, 1, 0.1);
     paint.color = white;
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
     paint.shader = _explosion!;
     return super.onLoad();
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    final ppc = parent as PositionComponent;
+    radius = ppc.size.x / 2;
+    anchor = Anchor.center;
+    position.setFrom(ppc.position);
+    position.x += ppc.size.x / 2;
+    position.y += ppc.size.y / 2;
+    _explosion!.setFloat(0, width);
+    _explosion!.setFloat(1, height);
   }
 
   double _time = 0;
@@ -34,8 +43,16 @@ class EnemyExplosion extends CircleComponent {
     _explosion!.setFloat(2, _time / 2);
     _time += dt;
     if (_time >= 1 && !_added) {
-      add(SpriteAnimationComponent(animation: _anim!, removeOnFinish: true)..scale.setAll(2.5));
+      add(SpriteAnimationComponent(
+        animation: _anim!,
+        removeOnFinish: true,
+        anchor: Anchor.topLeft,
+        size: size,
+      ));
       _added = true;
+    }
+    if (_time >= 2) {
+      removeFromParent();
     }
   }
 }
