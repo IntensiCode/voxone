@@ -29,6 +29,8 @@ class RangerLaser extends Component with HasContext, HasPaint {
   final _direction = Vector2(-1, 1 / 4).normalized();
   final _result = RaycastResult<ShapeHitbox>();
 
+  double damage = 0.1;
+
   @override
   void update(double dt) {
     if (_source.state == MarauderState.exploding) removeFromParent();
@@ -54,7 +56,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
 
     final target = result.hitbox?.parent;
     target?.onTraits<Target>((it) {
-      it.on_hit(damage: 0.1);
+      it.on_hit(damage: damage);
       if (_heard) return;
       _heard = true;
       soundboard.play(Sound.plasma, volume_factor: 0.1);

@@ -9,6 +9,7 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/game/stage1/ranger_laser.dart';
 import 'package:voxone/util/random.dart';
 
 class MarauderCaptain extends MarauderEntity
@@ -55,6 +56,8 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
+
+    await add(RangerLaser(this)..damage = 1);
   }
 }
 
