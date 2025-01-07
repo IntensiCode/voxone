@@ -14,7 +14,7 @@ import 'package:voxone/util/random.dart';
 class MarauderCaptain extends MarauderEntity
     with
         HasTraits,
-        CreateMarauderEntity,
+        _CreateMarauderCaptainEntity,
         WarpInOnIncoming,
         AddShieldAfterOnIncoming,
         FloatOnActive,
@@ -22,7 +22,15 @@ class MarauderCaptain extends MarauderEntity
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding {
-  //
+  @override
+  void shield_added() {
+    super.shield_added();
+    shield.scale.setAll(6);
+    indicator.position.setValues(0, -64);
+  }
+}
+
+mixin _CreateMarauderCaptainEntity on MarauderEntity {
   @override
   createEntity() async {
     reset_hit_points_to(40);
@@ -47,13 +55,6 @@ class MarauderCaptain extends MarauderEntity
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
-  }
-
-  @override
-  void shield_added() {
-    super.shield_added();
-    shield.scale.setAll(6);
-    indicator.position.setValues(0, -64);
   }
 }
 
