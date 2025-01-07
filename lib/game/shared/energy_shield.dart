@@ -24,6 +24,8 @@ class EnergyShield extends Trait implements Target {
       if (remaining > 0) _target.on_hit(remaining * 25);
     }
     energy = max(0, energy);
-    soundboard.play(Sound.teleport, volume_factor: 0.25);
+    if (damage >= 1) {
+      soundboard.play(Sound.teleport, volume_factor: 0.25);
+    }
   }
 }

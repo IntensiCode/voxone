@@ -7,6 +7,7 @@ import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/stage1/ranger_laser.dart';
 
 class WarpingRanger extends MarauderEntity
     with WarpInOnIncoming, FloatOnActive, PlantMineOnSweeping, SweepOutOnLeaving, TumbleOnExploding {
@@ -35,5 +36,7 @@ class WarpingRanger extends MarauderEntity
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
+
+    await add(RangerLaser(this));
   }
 }
