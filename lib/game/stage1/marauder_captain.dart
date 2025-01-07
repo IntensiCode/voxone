@@ -60,7 +60,7 @@ mixin _AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
     if (incoming_time < 1) return;
 
     final shield = DeflectorShield(this);
-    shield.scale.setAll(4);
+    shield.scale.setAll(6);
     shield.auto_recharge = null;
     shield.addTrait(Hostile());
     add(shield);
