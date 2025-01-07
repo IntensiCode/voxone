@@ -16,8 +16,9 @@ class RangerLaser extends Component with HasContext, HasPaint {
   RangerLaser(this._source) {
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
-    paint.color = Color.fromARGB(255, 255, 0, 0);
-    paint.maskFilter = MaskFilter.blur(BlurStyle.solid, 3);
+    paint.color = Color.fromARGB(255, 255, 250, 150);
+    paint.maskFilter = MaskFilter.blur(BlurStyle.solid, 4);
+    priority = -1000;
   }
 
   late final Marauder _source;
