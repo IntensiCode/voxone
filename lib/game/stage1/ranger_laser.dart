@@ -30,7 +30,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
   final _direction = Vector2(-1, 1 / 4).normalized();
   final _result = RaycastResult<ShapeHitbox>();
 
-  double damage = 0.1;
+  double damage = 0.15;
 
   @override
   void update(double dt) {
