@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/mutable.dart';
 
 class EnemyHealthBar extends PositionComponent {
-  EnemyHealthBar(this._hit_points);
+  EnemyHealthBar(this._source);
 
-  final EnemyHitPoints _hit_points;
+  final Integrity _source;
 
   static const _good = Color(0xA0ffffff);
   static const _half = Color(0xA0ffff00);
@@ -37,7 +37,7 @@ class EnemyHealthBar extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
-    final percent = _hit_points.remaining * 100 / _hit_points.hit_points;
+    final percent = _source.integrity_in_percent;
     if (percent <= 0) {
       removeFromParent();
       return;

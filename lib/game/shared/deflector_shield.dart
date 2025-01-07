@@ -12,7 +12,7 @@ import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits {
+class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits implements Integrity {
   DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
@@ -40,6 +40,9 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   EnergyShield? _shield;
 
   EnergyShield get shield => _shield ??= singleTrait<EnergyShield>();
+
+  @override
+  double get integrity_in_percent => shield.energy.clamp(0, 1) * 100;
 
   @override
   onLoad() async {

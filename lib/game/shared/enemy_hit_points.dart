@@ -5,12 +5,15 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
-mixin EnemyHitPoints on Component, HasContext implements Hostile, Target {
+mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Target {
   bool mini_explosions_on_hit = true;
 
   double hit_time = 0;
   double hit_points = 10;
   double remaining = 10;
+
+  @override
+  double get integrity_in_percent => remaining * 100 / hit_points;
 
   @override
   bool get susceptible;

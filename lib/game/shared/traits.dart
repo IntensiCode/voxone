@@ -7,6 +7,10 @@ class Friendly {}
 
 class Hostile {}
 
+abstract interface class Integrity {
+  double get integrity_in_percent;
+}
+
 abstract interface class Player {
   NotifyingVector2 get position;
 
