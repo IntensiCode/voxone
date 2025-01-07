@@ -1,4 +1,5 @@
 import 'package:flame/game.dart';
+import 'package:voxone/game/shared/has_context.dart';
 
 class Friendly {}
 
@@ -14,4 +15,8 @@ abstract interface class Target {
   bool get susceptible;
 
   void on_hit([double damage = 1]);
+}
+
+extension HasContextExtensions on HasContext {
+  Player get player => cache['player'];
 }

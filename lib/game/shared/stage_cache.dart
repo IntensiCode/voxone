@@ -15,6 +15,8 @@ class StageCache extends Component implements Disposable {
 
   operator [](String key) => _cache[key];
 
+  operator []=(String key, Object value) => _cache[key] = value;
+
   T require<T>(String key) => _cache[key] as T;
 
   T putIfAbsent<T>(String key, T Function() ifAbsent) {

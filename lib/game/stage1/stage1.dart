@@ -1,4 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
@@ -11,6 +12,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/info_overlay.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/enemies_stage1.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
@@ -43,9 +45,9 @@ class Stage1 extends GameScreen with HasContext {
         _show_time = 0;
 
       case GamePhase.intro:
-        final player = ZaxxonPlayer();
+        cache['player'] = ZaxxonPlayer();
         add(shadows);
-        add(player);
+        add(player as Component);
         add(ZaxxonHud(player));
         shadows.isVisible = false;
 
