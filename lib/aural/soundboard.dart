@@ -15,6 +15,7 @@ enum Sound {
   clash,
   explosion,
   explosion_hollow,
+  incoming,
   plasma,
   shot,
   teleport,
