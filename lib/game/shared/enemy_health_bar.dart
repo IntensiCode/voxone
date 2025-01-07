@@ -7,7 +7,10 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/mutable.dart';
 
 class EnemyHealthBar extends PositionComponent {
-  EnemyHealthBar(this._source);
+  EnemyHealthBar(this._source) {
+    anchor = Anchor.topCenter;
+    size.setValues(100, 20);
+  }
 
   final Integrity _source;
 
@@ -24,7 +27,7 @@ class EnemyHealthBar extends PositionComponent {
   @override
   void onMount() {
     super.onMount();
-    position.x = (parent as PositionComponent).width / 2 - 50;
+    position.x = (parent as PositionComponent).width / 2;
   }
 
   @override

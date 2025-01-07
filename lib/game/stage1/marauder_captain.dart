@@ -4,11 +4,9 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/random.dart';
@@ -18,7 +16,7 @@ class MarauderCaptain extends MarauderEntity
         HasTraits,
         CreateMarauderEntity,
         WarpInOnIncoming,
-        _AddShieldAfterOnIncoming,
+        AddShieldAfterOnIncoming,
         FloatOnActive,
         _SpamMinesWhenAlone,
         NopOnSweeping,
@@ -50,39 +48,12 @@ class MarauderCaptain extends MarauderEntity
       ..opacity = 0.2
       ..renderShape = debug);
   }
-}
-
-mixin _AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
-  Component? _shield;
-  Component? _health_bar;
 
   @override
-  void on_incoming(double dt) {
-    super.on_incoming(dt);
-
-    if (incoming_time < 1) return;
-
-    final shield = _shield = DeflectorShield(this);
+  void shield_added() {
+    super.shield_added();
     shield.scale.setAll(6);
-    shield.auto_recharge = 0.05;
-    shield.addTrait(Hostile());
-    add(shield);
-    addTrait(shield);
-
-    entity.add(_health_bar = EnemyHealthBar(shield)
-      ..anchor = Anchor.topLeft
-      ..position.setValues(0, -64));
-  }
-
-  @override
-  void on_destroyed() {
-    super.on_destroyed();
-    if (state.is_inactive && _shield != null) {
-      _shield?.removeFromParent();
-      _shield = null;
-      _health_bar?.removeFromParent();
-      _health_bar = null;
-    }
+    indicator.position.setValues(0, -64);
   }
 }
 

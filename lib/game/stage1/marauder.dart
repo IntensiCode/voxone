@@ -7,6 +7,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -171,6 +173,42 @@ mixin SweepInOnIncoming on MarauderEntity {
     position.setFrom(target_position);
     position.x += 350;
     position.x -= 350 * i;
+  }
+}
+
+mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
+  late DeflectorShield shield;
+  late EnemyHealthBar indicator;
+
+  String shader_name = 'plasma_shield.frag';
+
+  @override
+  void on_incoming(double dt) {
+    super.on_incoming(dt);
+
+    if (incoming_time < 1) return;
+
+    shield = DeflectorShield(this, shader_name: shader_name);
+    shield.auto_recharge = 0.05;
+    shield.addTrait(Hostile());
+    add(shield);
+    addTrait(shield);
+
+    entity.add(indicator = EnemyHealthBar(shield)..position.setValues(0, -64));
+
+    shield_added();
+  }
+
+  void shield_added() {}
+
+  @override
+  void on_destroyed() {
+    super.on_destroyed();
+    if (state.is_inactive && shield.isMounted) {
+      if (shield.isRemoving) return;
+      shield.removeFromParent();
+      indicator.removeFromParent();
+    }
   }
 }
 

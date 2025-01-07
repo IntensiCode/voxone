@@ -13,20 +13,24 @@ class CapitalShip extends MarauderEntity
     with
         HasTraits,
         WarpInOnIncoming,
-        _AddShieldAfterOnIncoming,
+        AddShieldAfterOnIncoming,
         _MaintainSatellitesOnActive,
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding {
   //
   @override
+  String get shader_name => 'hex_shield.frag';
+
+  @override
   createEntity() async {
     reset_hit_points_to(150);
 
-    size.setAll(1024);
+    size.setAll(220);
 
     entity = StackedEntity('entities/dual_striker.png', 16, shadows);
-    entity.size.setAll(1024 + 128);
+    entity.size.setFrom(size);
+    entity.size.scale(1.25);
 
     entity.rot_x = -pi / 4;
     entity.rot_y = -pi / 2 + pi / 8;
@@ -44,29 +48,19 @@ class CapitalShip extends MarauderEntity
     //   ..opacity = 0.2
     //   ..renderShape = debug);
   }
+
+  @override
+  void shield_added() {
+    super.shield_added();
+    shield.size.setFrom(entity.size);
+    shield.auto_recharge = 0.05;
+    shield.max_rotate_time = 360;
+    indicator.scale.setAll(0.25);
+    indicator.position.setValues(0, -16);
+  }
 }
 
 mixin _VibrateOnIncoming {}
-
-mixin _AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
-  @override
-  void on_incoming(double dt) {
-    super.on_incoming(dt);
-
-    if (incoming_time < 1) return;
-
-    final shield = DeflectorShield(this, shader_name: 'hex_shield.frag');
-    shield.scale.setAll(12);
-    shield.auto_recharge = 0.05;
-    shield.addTrait(Hostile());
-    add(shield);
-    addTrait(shield);
-
-    entity.add(EnemyHealthBar(shield)
-      ..anchor = Anchor.topLeft
-      ..position.setValues(0, -64));
-  }
-}
 
 mixin _LoseShieldWhenGeneratorDestroyed {}
 
