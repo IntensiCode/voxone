@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
-import 'package:voxone/util/mut_rect.dart';
+import 'package:voxone/util/mutable.dart';
 
 class EnemyHealthBar extends PositionComponent {
   EnemyHealthBar(this._hit_points);

@@ -8,7 +8,7 @@ import 'package:voxone/game/shared/energy_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/mut_rect.dart';
+import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 

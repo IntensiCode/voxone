@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mutable_rect.dart';
+import 'package:voxone/util/mutable.dart';
 
 class NinePatchComponent extends PositionComponent with HasPaint {
   final Sprite image;

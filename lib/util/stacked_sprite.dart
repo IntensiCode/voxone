@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mut_rect.dart';
+import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/uniforms.dart';
 
 enum HighlightMode {

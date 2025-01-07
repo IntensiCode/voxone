@@ -7,7 +7,7 @@ import 'package:voxone/game/shared/energy_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/mut_rect.dart';
+import 'package:voxone/util/mutable.dart';
 
 class ZaxxonHud extends Component with HasContext, HasPaint {
   ZaxxonHud(this._player) {

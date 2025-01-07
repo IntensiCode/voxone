@@ -9,7 +9,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mutable_rect.dart';
+import 'package:voxone/util/mutable.dart';
 
 extension BitmapFontExtensions on BitmapFont {
   void tint(Color color) {
