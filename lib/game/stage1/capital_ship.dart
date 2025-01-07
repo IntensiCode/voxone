@@ -14,16 +14,28 @@ import 'package:voxone/game/stage1/marauder.dart';
 class CapitalShip extends MarauderEntity
     with
         HasTraits,
+        _CreateCapitalShipEntity,
         _VibrateOnIncoming,
         AddShieldAfterOnIncoming,
         _MaintainSatellitesOnActive,
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding {
-  //
   @override
   String get shader_name => 'hex_shield.frag';
 
+  @override
+  void shield_added() {
+    super.shield_added();
+    shield.size.setFrom(entity.size);
+    shield.auto_recharge = 0.05;
+    shield.max_rotate_time = 360;
+    indicator.scale.setAll(0.25);
+    indicator.position.setValues(0, -16);
+  }
+}
+
+mixin _CreateCapitalShipEntity on MarauderEntity {
   @override
   createEntity() async {
     reset_hit_points_to(150);
@@ -49,16 +61,6 @@ class CapitalShip extends MarauderEntity
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
-  }
-
-  @override
-  void shield_added() {
-    super.shield_added();
-    shield.size.setFrom(entity.size);
-    shield.auto_recharge = 0.05;
-    shield.max_rotate_time = 360;
-    indicator.scale.setAll(0.25);
-    indicator.position.setValues(0, -16);
   }
 }
 
