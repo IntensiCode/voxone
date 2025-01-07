@@ -23,7 +23,9 @@ class CapitalShip extends MarauderEntity
         _MaintainSatellitesOnActive,
         NopOnSweeping,
         NopOnLeaving,
-        TumbleOnExploding {
+        TumbleOnExploding,
+        SpawnExtrasOnExploding {
+  //
   @override
   String get shader_name => 'hex_shield.frag';
 

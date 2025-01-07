@@ -23,7 +23,9 @@ class MarauderCaptain extends MarauderEntity
         _ReleaseMinesWhenInDanger,
         NopOnSweeping,
         NopOnLeaving,
-        TumbleOnExploding {
+        TumbleOnExploding,
+        SpawnExtrasOnExploding {
+  //
   @override
   void shield_added() {
     super.shield_added();

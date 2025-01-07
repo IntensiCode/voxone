@@ -10,7 +10,17 @@ import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
 
 class WarpingRanger extends MarauderEntity
-    with WarpInOnIncoming, FloatOnActive, PlantMineOnSweeping, SweepOutOnLeaving, TumbleOnExploding {
+    with
+        _CreateWarpingRangerEntity,
+        WarpInOnIncoming,
+        FloatOnActive,
+        PlantMineOnSweeping,
+        SweepOutOnLeaving,
+        TumbleOnExploding,
+        SpawnExtrasOnExploding {}
+
+mixin _CreateWarpingRangerEntity on MarauderEntity {
+  //
   @override
   createEntity() async {
     can_sweep = true;

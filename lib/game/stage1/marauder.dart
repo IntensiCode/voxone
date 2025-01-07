@@ -314,22 +314,9 @@ mixin SweepOutOnLeaving on MarauderEntity {
 }
 
 mixin TumbleOnExploding on MarauderEntity {
-  bool extra_spawned = false;
-
   @override
   void on_exploding(double dt) {
     leaving_time += dt;
-    if (leaving_time >= 1) {
-      if (!extra_spawned) {
-        for (final e in required_extras ?? {}) {
-          extras.spawn(position, choices: {e});
-        }
-        random_extras_count.forEach((_) {
-          extras.spawn(position, choices: allowed_random_extras);
-        });
-      }
-      extra_spawned = true;
-    }
     if (leaving_time >= 2) {
       leaving_time = 2;
       state = MarauderState.defeated;
@@ -342,6 +329,26 @@ mixin TumbleOnExploding on MarauderEntity {
     position.y += dt * 100 / 4;
 
     entity.sprite.opacity = 1 - leaving_time / 2;
+  }
+}
+
+mixin SpawnExtrasOnExploding on MarauderEntity {
+  bool extras_spawned = false;
+
+  @override
+  void on_exploding(double dt) {
+    super.on_exploding(dt);
+
+    if (leaving_time < 1 || extras_spawned) return;
+
+    for (final e in required_extras ?? {}) {
+      extras.spawn(position, choices: {e});
+    }
+    random_extras_count.forEach((_) {
+      extras.spawn(position, choices: allowed_random_extras);
+    });
+
+    extras_spawned = true;
   }
 }
 

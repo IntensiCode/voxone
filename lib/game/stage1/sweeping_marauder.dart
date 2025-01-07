@@ -7,4 +7,5 @@ class SweepingMarauder extends MarauderEntity
         FloatOnActive,
         PlantMineOnSweeping,
         SweepOutOnLeaving,
-        TumbleOnExploding {}
+        TumbleOnExploding,
+        SpawnExtrasOnExploding {}

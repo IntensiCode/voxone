@@ -7,4 +7,5 @@ class WarpingMarauder extends MarauderEntity
         FloatOnActive,
         PlantMineOnSweeping,
         SweepOutOnLeaving,
-        TumbleOnExploding {}
+        TumbleOnExploding,
+        SpawnExtrasOnExploding {}
