@@ -13,7 +13,7 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits {
-  DeflectorShield(Target target) {
+  DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
       ..paint.color = red
@@ -26,15 +26,24 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     addTrait(EnergyShield(this, target, () => _deflect_time = 0.3));
   }
 
-  bool auto_recharge = true;
+  final String _shader_name;
+
+  double? auto_recharge = 0.3;
 
   double _deflect_time = 0;
+  double _rotate_time = 0;
+
+  double max_rotate_time = 0.25;
 
   late final FragmentShader _shader;
 
+  EnergyShield? _shield;
+
+  EnergyShield get shield => _shield ??= singleTrait<EnergyShield>();
+
   @override
   onLoad() async {
-    _shader = await loadShader('plasma_shield.frag');
+    _shader = await loadShader(_shader_name);
     paint.shader = _shader;
     priority = 1;
     opacity = 0.5;
@@ -43,20 +52,21 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     _shader.setFloat(1, size.y);
   }
 
-  EnergyShield? _shield;
-
   @override
   void update(double dt) {
     super.update(dt);
 
-    if (auto_recharge) {
-      _shield ??= singleTrait<EnergyShield>();
-      if (_shield!.energy < 1) _shield!.energy += dt / 3;
+    if (auto_recharge != null) {
+      shield.recharge(dt * auto_recharge!);
     }
 
-    if (_deflect_time > 0) _deflect_time -= dt;
+    if (_deflect_time > 0) {
+      _deflect_time -= dt;
+      _rotate_time += dt;
+      _rotate_time %= max_rotate_time;
+    }
 
-    _shader.setFloat(4, _deflect_time);
+    _shader.setFloat(4, _rotate_time);
   }
 
   final _rect = MutRect(0, 0, 0, 0);

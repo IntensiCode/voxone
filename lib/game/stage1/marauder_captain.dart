@@ -61,7 +61,7 @@ mixin _AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
 
     final shield = DeflectorShield(this);
     shield.scale.setAll(4);
-    shield.auto_recharge = false;
+    shield.auto_recharge = null;
     shield.addTrait(Hostile());
     add(shield);
     addTrait(shield);

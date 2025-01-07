@@ -7,7 +7,7 @@
 precision highp float;
 
 uniform vec2 iResolution;
-uniform vec2 iOffset;
+uniform vec2 unused;
 uniform float iTime;
 
 out vec4 fragColor;
@@ -19,8 +19,6 @@ void main() {
     float t = iTime, z;
     vec2  R = iResolution.xy,
     p = 1.* (u+u - R) / R.x;// centered coords
-    p.x += 1;
-    p.y += 1;
     p /= .2 + .3* sqrt(z = max(1.-dot(p, p), 0.)), // sphere. z = depth
     p.y += fract(ceil(p.x = p.x/.9 + t) / 2.) + t*.2, // hexa: offset odd rows
     p = abs(fract(p) - .5), // tiling + symmetries

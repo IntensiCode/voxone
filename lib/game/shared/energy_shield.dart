@@ -10,20 +10,24 @@ class EnergyShield extends Trait implements Target {
   final Target _target;
   final void Function() _on_hit;
 
-  double energy = 1;
+  double _energy = 1;
+
+  double get energy => _energy;
+
+  void recharge(double amount) => _energy = min(1, _energy + amount);
 
   @override
-  bool get susceptible => energy > 0.1;
+  bool get susceptible => _energy > 0.1;
 
   @override
   void on_hit([double damage = 1]) {
     _on_hit();
-    energy -= damage / 25;
-    if (energy < 0) {
-      double remaining = energy.abs();
+    _energy -= damage / 25;
+    if (_energy < 0) {
+      double remaining = _energy.abs();
       if (remaining > 0) _target.on_hit(remaining * 25);
     }
-    energy = max(0, energy);
+    _energy = max(0, _energy);
     if (damage >= 1) {
       soundboard.play(Sound.teleport, volume_factor: 0.25);
     }
