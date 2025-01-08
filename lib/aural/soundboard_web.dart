@@ -92,7 +92,6 @@ class SoundboardImpl extends Soundboard {
     if (now < last_played_at + 100) return Disposable.disposed;
     _last_time[filename] = now;
 
-    // TODO handle !cache somehow?
     await FlameAudio.audioCache.load(filename);
     final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
     final it = await FlameAudio.play(filename, volume: volume);

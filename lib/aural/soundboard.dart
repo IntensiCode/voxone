@@ -37,13 +37,7 @@ enum AudioMode {
 abstract class Soundboard extends Component {
   Future _save() async => await save_data('soundboard', save_state());
 
-  AudioMode _audio_mode = AudioMode.music_and_sound;
-
-  AudioMode get audio_mode => _audio_mode;
-
   set audio_mode(AudioMode mode) {
-    if (_audio_mode == mode) return;
-    _audio_mode = mode;
     logInfo('change audio mode: $mode');
     _update_volumes(mode);
     _save();
@@ -189,7 +183,6 @@ abstract class Soundboard extends Component {
   }
 
   Future play_music(String filename, {bool loop = true, Hook? on_end}) async {
-    // TODO check is_playing_music, too?
     if (fade_out_volume != null) {
       logInfo('schedule music $filename');
       pending_music = (filename, loop, on_end);
@@ -262,7 +255,6 @@ abstract class Soundboard extends Component {
 
   void load_state(Map<String, dynamic> data) {
     logInfo('load soundboard: $data');
-    _audio_mode = AudioMode.from_name(data['audio_mode'] ?? audio_mode.name);
     _master = data['master'] ?? _master;
     _music = data['music'] ?? _music;
     _muted = data['muted'] ?? _muted;
@@ -273,6 +265,5 @@ abstract class Soundboard extends Component {
     ..['master'] = _master
     ..['music'] = _music
     ..['muted'] = _muted
-    ..['sound'] = _sound
-    ..['audio_mode'] = _audio_mode.name;
+    ..['sound'] = _sound;
 }
