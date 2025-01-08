@@ -13,11 +13,11 @@ class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void onLoad() {
-    at(delay, () => sendMessage(ShowInfoText(text: 'Capital Ship Approaching')));
+    after(delay, () => sendMessage(ShowInfoText(text: 'Capital Ship Approaching')));
 
     if (!dev) pause(info_time);
 
-    at(1.0, () {
+    after(1.0, () {
       final it = CapitalShip();
       it.target_position.x = 600;
       it.target_position.y = 160;
@@ -28,6 +28,7 @@ class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void update(double dt) {
+    super.update(dt);
     defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
   }
 }

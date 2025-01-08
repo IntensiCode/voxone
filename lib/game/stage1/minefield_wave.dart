@@ -15,12 +15,12 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void onLoad() {
-    at(delay, () => sendMessage(ShowInfoText(text: 'Approaching Minefield')));
+    after(delay, () => sendMessage(ShowInfoText(text: 'Approaching Minefield')));
 
     if (!dev) pause(info_time);
 
     enemies_in_wave.forEach((idx) {
-      at(0.2, () {
+      after(0.2, () {
         final it = mines.spawn(Vector2(850, -150 + rng.nextDoubleLimit(500)));
         it.then((it) => _wave.add(it));
       });
@@ -29,6 +29,7 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void update(double dt) {
+    super.update(dt);
     defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.isRemoved);
   }
 }

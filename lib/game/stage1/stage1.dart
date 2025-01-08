@@ -40,8 +40,8 @@ class Stage1 extends GameScreen with HasContext {
         t1.fadeInDeep();
         t2.fadeInDeep();
         clearScript();
-        at(dev ? 0.5 : 2.0, () => t1.fadeOutDeep());
-        at(0.0, () => t2.fadeOutDeep());
+        after(dev ? 0.5 : 2.0, () => t1.fadeOutDeep());
+        after(0.0, () => t2.fadeOutDeep());
         _show_time = 0;
 
       case GamePhase.intro:

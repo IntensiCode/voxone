@@ -35,7 +35,7 @@ class _InfoOverlay extends GameScriptComponent {
   final double pos_y;
   final double stay_time;
 
-  StreamSubscription? _active;
+  Future? _active;
 
   @override
   void update(double dt) {
@@ -51,27 +51,27 @@ class _InfoOverlay extends GameScriptComponent {
     Component? title_text;
     late Component text;
 
-    at(0.0, () {
+    after(0.0, () {
       final t = it.title;
       if (t != null) title_text = textXY(t, game_width / 2, pos_y - 15, scale: 2);
       title_text?.fadeInDeep();
       text = textXY(it.text, game_width / 2, pos_y + 5);
       text.fadeInDeep();
     });
-    at(stay_time, () {
+    after(stay_time, () {
       if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
     });
-    at(1.8, () => text.removeAll(text.children)); // remove blink?
+    after(1.8, () => text.removeAll(text.children)); // remove blink?
     if (pipe.length == 1) {
-      at(1.0, () => text.fadeOutDeep());
-      at(0.0, () => title_text?.fadeOutDeep());
-      at(0.5, () => it.when_done?.call());
+      after(1.0, () => text.fadeOutDeep());
+      after(0.0, () => title_text?.fadeOutDeep());
+      after(0.5, () => it.when_done?.call());
     } else {
-      at(0.0, () => it.when_done?.call());
+      after(0.0, () => it.when_done?.call());
     }
 
     final active = _active = executeScript();
-    _active?.onDone(() {
+    _active?.then((_) {
       pipe.removeAt(0);
       if (_active == active) _active = null;
     });
