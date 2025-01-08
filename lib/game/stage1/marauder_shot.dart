@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -63,6 +63,6 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
   @override
   void on_destroyed() {
     removeFromParent();
-    soundboard.play(Sound.teleport, volume_factor: 0.1);
+    audio.play(Sound.teleport, volume_factor: 0.1);
   }
 }

@@ -1,5 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/messaging.dart';
@@ -39,14 +39,14 @@ class MusicScore extends AutoDisposeComponent {
     if (_current_score == _target_score) {
       return;
     } else if (_current_score == null && _target_score != null) {
-      if (soundboard.fade_out_volume == null) {
+      if (audio.fade_out_volume == null) {
         logInfo('play music $_target_score');
-        soundboard.play_music(_target_score!);
+        audio.play_music(_target_score!);
         _current_score = _target_score;
       }
     } else if (_current_score != null) {
       logInfo('fade out music $_current_score');
-      soundboard.fade_out_music();
+      audio.fade_out_music();
       _current_score = null;
     }
   }

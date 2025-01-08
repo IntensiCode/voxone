@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -60,7 +60,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
       it.on_hit(damage: damage);
       if (_heard) return;
       _heard = true;
-      soundboard.play(Sound.plasma, volume_factor: 0.1);
+      audio.play(Sound.plasma, volume_factor: 0.1);
     });
   }
 

@@ -1,4 +1,3 @@
-import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 
 class SweepingMarauder extends MarauderEntity

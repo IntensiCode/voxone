@@ -5,7 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
@@ -72,7 +72,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     state = MarauderState.exploding;
     entity.add(EnemyExplosion());
     if (sweep_time > 0) can_sweep = true;
-    soundboard.play(Sound.explosion);
+    audio.play(Sound.explosion);
   }
 
   @override

@@ -8,8 +8,8 @@ import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_data.dart';
 import 'package:voxone/util/storage.dart';
 
-import 'soundboard_soloud.dart' if (dart.library.html) 'soundboard_web.dart';
-// import 'soundboard_mixed.dart' if (dart.library.html) 'soundboard_web.dart';
+import 'audio_soloud.dart' if (dart.library.html) 'audio_web.dart';
+// import 'audio_mixed.dart' if (dart.library.html) 'audio_web.dart';
 
 enum Sound {
   clash,
@@ -22,7 +22,7 @@ enum Sound {
   ;
 }
 
-final soundboard = SoundboardImpl();
+final audio = PlatformAudioSystem();
 
 enum AudioMode {
   music_and_sound,
@@ -34,8 +34,8 @@ enum AudioMode {
   static AudioMode from_name(String name) => AudioMode.values.firstWhere((it) => it.name == name);
 }
 
-abstract class Soundboard extends Component {
-  Future _save() async => await save_data('soundboard', save_state());
+abstract class AudioSystem extends Component {
+  Future _save() async => await save_data('audio', save_state());
 
   set audio_mode(AudioMode mode) {
     logInfo('change audio mode: $mode');
@@ -213,7 +213,7 @@ abstract class Soundboard extends Component {
   @override
   Future onLoad() async {
     super.onLoad();
-    final data = await load_data('soundboard');
+    final data = await load_data('audio');
     if (data != null) load_state(data);
   }
 
@@ -254,7 +254,7 @@ abstract class Soundboard extends Component {
   }
 
   void load_state(Map<String, dynamic> data) {
-    logInfo('load soundboard: $data');
+    logInfo('load audio: $data');
     _master = data['master'] ?? _master;
     _music = data['music'] ?? _music;
     _muted = data['muted'] ?? _muted;

@@ -1,7 +1,7 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/aural/volume_component.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
@@ -74,12 +74,12 @@ class AudioMenu extends GameScriptComponent {
   }
 
   void _add_volume_controls(BasicMenu<AudioMenuEntry> menu) {
-    void change_master(double volume) => soundboard.master = volume;
-    double read_master() => soundboard.master;
-    void change_music(double volume) => soundboard.music = volume;
-    double read_music() => soundboard.music;
-    void change_sound(double volume) => soundboard.sound = volume;
-    double read_sound() => soundboard.sound;
+    void change_master(double volume) => audio.master = volume;
+    double read_master() => audio.master;
+    void change_music(double volume) => audio.music = volume;
+    double read_music() => audio.music;
+    void change_sound(double volume) => audio.sound = volume;
+    double read_sound() => audio.sound;
 
     final positions = [
       Vector2(game_center.x, game_center.y),
@@ -107,15 +107,15 @@ class AudioMenu extends GameScriptComponent {
     logVerbose('audio menu selected: $it');
     switch (it) {
       case AudioMenuEntry.music_and_sound:
-        soundboard.audio_mode = AudioMode.music_and_sound;
+        audio.audio_mode = AudioMode.music_and_sound;
         _make_sound();
       case AudioMenuEntry.music_only:
-        soundboard.audio_mode = AudioMode.music_only;
+        audio.audio_mode = AudioMode.music_only;
       case AudioMenuEntry.sound_only:
-        soundboard.audio_mode = AudioMode.sound_only;
+        audio.audio_mode = AudioMode.sound_only;
         _make_sound();
       case AudioMenuEntry.silent_mode:
-        soundboard.audio_mode = AudioMode.silent;
+        audio.audio_mode = AudioMode.silent;
       case _:
         break;
     }
@@ -128,7 +128,7 @@ class AudioMenu extends GameScriptComponent {
     if (_last_sound_at + 100 > now) return;
     _last_sound_at = now;
     final which = (Sound.values - [Sound.incoming]).random().name;
-    soundboard.play_one_shot_sample('sound/$which.ogg');
+    audio.play_one_shot_sample('sound/$which.ogg');
   }
 
   VolumeComponent _volume_control(

@@ -5,8 +5,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/aural/music_score.dart';
-import 'package:voxone/aural/soundboard.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/hud.dart';
@@ -57,7 +57,7 @@ class MainGame extends FlameGame<MainController>
 
     atlas = await game.loadTextureAtlas();
 
-    await add(soundboard);
+    await add(audio);
     await add(music_score);
     await loadFonts(assets);
   }

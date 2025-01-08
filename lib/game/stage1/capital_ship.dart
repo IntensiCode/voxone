@@ -4,7 +4,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
@@ -113,7 +113,7 @@ mixin _VibrateOnIncoming on MarauderEntity {
     }
     if (!_vibrating && !dev) {
       _vibrating = true;
-      soundboard.play(Sound.incoming);
+      audio.play(Sound.incoming);
     }
 
     final i = Curves.decelerate.transform(incoming_time);

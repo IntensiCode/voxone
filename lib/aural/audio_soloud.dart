@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
-class SoundboardImpl extends Soundboard {
+class PlatformAudioSystem extends AudioSystem {
   late final SoLoud soloud;
 
   final _sounds = <Sound, AudioSource>{};

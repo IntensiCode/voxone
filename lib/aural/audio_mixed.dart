@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mp_audio_stream/mp_audio_stream.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
@@ -21,7 +21,7 @@ class _PlayState {
   double volume;
 }
 
-class SoundboardImpl extends Soundboard {
+class SoundboardImpl extends AudioSystem {
   AudioStream? _stream;
   final _samples = <Sound, Float32List>{};
   final _last_time = <Sound, int>{};

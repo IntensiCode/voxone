@@ -3,13 +3,12 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -119,7 +118,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     decals.spawn(Decal.nuke_explosion, position);
     removeFromParent();
 
-    soundboard.play(Sound.explosion_hollow);
+    audio.play(Sound.explosion_hollow);
   }
 
   @override
@@ -168,7 +167,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       }
       removeFromParent();
 
-      soundboard.play(Sound.explosion_hollow);
+      audio.play(Sound.explosion_hollow);
     });
   }
 }

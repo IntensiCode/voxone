@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:voxone/aural/soundboard.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/traits.dart';
 
@@ -30,7 +30,7 @@ class EnergyShield extends Trait implements Target {
     }
     _energy = max(0, _energy);
     if (damage >= 1) {
-      soundboard.play(Sound.teleport, volume_factor: 0.25);
+      audio.play(Sound.teleport, volume_factor: 0.25);
     }
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
 // note: not using actual particles because of the pseudo-3d effect based on priority. afaict particles wouldn't work
