@@ -6,9 +6,9 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -33,7 +33,7 @@ class ZaxxonPlayer extends PositionComponent
     _state = value;
   }
 
-  Component? weapon;
+  late final weapons = added(WeaponSystem(this));
 
   @override
   double integrity = 1;
@@ -55,6 +55,10 @@ class ZaxxonPlayer extends PositionComponent
         info('Integrity restored', hud: true);
         integrity = 1;
         break;
+      case ExtraId.full_shield:
+        info('Shield restored', hud: true);
+        onTraits<DeflectorShield>((it) => it.shield.recharge(1));
+        break;
       case ExtraId.integrity:
         info('Integrity boost', hud: true);
         integrity = min(1, integrity + 0.25);
@@ -64,11 +68,11 @@ class ZaxxonPlayer extends PositionComponent
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
       case ExtraId.triple_plasma:
-        info('Triple Plasma', hud: true);
+        info('Triple Plasma', title: 'Primary Weapon Upgrade', hud: true);
         logWarn('triple plasma not implemented');
         break;
       case _:
-        info(which.toString(), hud: true);
+        info(which.toString(), title: 'Primary Weapon Upgrade', hud: true);
         logWarn('unhandled extra $which');
         break;
     }
@@ -77,6 +81,8 @@ class ZaxxonPlayer extends PositionComponent
   @override
   Future onLoad() async {
     super.onLoad();
+
+    addTrait(weapons);
 
     _entity = StackedEntity('entities/star_runner.png', 16, shadows);
 
@@ -113,9 +119,6 @@ class ZaxxonPlayer extends PositionComponent
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
-
-    weapon = PlasmaGun(this);
-    await add(weapon!);
 
     final shield = DeflectorShield(this);
     shield.scale.setAll(4);
