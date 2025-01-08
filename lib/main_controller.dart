@@ -44,19 +44,19 @@ class MainController extends World
       onKey('<C-1>', () => showScreen(Screen.stage1));
       onKey('<C-2>', () => showScreen(Screen.stage2));
       onKey('<C-3>', () => showScreen(Screen.stage3));
-      onKeys(['<C-d>', '='], () {
+      onKeys(['<A-d>', '='], () {
         visual.debug = !visual.debug;
         logInfo('debug = ${visual.debug}');
       });
-      onKey('<C-v>', () {
+      onKey('<A-v>', () {
         visual.pixelate_screen = !visual.pixelate_screen;
         logInfo('pixelate_screen = ${visual.pixelate_screen}');
       });
     }
 
-    onKeys(['<C-a>', '<C-8>'], () => pushScreen(Screen.audio));
-    onKeys(['<C-c>', '<C-9>'], () => pushScreen(Screen.controls));
-    onKeys(['<C-t>', '<C-0>'], () => showScreen(Screen.title));
+    onKeys(['<A-a>', '<C-8>'], () => pushScreen(Screen.audio));
+    onKeys(['<A-c>', '<C-9>'], () => pushScreen(Screen.controls));
+    onKeys(['<A-t>', '<C-0>'], () => showScreen(Screen.title));
   }
 
   @override
