@@ -5,7 +5,6 @@ import 'package:voxone/game/stage1/capital_ship.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
 
 class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 1;

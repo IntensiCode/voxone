@@ -12,7 +12,6 @@ import 'package:voxone/game/stage1/minefield_wave.dart';
 import 'package:voxone/game/stage1/ranger_wave.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, HasContext {

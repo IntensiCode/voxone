@@ -6,7 +6,6 @@ import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/random.dart';
 
 class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {

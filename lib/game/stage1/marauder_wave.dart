@@ -8,7 +8,6 @@ import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/sweeping_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
 
 class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 8;

@@ -9,7 +9,6 @@ import 'package:voxone/game/stage1/marauder_captain.dart';
 import 'package:voxone/game/stage1/warping_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
 
 class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasContext {
   static const marauders_in_wave = 7;

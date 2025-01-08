@@ -15,7 +15,6 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/messaging.dart';
 
 class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implements Friendly, Player, Target {
   late final StackedEntity _entity;

@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/game_screen.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/stage_cache.dart';
@@ -12,8 +13,13 @@ import 'package:voxone/util/messaging.dart';
 mixin HasContext on Component {
   GameScreen? _stage;
   CollisionDetection<ShapeHitbox, Sweep<ShapeHitbox>>? _collision;
+  Messaging? _messaging;
 
   GameScreen get stage => _stage ??= findParent<GameScreen>(includeSelf: true)!;
+
+  Messaging get messaging => _messaging ??= stage.messaging;
+
+  void sendMessage<T extends Message>(T message) => messaging.send(message);
 
   StageCache get cache => stage.stage_cache;
 

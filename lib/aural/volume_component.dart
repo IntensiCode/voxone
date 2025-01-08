@@ -47,7 +47,6 @@ class VolumeComponent extends PositionComponent
   NinePatchImage? _background;
   late Highlighted _highlighted;
 
-
   final String key_down;
   final String key_up;
   final Function(double) change;
