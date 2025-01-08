@@ -162,7 +162,7 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
   double _rot_sign = 1;
 
   void _update_rotate(double dt) {
-    if (keys.fire2 && _rot == 0) {
+    if (keys.b_button && _rot == 0) {
       _rot = pi * 2;
       _rot_sign = -_strafe_speed.sign;
       if (_rot_sign == 0) _rot = 0;

@@ -23,7 +23,7 @@ class PlasmaGun extends Component with HasContext {
       return;
     }
 
-    if (keys.fire1) {
+    if (keys.a_button) {
       _cool_down += 0.2;
 
       final it = PlasmaShot();

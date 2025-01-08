@@ -4,10 +4,10 @@ import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_keys.dart';
 
 enum _GamePadButton {
-  a(GameKey.fire1),
-  b(GameKey.fire2),
-  x(GameKey.use),
-  y(GameKey.inventory),
+  a(GameKey.a_button),
+  b(GameKey.b_button),
+  x(GameKey.x_button),
+  y(GameKey.y_button),
   left_bumper(GameKey.soft1),
   right_bumper(GameKey.soft2),
   // left_trigger,
