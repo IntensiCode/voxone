@@ -76,7 +76,8 @@ class SoundboardImpl extends Soundboard {
     if (now < last_played_at + 100) return;
     _last_time[sound] = now;
 
-    await soloud.play(it, volume: (volume_factor * super.sound).clamp(0, 1));
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    await soloud.play(it, volume: volume);
   }
 
   @override
@@ -96,7 +97,8 @@ class SoundboardImpl extends Soundboard {
     _last_time[filename] = now;
 
     final source = _one_shots.putIfAbsent(filename, () => soloud.loadAsset('assets/audio/$filename'));
-    final handle = await soloud.play(await source, volume: (volume_factor * super.sound).clamp(0, 1), looping: loop);
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    final handle = await soloud.play(await source, volume: volume, looping: loop);
     return Disposable.wrap(() => soloud.stop(handle));
   }
 
@@ -120,7 +122,8 @@ class SoundboardImpl extends Soundboard {
     await Future.delayed(const Duration(milliseconds: 100));
 
     final source = await soloud.loadAsset('assets/audio/$filename');
-    final handle = await soloud.play(source, volume: music, looping: loop);
+    final volume = (super.music * super.master).clamp(0.0, 1.0);
+    final handle = await soloud.play(source, volume: volume, looping: loop);
     _active_music = (source, handle);
 
     logInfo('playing music via soloud: $filename');

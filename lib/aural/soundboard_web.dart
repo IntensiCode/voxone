@@ -72,7 +72,8 @@ class SoundboardImpl extends Soundboard {
     }
 
     if (it.state != PlayerState.stopped) await it.stop();
-    await it.setVolume((volume_factor * super.sound).clamp(0, 1));
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    await it.setVolume(volume);
     await it.resume();
   }
 
@@ -93,7 +94,8 @@ class SoundboardImpl extends Soundboard {
 
     // TODO handle !cache somehow?
     await FlameAudio.audioCache.load(filename);
-    final it = await FlameAudio.play(filename, volume: (volume_factor * super.sound).clamp(0, 1));
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    final it = await FlameAudio.play(filename, volume: volume);
     it.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
     return Disposable.wrap(() {
       it.setReleaseMode(ReleaseMode.release);
@@ -106,7 +108,8 @@ class SoundboardImpl extends Soundboard {
     do_stop_active_music();
 
     logInfo('playing music via audio_players');
-    await FlameAudio.bgm.play(filename, volume: music);
+    final volume = (super.music * super.master).clamp(0.0, 1.0);
+    await FlameAudio.bgm.play(filename, volume: volume);
 
     FlameAudio.bgm.audioPlayer.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
 

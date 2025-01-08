@@ -57,7 +57,7 @@ abstract class Soundboard extends Component {
         _sound = 0.6;
         _muted = false;
       case AudioMode.music_only:
-        _music = 1.0;
+        _music = 0.6;
         _sound = 0.0;
         _muted = false;
       case AudioMode.silent:
@@ -66,7 +66,7 @@ abstract class Soundboard extends Component {
         _muted = true;
       case AudioMode.sound_only:
         _music = 0.0;
-        _sound = 1.0;
+        _sound = 0.6;
         _muted = false;
     }
   }
