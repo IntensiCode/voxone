@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:voxone/ui/basic_menu_entry.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
 import 'package:voxone/util/keys.dart';
@@ -7,7 +8,7 @@ import 'package:voxone/util/keys.dart';
 import 'basic_menu_button.dart';
 
 class BasicMenu<T> extends PositionComponent with AutoDispose {
-  static final _select_keys = [GameKey.select, GameKey.start, GameKey.a_button, GameKey.b_button, GameKey.soft2];
+  static final _select_keys = [GameKey.a_button, GameKey.b_button, GameKey.soft2];
 
   final Keys keys;
   final SpriteSheet button;
@@ -15,7 +16,7 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
   final Function(T) onSelected;
   final double spacing;
 
-  final _entries = <(T, BasicMenuButton)>[];
+  final _entries = <(T, BasicMenuEntry)>[];
 
   List<T> get entries => _entries.map((it) => it.$1).toList();
 
@@ -56,11 +57,13 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
 
     var offset = 0.0;
     for (final (_, it) in _entries) {
-      it.position.x = width / 2;
-      it.position.y = offset;
-      it.anchor = Anchor.topCenter;
-      offset += it.size.y + spacing;
-      if (!it.isMounted) add(it);
+      if (it case BasicMenuButton it) {
+        it.position.x = width / 2;
+        it.position.y = offset;
+        it.anchor = Anchor.topCenter;
+        offset += it.size.y + spacing;
+        if (!it.isMounted) add(it);
+      }
     }
 
     if (size.isZero()) {
@@ -76,7 +79,7 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
   BasicMenuButton addEntry(T id, String text, {Anchor anchor = Anchor.center}) {
     final it = BasicMenuButton(
       text,
-      sheet: button,
+      size: Vector2(192, 24),
       font: font,
       onTap: () => _onSelected(id),
       text_anchor: anchor,
@@ -84,6 +87,8 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
     _entries.add((id, it));
     return it;
   }
+
+  void addCustom(T id, BasicMenuEntry it) => _entries.add((id, it));
 
   T? _preselected;
 

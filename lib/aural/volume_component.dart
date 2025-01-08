@@ -1,15 +1,20 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
+import 'package:voxone/ui/basic_menu_entry.dart';
 import 'package:voxone/ui/fonts.dart';
+import 'package:voxone/ui/highlighted.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/nine_patch_image.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class VolumeComponent extends PositionComponent
-    with AutoDispose, HasAutoDisposeShortcuts, HasPaint, DragCallbacks, TapCallbacks, HasVisibility {
+    with AutoDispose, HasAutoDisposeShortcuts, HasPaint, DragCallbacks, TapCallbacks, HasVisibility, BasicMenuEntry {
   //
   VolumeComponent({
     Sprite? bg_nine_patch,
@@ -21,6 +26,7 @@ class VolumeComponent extends PositionComponent
     required this.key_up,
     required this.change,
     required this.volume,
+    this.keys,
   }) {
     if (size.isZero()) {
       size.setValues(128, 32);
@@ -28,6 +34,7 @@ class VolumeComponent extends PositionComponent
     if (bg_nine_patch != null) {
       _background = NinePatchImage(bg_nine_patch);
     }
+    add(_highlighted = Highlighted());
     if (label != null) {
       add(BitmapText(
         text: label,
@@ -38,11 +45,33 @@ class VolumeComponent extends PositionComponent
   }
 
   NinePatchImage? _background;
+  late Highlighted _highlighted;
+
 
   final String key_down;
   final String key_up;
   final Function(double) change;
   double Function() volume;
+  Keys? keys;
+
+  bool _selected = false;
+
+  @override
+  set selected(bool it) {
+    _selected = it;
+    _highlighted.isVisible = it;
+  }
+
+  @override
+  set checked(bool it) {}
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (!_selected) return;
+    if (keys?.check_and_consume(GameKey.left) == true) _change(volume() - 0.1);
+    if (keys?.check_and_consume(GameKey.right) == true) _change(volume() + 0.1);
+  }
 
   @override
   void onMount() {
@@ -82,7 +111,9 @@ class VolumeComponent extends PositionComponent
       if ((volume() * 10).round() < i) continue;
 
       paint.opacity = 1;
+      if (_selected) paint.maskFilter = MaskFilter.blur(BlurStyle.solid, 10);
       canvas.drawRect(Rect.fromLTRB(x + 1, top + height, x + x_step - 1, size.y - 4), paint);
+      paint.maskFilter = null;
     }
 
     paint.opacity = 1;

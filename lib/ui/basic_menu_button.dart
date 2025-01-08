@@ -1,26 +1,24 @@
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
-import 'package:flame/sprite.dart';
+import 'package:voxone/ui/basic_menu_entry.dart';
+import 'package:voxone/ui/bordered.dart';
+import 'package:voxone/ui/highlighted.dart';
 import 'package:voxone/util/bitmap_font.dart';
 import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/extensions.dart';
 
-class BasicMenuButton extends SpriteComponent with HasVisibility, TapCallbacks {
-  final SpriteSheet sheet;
-  final BitmapFont font;
-  final Function onTap;
-
+class BasicMenuButton extends PositionComponent with BasicMenuEntry, HasVisibility, TapCallbacks {
   BasicMenuButton(
     String text, {
-    required this.sheet,
+    required super.size,
     required this.font,
     required this.onTap,
     bool selected = false,
     Anchor text_anchor = Anchor.center,
   }) {
-    this.selected = selected;
+    add(Bordered());
+    add(_highlighted = Highlighted());
+
     final p = Vector2.copy(size);
     p.x -= 12;
     p.x *= text_anchor.x;
@@ -32,23 +30,21 @@ class BasicMenuButton extends SpriteComponent with HasVisibility, TapCallbacks {
       font: font,
       anchor: text_anchor,
     ));
+
+    this.selected = selected;
   }
 
-  ComponentEffect? _highlighted;
+  final BitmapFont font;
+  final Function onTap;
 
-  set selected(bool value) {
-    if (value) {
-      _highlighted ??= added(HighlightEffect());
-      sprite = sheet.getSprite(0, 1);
-    } else {
-      _highlighted?.removeFromParent();
-      _highlighted = null;
-      sprite = sheet.getSprite(0, 0);
-    }
-  }
+  late Highlighted _highlighted;
 
   BitmapText? _checked;
 
+  @override
+  set selected(bool value) => _highlighted.isVisible = value;
+
+  @override
   set checked(bool value) {
     _checked?.removeFromParent();
     final p = Vector2.copy(size);

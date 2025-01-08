@@ -20,7 +20,6 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
     double font_scale = 2,
     bool at_top = false,
     bool insets = true,
-    bool shortcuts = true,
   }) =>
       added(SoftKeys.soft(
         left: left,
@@ -30,7 +29,6 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
         onTap: onTap,
         at_top: at_top,
         insets: insets,
-        shortcuts: shortcuts,
       ));
 
   SoftKeys softkeys_plain(
@@ -41,7 +39,6 @@ extension GameScriptFunctionsExtension on GameScriptFunctions {
     double font_scale = 2,
     bool at_top = false,
     bool insets = false,
-    bool shortcuts = true,
   }) =>
       added(SoftKeys.plain(
         left: left,
@@ -78,7 +75,6 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
     required Function(SoftKey) onTap,
     bool at_top = false,
     bool insets = true,
-    bool shortcuts = true,
   }) =>
       SoftKeys(
         image: atlas.sprite('button_soft.png'),
@@ -90,7 +86,6 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
         image_size: true,
         at_top: at_top,
         insets: insets ? null : Vector2.zero(),
-        shortcuts: shortcuts,
       );
 
   final Function(SoftKey) on_tap;
@@ -106,7 +101,6 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
     double font_scale = 1,
     bool image_size = false,
     bool at_top = false,
-    bool shortcuts = true,
   }) {
     insets ??= Vector2(2, 1);
     padding ??= Vector2(2, 1);
@@ -136,13 +130,6 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
         () => on_tap(SoftKey.right),
       )..set_label(right, image_size));
     }
-
-    if (shortcuts) onPressed = _onPressed;
-  }
-
-  void _onPressed(GameKey key) {
-    if (key == GameKey.soft1) on_tap(SoftKey.left);
-    if (key == GameKey.soft2) on_tap(SoftKey.right);
   }
 }
 

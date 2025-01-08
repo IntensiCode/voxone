@@ -20,7 +20,7 @@ ColorEffect HighlightEffect({
         alternate: repeat,
       ),
       opacityFrom: 0,
-      opacityTo: opacity ??= color.alpha / 255);
+      opacityTo: opacity ??= color.a / 255);
 }
 
 class BlinkEffect extends Effect {
