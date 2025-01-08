@@ -6,8 +6,10 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -51,6 +53,10 @@ class ZaxxonPlayer extends PositionComponent
   void on_collect_extra(ExtraId which) {
     logInfo('collect extra $which');
     switch (which) {
+      case ExtraId.acid_blast:
+        info('Acid Blast', title: 'Primary Weapon Upgrade', hud: true);
+        weapons.switch_primary_to(AcidBlaster);
+        break;
       case ExtraId.full_integrity:
         info('Integrity restored', hud: true);
         integrity = 1;
@@ -69,10 +75,10 @@ class ZaxxonPlayer extends PositionComponent
         break;
       case ExtraId.triple_plasma:
         info('Triple Plasma', title: 'Primary Weapon Upgrade', hud: true);
-        logWarn('triple plasma not implemented');
+        weapons.switch_primary_to(TriplePlasmaGun);
         break;
       case _:
-        info(which.toString(), title: 'Primary Weapon Upgrade', hud: true);
+        info(which.toString(), title: 'NYI', hud: true);
         logWarn('unhandled extra $which');
         break;
     }
