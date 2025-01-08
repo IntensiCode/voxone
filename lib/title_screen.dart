@@ -63,7 +63,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
         pushScreen(Screen.audio);
         break;
       case _TitleButtons.controls:
-        // pushScreen(Screen.controls);
+        pushScreen(Screen.controls);
         break;
       case _TitleButtons.play:
         showScreen(Screen.stage1);

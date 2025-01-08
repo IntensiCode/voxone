@@ -11,6 +11,7 @@ import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2.dart';
 import 'package:voxone/game/stage3.dart';
 import 'package:voxone/title_screen.dart';
+import 'package:voxone/ui/controls.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
@@ -43,7 +44,7 @@ class MainController extends World
       onKey('<C-1>', () => showScreen(Screen.stage1));
       onKey('<C-2>', () => showScreen(Screen.stage2));
       onKey('<C-3>', () => showScreen(Screen.stage3));
-      onKeys(['<C-d>', '<C-9>'], () {
+      onKeys(['<C-d>', '='], () {
         visual.debug = !visual.debug;
         logInfo('debug = ${visual.debug}');
       });
@@ -53,7 +54,8 @@ class MainController extends World
       });
     }
 
-    onKeys(['<C-a>', '<C-0>'], () => pushScreen(Screen.audio));
+    onKeys(['<C-a>', '<C-8>'], () => pushScreen(Screen.audio));
+    onKeys(['<C-c>', '<C-9>'], () => pushScreen(Screen.controls));
     onKeys(['<C-t>', '<C-0>'], () => showScreen(Screen.title));
   }
 
@@ -112,6 +114,7 @@ class MainController extends World
 
   Component _makeScreen(Screen it) => switch (it) {
         Screen.audio => AudioMenu(show_back: true),
+        Screen.controls => Controls(),
         Screen.stage1 => Stage1(),
         Screen.stage2 => Stage2(),
         Screen.stage3 => Stage3(),

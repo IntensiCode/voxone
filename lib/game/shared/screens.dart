@@ -2,6 +2,7 @@ import '../../core/common.dart';
 
 enum Screen {
   audio,
+  controls,
   stage1,
   stage2,
   stage3,

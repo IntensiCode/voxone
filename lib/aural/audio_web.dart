@@ -6,7 +6,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
-class SoundboardImpl extends AudioSystem {
+class PlatformAudioSystem extends AudioSystem {
   final _sounds = <Sound, AudioPlayer>{};
   final _max_sounds = <AudioPlayer>[];
   final _last_time = <Object, int>{};
