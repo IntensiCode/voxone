@@ -2,55 +2,72 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/util/effects.dart';
+import 'package:voxone/ui/basic_menu.dart';
+import 'package:voxone/ui/fonts.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/shortcuts.dart';
 
+enum _TitleButtons {
+  audio,
+  controls,
+  play,
+}
+
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
+  static _TitleButtons? _preselected;
+
   final _shadows = Shadows()..isVisible = false;
   final _keys = Keys();
 
   @override
-  onLoad() async {
-    super.onLoad();
-
-    await add(_keys);
-    await add(Space());
-    await add(_shadows);
-    await add(_TitleShip(_shadows));
+  onLoad() {
+    add(_keys);
+    add(Space());
+    add(_shadows);
+    add(_TitleShip(_shadows));
 
     textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
-    textXY('A Flutter Flame Experiment', 16, 50, anchor: Anchor.topLeft, scale: 1);
-
-    textXY('Controls', 16, 350, anchor: Anchor.topLeft, scale: 1);
-    textXY('Arrow Keys Left / Right - Strafe', 16, 360, anchor: Anchor.topLeft, scale: 1);
-    textXY('Space - Primary Fire', 16, 370, anchor: Anchor.topLeft, scale: 1);
-    textXY('Control - Secondary Fire', 16, 380, anchor: Anchor.topLeft, scale: 1);
-    textXY('Shift - Roll', 16, 390, anchor: Anchor.topLeft, scale: 1);
-
-    // textXY('Esc / Control-t - Back To Title', 16, 410, anchor: Anchor.topLeft, scale: 1);
-    // textXY('Control-m - Toggle Mute Sound', 16, 420, anchor: Anchor.topLeft, scale: 1);
-    // textXY('Control-p - Toggle Pause Game', 16, 430, anchor: Anchor.topLeft, scale: 1);
-    // textXY('Control-v - Toggle Full Pixelate', 16, 440, anchor: Anchor.topLeft, scale: 1);
-
-    textXY('Press Space To Play', 16, 460, anchor: Anchor.topLeft, scale: 1).add(BlinkEffect());
+    textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
     textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
     textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
 
-    buttonIXY('Audio', game_width - 16, 16, Anchor.topRight, onTap: () => pushScreen(Screen.audio));
+    final menu = added(BasicMenu<_TitleButtons>(
+      keys: _keys,
+      button: atlas.sheetI('button_option.png', 1, 2),
+      font: mini_font,
+      onSelected: _selected,
+      spacing: 2,
+      fixed_position: Vector2(16, game_height - 16),
+      fixed_anchor: Anchor.bottomLeft,
+    )
+      ..addEntry(_TitleButtons.audio, 'Audio')
+      ..addEntry(_TitleButtons.controls, 'Controls')
+      ..addEntry(_TitleButtons.play, 'Play')
+      ..preselectEntry(_preselected ?? _TitleButtons.play));
+
+    menu.onPreselected = (id) => _preselected = id;
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-    if (_keys.any([GameKey.select, GameKey.start])) {
-      showScreen(Screen.stage1);
+  void _selected(_TitleButtons id) {
+    _preselected = id;
+    switch (id) {
+      case _TitleButtons.audio:
+        pushScreen(Screen.audio);
+        break;
+      case _TitleButtons.controls:
+        // pushScreen(Screen.controls);
+        break;
+      case _TitleButtons.play:
+        showScreen(Screen.stage1);
+        break;
     }
   }
 }

@@ -2,15 +2,17 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/shortcuts.dart';
+import 'package:voxone/util/keys.dart';
 
 import 'basic_menu_button.dart';
 
-class BasicMenu<T> extends PositionComponent with AutoDispose, HasAutoDisposeShortcuts {
+class BasicMenu<T> extends PositionComponent with AutoDispose {
+  static final _select_keys = [GameKey.select, GameKey.start, GameKey.a_button, GameKey.b_button, GameKey.soft2];
+
+  final Keys keys;
   final SpriteSheet button;
   final BitmapFont font;
   final Function(T) onSelected;
-  final bool defaultShortcuts;
   final double spacing;
 
   final _entries = <(T, BasicMenuButton)>[];
@@ -20,10 +22,10 @@ class BasicMenu<T> extends PositionComponent with AutoDispose, HasAutoDisposeSho
   Function(T?) onPreselected = (_) {};
 
   BasicMenu({
+    required this.keys,
     required this.button,
     required this.font,
     required this.onSelected,
-    this.defaultShortcuts = true,
     this.spacing = 10,
     this.fixed_position,
     this.fixed_size,
@@ -40,16 +42,15 @@ class BasicMenu<T> extends PositionComponent with AutoDispose, HasAutoDisposeSho
   }
 
   @override
-  onMount() {
-    if (defaultShortcuts) {
-      onKey('<Up>', () => preselectPrevious());
-      onKey('k', () => preselectPrevious());
-      onKey('<Down>', () => preselectNext());
-      onKey('j', () => preselectNext());
-      onKey('<Enter>', () => select());
-      onKey('<Space>', () => select());
-    }
+  void update(double dt) {
+    super.update(dt);
+    if (keys.check_and_consume(GameKey.up)) preselectPrevious();
+    if (keys.check_and_consume(GameKey.down)) preselectNext();
+    if (keys.any(_select_keys)) select();
+  }
 
+  @override
+  onMount() {
     final button_width = button.getSpriteById(0).srcSize.x;
     final width = size.isZero() ? button_width : size.x;
 
