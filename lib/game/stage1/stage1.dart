@@ -77,6 +77,7 @@ class Stage1 extends GameScreen with HasContext {
 
   @override
   void update(double dt) {
+    super.update(dt);
     switch (phase) {
       case GamePhase.show_stage:
         _show_time += dt;
