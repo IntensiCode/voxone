@@ -28,6 +28,8 @@ enum _GamePadButton {
   const _GamePadButton([this.key]);
 }
 
+const _analog_sensitivity = 8192;
+
 mixin HasGamePads {
   abstract void Function(GameKey) onPressed;
   abstract void Function(GameKey) onReleased;
@@ -51,19 +53,19 @@ mixin HasGamePads {
           logError(e, st);
         }
       } else if (event.type == KeyType.analog) {
-        if (event.key == "6") {
-          if (event.value < -0.5) {
+        if (event.key == "6" || event.key == "0" || event.key == "3") {
+          if (event.value < -_analog_sensitivity) {
             onPressed(GameKey.left);
-          } else if (event.value > 0.5) {
+          } else if (event.value > _analog_sensitivity) {
             onPressed(GameKey.right);
           } else {
             onReleased(GameKey.left);
             onReleased(GameKey.right);
           }
-        } else if (event.key == "7") {
-          if (event.value < -0.5) {
+        } else if (event.key == "7" || event.key == "1" || event.key == "4") {
+          if (event.value < -_analog_sensitivity) {
             onPressed(GameKey.up);
-          } else if (event.value > 0.5) {
+          } else if (event.value > _analog_sensitivity) {
             onPressed(GameKey.down);
           } else {
             onReleased(GameKey.up);
