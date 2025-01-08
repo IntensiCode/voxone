@@ -47,8 +47,6 @@ flutter:
     - assets/audio/sound/
     - assets/fonts/
     - assets/images/
-    - assets/images/fonts/
-    - assets/images/entities/
   shaders:
     - assets/shaders/checkerboard.frag
     - assets/shaders/explosion.frag
