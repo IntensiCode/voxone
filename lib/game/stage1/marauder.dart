@@ -330,6 +330,8 @@ mixin TumbleOnExploding on MarauderEntity {
 }
 
 mixin SpawnExtrasOnExploding on MarauderEntity {
+  bool get _last_remaining => stage.children.whereType<Marauder>().singleOrNull == this;
+
   int random_extras_count = 1;
   Set<ExtraId> allowed_random_extras = ExtraId.defaults;
   Set<ExtraId>? required_extras;
@@ -343,12 +345,13 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
     if (leaving_time < 1 || _extras_spawned) return;
 
     final required = required_extras ?? {};
-    final all_count = required.length + random_extras_count;
+    final random_count = random_extras_count + (_last_remaining ? 3 : 0);
+    final all_count = required.length + random_count;
     var index = 0;
     for (final e in required) {
       extras.spawn(position, choices: {e}, index: index++, count: all_count);
     }
-    random_extras_count.forEach((_) {
+    random_count.forEach((_) {
       extras.spawn(position, choices: allowed_random_extras, index: index++, count: all_count);
     });
 
