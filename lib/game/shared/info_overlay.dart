@@ -11,7 +11,7 @@ import 'package:voxone/util/on_message.dart';
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
     add(_info = _InfoOverlay());
-    add(_hud = _InfoOverlay(pos_y: 32, stay_time: 0.2));
+    add(_hud = _InfoOverlay(pos_y: 480 - 32, stay_time: 0.2));
   }
 
   late _InfoOverlay _info;
