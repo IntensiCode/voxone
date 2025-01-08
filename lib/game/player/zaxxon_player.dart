@@ -8,6 +8,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
+import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -15,16 +16,13 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/extensions.dart';
 
-class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implements Friendly, Player, Target {
+class ZaxxonPlayer extends PositionComponent
+    with HasContext, HasTraits, PlayerStrafe
+    implements Friendly, Player, Target {
+  //
   late final StackedEntity _entity;
-
-  static const _strafe_accel = 10.0;
-  static const _max_strafe_speed = 4.0;
-  static const _max_strafe = 150.0;
-
-  double _strafe_speed = 0;
-  double _strafe = 0;
 
   PlayerState _state = PlayerState.incoming;
 
@@ -130,10 +128,11 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
     switch (state) {
       case PlayerState.incoming:
         _on_incoming(dt);
+        break;
 
       case PlayerState.playing:
-        _update_rotate(dt);
-        _update_strafe(dt);
+        update_strafe(dt);
+        break;
 
       case PlayerState.exploding:
         break;
@@ -157,56 +156,10 @@ class ZaxxonPlayer extends PositionComponent with HasContext, HasTraits implemen
     position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
   }
 
-  double _rot = 0;
-  double _rot_sign = 1;
-
-  void _update_rotate(double dt) {
-    if (keys.b_button && _rot == 0) {
-      _rot = pi * 2;
-      _rot_sign = -_strafe_speed.sign;
-      if (_rot_sign == 0) _rot = 0;
-    }
-
-    if (_rot > 0) {
-      _rot -= pi * 2 * dt;
-      if (_rot <= 0) _rot = 0;
-    }
-
-    _entity.rot_z = -0.2 + _rot * _rot_sign;
-  }
-
-  void _update_strafe(double dt) {
-    double max_strafe_speed = (_max_strafe - _strafe.abs()) / 5;
-
-    if (keys.left && _strafe > -_max_strafe) {
-      if (_strafe_speed > 0) _strafe_speed /= 1.5;
-      _strafe_speed -= _strafe_accel * dt;
-      if (_strafe < -_max_strafe / 2) {
-        _strafe_speed = min(_strafe_speed.abs(), max_strafe_speed) * _strafe_speed.sign;
-      }
-    } else if (keys.right && _strafe < _max_strafe) {
-      if (_strafe_speed < 0) _strafe_speed /= 1.5;
-      _strafe_speed += _strafe_accel * dt;
-      if (_strafe > _max_strafe / 2) {
-        _strafe_speed = min(_strafe_speed.abs(), max_strafe_speed) * _strafe_speed.sign;
-      }
-    } else {
-      _strafe_speed /= 1.05;
-    }
-
-    if (_strafe_speed.abs() > _max_strafe_speed) {
-      _strafe_speed = _max_strafe_speed * _strafe_speed.sign;
-    } else if (_strafe_speed.abs() < 0.1) {
-      _strafe_speed = 0;
-    }
-
-    _strafe += _strafe_speed;
-    if (_strafe.abs() > _max_strafe) {
-      _strafe_speed = 0;
-      _strafe = _max_strafe * _strafe.sign;
-    }
-
-    _entity.rot_x = -0.95 - _strafe_speed / 10;
-    position.setValues(100 + _strafe / 4, 280 + _strafe);
+  @override
+  void set_strafe(double tilt, double move_offset) {
+    super.set_strafe(tilt, move_offset);
+    _entity.rot_x = tilt;
+    position.setValues(100 + move_offset / 4, 280 + move_offset);
   }
 }
