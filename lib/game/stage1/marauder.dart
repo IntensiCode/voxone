@@ -331,7 +331,7 @@ mixin TumbleOnExploding on MarauderEntity {
 
 mixin SpawnExtrasOnExploding on MarauderEntity {
   int random_extras_count = 1;
-  Set<ExtraId> allowed_random_extras = ExtraId.restore;
+  Set<ExtraId> allowed_random_extras = ExtraId.defaults;
   Set<ExtraId>? required_extras;
 
   bool _extras_spawned = false;

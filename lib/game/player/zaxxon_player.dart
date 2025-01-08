@@ -66,6 +66,11 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.triple_plasma:
         info('Triple Plasma', hud: true);
         logWarn('triple plasma not implemented');
+        break;
+      case _:
+        info(which.toString(), hud: true);
+        logWarn('unhandled extra $which');
+        break;
     }
   }
 
