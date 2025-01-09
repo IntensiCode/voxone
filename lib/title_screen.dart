@@ -1,17 +1,21 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/ui/basic_menu.dart';
+import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
+import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 enum _TitleButtons {
@@ -54,7 +58,33 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       ..preselectEntry(_preselected ?? _TitleButtons.play));
 
     menu.onPreselected = (id) => _preselected = id;
+
+    final cheats = '''
+    > Cheat / Dev Mode Active
+    >
+    > Restart at Stage 1 - 3 :: 1 - 3
+    > Audio Menu :: 8
+    > Controls :: 9
+    > Back To Title :: 0
+    > Toggle Debug :: =
+    >
+    > Kill All Enemies :: Backspace
+    >
+    > All Weapons Available
+    ''';
+    add(_cheats = FlowText(
+      text: cheats,
+      background: atlas.sprite('button_plain.png'),
+      font: mini_font,
+      insets: Vector2(5, 5),
+      position: Vector2(game_width - 320, 0),
+      anchor: Anchor.topLeft,
+      size: Vector2(320, 160),
+    ));
+    _cheats.isVisible = dev;
   }
+
+  late FlowText _cheats;
 
   void _selected(_TitleButtons id) {
     _preselected = id;
@@ -68,6 +98,31 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       case _TitleButtons.play:
         showScreen(Screen.stage1);
         break;
+    }
+  }
+
+  String _cheat = '';
+
+  @override
+  void onMount() {
+    super.onMount();
+    onKey('t', () => _check_cheat('t'));
+    onKey('f', () => _check_cheat('f'));
+    onKey('d', () => _check_cheat('d'));
+    onKey('j', () => _check_cheat('j'));
+  }
+
+  void _check_cheat(String add) {
+    _cheat += add;
+    while (_cheat.length > 4) {
+      _cheat = _cheat.substring(1);
+    }
+    if (_cheat == 'tfdj') {
+      dev = !dev;
+      logInfo('cheat mode $dev');
+      _cheat = '';
+      _cheats.isVisible = dev;
+      sendMessage(ToggleCheatMode());
     }
   }
 }

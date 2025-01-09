@@ -27,10 +27,11 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
   EnemyWave? _active_wave;
 
   @override
-  onLoad() {
+  void onMount() {
+    super.onMount();
     if (dev) {
-      onKey('<C-w>', () {
-        logInfo("Skip wave");
+      onKey('<Backspace>', () {
+        logInfo('skip current wave');
         _active_wave?.defeated = true;
         _active_wave?.removeFromParent();
         stage.children.whereType<Hostile>().forEach((it) => (it as Component).removeFromParent());

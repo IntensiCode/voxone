@@ -48,10 +48,6 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     add(primary_weapon);
 
     if (dev) {
-      onKey('<A-w>', () {
-        _primaries.forEach((key, value) => _primaries[key] = true);
-      });
-
       primary_weapon.removeFromParent();
       primary_weapon = _primaries.keys.last;
       add(primary_weapon);
@@ -72,7 +68,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   void _switch_primary() {
     _primaries[primary_weapon] = true;
 
-    final bank = _primaries.entries.filter((it) => it.value).toList();
+    final bank = _primaries.entries.filter((it) => it.value || dev).toList();
     final index = bank.indexWhere((it) => it.key == primary_weapon);
     final next = bank[(index + 1) % bank.length];
     if (next.key == primary_weapon) return;

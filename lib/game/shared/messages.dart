@@ -20,3 +20,5 @@ class ShowInfoText with Message {
   final bool hud_align;
   final Function? when_done;
 }
+
+class ToggleCheatMode with Message {}

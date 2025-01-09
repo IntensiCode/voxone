@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/visual.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2.dart';
@@ -15,6 +16,7 @@ import 'package:voxone/ui/controls.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/on_message.dart';
 import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/web_play_screen.dart';
 
@@ -40,23 +42,29 @@ class MainController extends World
       add(TitleScreen());
     }
 
+    onMessage<ToggleCheatMode>((_) => _toggle_cheat_mode());
+    _toggle_cheat_mode();
+  }
+
+  void _toggle_cheat_mode() {
     if (dev) {
-      onKey('<C-1>', () => showScreen(Screen.stage1));
-      onKey('<C-2>', () => showScreen(Screen.stage2));
-      onKey('<C-3>', () => showScreen(Screen.stage3));
+      logInfo('activate cheat keys');
+
+      onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
+      onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
+      onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
+
+      onKey('1', () => showScreen(Screen.stage1));
+      onKey('2', () => showScreen(Screen.stage2));
+      onKey('3', () => showScreen(Screen.stage3));
+
       onKeys(['<A-d>', '='], () {
         visual.debug = !visual.debug;
         logInfo('debug = ${visual.debug}');
       });
-      onKey('<A-v>', () {
-        visual.pixelate_screen = !visual.pixelate_screen;
-        logInfo('pixelate_screen = ${visual.pixelate_screen}');
-      });
+    } else {
+      disposeWhereTag((it) => it.startsWith('onKey-'));
     }
-
-    onKeys(['<A-a>', '<C-8>'], () => pushScreen(Screen.audio));
-    onKeys(['<A-c>', '<C-9>'], () => pushScreen(Screen.controls));
-    onKeys(['<A-t>', '<C-0>'], () => showScreen(Screen.title));
   }
 
   @override

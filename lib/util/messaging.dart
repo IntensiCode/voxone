@@ -24,11 +24,11 @@ mixin Messaging on Component {
   }
 
   void send<T extends Message>(T message) {
-    final listener = listeners[message.runtimeType];
-    if (listener == null || listener.isEmpty) {
+    final all = listeners[message.runtimeType];
+    if (all == null || all.isEmpty) {
       if (debug) logWarn('no listener for ${message.runtimeType} in $listeners');
     } else {
-      listener.forEach((it) => it(message));
+      all.forEach((it) => it(message));
     }
   }
 

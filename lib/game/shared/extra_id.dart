@@ -11,7 +11,7 @@ enum ExtraId {
   /// Primary weapon: Penetrating energy swirl
   phosphor_swirl(11, probability: 0.1),
 
-  /// Primary weapon: Yin-yang energy orbs bouncing between on impact
+  /// Primary weapon: Yin-yang energy orbs bouncing between targets on impact
   yin_yang(12, probability: 0.1),
 
   /// Secondary weapon: Expanding plasma ring

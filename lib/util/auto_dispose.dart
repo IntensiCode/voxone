@@ -86,6 +86,21 @@ mixin AutoDispose on Component {
     _disposables.clear();
   }
 
+  void disposeWhere(bool Function(Disposable disposable) predicate) {
+    final matched = _disposables.entries.where((it) => predicate(it.value));
+    for (final it in matched) {
+      logInfo('dispose ${it.key}');
+      dispose(it.key);
+    }
+  }
+
+  void disposeWhereTag(bool Function(String tag) predicate) {
+    for (final tag in _disposables.keys.where(predicate).toList()) {
+      logInfo('dispose $tag');
+      dispose(tag);
+    }
+  }
+
   /// Dispose the [Disposable] associated with the given [tag]. Nop if nothing registered for this
   /// tag.
   void dispose(String tag) {
