@@ -1,8 +1,6 @@
 texture.png
 size:2048,2048
 repeat:none
-acid_blast
-bounds:452,668,20,20
 acid_bomb
 bounds:584,862,128,32
 bomb
