@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
@@ -29,8 +30,9 @@ class MarauderCaptain extends MarauderEntity
   @override
   void createEntity() {
     super.createEntity();
-    random_extras_count = 5;
-    required_extras = {ExtraId.triple_plasma};
+    final secondary = [ExtraId.plasma_ring, ExtraId.cluster_bomb, ExtraId.nuke_missile, ExtraId.smart_bomb].random(rng);
+    required_extras = {ExtraId.phosphor_swirl, ExtraId.ion_pulse, secondary};
+    random_extras_count = 3;
   }
 
   @override
