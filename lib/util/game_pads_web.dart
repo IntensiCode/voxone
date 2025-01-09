@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_keys.dart';
@@ -29,11 +30,19 @@ enum _GamePadButton {
   const _GamePadButton([this.key]);
 }
 
+enum _GamePadAxis {
+  left_stick_x,
+  left_stick_y,
+  right_stick_x,
+  right_stick_y,
+}
+
 mixin HasGamePads {
   abstract void Function(GameKey) onPressed;
   abstract void Function(GameKey) onReleased;
 
-  static final _state = _GamePadButton.values.associate((it) => MapEntry(it, false));
+  static final _buttons = _GamePadButton.values.associate((it) => MapEntry(it, false));
+  static final _axes = _GamePadAxis.values.associate((it) => MapEntry(it, 0.0));
 
   void tick_game_pads() {
     final it = window.navigator.getGamepads().toDart;
@@ -47,8 +56,8 @@ mixin HasGamePads {
       if (i >= _GamePadButton.values.length) break;
 
       final gpb = _GamePadButton.values[i];
-      if (_state[gpb] == button.pressed) continue;
-      _state[gpb] = button.pressed;
+      if (_buttons[gpb] == button.pressed) continue;
+      _buttons[gpb] = button.pressed;
 
       final key = gpb.key;
       if (key == null) continue;
@@ -57,6 +66,34 @@ mixin HasGamePads {
         onPressed(key);
       } else {
         onReleased(key);
+      }
+    }
+
+    final axes = gp.axes.toDart;
+    for (final it in _GamePadAxis.values) {
+      final now = axes[it.index].toDartDouble;
+      if (now == _axes[it]) continue;
+      _axes[it] = now;
+
+      if (it == _GamePadAxis.left_stick_x || it == _GamePadAxis.right_stick_x) {
+        if (now < -0.8) {
+          onPressed(GameKey.left);
+        } else if (now > 0.8) {
+          onPressed(GameKey.right);
+        } else {
+          onReleased(GameKey.left);
+          onReleased(GameKey.right);
+        }
+      }
+      if (it == _GamePadAxis.left_stick_y || it == _GamePadAxis.right_stick_y) {
+        if (now < -0.8) {
+          onPressed(GameKey.up);
+        } else if (now > 0.8) {
+          onPressed(GameKey.down);
+        } else {
+          onReleased(GameKey.up);
+          onReleased(GameKey.down);
+        }
       }
     }
   }
