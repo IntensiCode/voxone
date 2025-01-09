@@ -25,10 +25,10 @@ mixin HasGameKeys on KeyboardHandler {
   static final rightKeys = ['Arrow Right', 'D', 'L'];
   static final downKeys = ['Arrow Down', 'S', 'J'];
   static final upKeys = ['Arrow Up', 'W', 'K'];
-  static final aKeys = ['V', 'Control'];
-  static final bKeys = ['C', 'Shift'];
-  static final xKeys = ['X', 'Space'];
-  static final yKeys = ['Y', 'Alt'];
+  static final aKeys = ['V', 'Control', 'M'];
+  static final bKeys = ['C', 'Shift', 'E'];
+  static final xKeys = ['X', 'Space', 'N'];
+  static final yKeys = ['Y', 'Alt', 'Q'];
   static final selectKeys = ['Tab', 'I'];
   static final startKeys = ['F1', 'U'];
   static final softKeys1 = ['Escape'];

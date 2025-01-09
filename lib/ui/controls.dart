@@ -35,13 +35,13 @@ const _weapons = '''
 WEAPONS
 ------------
 
-V or Ctrl: Fire Primary
+V or M or Ctrl: Fire Primary
 
-C or Shift: Switch Primary
+C or E or Shift: Switch Primary
 
-X or Space: Fire Secondary
+X or N or Space: Fire Secondary
 
-Z or Alt: Switch Secondary
+Z or Q or Alt: Switch Secondary
 ''';
 
 const _soft_keys = '''
