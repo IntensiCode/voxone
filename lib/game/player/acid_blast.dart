@@ -5,14 +5,16 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class AcidBlast extends PositionComponent with CollisionCallbacks, HasPaint {
+class AcidBlast extends PositionComponent with CollisionCallbacks, DirectionalProjectile, HasPaint, Recyclable {
   static const initial_damage = 5.0;
   static const start_size = 32.0;
   static const size_speed = 64.0;
@@ -39,26 +41,30 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, HasPaint {
 
   late CircleHitbox _hitbox;
 
-  final direction = Vector2(1, 0)
-    ..rotate(-pi / 16)
-    ..scale(400);
-
-  final _tmp = Vector2.zero();
+  @override
+  double get base_speed => 400;
 
   double _anim_time = rng.nextDoubleLimit(10);
 
   double _damage = initial_damage;
+
+  void reset(Vector2 origin) {
+    _anim_time = rng.nextDoubleLimit(10);
+    _damage = initial_damage;
+    size.setAll(start_size);
+    _img?.dispose();
+    _img = null;
+    position.setFrom(origin);
+    x += 25;
+    y -= 25 / 4;
+  }
 
   @override
   onLoad() => _await_shader ??= loadShader('acid_blast.frag').then((it) => _shader = it);
 
   @override
   void update(double dt) {
-    _tmp.setFrom(direction);
-    _tmp.scale(dt);
-    position.add(_tmp);
-
-    if (x > 900) removeFromParent();
+    super.update(dt);
 
     _anim_time += dt;
 
@@ -91,7 +97,7 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, HasPaint {
     canvas.drawImageRect(_img!, _rect, _scaled, paint);
   }
 
-  final _rect = Rect.fromLTWH(0, 0, 80, 32);
+  final _rect = Rect.fromLTWH(0, 0, 64, 32);
   final _scaled = MutRect.zero();
 
   @override

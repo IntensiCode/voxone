@@ -4,14 +4,16 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 
 mixin DirectionalProjectile on PositionComponent {
-  final _direction = Vector2(1, 0)
+  double get base_speed => 500;
+
+  late final _direction = Vector2(1, 0)
     ..rotate(-pi / 16)
-    ..scale(500);
+    ..scale(base_speed);
 
   void change_direction(double relative_angle) {
     _direction.setValues(1, 0);
     _direction.rotate(-pi / 16 + relative_angle);
-    _direction.scale(500);
+    _direction.scale(base_speed);
   }
 
   final _tmp = Vector2.zero();
