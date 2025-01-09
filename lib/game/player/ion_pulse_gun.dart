@@ -3,12 +3,15 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/ion_pulse.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
 class IonPulseGun extends Component with HasContext {
   IonPulseGun(this._player);
 
   final Player _player;
+
+  final _projectiles = ComponentRecycler(() => IonPulse());
 
   double _cool_down = 0;
 
@@ -23,11 +26,7 @@ class IonPulseGun extends Component with HasContext {
       _cool_down += 0.8;
 
       5.forEach((i) {
-        stage.add(IonPulse()
-          ..delay = (i+1) * 0.05
-          ..position.setFrom(_player.position)
-          ..x += 25
-          ..y -= 25 / 4);
+        stage.add(_projectiles.acquire()..reset((i + 1) * 0.05, _player.position));
       });
 
       audio.play(Sound.shot, volume_factor: 0.5);

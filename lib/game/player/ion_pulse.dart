@@ -8,14 +8,10 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility {
-  late final SpriteSheet _sprites;
-
-  double delay = 0;
-  double _size_time = 1;
-
+class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
   IonPulse() {
     anchor = Anchor.center;
     size.setAll(16);
@@ -26,11 +22,25 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProje
       ..paint.opacity = 0.2);
   }
 
+  late final SpriteSheet _sprites;
+
+  double _delay = 0;
+  double _size_time = 1;
+
+  void reset(double delay, Vector2 position) {
+    _delay = delay;
+    _size_time = 1;
+
+    this.position.setFrom(position);
+    this.position.x += 25;
+    this.position.y -= 25 / 4;
+  }
+
   @override
   void update(double dt) {
-    isVisible = delay <= 0;
-    if (delay > 0) {
-      delay = max(0, delay - dt);
+    isVisible = _delay <= 0;
+    if (_delay > 0) {
+      _delay = max(0, _delay - dt);
       return;
     }
 
