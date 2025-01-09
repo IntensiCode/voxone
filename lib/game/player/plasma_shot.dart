@@ -5,14 +5,14 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
+class PlasmaShot extends PositionComponent with CollisionCallbacks, DirectionalProjectile, HasPaint, Recyclable {
   static const _blue1 = Color(0xFFa0a0ff);
   static const _blue2 = Color(0xFF20209f);
-
-  double _start_time = 1;
 
   PlasmaShot() {
     size.setAll(4);
@@ -21,29 +21,19 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, HasPaint {
       ..paint.opacity = 0.2);
   }
 
-  final direction = Vector2(1, 0)
-    ..rotate(-pi / 16)
-    ..scale(500);
+  double _start_time = 1;
 
-  final _tmp = Vector2.zero();
-
-  void change_direction(double relative_angle) {
-    direction.setValues(1, 0);
-    direction.rotate(-pi / 16 + relative_angle);
-    direction.scale(500);
+  void reset(Vector2 origin) {
+    _start_time = 1;
+    position.setFrom(origin);
+    x += 25;
+    y -= 25 / 4;
   }
 
   @override
   void update(double dt) {
-    if (_start_time > 0) _start_time -= dt;
-
-    _tmp.setFrom(direction);
-    _tmp.scale(dt);
-    position.add(_tmp);
-
-    // x += 500 * dt;
-    // y -= 500 / 4 * dt;
-    if (x > 900) removeFromParent();
+    super.update(dt);
+    if (_start_time > 0) _start_time = max(0, _start_time - dt);
   }
 
   @override
