@@ -11,7 +11,7 @@ import 'package:voxone/util/on_message.dart';
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
     add(_info = _InfoOverlay());
-    add(_hud = _InfoOverlay(pos_y: 480 - 32, stay_time: 0.2));
+    add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
   }
 
   late _InfoOverlay _info;
@@ -28,12 +28,12 @@ class InfoOverlay extends GameScriptComponent {
 }
 
 class _InfoOverlay extends GameScriptComponent {
-  _InfoOverlay({this.pos_y = game_height / 2, this.stay_time = 0.4});
+  _InfoOverlay({this.pos_y = game_height / 2, this.quick = false});
 
   final pipe = <ShowInfoText>[];
 
   final double pos_y;
-  final double stay_time;
+  final bool quick;
 
   Future? _active;
 
@@ -58,11 +58,11 @@ class _InfoOverlay extends GameScriptComponent {
       text = textXY(it.text, game_width / 2, pos_y + 5);
       text.fadeInDeep();
     });
-    after(stay_time, () {
+    after(quick ? 0.2 : 0.4, () {
       if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
     });
-    after(1.8, () => text.removeAll(text.children)); // remove blink?
-    if (pipe.length == 1) {
+    after(quick ? 0.9 : 1.8, () => text.removeAll(text.children)); // remove blink?
+    if (pipe.length == 1 && !quick) {
       after(1.0, () => text.fadeOutDeep());
       after(0.0, () => title_text?.fadeOutDeep());
       after(0.5, () => it.when_done?.call());
