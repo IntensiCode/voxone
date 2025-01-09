@@ -7,6 +7,7 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
+import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
@@ -62,7 +63,8 @@ class ZaxxonPlayer extends PositionComponent
         weapons.switch_primary_to(AcidBlaster);
         break;
       case ExtraId.cluster_bomb:
-        // TODO: Handle this case.
+        info('Cluster Bomb', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(ClusterBombCannon);
         break;
       case ExtraId.cooldown:
         info('Secondary Cooldown', hud: true);

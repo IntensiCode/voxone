@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
+import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
@@ -75,6 +76,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     _primaries[YinYangGun(player)] = false;
 
     _secondaries[PlasmaEmitter(player, _on_fired)] = 0;
+    _secondaries[ClusterBombCannon(player, _on_fired)] = 0;
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
