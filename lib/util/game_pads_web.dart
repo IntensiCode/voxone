@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 
+import 'package:supercharged/supercharged.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_keys.dart';
 import 'package:web/web.dart';
@@ -32,7 +33,7 @@ mixin HasGamePads {
   abstract void Function(GameKey) onPressed;
   abstract void Function(GameKey) onReleased;
 
-  final _state = <_GamePadButton, bool>{};
+  static final _state = _GamePadButton.values.associate((it) => MapEntry(it, false));
 
   void tick_game_pads() {
     final it = window.navigator.getGamepads().toDart;
@@ -47,10 +48,11 @@ mixin HasGamePads {
 
       final gpb = _GamePadButton.values[i];
       if (_state[gpb] == button.pressed) continue;
-
       _state[gpb] = button.pressed;
+
       final key = gpb.key;
       if (key == null) continue;
+
       if (button.pressed) {
         onPressed(key);
       } else {
