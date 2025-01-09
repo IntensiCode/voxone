@@ -7,6 +7,7 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
+import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
@@ -68,6 +69,10 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.integrity:
         info('Integrity boost', hud: true);
         integrity = min(1, integrity + 0.25);
+        break;
+      case ExtraId.ion_pulse:
+        info('Ion Pulse', title: 'Primary Weapon Upgrade', hud: true);
+        weapons.switch_primary_to(IonPulseGun);
         break;
       case ExtraId.shield:
         info('Shield boost', hud: true);

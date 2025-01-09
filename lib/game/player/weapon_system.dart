@@ -2,6 +2,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
+import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -36,6 +37,7 @@ class WeaponSystem extends Component with HasContext {
     _primaries[PlasmaGun(player)] = dev;
     _primaries[TriplePlasmaGun(player)] = dev;
     _primaries[AcidBlaster(player)] = dev;
+    _primaries[IonPulseGun(player)] = dev;
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
