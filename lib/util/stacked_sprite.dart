@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/mutable.dart';
@@ -102,9 +103,30 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _shadow.colorFilter = ColorFilter.mode(Color(0x80000000), BlendMode.srcIn);
   }
 
+  double _update_time = 0;
+  bool _render = true;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    _update_time += dt;
+    if (_update_time > 0.1) {
+      _update_time -= 0.1;
+      _render = true;
+    }
+  }
+
   @override
   void render(Canvas canvas) {
-    // canvas.drawRect(Rect.fromLTWH(0, 0, width, height), pixel_paint()..style = PaintingStyle.stroke);
+    if (!_render) {
+      if (_last != null) canvas.drawImage(_last!, Offset.zero, paint);
+      return;
+    }
+    _render = false;
+
+    // bug fix \_('')_/
+    if (kIsWeb) _shader!.setImageSampler(0, _sprite.image);
 
     _x_rot_mat.setRotationX(rot_x);
     _y_rot_mat.setRotationY(rot_y);
@@ -153,10 +175,12 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     c.drawRect(_rect, _paint);
 
     _last?.dispose();
+
     final picture = recorder.endRecording();
     _last = picture.toImageSync(width.toInt(), height.toInt());
-    canvas.drawImage(_last!, Offset.zero, paint);
     picture.dispose();
+
+    canvas.drawImage(_last!, Offset.zero, paint);
 
     _src ??= Rect.fromLTWH(0, 0, width, height);
     _dst ??= MutRect(0, 0, width, height);
