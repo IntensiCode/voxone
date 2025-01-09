@@ -9,7 +9,6 @@ import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
-import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/yin_yang_gun.dart';
@@ -70,7 +69,6 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   void onMount() {
     super.onMount();
 
-    _primaries[PlasmaGun(player)] = false;
     _primaries[TriplePlasmaGun(player)] = false;
     _primaries[AcidBlaster(player)] = false;
     _primaries[IonPulseGun(player)] = false;
@@ -88,9 +86,6 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     switch_secondary_to(initial.runtimeType);
 
     if (dev) {
-      switch_primary_to(_primaries.keys.last.runtimeType);
-      switch_secondary_to(_secondaries.keys.last.runtimeType);
-
       onKey('r', () {
         logInfo('recharge all secondary weapons');
         _secondaries.forEach((key, value) => _secondaries[key] = 10);

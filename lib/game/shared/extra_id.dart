@@ -43,9 +43,6 @@ enum ExtraId {
 
   /// Secondary weapon: Smart Bomb
   smart_bomb(22, probability: 0.1),
-
-  /// Primary weapon: Default Plasma Gun
-  plasma_gun(23, probability: 0.1),
   ;
 
   final int sheet_index;
