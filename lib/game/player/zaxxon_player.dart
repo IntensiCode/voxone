@@ -60,6 +60,9 @@ class ZaxxonPlayer extends PositionComponent
         info('Acid Blast', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(AcidBlaster);
         break;
+      case ExtraId.cluster_bomb:
+        // TODO: Handle this case.
+        break;
       case ExtraId.cooldown:
         info('Secondary Cooldown', hud: true);
         weapons.on_secondary_cooldown(0.5);
@@ -84,6 +87,9 @@ class ZaxxonPlayer extends PositionComponent
         info('Ion Pulse', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(IonPulseGun);
         break;
+      case ExtraId.nuke_missile:
+        // TODO: Handle this case.
+        break;
       case ExtraId.phosphor_swirl:
         info('Phosphor Swirl', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(SwirlGun);
@@ -96,6 +102,12 @@ class ZaxxonPlayer extends PositionComponent
         info('Shield boost', hud: true);
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
+      case ExtraId.smart_bomb:
+        // TODO: Handle this case.
+        break;
+      case ExtraId.super_smart_bomb:
+        // TODO: Handle this case.
+        break;
       case ExtraId.triple_plasma:
         info('Triple Plasma', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(TriplePlasmaGun);
@@ -103,10 +115,6 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.yin_yang:
         info('Yin Yang', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(YinYangGun);
-        break;
-      case _:
-        info(which.toString(), title: 'NYI', hud: true);
-        logWarn('unhandled extra $which');
         break;
     }
   }
