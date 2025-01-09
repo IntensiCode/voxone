@@ -3,6 +3,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_shot.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/random.dart';
 
 class MarauderGun extends Component with HasContext {
@@ -11,6 +12,8 @@ class MarauderGun extends Component with HasContext {
   final Marauder source;
 
   double _cool_down = rng.nextDouble();
+
+  final _projectiles = ComponentRecycler(() => MarauderShot());
 
   @override
   void update(double dt) {
@@ -26,7 +29,7 @@ class MarauderGun extends Component with HasContext {
 
     _cool_down += 0.4 + rng.nextDoubleLimit(0.9);
 
-    final it = MarauderShot();
+    final it = _projectiles.acquire();
     it.position.setFrom(source.position);
     it.x -= 25;
     it.y += 25 / 4;

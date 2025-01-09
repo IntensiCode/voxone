@@ -8,10 +8,11 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
-class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints {
+class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
   static const _inner = Color(0xFFa0ffa0);
   static const _outer = Color(0xFF209f20);
   static const _core = Color(0xFFffffff);
@@ -35,7 +36,7 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
   void update(double dt) {
     x -= 300 * dt;
     y += 300 / 4 * dt;
-    if (x < -100) removeFromParent();
+    if (x < -100) recycle();
   }
 
   @override
@@ -55,14 +56,14 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
         it.on_hit(damage: 1);
-        removeFromParent();
+        recycle();
       });
     }
   }
 
   @override
   void on_destroyed() {
-    removeFromParent();
+    recycle();
     audio.play(Sound.teleport, volume_factor: 0.1);
   }
 }
