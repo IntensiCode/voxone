@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
@@ -16,6 +17,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_keys.dart';
+import 'package:voxone/util/random.dart';
 import 'package:voxone/util/shortcuts.dart';
 
 class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, HasContext {
@@ -81,6 +83,9 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
     add(primary_weapon);
+
+    final initial = _secondaries.keys.toList().random(rng);
+    switch_secondary_to(initial.runtimeType);
 
     if (dev) {
       switch_primary_to(_primaries.keys.last.runtimeType);
