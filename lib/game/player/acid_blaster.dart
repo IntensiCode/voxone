@@ -20,7 +20,7 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
   String get display_name => 'Acid Blaster';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
+  Sprite get icon => extras.icon_for(ExtraId.acid_blast);
 
   @override
   void update(double dt) {

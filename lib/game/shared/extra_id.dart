@@ -41,11 +41,11 @@ enum ExtraId {
   /// Fully cool down secondary weapon
   full_cooldown(21, probability: 0.1),
 
-  /// Secondary weapon: Super Strong Smart Bomb
-  super_smart_bomb(22, probability: 0.1),
-
   /// Secondary weapon: Smart Bomb
-  smart_bomb(23, probability: 0.1),
+  smart_bomb(22, probability: 0.1),
+
+  /// Primary weapon: Default Plasma Gun
+  plasma_gun(23, probability: 0.1),
   ;
 
   final int sheet_index;

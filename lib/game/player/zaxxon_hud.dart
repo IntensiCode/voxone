@@ -8,6 +8,7 @@ import 'package:voxone/game/shared/energy_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/bitmap_text.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 
 class ZaxxonHud extends Component with HasContext, HasPaint {
@@ -16,8 +17,8 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
     add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32))..renderSnapshot = true);
     add(_cooldown = BitmapText(text: 'COOLDOWN', position: Vector2(16, 48))..renderSnapshot = true);
 
-    add(BitmapText(text: 'PRIMARY:', position: Vector2(192, 16))..renderSnapshot = true);
-    add(BitmapText(text: 'SECONDARY:', position: Vector2(192, 32))..renderSnapshot = true);
+    add(BitmapText(text: 'PRIMARY', position: Vector2(192 + 32, 16))..renderSnapshot = true);
+    add(BitmapText(text: 'SECONDARY', position: Vector2(192 * 2, 16))..renderSnapshot = true);
   }
 
   final Player _player;
@@ -27,6 +28,8 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
   late BitmapText _cooldown;
   BitmapText? _primary;
   BitmapText? _secondary;
+  SpriteComponent? _primary_weapon;
+  SpriteComponent? _secondary_weapon;
 
   @override
   void onMount() {
@@ -43,13 +46,22 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
     final primary = _weapons.primary_weapon.display_name;
     if (_primary?.text != primary) {
       _primary?.removeFromParent();
-      add(_primary = BitmapText(text: primary, position: Vector2(292, 16))..renderSnapshot = true);
+      add(_primary = BitmapText(text: primary, position: Vector2(192 + 32, 32))..renderSnapshot = true);
+      _primary_weapon ??= added(SpriteComponent()..position = Vector2(192 + 32 - 26, 18));
+      _primary_weapon?.sprite = _weapons.primary_weapon.icon;
     }
 
     final secondary = _weapons.secondary_weapon?.display_name ?? 'N/A';
     if (_secondary?.text != secondary) {
       _secondary?.removeFromParent();
-      add(_secondary = BitmapText(text: secondary, position: Vector2(292, 32))..renderSnapshot = true);
+      add(_secondary = BitmapText(text: secondary, position: Vector2(192 * 2, 32))..renderSnapshot = true);
+      _secondary_weapon ??= added(SpriteComponent()..position = Vector2(192 * 2 - 26, 18));
+      _secondary_weapon?.sprite = _weapons.secondary_weapon?.icon;
+      if (_weapons.secondary_weapon == null) {
+        _secondary_weapon?.removeFromParent();
+      } else if (_secondary_weapon?.parent == null) {
+        add(_secondary_weapon!);
+      }
     }
   }
 

@@ -21,7 +21,7 @@ class IonPulseGun extends Component with HasContext, PrimaryWeapon {
   String get display_name => 'Ion Pulse';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
+  Sprite get icon => extras.icon_for(ExtraId.ion_pulse);
 
   @override
   void update(double dt) {

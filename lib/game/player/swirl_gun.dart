@@ -20,7 +20,7 @@ class SwirlGun extends Component with HasContext, PrimaryWeapon {
   String get display_name => 'Swirl Gun';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
+  Sprite get icon => extras.icon_for(ExtraId.phosphor_swirl);
 
   @override
   void update(double dt) {

@@ -9,6 +9,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
+import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
@@ -94,6 +95,10 @@ class ZaxxonPlayer extends PositionComponent
         info('Phosphor Swirl', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(SwirlGun);
         break;
+      case ExtraId.plasma_gun:
+        info('Plasma Gun', title: 'Primary Weapon', hud: true);
+        weapons.switch_primary_to(PlasmaGun);
+        break;
       case ExtraId.plasma_ring:
         info('Plasma Ring', title: 'Secondary Weapon', hud: true);
         weapons.switch_secondary_to(PlasmaEmitter);
@@ -103,9 +108,6 @@ class ZaxxonPlayer extends PositionComponent
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
       case ExtraId.smart_bomb:
-        // TODO: Handle this case.
-        break;
-      case ExtraId.super_smart_bomb:
         // TODO: Handle this case.
         break;
       case ExtraId.triple_plasma:

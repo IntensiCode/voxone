@@ -20,7 +20,7 @@ class YinYangGun extends Component with HasContext, PrimaryWeapon {
   String get display_name => 'Yin Yang';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
+  Sprite get icon => extras.icon_for(ExtraId.yin_yang);
 
   @override
   void update(double dt) {
