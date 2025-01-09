@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/ui/fonts.dart';
@@ -13,13 +14,11 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
 
   @override
   onLoad() async {
-    final button = Sprite(await images.load('button_plain.png'));
-    const scale = 0.5;
     add(BitmapButton(
-      bg_nine_patch: button,
+      bg_nine_patch: atlas.sprite('button_plain.png'),
       text: 'Start',
       font: menu_font,
-      font_scale: scale,
+      font_scale: 0.5,
       position: Vector2(game_width / 2, game_height / 2),
       anchor: Anchor.center,
       onTap: (_) => _leave(),
