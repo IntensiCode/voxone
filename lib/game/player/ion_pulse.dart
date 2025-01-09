@@ -11,7 +11,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
+class IonPulse extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
   IonPulse() {
     anchor = Anchor.center;
     size.setAll(16);
@@ -56,7 +56,7 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProje
     if (_size_time < 0) {
       _size_time = min(0, _size_time + dt * 5);
       sprite = _sprites.getSprite(0, ((1 + _size_time) * (_sprites.columns - 1)).toInt());
-      if (_size_time == 0) removeFromParent();
+      if (_size_time == 0) recycle();
     }
   }
 

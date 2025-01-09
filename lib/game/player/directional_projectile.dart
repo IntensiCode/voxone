@@ -2,8 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/util/component_recycler.dart';
 
-mixin DirectionalProjectile on PositionComponent {
+mixin DirectionalProjectile on PositionComponent, Recyclable {
   double get base_speed => 500;
 
   late final _direction = Vector2(1, 0)
@@ -30,6 +31,6 @@ mixin DirectionalProjectile on PositionComponent {
     _tmp.scale(dt);
     position.add(_tmp);
 
-    if (x > game_width + 100) removeFromParent();
+    if (x > game_width + 100) recycle();
   }
 }

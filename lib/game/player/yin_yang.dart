@@ -15,7 +15,7 @@ import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
-class YinYang extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
+class YinYang extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
   YinYang(this._stage) {
     anchor = Anchor.center;
     size.setAll(32);

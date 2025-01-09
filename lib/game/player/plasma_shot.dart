@@ -10,7 +10,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaShot extends PositionComponent with CollisionCallbacks, DirectionalProjectile, HasPaint, Recyclable {
+class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   static const _blue1 = Color(0xFFa0a0ff);
   static const _blue2 = Color(0xFF20209f);
 
@@ -53,7 +53,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, DirectionalP
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(intersections: intersectionPoints);
-          removeFromParent();
+          recycle();
         }
       });
     }

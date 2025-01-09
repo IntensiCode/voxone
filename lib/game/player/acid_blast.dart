@@ -14,7 +14,7 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class AcidBlast extends PositionComponent with CollisionCallbacks, DirectionalProjectile, HasPaint, Recyclable {
+class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   static const initial_damage = 5.0;
   static const start_size = 32.0;
   static const size_speed = 64.0;
@@ -108,7 +108,7 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, DirectionalPr
         if (it.susceptible) {
           _damage /= 2;
           it.on_hit(damage: _damage, intersections: intersectionPoints);
-          if (_damage < 1) removeFromParent();
+          if (_damage < 1) recycle();
           size.scale(0.5);
         }
       });
