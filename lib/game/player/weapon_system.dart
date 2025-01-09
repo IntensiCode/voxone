@@ -4,6 +4,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
+import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -40,20 +41,21 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     _primaries[TriplePlasmaGun(player)] = false;
     _primaries[AcidBlaster(player)] = false;
     _primaries[IonPulseGun(player)] = false;
-
-    if (dev) {
-      onKey('<A-w>', () {
-        _primaries.forEach((key, value) => _primaries[key] = true);
-
-        primary_weapon.removeFromParent();
-        primary_weapon = _primaries.keys.last;
-        add(primary_weapon);
-      });
-    }
+    _primaries[SwirlGun(player)] = false;
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
     add(primary_weapon);
+
+    if (dev) {
+      onKey('<A-w>', () {
+        _primaries.forEach((key, value) => _primaries[key] = true);
+      });
+
+      primary_weapon.removeFromParent();
+      primary_weapon = _primaries.keys.last;
+      add(primary_weapon);
+    }
   }
 
   @override

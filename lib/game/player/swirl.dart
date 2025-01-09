@@ -1,0 +1,59 @@
+import 'package:flame/collisions.dart';
+import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
+import 'package:voxone/core/atlas.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/player/directional_projectile.dart';
+import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/extensions.dart';
+
+class Swirl extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
+  Swirl() {
+    anchor = Anchor.center;
+    size.setAll(32);
+    _sprites = atlas.sheetI('swirl.png', 8, 1);
+    sprite = _sprites.getSprite(0, 0);
+    add(CircleHitbox(radius: 4, anchor: Anchor.center)
+      ..x = size.x / 2
+      ..y = size.y / 2
+      ..renderShape = debug
+      ..paint.opacity = 0.2);
+  }
+
+  late final SpriteSheet _sprites;
+
+  @override
+  double get base_speed => 700;
+
+  double _anim_time = 0;
+
+  void reset(Vector2 origin) {
+    position.setFrom(origin);
+    x += 25;
+    y -= 25 / 4;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    _anim_time = (_anim_time + dt * 3) % 1;
+
+    sprite = _sprites.getSprite(0, ((1 - _anim_time) * (_sprites.columns - 1)).toInt());
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+
+    if (other.hasTrait<Hostile>()) {
+      other.onTraits<Target>((it) {
+        if (it.susceptible) {
+          it.on_hit(intersections: intersectionPoints);
+        }
+      });
+    }
+  }
+}

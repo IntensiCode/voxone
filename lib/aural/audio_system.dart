@@ -20,6 +20,7 @@ enum Sound {
   plasma,
   pulse,
   shot,
+  swirl,
   teleport,
   ;
 }

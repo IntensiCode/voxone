@@ -10,6 +10,7 @@ import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
@@ -73,6 +74,10 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.ion_pulse:
         info('Ion Pulse', title: 'Primary Weapon Upgrade', hud: true);
         weapons.switch_primary_to(IonPulseGun);
+        break;
+      case ExtraId.phosphor_swirl:
+        info('Phosphor Swirl', title: 'Primary Weapon Upgrade', hud: true);
+        weapons.switch_primary_to(SwirlGun);
         break;
       case ExtraId.shield:
         info('Shield boost', hud: true);
