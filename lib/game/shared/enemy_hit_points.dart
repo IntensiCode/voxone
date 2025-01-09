@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:voxone/game/shared/decals.dart';
@@ -31,7 +33,7 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
-    if (remaining > 0) remaining--;
+    remaining = max(0, remaining - damage);
     if (remaining == 0) on_destroyed();
     final p = intersections?.firstOrNull ?? position;
     if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, p);
