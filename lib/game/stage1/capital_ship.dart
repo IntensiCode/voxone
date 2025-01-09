@@ -9,6 +9,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
@@ -37,6 +38,8 @@ class CapitalShip extends MarauderEntity
     shield.max_rotate_time = 360;
     indicator.scale.setAll(0.25);
     indicator.position.setValues(0, -16);
+
+    sendMessage(ShowInfoText(title: 'The End For Now', text: 'Work In Progress'));
   }
 }
 
