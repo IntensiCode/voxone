@@ -22,8 +22,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
   late Player player;
 
-  late Component primary_weapon;
-  Component? secondary_weapon;
+  late PrimaryWeapon primary_weapon;
+  SecondaryWeapon? secondary_weapon;
 
   double? get secondary_cooldown {
     if (secondary_weapon != null) {
@@ -34,8 +34,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     }
   }
 
-  final _primaries = <Component, bool>{};
-  final _secondaries = <Component, int>{};
+  final _primaries = <PrimaryWeapon, bool>{};
+  final _secondaries = <SecondaryWeapon, int>{};
 
   void switch_primary_to(Type type) {
     final weapon = _primaries.keys.firstWhere((it) => it.runtimeType == type);
@@ -58,7 +58,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   void on_secondary_cooldown(double dt) {
     // cooldown all secondary weapons:
     for (final it in _secondaries.entries) {
-      final weapon = it.key as SecondaryWeapon;
+      final weapon = it.key;
       weapon.cooldown = max(0, weapon.cooldown - dt);
     }
   }
@@ -93,13 +93,12 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   }
 
   void _on_fired(SecondaryWeapon weapon) {
-    final it = weapon as Component;
-    final count = _secondaries[it];
+    final count = _secondaries[weapon];
     if (count == null) return;
     if (count <= 0) {
       logError('Secondary weapon fired without ammo');
     } else {
-      _secondaries[it] = count - 1;
+      _secondaries[weapon] = count - 1;
       logInfo('Secondary weapon ammo: $count');
       if (count == 1) {
         logInfo('Secondary weapon out of ammo');

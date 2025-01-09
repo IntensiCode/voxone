@@ -40,22 +40,16 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
     super.update(dt);
     _cooldown.isVisible = _weapons.secondary_weapon != null;
 
-    final primary = _weapons.primary_weapon.runtimeType.toString();
+    final primary = _weapons.primary_weapon.display_name;
     if (_primary?.text != primary) {
       _primary?.removeFromParent();
-      add(_primary = BitmapText(
-        text: _weapons.primary_weapon.runtimeType.toString(),
-        position: Vector2(292, 16),
-      )..renderSnapshot = true);
+      add(_primary = BitmapText(text: primary, position: Vector2(292, 16))..renderSnapshot = true);
     }
 
-    final secondary = _weapons.secondary_weapon?.runtimeType.toString() ?? 'N/A';
+    final secondary = _weapons.secondary_weapon?.display_name ?? 'N/A';
     if (_secondary?.text != secondary) {
       _secondary?.removeFromParent();
-      add(_secondary = BitmapText(
-        text: secondary,
-        position: Vector2(292, 32),
-      )..renderSnapshot = true);
+      add(_secondary = BitmapText(text: secondary, position: Vector2(292, 32))..renderSnapshot = true);
     }
   }
 

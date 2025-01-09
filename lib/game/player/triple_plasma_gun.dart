@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/plasma_shot.dart';
+import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
-class TriplePlasmaGun extends Component with HasContext {
+class TriplePlasmaGun extends Component with HasContext, PrimaryWeapon {
   TriplePlasmaGun(this._player);
 
   final Player _player;
@@ -15,6 +17,12 @@ class TriplePlasmaGun extends Component with HasContext {
   final _projectiles = ComponentRecycler(() => PlasmaShot());
 
   double _cool_down = 0;
+
+  @override
+  String get display_name => 'Triple Plasma';
+
+  @override
+  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
 
   @override
   void update(double dt) {

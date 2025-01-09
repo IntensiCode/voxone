@@ -1,4 +1,5 @@
 import 'package:flame/collisions.dart';
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -18,6 +19,19 @@ abstract interface class Player {
   double get integrity;
 
   void on_collect_extra(ExtraId which);
+}
+
+mixin PrimaryWeapon on Component {
+  String get display_name;
+  Sprite get icon;
+}
+
+mixin SecondaryWeapon on Component {
+  String get display_name;
+  Sprite get icon;
+
+  double cooldown = 0;
+  double cooldown_time = 3;
 }
 
 abstract class Target {

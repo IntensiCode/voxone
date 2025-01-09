@@ -3,16 +3,14 @@ import 'dart:math';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/game/player/plasma_blob.dart';
 import 'package:voxone/game/player/plasma_ring.dart';
+import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
-
-mixin SecondaryWeapon {
-  double cooldown = 0;
-  double cooldown_time = 3;
-}
 
 class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
   PlasmaEmitter(this._player, this._on_fired);
@@ -22,6 +20,12 @@ class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
 
   late final _blobs = ComponentRecycler(() => PlasmaBlob(_emit_plasma_ring));
   late final _rings = ComponentRecycler(() => PlasmaRing());
+
+  @override
+  String get display_name => 'Plasma Emitter';
+
+  @override
+  Sprite get icon => extras.icon_for(ExtraId.plasma_ring);
 
   @override
   void update(double dt) {

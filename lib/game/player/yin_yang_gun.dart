@@ -1,11 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/yin_yang.dart';
+import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
-class YinYangGun extends Component with HasContext {
+class YinYangGun extends Component with HasContext, PrimaryWeapon {
   YinYangGun(this._player);
 
   final Player _player;
@@ -13,6 +15,12 @@ class YinYangGun extends Component with HasContext {
   late final _projectiles = ComponentRecycler(() => YinYang(stage));
 
   double _cool_down = 0;
+
+  @override
+  String get display_name => 'Yin Yang';
+
+  @override
+  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
 
   @override
   void update(double dt) {

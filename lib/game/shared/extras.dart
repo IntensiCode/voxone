@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -29,6 +28,8 @@ class Extras extends Component with HasContext {
   late final SpriteSheet _sheet;
 
   final _animations = <ExtraId, List<Image>>{};
+
+  Sprite icon_for(ExtraId which) => _sheet.getSpriteById(which.sheet_index);
 
   void spawn(Vector2 position, {required Set<ExtraId> choices, int? index, int? count}) {
     final pick = _pick_power_up(choices);
