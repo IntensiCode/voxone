@@ -10,6 +10,7 @@ import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
+import 'package:voxone/game/player/smart_bomb.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/yin_yang_gun.dart';
@@ -79,6 +80,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     _secondaries[PlasmaEmitter(player, _on_fired)] = 0;
     _secondaries[ClusterBombCannon(player, _on_fired)] = 0;
     _secondaries[NukeMissileLauncher(player, _on_fired)] = 0;
+    _secondaries[SmartBomb(_on_fired)] = 0;
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;

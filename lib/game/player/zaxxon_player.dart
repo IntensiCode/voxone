@@ -13,6 +13,7 @@ import 'package:voxone/game/player/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/smart_bomb.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
@@ -107,7 +108,8 @@ class ZaxxonPlayer extends PositionComponent
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
       case ExtraId.smart_bomb:
-        // TODO: Handle this case.
+        info('Smart Bomb', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(SmartBomb);
         break;
       case ExtraId.triple_plasma:
         info('Triple Plasma', title: 'Primary Weapon', hud: true);
