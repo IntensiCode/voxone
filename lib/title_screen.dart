@@ -60,24 +60,26 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     menu.onPreselected = (id) => _preselected = id;
 
     final cheats = '''
-    > Cheat / Dev Mode Active
+    Cheat / Dev Mode Active
     >
-    > Restart at Stage 1 - 3 :: 1 - 3
-    > Audio Menu :: 8
-    > Controls :: 9
-    > Back To Title :: 0
-    > Toggle Debug :: =
+    Jump To Stage :: 1 - 3
+    Audio Menu :: 8
+    Controls :: 9
+    Back To Title :: 0
+    Toggle Debug :: =
     >
-    > Kill All Enemies :: Backspace
+    Kill All Enemies :: Backspace
     >
-    > All Weapons Available
+    All Primary Weapons Available
+    >
+    Recharge All Secondary Weapons :: r
     ''';
     add(_cheats = FlowText(
       text: cheats,
       background: atlas.sprite('button_plain.png'),
       font: mini_font,
-      insets: Vector2(5, 5),
-      position: Vector2(game_width - 320, 0),
+      insets: Vector2(9, 9),
+      position: Vector2(game_width - 320 - 16, 16),
       anchor: Anchor.topLeft,
       size: Vector2(320, 160),
     ));

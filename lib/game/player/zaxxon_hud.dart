@@ -61,14 +61,15 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
 
   @override
   void render(Canvas canvas) {
-    _draw_indicator(canvas, _shield.energy ?? 0, 0);
+    _draw_indicator(canvas, _shield.energy, 0);
     _draw_indicator(canvas, _player.integrity, 16);
     if (_weapons.secondary_weapon != null) {
-      _draw_indicator(canvas, _weapons.secondary_cooldown ?? 0, 32);
+      _draw_indicator(canvas, (1 - (_weapons.secondary_cooldown ?? 1)), 32);
     }
   }
 
   void _draw_indicator(Canvas canvas, double value, double offset_y) {
+    if (value <= 0) return;
     paint.color = switch (value) {
       > .6 => _good,
       > .5 => _damaged,

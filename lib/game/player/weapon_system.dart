@@ -1,8 +1,10 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
+import 'package:voxone/game/player/plasma_emitter.dart';
 import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
@@ -21,9 +23,17 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   late Component primary_weapon;
   Component? secondary_weapon;
 
-  double secondary_cooldown = 1;
+  double? get secondary_cooldown {
+    if (secondary_weapon != null) {
+      var it = secondary_weapon as SecondaryWeapon;
+      return it.cooldown / it.cooldown_time;
+    } else {
+      return null;
+    }
+  }
 
   final _primaries = <Component, bool>{};
+  final _secondaries = <Component, int>{};
 
   void switch_primary_to(Type type) {
     final weapon = _primaries.keys.firstWhere((it) => it.runtimeType == type);
@@ -32,6 +42,15 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     primary_weapon.removeFromParent();
     primary_weapon = weapon;
     add(primary_weapon);
+  }
+
+  void switch_secondary_to(Type type) {
+    final weapon = _secondaries.keys.firstWhere((it) => it.runtimeType == type);
+    _secondaries[weapon] = (_secondaries[weapon] ?? 0) + (dev ? 10 : 3);
+
+    secondary_weapon?.removeFromParent();
+    secondary_weapon = weapon;
+    add(secondary_weapon!);
   }
 
   @override
@@ -45,38 +64,69 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     _primaries[SwirlGun(player)] = false;
     _primaries[YinYangGun(player)] = false;
 
+    _secondaries[PlasmaEmitter(player, _on_fired)] = 0;
+
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
     add(primary_weapon);
 
     if (dev) {
-      primary_weapon.removeFromParent();
-      primary_weapon = _primaries.keys.last;
-      add(primary_weapon);
+      switch_primary_to(_primaries.keys.last.runtimeType);
+      switch_secondary_to(_secondaries.keys.last.runtimeType);
+
+      onKey('r', () {
+        logInfo('recharge all secondary weapons');
+        _secondaries.forEach((key, value) => _secondaries[key] = 10);
+        switch_secondary_to(_secondaries.keys.last.runtimeType);
+      });
+    }
+  }
+
+  void _on_fired(SecondaryWeapon weapon) {
+    final it = weapon as Component;
+    final count = _secondaries[it];
+    if (count == null) return;
+    if (count <= 0) {
+      logError('Secondary weapon fired without ammo');
+    } else {
+      _secondaries[it] = count - 1;
+      logInfo('Secondary weapon ammo: $count');
+      if (count == 1) {
+        logInfo('Secondary weapon out of ammo');
+        weapon.cooldown = 0;
+        _switch_secondary();
+      }
     }
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (keys.check_and_consume(GameKey.b_button)) {
-      _switch_primary();
-    }
-    if (keys.check_and_consume(GameKey.y_button)) {
-      // _switch_secondary();
-    }
+    if (keys.check_and_consume(GameKey.b_button)) _switch_primary();
+    if (keys.check_and_consume(GameKey.y_button)) _switch_secondary();
   }
 
   void _switch_primary() {
-    _primaries[primary_weapon] = true;
-
     final bank = _primaries.entries.filter((it) => it.value || dev).toList();
     final index = bank.indexWhere((it) => it.key == primary_weapon);
     final next = bank[(index + 1) % bank.length];
     if (next.key == primary_weapon) return;
 
-    primary_weapon.removeFromParent();
-    primary_weapon = next.key;
-    add(primary_weapon);
+    switch_primary_to(next.key.runtimeType);
+  }
+
+  void _switch_secondary() {
+    final bank = _secondaries.entries.filter((it) => it.value > 0).toList();
+    if (bank.isEmpty) {
+      secondary_weapon?.removeFromParent();
+      secondary_weapon = null;
+      return;
+    }
+
+    final index = bank.indexWhere((it) => it.key == secondary_weapon);
+    final next = bank[(index + 1) % bank.length];
+    if (next.key == secondary_weapon) return;
+
+    switch_secondary_to(next.key.runtimeType);
   }
 }
