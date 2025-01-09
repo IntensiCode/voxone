@@ -37,7 +37,7 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
     if (remaining == 0) on_destroyed();
     final p = intersections?.firstOrNull ?? position;
     if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, p);
-    hit_time += 0.05;
+    hit_time = (hit_time + 0.05).clamp(0.0, 0.5);
   }
 
   @override
