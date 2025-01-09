@@ -24,7 +24,7 @@ enum ExtraId {
   nuke_missile(15, probability: 0.1),
 
   /// Restore some integrity
-  integrity(16, probability: 10),
+  integrity(16, probability: 2),
 
   /// Restore some shield energy
   shield(17, probability: 1),
