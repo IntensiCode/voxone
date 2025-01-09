@@ -48,7 +48,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
 
   @override
   createEntity() async {
-    reset_hit_points_to(dev ? 25 : 150);
+    reset_hit_points_to(dev ? 25 : 500);
 
     size.setAll(220);
 
@@ -139,7 +139,7 @@ mixin _VibrateOnIncoming on MarauderEntity {
 
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
   final _nop = <Vector2>{};
-  double _generator_hit_points = dev ? 3 : 25;
+  double _generator_hit_points = dev ? 3 : 150;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
