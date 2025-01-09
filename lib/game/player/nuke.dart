@@ -1,8 +1,8 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
@@ -10,51 +10,46 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaRing extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
-  static const _color1 = Color(0xFFa0a0ff);
-  static const _color2 = Color(0xFF20209f);
-
-  PlasmaRing() {
-    size.setAll(4);
-    add(_hitbox = CircleHitbox(radius: 16, anchor: Anchor.center)
+class Nuke extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
+  Nuke() {
+    size.setAll(400);
+    add(CircleHitbox(anchor: Anchor.center, isSolid: true)
       ..renderShape = debug
       ..paint.opacity = 0.2);
 
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 8;
+    paint.color = white;
     paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 16);
+
+    priority = 5000;
   }
 
+  double _life_time = 0;
+
   @override
-  double get base_speed => 32;
-
-  late CircleHitbox _hitbox;
-
-  double _size = 32;
+  double get base_speed => 0;
 
   void reset(Vector2 origin) {
-    _size = 32;
+    _life_time = 0;
     position.setFrom(origin);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    _size += 350 * dt + pow(_size, 2) * dt / 100;
-    if (_size > 1000) recycle();
-    size.setAll(_size);
-    _hitbox.radius = _size;
+    _life_time += dt;
+    if (_life_time > 1) recycle();
   }
 
   @override
   void render(Canvas canvas) {
-    paint.color = _color2;
-    canvas.drawCircle(Offset.zero, _size, paint);
-    final mf = paint.maskFilter;
-    paint.maskFilter = null;
-    paint.color = _color1;
-    canvas.drawCircle(Offset.zero, _size, paint);
-    paint.maskFilter = mf;
+    final saved = paint.opacity;
+
+    final x = _life_time < 0.5 ? _life_time * 2 : 1 - (_life_time - 0.5) * 2;
+    final o = Curves.easeInOutCubic.transform(x.clamp(0, 1));
+    paint.opacity *= o;
+    canvas.drawCircle(Offset.zero, size.x / 2, paint);
+
+    paint.opacity = saved;
   }
 
   @override

@@ -9,6 +9,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
+import 'package:voxone/game/player/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
 import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
@@ -90,7 +91,8 @@ class ZaxxonPlayer extends PositionComponent
         weapons.switch_primary_to(IonPulseGun);
         break;
       case ExtraId.nuke_missile:
-        // TODO: Handle this case.
+        info('Nuke Missile', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(NukeMissileLauncher);
         break;
       case ExtraId.phosphor_swirl:
         info('Phosphor Swirl', title: 'Primary Weapon', hud: true);
