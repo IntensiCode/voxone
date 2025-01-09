@@ -26,14 +26,12 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProje
 
   double _delay = 0;
   double _size_time = 1;
+  late Vector2 _origin;
 
   void reset(double delay, Vector2 position) {
     _delay = delay;
     _size_time = 1;
-
-    this.position.setFrom(position);
-    this.position.x += 25;
-    this.position.y -= 25 / 4;
+    _origin = position;
   }
 
   @override
@@ -41,6 +39,11 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, DirectionalProje
     isVisible = _delay <= 0;
     if (_delay > 0) {
       _delay = max(0, _delay - dt);
+      if (_delay == 0) {
+        position.setFrom(_origin);
+        x += 25;
+        y -= 25 / 4;
+      }
       return;
     }
 
