@@ -13,6 +13,7 @@ import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
+import 'package:voxone/game/player/yin_yang_gun.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -53,10 +54,9 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void on_collect_extra(ExtraId which) {
-    logInfo('collect extra $which');
     switch (which) {
       case ExtraId.acid_blast:
-        info('Acid Blast', title: 'Primary Weapon Upgrade', hud: true);
+        info('Acid Blast', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(AcidBlaster);
         break;
       case ExtraId.full_integrity:
@@ -72,11 +72,11 @@ class ZaxxonPlayer extends PositionComponent
         integrity = min(1, integrity + 0.25);
         break;
       case ExtraId.ion_pulse:
-        info('Ion Pulse', title: 'Primary Weapon Upgrade', hud: true);
+        info('Ion Pulse', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(IonPulseGun);
         break;
       case ExtraId.phosphor_swirl:
-        info('Phosphor Swirl', title: 'Primary Weapon Upgrade', hud: true);
+        info('Phosphor Swirl', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(SwirlGun);
         break;
       case ExtraId.shield:
@@ -84,8 +84,12 @@ class ZaxxonPlayer extends PositionComponent
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
       case ExtraId.triple_plasma:
-        info('Triple Plasma', title: 'Primary Weapon Upgrade', hud: true);
+        info('Triple Plasma', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(TriplePlasmaGun);
+        break;
+      case ExtraId.yin_yang:
+        info('Yin Yang', title: 'Primary Weapon', hud: true);
+        weapons.switch_primary_to(YinYangGun);
         break;
       case _:
         info(which.toString(), title: 'NYI', hud: true);

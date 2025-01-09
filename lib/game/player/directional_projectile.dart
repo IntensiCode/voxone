@@ -16,6 +16,12 @@ mixin DirectionalProjectile on PositionComponent {
     _direction.scale(base_speed);
   }
 
+  void set_direction(Vector2 direction) {
+    _direction.setFrom(direction);
+    _direction.normalize();
+    _direction.scale(base_speed);
+  }
+
   final _tmp = Vector2.zero();
 
   @override

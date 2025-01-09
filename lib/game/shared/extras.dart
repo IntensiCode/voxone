@@ -34,7 +34,6 @@ class Extras extends Component with HasContext {
     final pick = _pick_power_up(choices);
     if (pick == null) return;
 
-    logInfo('picked $pick from $choices');
     final animation = _animations[pick] ??= _make_animation(pick);
     final extra = _Extra(animation, shadows);
     extra.which = pick;

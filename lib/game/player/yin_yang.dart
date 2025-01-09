@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:dart_extensions_methods/dart_extension_methods.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -8,14 +10,16 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/stage1/marauder_shot.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/random.dart';
 
-class Swirl extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
-  Swirl() {
+class YinYang extends SpriteComponent with CollisionCallbacks, DirectionalProjectile, HasVisibility, Recyclable {
+  YinYang(this._stage) {
     anchor = Anchor.center;
     size.setAll(32);
-    _sprites = atlas.sheetI('swirl.png', 8, 1);
+    _sprites = atlas.sheetI('yin-yang.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
     add(CircleHitbox(radius: 4, anchor: Anchor.center)
       ..x = size.x / 2
@@ -24,10 +28,12 @@ class Swirl extends SpriteComponent with CollisionCallbacks, DirectionalProjecti
       ..paint.opacity = 0.2);
   }
 
+  final Component _stage;
+
   late final SpriteSheet _sprites;
 
   @override
-  double get base_speed => 700;
+  double get base_speed => 300;
 
   double _anim_time = 0;
 
@@ -42,7 +48,7 @@ class Swirl extends SpriteComponent with CollisionCallbacks, DirectionalProjecti
     super.update(dt);
 
     _anim_time = (_anim_time + dt * 3) % 1;
-    angle = _anim_time * pi * 2;
+    angle = -_anim_time * pi * 2;
   }
 
   @override
@@ -53,6 +59,26 @@ class Swirl extends SpriteComponent with CollisionCallbacks, DirectionalProjecti
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(intersections: intersectionPoints);
+
+          var hostiles = _stage.children
+              .whereType<Hostile>()
+              .map((it) => it as PositionComponent)
+              .filterNot((it) => it == other)
+              .filterNot((it) => it is MarauderShot)
+              .toSet();
+
+          if (hostiles.isEmpty) {
+            logInfo('no other hostiles');
+            set_direction(randomNormalizedVector2());
+            return;
+          }
+
+          // pick nearest target from hostiles:
+          final nearest = hostiles.reduce((a, b) => a.distance(this) < b.distance(this) ? a : b);
+
+          // change direction towards nearest target:
+          final direction = nearest.position - position;
+          set_direction(direction.normalized());
         }
       });
     }
