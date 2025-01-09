@@ -38,6 +38,7 @@ class YinYang extends SpriteComponent with CollisionCallbacks, Recyclable, Direc
   double _anim_time = 0;
 
   void reset(Vector2 origin) {
+    change_direction(0);
     position.setFrom(origin);
     x += 25;
     y -= 25 / 4;

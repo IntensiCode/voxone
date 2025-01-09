@@ -25,6 +25,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   void reset(Vector2 origin) {
     _start_time = 1;
+    change_direction(0);
     position.setFrom(origin);
     x += 25;
     y -= 25 / 4;
