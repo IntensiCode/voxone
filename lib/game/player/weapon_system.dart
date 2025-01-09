@@ -1,5 +1,5 @@
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
@@ -7,9 +7,11 @@ import 'package:voxone/game/player/plasma_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_keys.dart';
+import 'package:voxone/util/shortcuts.dart';
 
-class WeaponSystem extends Component with HasContext {
+class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, HasContext {
   WeaponSystem(this.player);
 
   late Player player;
@@ -34,20 +36,24 @@ class WeaponSystem extends Component with HasContext {
   void onMount() {
     super.onMount();
 
-    _primaries[PlasmaGun(player)] = dev;
-    _primaries[TriplePlasmaGun(player)] = dev;
-    _primaries[AcidBlaster(player)] = dev;
-    _primaries[IonPulseGun(player)] = dev;
+    _primaries[PlasmaGun(player)] = false;
+    _primaries[TriplePlasmaGun(player)] = false;
+    _primaries[AcidBlaster(player)] = false;
+    _primaries[IonPulseGun(player)] = false;
+
+    if (dev) {
+      onKey('<A-w>', () {
+        _primaries.forEach((key, value) => _primaries[key] = true);
+
+        primary_weapon.removeFromParent();
+        primary_weapon = _primaries.keys.last;
+        add(primary_weapon);
+      });
+    }
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
     add(primary_weapon);
-
-    if (dev) {
-      primary_weapon.removeFromParent();
-      primary_weapon = _primaries.keys.last;
-      add(primary_weapon);
-    }
   }
 
   @override
@@ -62,15 +68,12 @@ class WeaponSystem extends Component with HasContext {
   }
 
   void _switch_primary() {
-    final bank = _primaries.entries.toList();
-    logInfo("Switch primary weapon: $bank");
+    _primaries[primary_weapon] = true;
+
+    final bank = _primaries.entries.filter((it) => it.value).toList();
     final index = bank.indexWhere((it) => it.key == primary_weapon);
-    logInfo("Current primary weapon: $index");
     final next = bank[(index + 1) % bank.length];
-    if (next.key == primary_weapon) {
-      logInfo("No other primary weapon available");
-      return;
-    }
+    if (next.key == primary_weapon) return;
 
     primary_weapon.removeFromParent();
     primary_weapon = next.key;

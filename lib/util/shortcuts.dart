@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'auto_dispose.dart';
 
 mixin HasAutoDisposeShortcuts on Component, AutoDispose {
-  bool get is_active => true;
+  bool get is_active => isMounted && !isRemoving;
 
   void onKey(String pattern, void Function() callback) {
     autoDispose(
