@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
@@ -51,6 +53,14 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     secondary_weapon?.removeFromParent();
     secondary_weapon = weapon;
     add(secondary_weapon!);
+  }
+
+  void on_secondary_cooldown(double dt) {
+    // cooldown all secondary weapons:
+    for (final it in _secondaries.entries) {
+      final weapon = it.key as SecondaryWeapon;
+      weapon.cooldown = max(0, weapon.cooldown - dt);
+    }
   }
 
   @override

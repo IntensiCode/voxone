@@ -60,6 +60,14 @@ class ZaxxonPlayer extends PositionComponent
         info('Acid Blast', title: 'Primary Weapon', hud: true);
         weapons.switch_primary_to(AcidBlaster);
         break;
+      case ExtraId.cooldown:
+        info('Secondary Cooldown', hud: true);
+        weapons.on_secondary_cooldown(0.5);
+        break;
+      case ExtraId.full_cooldown:
+        info('Full Secondary Cooldown', hud: true);
+        weapons.on_secondary_cooldown(5);
+        break;
       case ExtraId.full_integrity:
         info('Integrity restored', hud: true);
         integrity = 1;
