@@ -29,7 +29,7 @@ class IonPulseGun extends Component with HasContext {
         stage.add(_projectiles.acquire()..reset((i + 1) * 0.05, _player.position));
       });
 
-      audio.play(Sound.shot, volume_factor: 0.5);
+      audio.play(Sound.pulse, volume_factor: 0.5);
     }
   }
 }
