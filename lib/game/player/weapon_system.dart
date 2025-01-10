@@ -101,17 +101,11 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
   void _on_fired(SecondaryWeapon weapon) {
     final count = _secondaries[weapon];
-    if (count == null) return;
-    if (count <= 0) {
-      logError('Secondary weapon fired without ammo');
-    } else {
-      _secondaries[weapon] = count - 1;
-      logInfo('Secondary weapon ammo: $count');
-      if (count == 1) {
-        logInfo('Secondary weapon out of ammo');
-        weapon.cooldown = 0;
-        _switch_secondary();
-      }
+    if (count == null || count <= 0) return;
+    _secondaries[weapon] = count - 1;
+    if (count == 1) {
+      weapon.cooldown = 0;
+      _switch_secondary();
     }
   }
 
