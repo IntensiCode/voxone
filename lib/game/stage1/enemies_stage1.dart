@@ -1,7 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -26,11 +25,6 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
   ];
 
   EnemyWave? _active_wave;
-
-  @override
-  onLoad() async {
-    await EnemyExplosion.preload();
-  }
 
   @override
   void onMount() {

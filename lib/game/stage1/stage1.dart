@@ -2,9 +2,13 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/player/acid_blast.dart';
+import 'package:voxone/game/player/plasma_blob.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
 import 'package:voxone/game/player/zaxxon_player.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
+import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/game_screen.dart';
@@ -29,6 +33,11 @@ class Stage1 extends GameScreen with HasContext {
     add(extras);
     add(mines);
     add(InfoOverlay());
+
+    AcidBlast.preload();
+    PlasmaBlob.preload();
+    DeflectorShield.preload();
+    await EnemyExplosion.preload();
   }
 
   void _change_phase(GamePhase phase) {

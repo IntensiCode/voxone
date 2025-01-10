@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
@@ -12,10 +13,16 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
+import 'package:voxone/util/uniforms.dart';
 
 class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
+
+  static preload() {
+    logInfo('preload plasma blob shader');
+    PlasmaBlob.await_shader = loadShader('plasma_blob.frag');
+  }
 
   PlasmaBlob(this._emit_plasma_ring) {
     anchor = Anchor.center;

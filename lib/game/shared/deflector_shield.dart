@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
@@ -13,6 +14,14 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits implements Integrity {
+  static final _shaders = <String, FragmentShader>{};
+
+  static preload() async {
+    logInfo('preload deflector shield shaders');
+    _shaders['plasma_shield.frag'] = await loadShader('plasma_shield.frag');
+    _shaders['hex_shield.frag'] = await loadShader('hex_shield.frag');
+  }
+
   DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
     size.setAll(96);
     add(CircleHitbox(anchor: Anchor.center)
@@ -48,7 +57,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   @override
   onLoad() async {
-    _shader = await loadShader(_shader_name);
+    _shader = _shaders[_shader_name]!;
     paint.shader = _shader;
     priority = 1;
     opacity = 0.5;

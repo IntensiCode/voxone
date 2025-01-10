@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/functions.dart';
@@ -9,7 +10,8 @@ class EnemyExplosion extends CircleComponent {
   static FragmentShader? _explosion;
   static SpriteAnimation? _anim;
 
-  static Future<void> preload() async {
+  static preload() async {
+    logInfo('preload enemy explosion shader');
     _explosion ??= await loadShader('explosion.frag');
     _anim ??= animCR('explosion96.png', 12, 1, 0.1);
   }

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
@@ -12,6 +13,7 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
+import 'package:voxone/util/uniforms.dart';
 
 class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   static const initial_damage = 6.0;
@@ -20,6 +22,11 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, D
 
   static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
+
+  static preload() {
+    logInfo('preload acid blast shader');
+    await_shader = loadShader('acid_blast.frag');
+  }
 
   AcidBlast() {
     anchor = Anchor.center;

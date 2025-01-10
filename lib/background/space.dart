@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/uniforms.dart';
@@ -33,6 +34,7 @@ class Space extends Component with HasPaint {
 
     if (_shader != null) return;
 
+    logInfo('load space shader');
     _shader = await loadShader('space.frag');
 
     _uniforms = Uniforms(_shader!, Uniform.values);
