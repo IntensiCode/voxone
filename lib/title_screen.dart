@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
@@ -17,6 +18,7 @@ import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/shortcuts.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 
 enum _TitleButtons {
   audio,
@@ -126,6 +128,13 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       _cheats.isVisible = dev;
       sendMessage(ToggleCheatMode());
     }
+  }
+
+  @override
+  void renderTree(Canvas canvas) {
+    StackedSprite.update_interval = 0.05;
+    StackedSprite.render_count = 0;
+    super.renderTree(canvas);
   }
 }
 

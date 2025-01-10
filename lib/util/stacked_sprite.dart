@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/mutable.dart';
+import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
 
 enum HighlightMode {
@@ -103,27 +104,37 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _shadow.colorFilter = ColorFilter.mode(Color(0x80000000), BlendMode.srcIn);
   }
 
+  static double update_interval = 0.1;
+  static final _max_renders_per_frame = kDebugMode ? 1 : 5;
+
   double _update_time = 0;
   bool _render = true;
+
+  static int render_count = 0;
 
   @override
   void update(double dt) {
     super.update(dt);
 
     _update_time += dt;
-    if (_update_time > 0.1) {
-      _update_time -= 0.1;
+    if (_update_time > update_interval) {
       _render = true;
     }
   }
 
   @override
   void render(Canvas canvas) {
-    if (!_render) {
-      if (_last != null) canvas.drawImage(_last!, Offset.zero, paint);
-      return;
+    if (_last != null) {
+      if (!_render || render_count > _max_renders_per_frame) {
+        _update_time = update_interval - rng.nextDoubleLimit(update_interval / 4);
+        canvas.drawImage(_last!, Offset.zero, paint);
+        return;
+      }
     }
     _render = false;
+    _update_time = rng.nextDoubleLimit(update_interval / 4);
+
+    render_count++;
 
     // bug fix \_('')_/
     if (kIsWeb) _shader!.setImageSampler(0, _sprite.image);

@@ -66,6 +66,13 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     }
     super.updateTree(dt);
   }
+
+  @override
+  void renderTree(Canvas canvas) {
+    StackedSprite.update_interval = 0.2;
+    StackedSprite.render_count = 0;
+    super.renderTree(canvas);
+  }
 }
 
 class _PauseOverlay extends GameScriptComponent with HasContext {
