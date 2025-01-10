@@ -14,12 +14,10 @@ import 'package:voxone/util/extensions.dart';
 class SmartBomb extends Component with HasContext, SecondaryWeapon {
   SmartBomb(Function(SecondaryWeapon) on_fired) {
     super.on_fired = on_fired;
+    cooldown_time = 10;
   }
 
   late final _nukes = ComponentRecycler(() => _DestroyEverything(stage));
-
-  @override
-  double get cooldown_time => 1;
 
   @override
   String get display_name => 'Smart Bomb';
