@@ -11,10 +11,9 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/uniforms.dart';
 
 class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
-  static Future<FragmentShader>? _await_shader;
+  static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
 
   PlasmaBlob(this._emit_plasma_ring) {
@@ -50,7 +49,7 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
   }
 
   @override
-  onLoad() => _await_shader ??= loadShader('plasma_blob.frag').then((it) => _shader = it);
+  onLoad() => await_shader.then((it) => _shader = it);
 
   @override
   void update(double dt) {

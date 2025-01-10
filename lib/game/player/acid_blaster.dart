@@ -6,6 +6,7 @@ import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/uniforms.dart';
 
 class AcidBlaster extends Component with HasContext, PrimaryWeapon {
   AcidBlaster(this._player);
@@ -21,6 +22,9 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
 
   @override
   Sprite get icon => extras.icon_for(ExtraId.acid_blast);
+
+  @override
+  onLoad() => AcidBlast.await_shader = loadShader('acid_blast.frag');
 
   @override
   void update(double dt) {

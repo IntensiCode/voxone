@@ -12,14 +12,13 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/uniforms.dart';
 
 class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   static const initial_damage = 6.0;
   static const start_size = 16.0;
   static const size_speed = 64.0;
 
-  static Future<FragmentShader>? _await_shader;
+  static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
 
   AcidBlast() {
@@ -60,7 +59,7 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, D
   }
 
   @override
-  onLoad() => _await_shader ??= loadShader('acid_blast.frag').then((it) => _shader = it);
+  onLoad() => await_shader.then((it) => _shader = it);
 
   @override
   void update(double dt) {

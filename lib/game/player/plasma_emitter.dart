@@ -9,6 +9,7 @@ import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/uniforms.dart';
 
 class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
   PlasmaEmitter(this._player, this._on_fired);
@@ -24,6 +25,9 @@ class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
 
   @override
   Sprite get icon => extras.icon_for(ExtraId.plasma_ring);
+
+  @override
+  onLoad() => PlasmaBlob.await_shader = loadShader('plasma_blob.frag');
 
   @override
   void update(double dt) {
