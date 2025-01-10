@@ -15,7 +15,7 @@ import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
-  static const initial_damage = 3.0;
+  static const initial_damage = 6.0;
   static const start_size = 16.0;
   static const size_speed = 64.0;
 
