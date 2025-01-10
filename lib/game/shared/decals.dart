@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
@@ -14,6 +14,7 @@ extension HasContextExtensions on HasContext {
 enum Decal {
   mini_explosion(1.0),
   nuke_explosion(1.0),
+  smoke(1.0),
   teleport(0.3),
   ;
 
@@ -23,109 +24,114 @@ enum Decal {
 }
 
 class DecalObj {
-  DecalObj(this.position);
-
-  final Vector2 position;
+  int row = 0;
+  final position = Vector2.zero();
+  final velocity = Vector2(0, 0);
   double time = 0;
 
-  final velocity = Vector2(0, 0);
-}
-
-class _MiniExplosion extends DecalObj {
-  _MiniExplosion(super.position) {
-    position.x += rng.nextDoublePM(20);
-    position.y += rng.nextDoublePM(20);
-    velocity.setValues(80, -20);
+  void randomize_position({double range = 20}) {
+    position.x += rng.nextDoublePM(range);
+    position.y += rng.nextDoublePM(range);
   }
 
-  int which = rng.nextInt(8);
+  void randomize_velocity({double range = 20}) {
+    velocity.x += rng.nextDoublePM(range);
+    velocity.y += rng.nextDoublePM(range);
+  }
 }
 
 class Decals extends Component {
   Decals() {
     priority = 10000;
-    logInfo('Decals created');
+    for (final it in Decal.values) {
+      _ready[it] = List.generate(10, (_) => DecalObj());
+      _active[it] = List.empty(growable: true);
+    }
   }
 
-  late final SpriteSheet _explosions;
-  late final SpriteAnimation _teleport;
-  late final SpriteAnimation _nuke;
-
-  final _instances = <Decal, List<DecalObj>>{};
+  final _ready = <Decal, List<DecalObj>>{};
+  final _active = <Decal, List<DecalObj>>{};
+  final _anim = <Decal, SpriteSheet>{};
 
   DecalObj spawn(Decal decal, Vector2 start) {
     late final DecalObj result;
-    final instances = _instances[decal] ??= List.empty(growable: true);
+
+    final instances = _active[decal] ??= List.empty(growable: true);
+    final pool = _ready[decal]!;
+    if (pool.isEmpty) pool.add(DecalObj());
+    instances.add(result = pool.removeAt(0));
+
+    result.position.setFrom(start);
+    result.velocity.setZero();
+    result.time = 0;
+
     if (decal == Decal.mini_explosion) {
-      instances.add(result = _MiniExplosion(start.clone()));
-    } else {
-      instances.add(result = DecalObj(start.clone()));
+      result.randomize_position(range: 20);
+      result.randomize_velocity(range: 20);
+      result.row = rng.nextInt(8);
+    }
+    if (decal == Decal.smoke) {
+      result.randomize_position(range: 8);
+      result.randomize_velocity(range: 8);
     }
     return result;
   }
 
   @override
   onLoad() {
-    _explosions = sheetI('explosions.png', 7, 8);
-    _teleport = animCR('teleport.png', 5, 1);
-    _nuke = animCR('explosion.png', 14, 1);
+    _anim[Decal.mini_explosion] = sheetI('explosions.png', 7, 8);
+    _anim[Decal.nuke_explosion] = sheetI('explosion.png', 14, 1);
+    _anim[Decal.smoke] = sheetI('smoke.png', 11, 1);
+    _anim[Decal.teleport] = sheetI('teleport.png', 5, 1);
   }
 
   @override
   void update(double dt) {
-    final mini_explosions = _instances[Decal.mini_explosion];
-    if (mini_explosions != null) {
-      for (final it in mini_explosions) {
-        it.position.x += it.velocity.x * dt;
-        it.position.y -= it.velocity.y * dt;
-        it.time += dt * 2;
-      }
-      mini_explosions.removeWhere((it) => it.time >= 1);
+    for (final it in Decal.values) {
+      _update(it, dt);
     }
-
-    final teleports = _instances[Decal.teleport];
-    if (teleports != null) _update_default(Decal.teleport, dt, teleports);
-
-    final nukes = _instances[Decal.nuke_explosion];
-    if (nukes != null) _update_default(Decal.nuke_explosion, dt, nukes);
   }
 
-  void _update_default(Decal decal, double dt, List<DecalObj> decals) {
+  void _update(Decal decal, double dt) {
+    final decals = _active[decal];
+    if (decals == null) return;
+
     for (final it in decals) {
       it.position.x += it.velocity.x * dt;
       it.position.y -= it.velocity.y * dt;
       it.time += dt;
     }
-    decals.removeWhere((it) => it.time >= decal.anim_time);
+    final done = decals.where((it) => it.time >= decal.anim_time).toList();
+    for (final it in done) {
+      _ready[decal]!.add(it);
+    }
+    decals.removeAll(done);
   }
 
   @override
   void render(Canvas canvas) {
-    final mini_explosions = _instances[Decal.mini_explosion];
-    if (mini_explosions != null) {
-      for (final it in mini_explosions) {
-        final me = it as _MiniExplosion;
-        final column = (it.time * _explosions.columns - 1).toInt();
-        final f = _explosions.getSprite(me.which, column);
-        f.render(canvas, position: it.position, anchor: Anchor.center, size: _mini_explosion_size);
-      }
+    for (final it in Decal.values) {
+      _render(it, canvas, _anim[it]!);
     }
-
-    final teleports = _instances[Decal.teleport];
-    if (teleports != null) _render_default(Decal.teleport, canvas, teleports, _teleport);
-
-    final nukes = _instances[Decal.nuke_explosion];
-    if (nukes != null) _render_default(Decal.nuke_explosion, canvas, nukes, _nuke);
   }
 
-  void _render_default(Decal decal, Canvas canvas, List<DecalObj> decals, SpriteAnimation animation) {
+  void _render(Decal decal, Canvas canvas, SpriteSheet animation) {
+    final decals = _active[decal];
+    if (decals == null) return;
+
+    final size = switch (decal) {
+      Decal.mini_explosion => _mini_explosion_size,
+      Decal.smoke => _smoke_size,
+      _ => _default_decal_size,
+    };
     for (final it in decals) {
-      final column = (it.time * (animation.frames.length - 1) / decal.anim_time).toInt();
-      final f = animation.frames[column];
-      f.sprite.render(canvas, position: it.position, anchor: Anchor.center, size: _default_decal_size);
+      final column = (it.time * (animation.columns - 1) / decal.anim_time).toInt();
+      final f = animation.getSprite(it.row, column);
+      f.render(canvas, position: it.position, anchor: Anchor.center, size: size);
     }
   }
 
-  final _mini_explosion_size = Vector2.all(16);
   final _default_decal_size = Vector2.all(32);
+  final _mini_explosion_size = Vector2.all(16);
+  final _smoke_size = Vector2.all(6);
 }
