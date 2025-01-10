@@ -43,10 +43,8 @@ class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, Directio
     final sprite_index = (anim_time * (_sprites.columns - 1)).toInt();
     sprite = _sprites.getSprite(0, sprite_index);
 
-    if (_life_time > 5 || _is_outside()) recycle();
+    if (_life_time > 5 || position.is_outside()) recycle();
   }
-
-  bool _is_outside() => x < -50 || x > game_width + 50 || y < 50 || y > game_height + 50;
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {

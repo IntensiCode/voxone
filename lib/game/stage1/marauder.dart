@@ -55,12 +55,14 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
   final target_position = Vector2.zero();
 
+  double volatile_incoming_time = 0.9;
+
   @override
   bool get susceptible => switch (state) {
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,
-        _ => incoming_time > 0.9,
+        _ => incoming_time > volatile_incoming_time,
       };
 
   @override
@@ -83,6 +85,8 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   }
 
   void createEntity();
+
+  double active_time_limit = 120;
 
   double incoming_time = 0;
   double active_time = 0;
@@ -151,14 +155,8 @@ mixin CreateMarauderEntity on MarauderEntity {
     entity.scale_z = 1.2;
 
     await entity.add(EnemyHealthBar(this));
-
     await add(entity);
-
-    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
-
+    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
     await add(MarauderGun(this));
   }
 }
@@ -245,7 +243,7 @@ mixin FloatOnActive on MarauderEntity {
 
     if (state != MarauderState.active) {
       return;
-    } else if (active_time > 120) {
+    } else if (active_time > active_time_limit) {
       state = MarauderState.leaving;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
@@ -328,6 +326,8 @@ mixin SweepOutOnLeaving on MarauderEntity {
 }
 
 mixin TumbleOnExploding on MarauderEntity {
+  Vector2? tumble_dir;
+
   @override
   void on_exploding(double dt) {
     leaving_time += dt;
@@ -339,8 +339,8 @@ mixin TumbleOnExploding on MarauderEntity {
     entity.rot_x += dt;
     entity.rot_y += dt * 2;
     entity.rot_z += dt * 0.5;
-    position.x -= dt * 100;
-    position.y += dt * 100 / 4;
+    position.x += dt * (tumble_dir?.x ?? 100);
+    position.y += dt * (tumble_dir?.y ?? 100 / 4);
 
     entity.sprite.opacity = 1 - leaving_time / 2;
   }

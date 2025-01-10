@@ -14,6 +14,8 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
+import 'package:voxone/game/stage1/satellite_marauder.dart';
+import 'package:voxone/util/extensions.dart';
 
 class CapitalShip extends MarauderEntity
     with
@@ -43,6 +45,7 @@ class CapitalShip extends MarauderEntity
   void shield_added() {
     super.shield_added();
     shield.size.setFrom(entity.size);
+    shield.auto_recharge = 0.05;
     shield.auto_recharge = dev ? 0.01 : 0.05;
     shield.max_rotate_time = 360;
     indicator.scale.setAll(0.25);
@@ -58,6 +61,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
   @override
   createEntity() async {
     reset_hit_points_to(dev ? 25 : 500);
+    reset_hit_points_to(500);
 
     size.setAll(220);
 
@@ -148,7 +152,9 @@ mixin _VibrateOnIncoming on MarauderEntity {
 
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
   final _nop = <Vector2>{};
-  double _generator_hit_points = dev ? 3 : 150;
+
+  // double _generator_hit_points = dev ? 3 : 150;
+  double _generator_hit_points = 150;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
@@ -168,21 +174,44 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
 }
 
 mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
+  static const _satellite_count = 6;
+
+  int _waves = 10;
+
   final _satellites = <MarauderEntity>[];
 
   @override
   void on_active(double dt) {
-    // if (_satellites.isEmpty) {
-    //   final satellite = Marauder();
-    //   satellite.target = target;
-    //   satellite.target_position = target_position;
-    //   satellite.position.setFrom(position);
-    //   satellite.position.x += 100;
-    //   satellite.position.y += 100;
-    //   satellite.position.z += 100;
-    //   satellite.addTrait(Hostile());
-    //   _satellites.add(satellite);
-    //   add(satellite);
-    // }
+    _satellites.forEach((it) {
+      if (it.state == MarauderState.left || it.state == MarauderState.defeated) {
+        it.removeFromParent();
+      }
+    });
+    _satellites.removeWhere((it) => it.state == MarauderState.left);
+    _satellites.removeWhere((it) => it.state == MarauderState.defeated);
+
+    if (_satellites.isNotEmpty || _waves <= 0) return;
+
+    final target = Vector2.zero();
+    _satellite_count.forEach((index) {
+      final angle = pi / 4 - pi / 2 * index / _satellite_count;
+      target.setValues(-200 * cos(angle) - index * 10, 30 + 130 * sin(angle));
+      target.add(position);
+
+      final satellite = SatelliteMarauder();
+      satellite.target_position.setFrom(target);
+      satellite.init_formation(position, index / _satellite_count, index * 2 - 5);
+
+      _satellites.add(satellite);
+      stage.add(satellite);
+    });
+
+    _waves--;
+  }
+
+  @override
+  void on_destroyed() {
+    super.on_destroyed();
+    _satellites.forEach((it) => it.on_destroyed());
   }
 }

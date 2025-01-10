@@ -16,6 +16,11 @@ const double game_height = 480;
 final Vector2 game_size = Vector2(game_width, game_height);
 final Vector2 game_center = game_size / 2;
 
+extension VectorExtensions on Vector2 {
+  bool is_outside({double buffer = 50}) =>
+      x < -buffer || x > game_width + buffer || y < buffer || y > game_height + buffer;
+}
+
 const default_line_height = 12.0;
 const debug_height = default_line_height;
 

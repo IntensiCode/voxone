@@ -1,10 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/sprite.dart';
 import 'package:kart/kart.dart';
+import 'package:voxone/core/common.dart' as c;
 
 extension ComponentExtension on Component {
   PositionComponent get ppc => parent! as PositionComponent;
@@ -163,4 +165,12 @@ extension SetExtensions<T> on Set<T> {
   T random(Random rng) => elementAt(rng.nextInt(length));
 
   Set<T> operator +(T it) => <T>{...this, it};
+}
+
+extension ShapeHitboxExtensions on ShapeHitbox {
+  void debug() {
+    paint.color = c.red;
+    opacity = 0.2;
+    renderShape = c.debug;
+  }
 }

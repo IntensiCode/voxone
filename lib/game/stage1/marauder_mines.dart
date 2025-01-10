@@ -27,9 +27,9 @@ extension HasContextExtensions on HasContext {
 class MarauderMines extends Component with HasContext {
   ComponentRecycler<MarauderMine>? _mines;
 
-  spawn(Vector2 position, {double drift = 0}) {
+  MarauderMine? spawn(Vector2 position, {double drift = 0}) {
     if (_mines == null) return null;
-    stage.added(_mines!.acquire()..reset(position, drift: drift));
+    return stage.added(_mines!.acquire()..reset(position, drift: drift));
   }
 
   @override
@@ -92,6 +92,10 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       ..renderShape = debug);
   }
 
+  final _dir_override = Vector2.zero();
+
+  void set_direction(Vector2 direction) => _dir_override.setFrom(direction);
+
   void reset(Vector2 origin, {double drift = 0}) {
     position.setFrom(origin);
     hit_time = 0;
@@ -99,6 +103,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     remaining = 10;
     _destroyed = false;
     this.drift = drift;
+    _dir_override.setZero();
 
     entity.sprite.reset();
   }
@@ -146,13 +151,22 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     entity.rot_x += dt;
     entity.rot_y += dt / 2;
     entity.rot_z += dt * 3;
-    position.x -= 100 * dt;
-    position.y += 100 / 4 * dt;
-    position.x -= drift / 4 * dt;
-    position.y -= drift * dt;
 
-    if (position.x < -100) recycle();
+    if (_dir_override.isZero()) {
+      position.x -= 100 * dt;
+      position.y += 100 / 4 * dt;
+      position.x -= drift / 4 * dt;
+      position.y -= drift * dt;
+    } else {
+      _tmp.setFrom(_dir_override);
+      _tmp.scale(dt);
+      position.add(_tmp);
+    }
+
+    if (position.is_outside()) recycle();
   }
+
+  final _tmp = Vector2.zero();
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
