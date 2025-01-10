@@ -9,6 +9,7 @@ import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/stage1/homing_launcher.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
@@ -70,6 +71,8 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
       ..renderShape = debug);
 
     await add(RangerLaser(this)..damage = 0.3);
+
+    await add(HomingLauncher(this));
   }
 }
 

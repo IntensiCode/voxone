@@ -14,6 +14,7 @@ import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/stage1/homing_launcher.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
 import 'package:voxone/game/stage1/satellite_marauder.dart';
@@ -44,6 +45,7 @@ class CapitalShip extends MarauderEntity
   @override
   void createEntity() {
     super.createEntity();
+    add(HomingLauncher(this));
     add(RangerLaser(this, offset: _v(-108, -6), damage: 0.4, cool_down: 2.8)..priority = 10);
     add(RangerLaser(this, offset: _v(-50, 72), damage: 0.4, cool_down: 2.8)..priority = 10);
     add(RangerLaser(this, offset: _v(-10, 4), damage: 0.4)..priority = 10);

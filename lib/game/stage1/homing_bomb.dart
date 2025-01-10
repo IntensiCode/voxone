@@ -1,0 +1,106 @@
+import 'dart:math';
+import 'dart:ui';
+
+import 'package:flame/collisions.dart';
+import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
+import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/common.dart';
+import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/random.dart';
+import 'package:voxone/util/stacked_sprite.dart';
+
+class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
+  static late SpriteSheet sheet;
+
+  HomingBomb() {
+    size.setAll(4);
+    add(CircleHitbox(radius: 4, anchor: Anchor.center)
+      ..renderShape = debug
+      ..paint.opacity = 0.2);
+    mini_explosions_on_hit = false;
+  }
+
+  void reset() {
+    reset_hit_points_to(15);
+    _dir.setZero();
+    _anim_time = 0;
+    _life_time = 0;
+  }
+
+  final _dir = Vector2.zero();
+
+  double _anim_time = 0;
+
+  double _life_time = 0;
+
+  @override
+  bool get susceptible => true;
+
+  @override
+  set highlight_mode(HighlightMode mode) {}
+
+  @override
+  void onMount() {
+    super.onMount();
+    _dir.setFrom(player.position - position);
+    _dir.normalize();
+    _dir.rotate(rng.nextBool() ? -pi / 8 : pi / 8);
+  }
+
+  final _tmp = Vector2.zero();
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    _tmp.setFrom(player.position);
+    _tmp.sub(position);
+    _tmp.normalize();
+    _dir.lerp(_tmp, 0.8 * dt);
+    _tmp.scale(0.01);
+    _dir.add(_tmp);
+
+    x += _dir.x * dt * 200;
+    y += _dir.y * dt * 200;
+    if (position.is_outside()) recycle();
+
+    _anim_time = (_anim_time + dt * 1.5) % 1;
+    angle = _anim_time * 2 * pi;
+    scale.setAll(1 + sin(_anim_time * 2 * pi) * 0.25);
+
+    _life_time += dt;
+    if (_life_time > 4.25) {
+      recycle();
+      4.forEach((_) => decals.spawn(Decal.smoke, position));
+    }
+  }
+
+  @override
+  void render(Canvas canvas) => sheet.getSpriteById(0).render(canvas, anchor: Anchor.center);
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other.hasTrait<Friendly>()) {
+      other.onTraits<Target>((it) {
+        if (!it.susceptible) return;
+        decals.spawn(Decal.nuke_explosion, position);
+        it.on_hit(damage: 20);
+        recycle();
+      });
+    }
+  }
+
+  @override
+  void on_destroyed() {
+    recycle();
+    audio.play(Sound.explosion, volume_factor: 0.1);
+  }
+}
