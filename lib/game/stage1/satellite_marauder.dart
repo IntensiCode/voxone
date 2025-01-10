@@ -69,7 +69,7 @@ mixin _MoveIntoFormationOnIncoming on MarauderEntity, HasVisibility {
     _origin.setFrom(origin);
     _incoming_delay = delay;
     _path = CatmullRomSpline([
-      origin.toOffsetXY(50, -20),
+      origin.toOffsetXY(25, -20),
       origin.toOffsetXY(150 - dy * 10.0, -dy.toDouble() * 10 - 20),
       origin.toOffsetXY(0, -50 * dy.sign - dy.toDouble() * 20 - 10),
       origin.toOffsetXY(-100, -50 * dy.sign - dy.toDouble() * 20),
@@ -108,6 +108,8 @@ mixin _MoveIntoFormationOnIncoming on MarauderEntity, HasVisibility {
       entity.rot_y = pi / 2 - atan2(_last_dir.y, _last_dir.x);
     }
     if (i > 0.9) entity.rot_y = -1 - (1 - i) * 10;
+
+    priority = i < 0.1 ? -500 : 0;
   }
 
   final _last_dir = Vector2.zero();
