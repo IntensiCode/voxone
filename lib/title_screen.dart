@@ -131,6 +131,12 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+    if (_keys.check_and_consume(GameKey.start)) pushScreen(Screen.stage1);
+  }
+
+  @override
   void renderTree(Canvas canvas) {
     StackedSprite.update_interval = 0.05;
     StackedSprite.render_count = 0;
