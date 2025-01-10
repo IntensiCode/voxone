@@ -25,7 +25,14 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     logInfo('Keys instances: $_instances');
   }
 
-  static const _do_not_repeat = {GameKey.a_button, GameKey.b_button, GameKey.soft1, GameKey.soft2};
+  static const _do_not_repeat = {
+    GameKey.a_button,
+    GameKey.b_button,
+    GameKey.x_button,
+    GameKey.y_button,
+    GameKey.soft1,
+    GameKey.soft2,
+  };
   static const _repeat_delay_ticks = tps ~/ 4;
   static const _repeat_interval_ticks = tps ~/ 20;
 

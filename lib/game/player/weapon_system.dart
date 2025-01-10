@@ -122,7 +122,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   @override
   void update(double dt) {
     super.update(dt);
-    if (keys.check_and_consume(GameKey.b_button)) _switch_primary();
+    if (keys.check_and_consume(GameKey.x_button)) _switch_primary();
     if (keys.check_and_consume(GameKey.y_button)) _switch_secondary();
 
     // update cooldown for all secondary weapons:

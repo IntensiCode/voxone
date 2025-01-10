@@ -29,7 +29,7 @@ mixin PrimaryWeapon on Component {
 }
 
 mixin SecondaryWeapon on HasContext {
-  var button = GameKey.x_button;
+  var button = GameKey.b_button;
 
   String get display_name;
 
