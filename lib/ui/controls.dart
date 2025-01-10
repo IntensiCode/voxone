@@ -3,11 +3,11 @@ import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
+import 'package:voxone/input/keys.dart';
 import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/keys.dart';
 
 const _game_pad = '''
 The dpad or left stick is used to move the player. The stick may not work, depending on the controller. The dpad should always work.

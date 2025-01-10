@@ -3,8 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-import 'auto_dispose.dart';
+import 'package:voxone/util/auto_dispose.dart';
 
 mixin HasAutoDisposeShortcuts on Component, AutoDispose {
   bool get is_active => isMounted && !isRemoving;

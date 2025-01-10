@@ -1,9 +1,8 @@
 import 'dart:js_interop';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/game_keys.dart';
 import 'package:web/web.dart';
 
 enum _GamePadButton {

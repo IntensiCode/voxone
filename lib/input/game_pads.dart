@@ -1,7 +1,7 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:gamepads/gamepads.dart';
+import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/game_keys.dart';
 
 enum _GamePadButton {
   a(GameKey.a_button),

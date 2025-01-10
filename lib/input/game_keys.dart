@@ -1,7 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
-
-import 'extensions.dart';
+import 'package:voxone/util/extensions.dart';
 
 enum GameKey {
   left,

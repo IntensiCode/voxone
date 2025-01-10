@@ -16,10 +16,10 @@ import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/yin_yang_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/input/game_keys.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/game_keys.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/shortcuts.dart';
 
 class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, HasContext {
   WeaponSystem(this.player);

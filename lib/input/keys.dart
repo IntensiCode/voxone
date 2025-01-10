@@ -2,9 +2,9 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/input/game_keys.dart';
+import 'package:voxone/util/auto_dispose.dart';
 
-import 'auto_dispose.dart';
-import 'game_keys.dart';
 import 'game_pads.dart' if (dart.library.html) 'game_pads_web.dart';
 
 export 'game_keys.dart';

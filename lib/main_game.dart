@@ -10,11 +10,11 @@ import 'package:voxone/aural/music_score.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/hud.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/main_controller.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/performance.dart';
-import 'package:voxone/util/shortcuts.dart';
 
 class MainGame extends FlameGame<MainController>
     with HasKeyboardHandlerComponents, Messaging, Shortcuts, HasPerformanceTracker, ScrollDetector {

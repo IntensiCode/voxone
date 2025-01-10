@@ -23,11 +23,13 @@ abstract interface class Player {
 
 mixin PrimaryWeapon on Component {
   String get display_name;
+
   Sprite get icon;
 }
 
 mixin SecondaryWeapon on Component {
   String get display_name;
+
   Sprite get icon;
 
   double cooldown = 0;

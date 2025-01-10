@@ -11,13 +11,13 @@ import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2.dart';
 import 'package:voxone/game/stage3.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/title_screen.dart';
 import 'package:voxone/ui/controls.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/on_message.dart';
-import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World

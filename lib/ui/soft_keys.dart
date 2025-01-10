@@ -2,12 +2,12 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_keys.dart';
 import 'package:voxone/util/game_script_functions.dart';
 import 'package:voxone/util/nine_patch_image.dart';
 

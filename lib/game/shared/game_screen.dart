@@ -9,13 +9,13 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/stage_cache.dart';
+import 'package:voxone/input/keys.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasVisibility {

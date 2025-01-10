@@ -5,13 +5,13 @@ import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
+import 'package:voxone/input/keys.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/keys.dart';
-import 'package:voxone/util/shortcuts.dart';
 
 class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
   WebPlayScreen() {

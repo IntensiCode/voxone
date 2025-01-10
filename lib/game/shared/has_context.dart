@@ -4,7 +4,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/game_screen.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/stage_cache.dart';
-import 'package:voxone/util/keys.dart';
+import 'package:voxone/input/keys.dart';
 import 'package:voxone/util/messaging.dart';
 
 /// Mixin to provide cross-component-hierarchy access to other, shared components. The [stage] is always required as

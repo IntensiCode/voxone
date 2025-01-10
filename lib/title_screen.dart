@@ -10,14 +10,14 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/input/keys.dart';
+import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/shortcuts.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 enum _TitleButtons {
