@@ -6,25 +6,18 @@ import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class EnemyExplosion extends CircleComponent {
-  EnemyExplosion();
-
   static FragmentShader? _explosion;
   static SpriteAnimation? _anim;
 
-  @override
-  Future onLoad() async {
+  static Future<void> preload() async {
     _explosion ??= await loadShader('explosion.frag');
     _anim ??= animCR('explosion96.png', 12, 1, 0.1);
-    paint.color = white;
-    paint.isAntiAlias = false;
-    paint.filterQuality = FilterQuality.none;
-    paint.shader = _explosion!;
-    return super.onLoad();
   }
 
   @override
   void onMount() {
     super.onMount();
+
     final ppc = parent as PositionComponent;
     radius = ppc.size.x / 2;
     anchor = Anchor.center;
@@ -33,6 +26,11 @@ class EnemyExplosion extends CircleComponent {
     position.y += ppc.size.y / 2;
     _explosion!.setFloat(0, width);
     _explosion!.setFloat(1, height);
+
+    paint.color = white;
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
+    paint.shader = _explosion!;
   }
 
   double _time = 0;
