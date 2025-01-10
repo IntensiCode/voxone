@@ -12,7 +12,7 @@ import 'package:voxone/util/extensions.dart';
 
 class Nuke extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
   Nuke() {
-    size.setAll(400);
+    size.setAll(300);
     add(CircleHitbox(anchor: Anchor.center, isSolid: true)
       ..renderShape = debug
       ..paint.opacity = 0.2);
