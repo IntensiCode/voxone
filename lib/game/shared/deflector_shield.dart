@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
@@ -37,7 +38,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   final String _shader_name;
 
-  double? auto_recharge = 0.3;
+  double auto_recharge = 0.3;
 
   double _deflect_time = 0;
   double _rotate_time = 0;
@@ -55,6 +56,11 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   @override
   double get integrity_in_percent => shield.energy.clamp(0, 1) * 100;
 
+  void on_shield_boost() {
+    shield.on_shield_boost();
+    auto_recharge = min(0.75, auto_recharge + 0.05);
+  }
+
   @override
   onLoad() async {
     _shader = _shaders[_shader_name] ?? await loadShader(_shader_name);
@@ -66,9 +72,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   void update(double dt) {
     super.update(dt);
 
-    if (auto_recharge != null) {
-      shield.recharge(dt * auto_recharge!);
-    }
+    shield.recharge(dt * auto_recharge);
 
     if (_deflect_time > 0) {
       _deflect_time -= dt;

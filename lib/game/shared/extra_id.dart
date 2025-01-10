@@ -36,7 +36,7 @@ enum ExtraId {
   integrity_boost(19, probability: 0.1),
 
   /// Restore full shield energy
-  full_shield(20, probability: 0.1),
+  shield_boost(20, probability: 0.1),
 
   /// Fully cool down secondary weapon
   cooldown_boost(21, probability: 0.1),
@@ -60,7 +60,7 @@ enum ExtraId {
     shield,
     cooldown,
     integrity_boost,
-    full_shield,
+    shield_boost,
     cooldown_boost,
   };
 }

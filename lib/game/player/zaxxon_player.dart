@@ -81,9 +81,9 @@ class ZaxxonPlayer extends PositionComponent
         info('Integrity Boost', hud: true);
         _integrity_boost = min(2, _integrity_boost + 0.1);
         break;
-      case ExtraId.full_shield:
-        info('Shield restored', hud: true);
-        onTraits<DeflectorShield>((it) => it.shield.recharge(1));
+      case ExtraId.shield_boost:
+        info('Shield Boost', hud: true);
+        onTraits<DeflectorShield>((it) => it.on_shield_boost());
         break;
       case ExtraId.integrity:
         info('Integrity boost', hud: true);
