@@ -9,6 +9,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -39,6 +40,8 @@ class CapitalShip extends MarauderEntity
     add(RangerLaser(this, offset: Vector2(-113, -3), damage: 0.4, cool_down: 2.8)..priority = 10);
     add(RangerLaser(this, offset: Vector2(-60, 68), damage: 0.4, cool_down: 2.8)..priority = 10);
     add(RangerLaser(this, offset: Vector2(-10, 4), damage: 0.4)..priority = 10);
+    random_extras_count = 5;
+    required_extras = {ExtraId.smart_bomb, ExtraId.phosphor_swirl, ExtraId.nuke_missile};
   }
 
   @override

@@ -42,7 +42,7 @@ enum ExtraId {
   cooldown_boost(21, probability: 0.2),
 
   /// Secondary weapon: Smart Bomb
-  smart_bomb(22, probability: 0.1),
+  smart_bomb(22, probability: 0.05),
   ;
 
   final int sheet_index;
