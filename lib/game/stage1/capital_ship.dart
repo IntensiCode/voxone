@@ -28,7 +28,7 @@ class CapitalShip extends MarauderEntity
         SpawnExtrasOnExploding {
   //
   @override
-  String get shader_name => 'hex_shield.frag';
+  String get shield_shader => 'hex_shield.frag';
 
   @override
   void shield_added() {

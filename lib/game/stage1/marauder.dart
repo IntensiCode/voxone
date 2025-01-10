@@ -185,7 +185,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
   late DeflectorShield shield;
   late EnemyHealthBar indicator;
 
-  String shader_name = 'plasma_shield.frag';
+  String shield_shader = 'plasma_shield.frag';
 
   @override
   void on_incoming(double dt) {
@@ -193,7 +193,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
 
     if (incoming_time < 1) return;
 
-    shield = DeflectorShield(this, shader_name: shader_name);
+    shield = DeflectorShield(this, shader_name: shield_shader);
     shield.auto_recharge = 0.01;
     shield.addTrait(Hostile());
     add(shield);
