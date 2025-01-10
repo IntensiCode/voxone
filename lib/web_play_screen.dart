@@ -45,8 +45,43 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
       ..addEntry(AudioMenuEntry.sound_only, 'Sound Only')
       ..addEntry(AudioMenuEntry.silent_mode, 'Silent Mode')
       ..preselectEntry(AudioMenuEntry.master_volume)
-      ..position.setValues(game_center.x, 64)
+      ..position.setValues(game_center.x, game_center.y - 16)
       ..anchor = Anchor.topCenter);
+
+    final frames = atlas.sheetI('splash_anim.png', 13, 1);
+    final logo = added(SpriteComponent(
+      sprite: frames.getSpriteById(12),
+      anchor: Anchor.topCenter,
+      position: Vector2(game_center.x, 64),
+    )..opacity = 0);
+    final anim = frames.createAnimation(row: 0, stepTime: 0.1, loop: false);
+    final it = added(SpriteAnimationComponent(
+      animation: anim,
+      removeOnFinish: true,
+      anchor: Anchor.topCenter,
+      position: Vector2(game_center.x, 64),
+    ));
+    it.animationTicker?.completed.then((_) {
+      add(BitmapText(
+        text: "A",
+        font: menu_font,
+        anchor: Anchor.topCenter,
+        position: Vector2(game_center.x, 32),
+      )..fadeInDeep());
+      add(BitmapText(
+        text: "GAME",
+        font: menu_font,
+        anchor: Anchor.topCenter,
+        position: Vector2(game_center.x, 160),
+      )..fadeInDeep());
+      logo.opacity = 1;
+      add(BitmapText(
+        text: "AN INTENSICODE PRESENTATION",
+        anchor: Anchor.bottomCenter,
+        position: Vector2(game_center.x, game_height - 16),
+      )..fadeInDeep());
+    });
+    audio.play_one_shot_sample('psychocell.ogg', cache: false);
   }
 
   void _selected(AudioMenuEntry it) {
