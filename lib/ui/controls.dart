@@ -59,7 +59,7 @@ class Controls extends GameScriptComponent {
   @override
   onLoad() {
     add(_keys);
-    add(Space());
+    add(space);
 
     fontSelect(tiny_font, scale: 2);
     textXY('Game Pad / Controller', game_center.x, 20, scale: 2, anchor: Anchor.topCenter);

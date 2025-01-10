@@ -10,6 +10,13 @@ enum Uniform {
   time,
 }
 
+Space? _space;
+
+Space get space {
+  _space?.removeFromParent();
+  return _space ??= Space();
+}
+
 class Space extends Component with HasPaint {
   final _rect = const Rect.fromLTWH(0, 0, game_width, game_height);
 

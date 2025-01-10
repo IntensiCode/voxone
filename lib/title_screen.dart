@@ -35,7 +35,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   onLoad() {
     add(_keys);
-    add(Space());
+    add(space);
     add(_shadows);
     add(_TitleShip(_shadows));
 

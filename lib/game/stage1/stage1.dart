@@ -23,7 +23,7 @@ class Stage1 extends GameScreen with HasContext {
 
   @override
   onLoad() async {
-    add(Space());
+    add(space);
     _change_phase(phase);
     add(decals);
     add(extras);

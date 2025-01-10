@@ -38,7 +38,7 @@ class AudioMenu extends GameScriptComponent {
   @override
   onLoad() {
     add(_keys);
-    add(Space());
+    add(space);
 
     fontSelect(tiny_font, scale: 2);
     textXY('Audio Mode', game_center.x, 20, scale: 2, anchor: Anchor.topCenter);
