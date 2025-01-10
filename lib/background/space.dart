@@ -29,6 +29,8 @@ class Space extends Component with HasPaint {
 
   @override
   Future<void> onLoad() async {
+    priority = -10000;
+
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
 
