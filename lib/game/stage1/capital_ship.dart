@@ -18,6 +18,10 @@ import 'package:voxone/game/stage1/ranger_laser.dart';
 import 'package:voxone/game/stage1/satellite_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 
+const _scale_factor = 2.0;
+
+Vector2 _v(double x, double y) => Vector2(x * _scale_factor, y * _scale_factor);
+
 class CapitalShip extends MarauderEntity
     with
         HasTraits,
@@ -25,6 +29,7 @@ class CapitalShip extends MarauderEntity
         _VibrateOnIncoming,
         AddShieldAfterOnIncoming,
         _LoseShieldWhenGeneratorDestroyed,
+        _FloatOnActive,
         _MaintainSatellitesOnActive,
         NopOnSweeping,
         NopOnLeaving,
@@ -37,9 +42,9 @@ class CapitalShip extends MarauderEntity
   @override
   void createEntity() {
     super.createEntity();
-    add(RangerLaser(this, offset: Vector2(-113, -3), damage: 0.4, cool_down: 2.8)..priority = 10);
-    add(RangerLaser(this, offset: Vector2(-60, 68), damage: 0.4, cool_down: 2.8)..priority = 10);
-    add(RangerLaser(this, offset: Vector2(-10, 4), damage: 0.4)..priority = 10);
+    add(RangerLaser(this, offset: _v(-108, -6), damage: 0.4, cool_down: 2.8)..priority = 10);
+    add(RangerLaser(this, offset: _v(-50, 72), damage: 0.4, cool_down: 2.8)..priority = 10);
+    add(RangerLaser(this, offset: _v(-10, 4), damage: 0.4)..priority = 10);
     random_extras_count = 5;
     required_extras = {ExtraId.smart_bomb, ExtraId.phosphor_swirl, ExtraId.nuke_missile};
   }
@@ -66,7 +71,8 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
     reset_hit_points_to(dev ? 25 : 500);
     reset_hit_points_to(500);
 
-    size.setAll(220);
+    size.setAll(200 * _scale_factor);
+    scale.setAll(1 / _scale_factor);
 
     entity = StackedEntity('entities/dual_striker.png', 16, shadows);
     entity.size.setFrom(size);
@@ -176,6 +182,16 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
   }
 }
 
+mixin _FloatOnActive on MarauderEntity {
+  @override
+  void on_active(double dt) {
+    active_time += dt * 3;
+    position.setFrom(target_position);
+    position.x += sin(active_time / 1.2345) * 10;
+    position.y += sin(active_time) * 10;
+  }
+}
+
 mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   static const _satellite_count = 6;
 
@@ -185,6 +201,8 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
 
   @override
   void on_active(double dt) {
+    super.on_active(dt);
+
     _satellites.forEach((it) {
       if (it.state == MarauderState.left || it.state == MarauderState.defeated) {
         it.removeFromParent();

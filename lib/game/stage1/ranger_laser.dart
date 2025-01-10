@@ -101,11 +101,13 @@ class RangerLaser extends Component with HasContext, HasPaint {
     } else {
       dist = 5000.0;
     }
-    _to.dx = _direction.x * dist / (_source as PositionComponent).scale.x;
-    _to.dy = _direction.y * dist / (_source as PositionComponent).scale.y;
-    _to.dx += offset.x;
-    _to.dy += offset.y;
 
+    // FIXME does not work properly for CapitalShip - but it looks ok - so keeping it for now
+    final s = (_source as PositionComponent).scale;
+    _to.dx = _direction.x * dist / s.x;
+    _to.dy = _direction.y * dist / s.y;
+    _to.dx += offset.x / s.x;
+    _to.dy += offset.y / s.y;
     _from.dx = offset.x;
     _from.dy = offset.y;
     paint.strokeWidth = damage / 0.2;
