@@ -14,10 +14,10 @@ import 'package:voxone/util/extensions.dart';
 class Swirl extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
   Swirl() {
     anchor = Anchor.center;
-    size.setAll(32);
+    size.setAll(24);
     _sprites = atlas.sheetI('swirl.png', 8, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)
+    add(CircleHitbox(radius: 8, anchor: Anchor.center)
       ..x = size.x / 2
       ..y = size.y / 2
       ..renderShape = debug
