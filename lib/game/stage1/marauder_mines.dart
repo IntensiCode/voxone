@@ -14,6 +14,8 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
@@ -23,22 +25,20 @@ extension HasContextExtensions on HasContext {
 }
 
 class MarauderMines extends Component with HasContext {
-  Future<MarauderMine> spawn(Vector2 position) {
-    final animation = cache.require<Future<SpriteAnimation>>('mines_animation');
-    return animation.then((animation) {
-      final it = MarauderMine(animation, shadows);
-      it.position.setFrom(position);
-      stage.add(it);
-      return it;
-    });
+  ComponentRecycler<MarauderMine>? _mines;
+
+  spawn(Vector2 position, {double drift = 0}) {
+    if (_mines == null) return null;
+    stage.added(_mines!.acquire()..reset(position, drift: drift));
   }
 
   @override
   onLoad() async {
-    cache.putIfAbsent('mines_animation', () async {
+    final animation = cache.putIfAbsent('mines_animation', () async {
       final sheet = sheetI('acid_bomb.png', 8, 2);
       return _make_animation(sheet);
     });
+    animation.then((animation) => _mines = ComponentRecycler(() => MarauderMine(animation, shadows)));
   }
 
   Future<SpriteAnimation> _make_animation(SpriteSheet sheet) async {
@@ -75,7 +75,7 @@ class MarauderMines extends Component with HasContext {
   }
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints {
+class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
   MarauderMine(this.animation, Shadows shadows)
       : entity = StackedEntity.image(animation.frames.first.sprite.image, 8, shadows) {
     entity.scale_x = 1.2;
@@ -90,9 +90,17 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       ..paint.color = red
       ..opacity = 0.2
       ..renderShape = debug);
+  }
 
+  void reset(Vector2 origin, {double drift = 0}) {
+    position.setFrom(origin);
+    hit_time = 0;
     hit_points = 10;
     remaining = 10;
+    _destroyed = false;
+    this.drift = drift;
+
+    entity.sprite.reset();
   }
 
   final SpriteAnimation animation;
@@ -116,7 +124,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     if (_destroyed) return;
     _destroyed = true;
     decals.spawn(Decal.nuke_explosion, position);
-    removeFromParent();
+    recycle();
 
     audio.play(Sound.explosion_hollow);
   }
@@ -142,9 +150,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     position.y += 100 / 4 * dt;
     position.x -= drift / 4 * dt;
     position.y -= drift * dt;
-    if (position.x < -100) {
-      removeFromParent();
-    }
+
+    if (position.x < -100) recycle();
   }
 
   @override
@@ -165,7 +172,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
         d.velocity.setValues(-10.0 * i, 10 / 4 * i);
         d.time = rng.nextDoubleLimit(0.2);
       }
-      removeFromParent();
+      recycle();
 
       audio.play(Sound.explosion_hollow);
     });

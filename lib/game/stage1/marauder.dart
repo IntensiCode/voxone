@@ -92,8 +92,12 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   double sweep_dist = 0;
   bool mine_planted = false;
 
+  // fix(?) for recycled mines position bug
+  final _live_position = Vector2.zero();
+
   @override
   void update(double dt) {
+    _live_position.setFrom(position);
     super.update(dt);
     switch (state) {
       case MarauderState.incoming:
@@ -277,7 +281,7 @@ mixin PlantMineOnSweeping on MarauderEntity {
 
     if (sweep_time >= 5 && !mine_planted) {
       mine_planted = true;
-      mines.spawn(position);
+      mines.spawn(_live_position);
     }
 
     final t = Curves.easeInOutCubic.transform(sweep_time / 10);

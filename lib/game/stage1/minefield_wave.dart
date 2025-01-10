@@ -11,7 +11,9 @@ import 'package:voxone/util/random.dart';
 class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 64;
 
-  final _wave = List<MarauderMine>.empty(growable: true);
+  bool _done_spawning = false;
+
+  Iterable<MarauderMine> get _wave => stage.children.whereType<MarauderMine>();
 
   @override
   void onLoad() {
@@ -19,17 +21,20 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
     if (!dev) pause(info_time);
 
+    final pos = Vector2.zero();
     enemies_in_wave.forEach((idx) {
       after(0.2, () {
-        final it = mines.spawn(Vector2(850, -150 + rng.nextDoubleLimit(500)));
-        it.then((it) => _wave.add(it));
+        pos.x = 850;
+        pos.y = -150 + rng.nextDoubleLimit(500);
+        mines.spawn(pos, drift: rng.nextDoublePM(25));
       });
     });
+    after(1, () => _done_spawning = true);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.isRemoved);
+    defeated = _done_spawning && _wave.every((it) => it.isRemoved);
   }
 }

@@ -43,7 +43,7 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
   @override
   void update(double dt) {
     super.update(dt);
-    if (hit_time > 0) hit_time -= dt;
+    if (hit_time > 0) hit_time = max(0, hit_time - dt);
     highlight_mode = hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
   }
 }

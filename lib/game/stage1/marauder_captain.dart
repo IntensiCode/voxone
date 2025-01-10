@@ -89,7 +89,7 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
   void _on_release_mine(double dt) {
     if (_mine_spawn_time <= 0) {
       _mine_spawn_time = 0.75;
-      mines.spawn(position).then((it) => it.drift = rng.nextDoublePM(40));
+      mines.spawn(position, drift: rng.nextDoublePM(40));
     } else {
       _mine_spawn_time -= dt;
     }

@@ -76,6 +76,14 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   void change_image(Image image) => _shader?.setImageSampler(0, image);
 
+  void reset() {
+    highlight_mode = HighlightMode.none;
+    _last?.dispose();
+    _last = null;
+    _update_time = 0;
+    _render = true;
+  }
+
   @override
   Future onLoad() async {
     super.onLoad();
