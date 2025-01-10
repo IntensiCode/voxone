@@ -55,7 +55,7 @@ class Nuke extends PositionComponent with CollisionCallbacks, Recyclable, Direct
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other.hasTrait<Hostile>()) {
+    if (_life_time < 0.2 && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(intersections: intersectionPoints);
