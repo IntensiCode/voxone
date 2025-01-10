@@ -36,10 +36,8 @@ class MainController extends World
   void onMount() {
     if (dev && !kIsWeb) {
       showScreen(Screen.stage1);
-    } else if (kIsWeb) {
-      add(WebPlayScreen());
     } else {
-      add(TitleScreen());
+      add(WebPlayScreen());
     }
 
     onMessage<ToggleCheatMode>((_) => _toggle_cheat_mode());
