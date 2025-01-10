@@ -198,9 +198,22 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
     entity.add(indicator = EnemyHealthBar(shield)..position.setValues(0, -64));
 
     shield_added();
+
+    _shielded = true;
   }
 
   void shield_added() {}
+
+  bool _shielded = false;
+
+  @override
+  void on_hit({Set<Vector2>? intersections, double damage = 1}) {
+    if (_shielded && shield.energy > 0.1) {
+      super.on_hit(intersections: intersections, damage: damage * 0.25);
+    } else {
+      super.on_hit(intersections: intersections, damage: damage);
+    }
+  }
 
   @override
   void on_destroyed() {
