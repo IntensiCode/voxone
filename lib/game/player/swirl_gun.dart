@@ -30,7 +30,7 @@ class SwirlGun extends Component with HasContext, PrimaryWeapon {
     }
 
     if (keys.a_button) {
-      _cool_down += 1.5;
+      _cool_down += 0.4;
       stage.add(_projectiles.acquire()..reset(_player.position));
       audio.play(Sound.swirl, volume_factor: 0.5);
     }
