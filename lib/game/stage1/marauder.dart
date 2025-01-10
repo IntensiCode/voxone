@@ -203,16 +203,16 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
 
     shield_added();
 
-    _shielded = true;
+    shielded = true;
   }
 
   void shield_added() {}
 
-  bool _shielded = false;
+  bool shielded = false;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
-    if (_shielded && shield.energy > 0.1) {
+    if (shielded && shield.energy > 0.1) {
       super.on_hit(intersections: intersections, damage: damage * 0.25);
     } else {
       super.on_hit(intersections: intersections, damage: damage);
@@ -222,7 +222,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
   @override
   void on_destroyed() {
     super.on_destroyed();
-    if (state.is_inactive && shield.isMounted) {
+    if (state.is_inactive && shielded && shield.isMounted) {
       if (shield.isRemoving) return;
       shield.removeFromParent();
       indicator.removeFromParent();
