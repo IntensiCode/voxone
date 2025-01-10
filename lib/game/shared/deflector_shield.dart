@@ -58,12 +58,8 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   @override
   onLoad() async {
     _shader = _shaders[_shader_name]!;
-    paint.shader = _shader;
+    _paint.shader = _shader;
     priority = 1;
-    opacity = 0.5;
-    angle = -0.2;
-    _shader.setFloat(0, size.x);
-    _shader.setFloat(1, size.y);
   }
 
   @override
@@ -80,6 +76,8 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
       _rotate_time %= max_rotate_time;
     }
 
+    _shader.setFloat(0, size.x);
+    _shader.setFloat(1, size.y);
     _shader.setFloat(4, _rotate_time);
   }
 
@@ -93,12 +91,13 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     final image = pixelate(size.x.toInt(), size.y.toInt(), (canvas) {
       _rect.right = size.x;
       _rect.bottom = size.y;
-      canvas.drawRect(_rect, paint);
+      _paint.opacity = _deflect_time > 0 ? 0.75 : 0.05;
+      _paint.shader = _shader;
+      canvas.drawRect(_rect, _paint);
     });
 
     _offset ??= Offset(-size.x / 2, -size.y / 2);
-    _paint.opacity = _deflect_time > 0 ? 0.75 : 0.05;
-    canvas.drawImage(image, _offset!, _paint);
+    canvas.drawImage(image, _offset!, paint);
     image.dispose();
   }
 
