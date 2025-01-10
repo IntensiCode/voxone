@@ -6,6 +6,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/stage1/marauder_shot.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
@@ -54,7 +55,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other.hasTrait<Hostile>()) {
+    if (other is! MarauderShot && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(damage: 15, intersections: intersectionPoints);

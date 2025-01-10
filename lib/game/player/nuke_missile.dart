@@ -57,7 +57,7 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (other.hasTrait<Hostile>() && other is! MarauderShot) {
+    if (other is! MarauderShot && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(damage: 15, intersections: intersectionPoints);
