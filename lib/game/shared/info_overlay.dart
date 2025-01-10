@@ -62,10 +62,10 @@ class _InfoOverlay extends GameScriptComponent {
       if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
     });
     after(quick ? 0.9 : 1.8, () => text.removeAll(text.children)); // remove blink?
-    if (pipe.length == 1 && !quick) {
-      after(1.0, () => text.fadeOutDeep());
+    if (pipe.length == 1) {
+      after(quick ? 0.0 : 1.0, () => text.fadeOutDeep());
       after(0.0, () => title_text?.fadeOutDeep());
-      after(0.5, () => it.when_done?.call());
+      after(quick ? 0.2 : 0.5, () => it.when_done?.call());
     } else {
       after(0.0, () => it.when_done?.call());
     }
