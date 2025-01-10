@@ -24,22 +24,22 @@ enum ExtraId {
   nuke_missile(15, probability: 0.1),
 
   /// Restore some integrity
-  integrity(16, probability: 2),
+  integrity(16, probability: 1.6),
 
   /// Restore some shield energy
-  shield(17, probability: 1),
+  shield(17, probability: 0.8),
 
   /// Cool down secondary weapon
-  cooldown(18, probability: 1),
+  cooldown(18, probability: 0.8),
 
   /// Restore full integrity
-  integrity_boost(19, probability: 0.1),
+  integrity_boost(19, probability: 0.2),
 
   /// Restore full shield energy
-  shield_boost(20, probability: 0.1),
+  shield_boost(20, probability: 0.2),
 
   /// Fully cool down secondary weapon
-  cooldown_boost(21, probability: 0.1),
+  cooldown_boost(21, probability: 0.2),
 
   /// Secondary weapon: Smart Bomb
   smart_bomb(22, probability: 0.1),
