@@ -7,6 +7,7 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -17,6 +18,7 @@ import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
 import 'package:voxone/game/stage1/satellite_marauder.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/random.dart';
 
 const _scale_factor = 2.0;
 
@@ -33,7 +35,7 @@ class CapitalShip extends MarauderEntity
         _MaintainSatellitesOnActive,
         NopOnSweeping,
         NopOnLeaving,
-        TumbleOnExploding,
+        _MultipleExplosionsOnExploding,
         SpawnExtrasOnExploding {
   //
   @override
@@ -68,8 +70,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
 
   @override
   createEntity() async {
-    reset_hit_points_to(dev ? 25 : 500);
-    reset_hit_points_to(500);
+    reset_hit_points_to(dev ? 125 : 500);
 
     size.setAll(200 * _scale_factor);
     scale.setAll(1 / _scale_factor);
@@ -90,9 +91,10 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
     await add(entity);
 
     await add(center_mass = CircleHitbox.relative(
-      0.25,
+      0.5,
       parentSize: size,
-      position: Vector2(0, -10),
+      position: _v(0, -10),
+      isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
     )
@@ -101,9 +103,10 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
       ..renderShape = debug);
 
     await add(CircleHitbox.relative(
-      0.25,
+      0.3,
       parentSize: size,
-      position: Vector2(-80, -20),
+      position: _v(-80, -20),
+      isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
     )
@@ -112,9 +115,10 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
       ..renderShape = debug);
 
     await add(CircleHitbox.relative(
-      0.25,
+      0.3,
       parentSize: size,
-      position: Vector2(-30, 50),
+      position: _v(-30, 50),
+      isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
     )
@@ -162,8 +166,7 @@ mixin _VibrateOnIncoming on MarauderEntity {
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
   final _nop = <Vector2>{};
 
-  // double _generator_hit_points = dev ? 3 : 150;
-  double _generator_hit_points = 150;
+  double _generator_hit_points = dev ? 50 : 150;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
@@ -234,5 +237,33 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   void on_destroyed() {
     super.on_destroyed();
     _satellites.forEach((it) => it.on_destroyed());
+  }
+}
+
+mixin _MultipleExplosionsOnExploding on MarauderEntity {
+  Vector2? tumble_dir;
+
+  double _add_explosion_time = 0;
+
+  @override
+  void on_exploding(double dt) {
+    leaving_time += dt / 1.5;
+    if (leaving_time >= 2) {
+      leaving_time = 2;
+      state = MarauderState.defeated;
+    }
+
+    _add_explosion_time += dt;
+    if (_add_explosion_time > 0.1) {
+      _add_explosion_time -= 0.1;
+      final it = decals.spawn(Decal.nuke_explosion, position);
+      it.position.x += rng.nextDoublePM(100);
+      it.position.y += rng.nextDoublePM(100);
+    }
+
+    position.x += dt * (tumble_dir?.x ?? -10);
+    position.y += dt * (tumble_dir?.y ?? 10 / 4);
+
+    entity.sprite.opacity = leaving_time < 1 ? 1 - leaving_time / 2 : 0;
   }
 }

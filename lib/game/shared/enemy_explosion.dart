@@ -6,6 +6,8 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
 
+// FIXME pooled - Decals? or custom?
+
 class EnemyExplosion extends CircleComponent {
   static FragmentShader? _explosion;
   static SpriteAnimation? _anim;
