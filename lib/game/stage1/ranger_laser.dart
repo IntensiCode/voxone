@@ -13,24 +13,29 @@ import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/random.dart';
 
 class RangerLaser extends Component with HasContext, HasPaint {
-  RangerLaser(this._source) {
+  RangerLaser(this._source, {Vector2? offset, int? priority, double? damage, double? cool_down}) {
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
     paint.color = Color.fromARGB(255, 255, 250, 150);
     paint.maskFilter = MaskFilter.blur(BlurStyle.solid, 4);
-    priority = -1000;
+    this.priority = priority ?? -1000;
+    if (offset != null) this.offset.setFrom(offset);
+    if (damage != null) this.damage = damage;
+    if (cool_down != null) this.cool_down = cool_down;
   }
 
-  late final Marauder _source;
+  final Marauder _source;
 
   double _cool_down = rng.nextDouble();
   double _active_time = 0;
   bool _heard = false;
 
+  final offset = Vector2.zero();
   final _direction = Vector2(-1, 1 / 4).normalized();
   final _result = RaycastResult<ShapeHitbox>();
 
   double damage = 0.15;
+  double cool_down = 1.0;
 
   @override
   void update(double dt) {
@@ -68,13 +73,18 @@ class RangerLaser extends Component with HasContext, HasPaint {
     final result = _update_raycast_result();
     if (result == null) return;
 
-    _cool_down += 1.0;
+    _cool_down += cool_down;
     _active_time = 0.25;
     _heard = false;
   }
 
+  final _tmp = Vector2.zero();
+
   RaycastResult<ShapeHitbox>? _update_raycast_result() {
-    final ray = Ray2(origin: _source.position, direction: _direction);
+    _tmp.setFrom(_source.position);
+    _tmp.add(offset);
+
+    final ray = Ray2(origin: _tmp, direction: _direction);
     return collisionDetection.raycast(ray, hitboxFilter: (hitbox) => hitbox.isFriendly(), out: _result);
   }
 
@@ -87,13 +97,18 @@ class RangerLaser extends Component with HasContext, HasPaint {
 
     final double dist;
     if (_result.intersectionPoint != null) {
-      dist = _result.intersectionPoint!.distanceTo(_source.position);
+      dist = _result.intersectionPoint!.distanceTo(_tmp);
     } else {
       dist = 5000.0;
     }
     _to.dx = _direction.x * dist / (_source as PositionComponent).scale.x;
     _to.dy = _direction.y * dist / (_source as PositionComponent).scale.y;
+    _to.dx += offset.x;
+    _to.dy += offset.y;
 
+    _from.dx = offset.x;
+    _from.dy = offset.y;
+    paint.strokeWidth = damage / 0.2;
     canvas.drawLine(_from, _to, paint);
   }
 

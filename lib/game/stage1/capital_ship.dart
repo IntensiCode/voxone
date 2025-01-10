@@ -13,6 +13,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/stage1/ranger_laser.dart';
 
 class CapitalShip extends MarauderEntity
     with
@@ -29,6 +30,14 @@ class CapitalShip extends MarauderEntity
   //
   @override
   String get shield_shader => 'hex_shield.frag';
+
+  @override
+  void createEntity() {
+    super.createEntity();
+    add(RangerLaser(this, offset: Vector2(-113, -3), damage: 0.4, cool_down: 2.8)..priority = 10);
+    add(RangerLaser(this, offset: Vector2(-60, 68), damage: 0.4, cool_down: 2.8)..priority = 10);
+    add(RangerLaser(this, offset: Vector2(-10, 4), damage: 0.4)..priority = 10);
+  }
 
   @override
   void shield_added() {
