@@ -18,7 +18,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   static preload() async {
     logInfo('preload deflector shield shaders');
-    _shaders['plasma_shield.frag'] = await loadShader('plasma_shield.frag');
+    // _shaders['plasma_shield.frag'] = await loadShader('plasma_shield.frag');
     _shaders['hex_shield.frag'] = await loadShader('hex_shield.frag');
   }
 
@@ -57,7 +57,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   @override
   onLoad() async {
-    _shader = _shaders[_shader_name]!;
+    _shader = _shaders[_shader_name] ?? await loadShader(_shader_name);
     _paint.shader = _shader;
     priority = 1;
   }
