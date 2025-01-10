@@ -71,9 +71,9 @@ class ZaxxonPlayer extends PositionComponent
         info('Secondary Cooldown', hud: true);
         weapons.on_secondary_cooldown(0.5);
         break;
-      case ExtraId.full_cooldown:
-        info('Full Secondary Cooldown', hud: true);
-        weapons.on_secondary_cooldown(5);
+      case ExtraId.cooldown_boost:
+        info('Cooldown Boost', hud: true);
+        weapons.on_cooldown_boost();
         break;
       case ExtraId.full_integrity:
         info('Integrity restored', hud: true);

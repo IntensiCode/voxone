@@ -11,10 +11,11 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
 class ClusterBombCannon extends Component with HasContext, SecondaryWeapon {
-  ClusterBombCannon(this._player, this._on_fired);
+  ClusterBombCannon(this._player, Function(SecondaryWeapon) on_fired) {
+    super.on_fired = on_fired;
+  }
 
   final Player _player;
-  final void Function(SecondaryWeapon) _on_fired;
 
   late final _primary = ComponentRecycler(() => ClusterBomb(_emit_bombs));
   late final _secondary = ComponentRecycler(() => Bomb());
@@ -26,18 +27,9 @@ class ClusterBombCannon extends Component with HasContext, SecondaryWeapon {
   Sprite get icon => extras.icon_for(ExtraId.cluster_bomb);
 
   @override
-  void update(double dt) {
-    if (cooldown > 0) {
-      cooldown = max(0, cooldown - dt);
-      return;
-    }
-
-    if (keys.x_button) {
-      cooldown += cooldown_time;
-      stage.add(_primary.acquire()..reset(_player.position));
-      audio.play(Sound.shot, volume_factor: 0.5);
-      _on_fired(this);
-    }
+  void do_fire() {
+    stage.add(_primary.acquire()..reset(_player.position));
+    audio.play(Sound.shot, volume_factor: 0.5);
   }
 
   _emit_bombs(Vector2 origin) {

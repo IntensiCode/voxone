@@ -38,6 +38,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     }
   }
 
+  double _cooldown_boost = 1;
+
   final _primaries = <PrimaryWeapon, bool>{};
   final _secondaries = <SecondaryWeapon, int>{};
 
@@ -57,6 +59,11 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     secondary_weapon?.removeFromParent();
     secondary_weapon = weapon;
     add(secondary_weapon!);
+  }
+
+  void on_cooldown_boost() {
+    _cooldown_boost = min(2, _cooldown_boost + 0.1);
+    logInfo('cooldown boost: $_cooldown_boost');
   }
 
   void on_secondary_cooldown(double dt) {
@@ -100,12 +107,15 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   }
 
   void _on_fired(SecondaryWeapon weapon) {
+    logInfo('fired secondary weapon: $weapon');
     final count = _secondaries[weapon];
     if (count == null || count <= 0) return;
     _secondaries[weapon] = count - 1;
     if (count == 1) {
       weapon.cooldown = 0;
       _switch_secondary();
+    } else {
+      weapon.cooldown = weapon.cooldown_time / _cooldown_boost;
     }
   }
 
@@ -114,6 +124,12 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     super.update(dt);
     if (keys.check_and_consume(GameKey.b_button)) _switch_primary();
     if (keys.check_and_consume(GameKey.y_button)) _switch_secondary();
+
+    // update cooldown for all secondary weapons:
+    for (final it in _secondaries.entries) {
+      final weapon = it.key;
+      weapon.cooldown = max(0, weapon.cooldown - dt);
+    }
   }
 
   void _switch_primary() {

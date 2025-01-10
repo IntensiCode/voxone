@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/input/game_keys.dart';
 
 class Friendly {}
 
@@ -27,13 +28,27 @@ mixin PrimaryWeapon on Component {
   Sprite get icon;
 }
 
-mixin SecondaryWeapon on Component {
+mixin SecondaryWeapon on HasContext {
+  var button = GameKey.x_button;
+
   String get display_name;
 
   Sprite get icon;
 
   double cooldown = 0;
   double cooldown_time = 3;
+
+  late Function(SecondaryWeapon) on_fired;
+
+  @override
+  void update(double dt) {
+    if (cooldown > 0) return;
+    if (keys.held[button] != true) return;
+    do_fire();
+    on_fired(this);
+  }
+
+  void do_fire();
 }
 
 abstract class Target {

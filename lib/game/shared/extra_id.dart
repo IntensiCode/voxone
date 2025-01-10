@@ -39,7 +39,7 @@ enum ExtraId {
   full_shield(20, probability: 0.1),
 
   /// Fully cool down secondary weapon
-  full_cooldown(21, probability: 0.1),
+  cooldown_boost(21, probability: 0.1),
 
   /// Secondary weapon: Smart Bomb
   smart_bomb(22, probability: 0.1),
@@ -61,6 +61,6 @@ enum ExtraId {
     cooldown,
     full_integrity,
     full_shield,
-    full_cooldown,
+    cooldown_boost,
   };
 }

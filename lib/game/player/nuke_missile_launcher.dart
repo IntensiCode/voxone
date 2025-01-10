@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/nuke.dart';
@@ -12,10 +10,11 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
 class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
-  NukeMissileLauncher(this._player, this._on_fired);
+  NukeMissileLauncher(this._player, Function(SecondaryWeapon) on_fired) {
+    super.on_fired = on_fired;
+  }
 
   final Player _player;
-  final void Function(SecondaryWeapon) _on_fired;
 
   late final _missiles = ComponentRecycler(() => NukeMissile(decals, _emit_nuke));
   late final _nukes = ComponentRecycler(() => Nuke());
@@ -30,18 +29,9 @@ class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
   Sprite get icon => extras.icon_for(ExtraId.nuke_missile);
 
   @override
-  void update(double dt) {
-    if (cooldown > 0) {
-      cooldown = max(0, cooldown - dt);
-      return;
-    }
-
-    if (keys.x_button) {
-      cooldown += cooldown_time;
-      stage.add(_missiles.acquire()..reset(_player.position));
-      audio.play(Sound.acid_blast, volume_factor: 0.5);
-      _on_fired(this);
-    }
+  void do_fire() {
+    stage.add(_missiles.acquire()..reset(_player.position));
+    audio.play(Sound.acid_blast, volume_factor: 0.5);
   }
 
   _emit_nuke(Vector2 origin) => stage.add(_nukes.acquire()..reset(origin));

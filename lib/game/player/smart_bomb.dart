@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -13,9 +12,9 @@ import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
 class SmartBomb extends Component with HasContext, SecondaryWeapon {
-  SmartBomb(this._on_fired);
-
-  final void Function(SecondaryWeapon) _on_fired;
+  SmartBomb(Function(SecondaryWeapon) on_fired) {
+    super.on_fired = on_fired;
+  }
 
   late final _nukes = ComponentRecycler(() => _DestroyEverything(stage));
 
@@ -29,18 +28,9 @@ class SmartBomb extends Component with HasContext, SecondaryWeapon {
   Sprite get icon => extras.icon_for(ExtraId.smart_bomb);
 
   @override
-  void update(double dt) {
-    if (cooldown > 0) {
-      cooldown = max(0, cooldown - dt);
-      return;
-    }
-
-    if (keys.x_button) {
-      cooldown += cooldown_time;
-      stage.add(_nukes.acquire()..reset());
-      audio.play(Sound.plasma, volume_factor: 0.5);
-      _on_fired(this);
-    }
+  void do_fire() {
+    stage.add(_nukes.acquire()..reset());
+    audio.play(Sound.plasma, volume_factor: 0.5);
   }
 }
 
