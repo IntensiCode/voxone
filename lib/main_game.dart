@@ -25,6 +25,7 @@ class MainGame extends FlameGame<MainController>
     game = this;
     images = this.images;
     if (kIsWeb) logAnsi = false;
+    pauseWhenBackgrounded = true;
   }
 
   @override
