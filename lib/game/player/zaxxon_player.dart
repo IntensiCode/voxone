@@ -86,7 +86,7 @@ class ZaxxonPlayer extends PositionComponent
         onTraits<DeflectorShield>((it) => it.on_shield_boost());
         break;
       case ExtraId.integrity:
-        info('Integrity boost', hud: true);
+        info('Integrity Repair', hud: true);
         integrity = min(1, integrity + 0.25);
         break;
       case ExtraId.ion_pulse:
@@ -106,7 +106,7 @@ class ZaxxonPlayer extends PositionComponent
         weapons.switch_secondary_to(PlasmaEmitter);
         break;
       case ExtraId.shield:
-        info('Shield boost', hud: true);
+        info('Shield Repair', hud: true);
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
         break;
       case ExtraId.smart_bomb:
