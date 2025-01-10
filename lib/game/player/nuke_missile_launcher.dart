@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/nuke.dart';
 import 'package:voxone/game/player/nuke_missile.dart';
+import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -16,7 +17,7 @@ class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
   final Player _player;
   final void Function(SecondaryWeapon) _on_fired;
 
-  late final _missiles = ComponentRecycler(() => NukeMissile(_emit_nuke));
+  late final _missiles = ComponentRecycler(() => NukeMissile(decals, _emit_nuke));
   late final _nukes = ComponentRecycler(() => Nuke());
 
   @override
