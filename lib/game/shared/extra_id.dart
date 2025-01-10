@@ -33,7 +33,7 @@ enum ExtraId {
   cooldown(18, probability: 1),
 
   /// Restore full integrity
-  full_integrity(19, probability: 0.1),
+  integrity_boost(19, probability: 0.1),
 
   /// Restore full shield energy
   full_shield(20, probability: 0.1),
@@ -59,7 +59,7 @@ enum ExtraId {
     integrity,
     shield,
     cooldown,
-    full_integrity,
+    integrity_boost,
     full_shield,
     cooldown_boost,
   };

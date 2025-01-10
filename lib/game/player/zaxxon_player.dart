@@ -44,6 +44,8 @@ class ZaxxonPlayer extends PositionComponent
 
   late final weapons = added(WeaponSystem(this));
 
+  double _integrity_boost = 1;
+
   @override
   double integrity = 1;
 
@@ -52,7 +54,7 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
-    integrity -= damage / 50;
+    integrity -= damage / 50 / _integrity_boost;
     if (integrity < 0) integrity = 0;
   }
 
@@ -75,9 +77,9 @@ class ZaxxonPlayer extends PositionComponent
         info('Cooldown Boost', hud: true);
         weapons.on_cooldown_boost();
         break;
-      case ExtraId.full_integrity:
-        info('Integrity restored', hud: true);
-        integrity = 1;
+      case ExtraId.integrity_boost:
+        info('Integrity Boost', hud: true);
+        _integrity_boost = min(2, _integrity_boost + 0.1);
         break;
       case ExtraId.full_shield:
         info('Shield restored', hud: true);
