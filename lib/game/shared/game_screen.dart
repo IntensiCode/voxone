@@ -15,10 +15,10 @@ import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/keys.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/shortcuts.dart';
+import 'package:voxone/util/stacked_sprite.dart';
 
-abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasVisibility, Pixelate {
+abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasVisibility {
   GameScreen() {
     add(stage_keys);
     add(stage_cache);
