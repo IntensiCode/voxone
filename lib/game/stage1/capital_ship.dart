@@ -57,8 +57,8 @@ class CapitalShip extends MarauderEntity
   void shield_added() {
     super.shield_added();
     shield.size.setFrom(entity.size);
-    shield.auto_recharge = 0.05;
-    shield.auto_recharge = dev ? 0.01 : 0.05;
+    shield.shield.shield_boost = 3;
+    shield.auto_recharge = 0.1;
     shield.max_rotate_time = 360;
     indicator.scale.setAll(0.25);
     indicator.position.setValues(0, -16);
@@ -72,7 +72,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
 
   @override
   createEntity() async {
-    reset_hit_points_to(dev ? 125 : 500);
+    reset_hit_points_to(1000);
 
     size.setAll(200 * _scale_factor);
     scale.setAll(1 / _scale_factor);
@@ -168,7 +168,7 @@ mixin _VibrateOnIncoming on MarauderEntity {
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
   final _nop = <Vector2>{};
 
-  double _generator_hit_points = dev ? 50 : 150;
+  double _generator_hit_points = 150;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
