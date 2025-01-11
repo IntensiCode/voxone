@@ -71,7 +71,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
 
   @override
   createEntity() async {
-    reset_hit_points_to(1000);
+    reset_hit_points_to(1250);
 
     size.setAll(200 * _scale_factor);
     scale.setAll(1 / _scale_factor);
