@@ -86,10 +86,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     add(entity);
 
     size.setAll(16);
-    add(RectangleHitbox(anchor: Anchor.center)
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    add(CircleHitbox(radius: 6, anchor: Anchor.center)..debug());
   }
 
   final _dir_override = Vector2.zero();
@@ -101,6 +98,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     hit_time = 0;
     hit_points = 10;
     remaining = 10;
+    _became_visible = false;
     _destroyed = false;
     this.drift = drift;
     _dir_override.setZero();
@@ -115,6 +113,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
 
   double drift = 0.0;
 
+  bool _became_visible = false;
   bool _destroyed = false;
   double _anim_time = 0;
 
@@ -136,6 +135,8 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
 
   @override
   void update(double dt) {
+    alreadyCollided.clear();
+
     super.update(dt);
 
     _anim_time += dt;
@@ -163,14 +164,60 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       position.add(_tmp);
     }
 
-    if (position.is_outside()) recycle();
+    final outside = position.is_outside();
+    if (!outside) _became_visible = true;
+    if (_became_visible && outside) recycle();
   }
 
   final _tmp = Vector2.zero();
 
+  final _ours = Vector2.zero();
+  final _theirs = Vector2.zero();
+
+  static final alreadyCollided = <MarauderMine>[];
+
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+
+    if (other is MarauderMine) {
+      //
+      // lovely work.. as always.. :-D
+      //
+      if (alreadyCollided.contains(this)) return;
+      if (alreadyCollided.contains(other)) return;
+      alreadyCollided.add(this);
+      alreadyCollided.add(other);
+
+      if (this._dir_override.isZero()) {
+        _dir_override.x = -100 - drift / 4;
+        _dir_override.y = 100 / 4 - drift;
+      }
+      if (other._dir_override.isZero()) {
+        other._dir_override.x = -100 - other.drift / 4;
+        other._dir_override.y = 100 / 4 - other.drift;
+      }
+
+      _ours.setFrom(this._dir_override);
+      _ours.normalize();
+      _theirs.setFrom(other._dir_override);
+      _theirs.normalize();
+
+      final m1 = 100.0;
+      final m2 = 100.0;
+      final u1 = _ours;
+      final u2 = _theirs;
+      final v1 = (u1 * (m1 - m2) + u2 * m2 * 2) / (m1 + m2);
+      final v2 = (u2 * (m2 - m1) + u1 * m1 * 2) / (m1 + m2);
+      this._dir_override.x = v1.x;
+      this._dir_override.y = v1.y;
+      other._dir_override.x = v2.x;
+      other._dir_override.y = v2.y;
+      this._dir_override.scale(100);
+      other._dir_override.scale(100);
+
+      return;
+    }
 
     if (!other.hasTrait<Friendly>()) return;
 

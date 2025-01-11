@@ -9,7 +9,7 @@ import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/random.dart';
 
 class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
-  static const enemies_in_wave = 64;
+  static const enemies_in_wave = 128;
 
   bool _done_spawning = false;
 
@@ -23,7 +23,7 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
     final pos = Vector2.zero();
     enemies_in_wave.forEach((idx) {
-      after(0.2, () {
+      after(0.15, () {
         pos.x = 850;
         pos.y = -150 + rng.nextDoubleLimit(500);
         mines.spawn(pos, drift: rng.nextDoublePM(25));
