@@ -25,7 +25,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
     size.setAll(96);
-    add(CircleHitbox(anchor: Anchor.center)
+    add(CircleHitbox(anchor: Anchor.center, isSolid: true)
       ..paint.color = red
       ..opacity = 0.1
       ..renderShape = debug);
