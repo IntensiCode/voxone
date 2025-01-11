@@ -212,7 +212,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     if (shielded && shield.energy > 0.1) {
-      super.on_hit(intersections: intersections, damage: damage * 0.25);
+      super.on_hit(intersections: intersections, damage: damage * 0.1);
     } else {
       super.on_hit(intersections: intersections, damage: damage);
     }
