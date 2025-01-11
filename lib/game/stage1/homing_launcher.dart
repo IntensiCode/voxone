@@ -31,7 +31,7 @@ class HomingLauncher extends Component with HasContext {
       return;
     }
 
-    _cool_down += 4.4 + rng.nextDoubleLimit(0.9);
+    _cool_down += 5.4 + rng.nextDoubleLimit(0.9);
 
     final it = _projectiles.acquire()..reset();
     it.position.setFrom(source.position);

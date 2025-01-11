@@ -33,7 +33,7 @@ class MarauderCaptain extends MarauderEntity
     super.createEntity();
     final secondary = [ExtraId.plasma_ring, ExtraId.cluster_bomb, ExtraId.nuke_missile, ExtraId.smart_bomb].random(rng);
     required_extras = {ExtraId.phosphor_swirl, ExtraId.ion_pulse, secondary, ExtraId.triple_plasma};
-    random_extras_count = 3;
+    random_extras_count = 1;
   }
 
   @override
@@ -91,7 +91,7 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
 
   void _on_release_mine(double dt) {
     if (_mine_spawn_time <= 0) {
-      _mine_spawn_time = 0.75;
+      _mine_spawn_time = 1;
       mines.spawn(position, drift: rng.nextDoublePM(40));
     } else {
       _mine_spawn_time -= dt;
