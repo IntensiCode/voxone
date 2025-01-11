@@ -31,10 +31,13 @@ class Swirl extends SpriteComponent with CollisionCallbacks, Recyclable, Directi
 
   double _anim_time = 0;
 
+  double _damage = 1;
+
   void reset(Vector2 origin) {
     position.setFrom(origin);
     x += 25;
     y -= 25 / 4;
+    _damage = 1;
   }
 
   @override
@@ -52,7 +55,8 @@ class Swirl extends SpriteComponent with CollisionCallbacks, Recyclable, Directi
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          it.on_hit(intersections: intersectionPoints, damage: _damage);
+          _damage = max(0.1, _damage * 0.9);
         }
       });
     }
