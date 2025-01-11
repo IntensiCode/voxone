@@ -92,7 +92,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
         decals.spawn(Decal.nuke_explosion, position);
-        it.on_hit(damage: 20);
+        it.on_hit(damage: 50);
         recycle();
       });
     }
