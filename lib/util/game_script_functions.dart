@@ -105,7 +105,7 @@ mixin GameScriptFunctions on Component, AutoDispose {
     bool loop = true,
     double stepTime = 0.1,
   }) {
-    final animation = animCR(filename, columns, rows, stepTime, loop);
+    final animation = animCR(filename, columns, rows, stepTime: stepTime, loop: loop);
     return makeAnim(animation, Vector2(x, y), anchor);
   }
 

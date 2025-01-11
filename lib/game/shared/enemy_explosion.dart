@@ -15,7 +15,7 @@ class EnemyExplosion extends CircleComponent {
   static preload() async {
     logInfo('preload enemy explosion shader');
     _explosion ??= await loadShader('explosion.frag');
-    _anim ??= animCR('explosion96.png', 12, 1, 0.1);
+    _anim ??= animCR('explosion96.png', 6, 2, stepTime: 0.1);
   }
 
   @override

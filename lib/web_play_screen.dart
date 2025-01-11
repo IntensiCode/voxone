@@ -12,6 +12,7 @@ import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/functions.dart';
 
 class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
   WebPlayScreen() {
@@ -48,13 +49,12 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
       ..position.setValues(game_center.x, game_center.y - 16)
       ..anchor = Anchor.topCenter);
 
-    final frames = atlas.sheetI('splash_anim.png', 13, 1);
+    final anim = animCR('splash_anim.png', 2, 7, loop: false, vertical: true);
     final logo = added(SpriteComponent(
-      sprite: frames.getSpriteById(12),
+      sprite: anim.frames.last.sprite,
       anchor: Anchor.topCenter,
       position: Vector2(game_center.x, 64),
     )..opacity = 0);
-    final anim = frames.createAnimation(row: 0, stepTime: 0.1, loop: false);
     final it = added(SpriteAnimationComponent(
       animation: anim,
       removeOnFinish: true,

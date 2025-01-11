@@ -99,7 +99,7 @@ extension FlameGameExtensions on FlameGame {
 
 extension TexturePackerAtlasExtensions on TexturePackerAtlas {
   Sprite image(String name) {
-    final sprite = findSpriteByName(name.replaceFirst('.png', '').split('/').last);
+    final sprite = findSpriteByName(name.replaceFirst('.png', ''));
     if (sprite == null) throw 'unknown atlas id: $name';
     return sprite;
   }

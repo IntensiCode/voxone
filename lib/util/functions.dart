@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
@@ -53,14 +54,20 @@ SpriteComponent sprite_comp(
 SpriteAnimation animCR(
   String filename,
   int columns,
-  int rows, [
+  int rows, {
   double stepTime = 0.1,
   bool loop = true,
-]) {
-  if (rows != 1) throw ArgumentError('rows must be 1 for now');
-
+  bool vertical = false,
+}) {
   final sheet = atlas.sheetI(filename, columns, rows);
-  return sheet.createAnimation(row: 0, stepTime: stepTime, loop: loop);
+  final parts = List.generate(rows, (i) => sheet.createAnimation(row: i, stepTime: stepTime, loop: loop));
+  final List<SpriteAnimationFrame> frames;
+  if (vertical) {
+     frames = List.generate(columns, (i) => List.generate(rows, (j) => parts[j].frames[i])).flattenedToList;
+  } else {
+    frames = parts.map((it) => it.frames).flattenedToList;
+  }
+  return SpriteAnimation(frames, loop: loop);
 }
 
 SpriteAnimation animWH(
