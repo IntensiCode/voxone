@@ -12,8 +12,8 @@ import 'package:voxone/util/game_script.dart';
 const _game_pad = '''
 The dpad or left stick is used to move the player. The stick may not work, depending on the controller. The dpad should always work.
 
-A: Fire primary weapon. B: Next primary weapons.
-X: Fire secondary weapon. Y: Next secondary weapon.
+A: Fire primary weapon. X: Next primary weapons.
+B: Fire secondary weapon. Y: Next secondary weapon.
 
 Use start button to toggle pause. During pause, L1 will exit the game.
 
