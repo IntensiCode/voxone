@@ -18,9 +18,9 @@ class EnergyShield extends Trait implements Target {
 
   void recharge(double amount) => _energy = min(1, _energy + amount);
 
-  double _shield_boost = 1.0;
+  double shield_boost = 1.0;
 
-  void on_shield_boost() => _shield_boost = min(2, _shield_boost + 0.1);
+  void on_shield_boost() => shield_boost = min(2, shield_boost + 0.1);
 
   @override
   bool get susceptible => _energy > 0.1;
@@ -28,7 +28,7 @@ class EnergyShield extends Trait implements Target {
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     _on_hit();
-    _energy -= damage / 25 / _shield_boost;
+    _energy -= damage / 25 / shield_boost;
     if (_energy < 0) {
       double remaining = _energy.abs();
       if (remaining > 0) _target.on_hit(damage: remaining * 25);
