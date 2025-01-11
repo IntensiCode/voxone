@@ -17,7 +17,6 @@ import 'package:voxone/util/extensions.dart';
 
 class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, HasContext {
   final List<EnemyWave> _waves = [
-    if (dev) MinefieldWave(),
     MarauderWave(),
     MarauderWaveWithCaptain(),
     RangerWave(),
