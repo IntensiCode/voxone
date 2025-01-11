@@ -78,7 +78,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   void onMount() {
     super.onMount();
 
-    _primaries[TriplePlasmaGun(player)] = false;
+    _primaries[TriplePlasmaGun(player)] = true;
     _primaries[AcidBlaster(player)] = false;
     _primaries[IonPulseGun(player)] = false;
     _primaries[SwirlGun(player)] = false;
@@ -134,6 +134,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
   void _switch_primary() {
     final bank = _primaries.entries.filter((it) => it.value || dev).toList();
+    if (bank.isEmpty) return;
+
     final index = bank.indexWhere((it) => it.key == primary_weapon);
     final next = bank[(index + 1) % bank.length];
     if (next.key == primary_weapon) return;
