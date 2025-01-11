@@ -9,6 +9,7 @@ import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
 import 'package:voxone/game/stage1/minefield_wave.dart';
+import 'package:voxone/game/stage1/planetary_fleet.dart';
 import 'package:voxone/game/stage1/ranger_wave.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/util/auto_dispose.dart';
@@ -16,11 +17,12 @@ import 'package:voxone/util/extensions.dart';
 
 class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, HasContext {
   final List<EnemyWave> _waves = [
-    if (dev) CapitalShipWave(),
+    if (dev) PlanetaryFleet(),
     MarauderWave(),
     MarauderWaveWithCaptain(),
     RangerWave(),
     MinefieldWave(),
+    PlanetaryFleet(),
     CapitalShipWave(),
   ];
 

@@ -113,7 +113,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   }
 
   static double update_interval = 0.1;
-  static final _max_renders_per_frame = kDebugMode ? 1 : 5;
+  static final _max_renders_per_frame = kDebugMode ? 3 : 6;
 
   double _update_time = 0;
   bool _render = true;

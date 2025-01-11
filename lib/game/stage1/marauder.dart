@@ -62,11 +62,18 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
         MarauderState.left => false,
         MarauderState.exploding => false,
         MarauderState.defeated => false,
-        _ => incoming_time > volatile_incoming_time,
+        MarauderState.incoming => incoming_time > volatile_incoming_time,
+        _ => true,
       };
 
   @override
   set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
+
+  void set_active_collisions() {
+    for (final it in children.whereType<ShapeHitbox>()) {
+      it.collisionType = CollisionType.active;
+    }
+  }
 
   @override
   void on_destroyed({Vector2? direction}) {
@@ -384,6 +391,25 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
     });
 
     _extras_spawned = true;
+  }
+}
+
+mixin ActiveOnIncoming on MarauderEntity {
+  @override
+  void on_incoming(double dt) => state = MarauderState.active;
+}
+
+mixin DelayOnIncoming on MarauderEntity, HasVisibility {
+  double incoming_delay = 0;
+
+  @override
+  void on_incoming(double dt) {
+    if (incoming_delay > 0) incoming_delay -= dt;
+    if (incoming_delay <= 0) {
+      incoming_time = 1;
+      state = MarauderState.active;
+    }
+    isVisible = incoming_delay <= 0;
   }
 }
 

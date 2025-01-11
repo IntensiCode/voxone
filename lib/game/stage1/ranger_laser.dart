@@ -37,6 +37,12 @@ class RangerLaser extends Component with HasContext, HasPaint {
   double damage = 0.15;
   double cool_down = 1.0;
 
+  void set_laser_direction(Vector2 direction) {
+    _direction.setFrom(direction);
+    _direction.normalize();
+    if (_direction.length2 < 0.1) _direction.setValues(1, 0);
+  }
+
   @override
   void update(double dt) {
     if (_source.state == MarauderState.exploding) removeFromParent();
