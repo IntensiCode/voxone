@@ -63,10 +63,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     add(secondary_weapon!);
   }
 
-  void on_cooldown_boost() {
-    _cooldown_boost = min(2, _cooldown_boost + 0.1);
-    logInfo('cooldown boost: $_cooldown_boost');
-  }
+  void on_cooldown_boost() => _cooldown_boost = min(2, _cooldown_boost + 0.1);
 
   void on_secondary_cooldown(double dt) {
     // cooldown all secondary weapons:
@@ -111,7 +108,6 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   }
 
   void _on_fired(SecondaryWeapon weapon) {
-    logInfo('fired secondary weapon: $weapon');
     final count = _secondaries[weapon];
     if (count == null || count <= 0) return;
     _secondaries[weapon] = count - 1;
