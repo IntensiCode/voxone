@@ -411,4 +411,10 @@ mixin WarpInOnIncoming on MarauderEntity {
     entity.sprite.paint.imageFilter = ImageFilter.blur(sigmaX: 32 * (1 - i), sigmaY: 32 * (1 - i));
     entity.sprite.paint.colorFilter = ColorFilter.mode(white, BlendMode.modulate);
   }
+
+  @override
+  void on_destroyed({Vector2? direction}) {
+    super.on_destroyed(direction: direction);
+    scale.setAll(0.2);
+  }
 }
