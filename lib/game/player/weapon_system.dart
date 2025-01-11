@@ -44,6 +44,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   final _secondaries = <SecondaryWeapon, int>{};
 
   void switch_primary_to(Type type) {
+    if (type == TriplePlasmaGun) tpg.boost_power();
+
     final weapon = _primaries.keys.firstWhere((it) => it.runtimeType == type);
     _primaries[weapon] = true;
 
@@ -74,11 +76,13 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     }
   }
 
+  late TriplePlasmaGun tpg;
+
   @override
   void onMount() {
     super.onMount();
 
-    _primaries[TriplePlasmaGun(player)] = true;
+    _primaries[tpg = TriplePlasmaGun(player)] = true;
     _primaries[AcidBlaster(player)] = false;
     _primaries[IonPulseGun(player)] = false;
     _primaries[SwirlGun(player)] = false;

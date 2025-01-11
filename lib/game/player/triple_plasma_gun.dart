@@ -24,6 +24,11 @@ class TriplePlasmaGun extends Component with HasContext, PrimaryWeapon {
   @override
   Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
 
+  void boost_power() => PlasmaShot.power_boost = min(5, PlasmaShot.power_boost + 0.25);
+
+  @override
+  onLoad() => PlasmaShot.power_boost = 1;
+
   @override
   void update(double dt) {
     if (_cool_down > 0) {
@@ -34,15 +39,13 @@ class TriplePlasmaGun extends Component with HasContext, PrimaryWeapon {
     if (keys.a_button) {
       _cool_down += 0.35;
 
-      stage.add(_projectiles.acquire()
-        ..reset(_player.position)
-        ..change_direction(pi / 32));
+      final count = 2 + PlasmaShot.power_boost.round();
 
-      stage.add(_projectiles.acquire()
-        ..reset(_player.position)
-        ..change_direction(-pi / 32));
-
-      stage.add(_projectiles.acquire()..reset(_player.position));
+      for (var i = 0; i < count; i++) {
+        stage.add(_projectiles.acquire()
+          ..reset(_player.position)
+          ..change_direction(pi / 48 * (i - count / 2)));
+      }
 
       audio.play(Sound.shot, volume_factor: 0.5);
     }

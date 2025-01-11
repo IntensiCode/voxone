@@ -32,7 +32,7 @@ class MarauderCaptain extends MarauderEntity
   void createEntity() {
     super.createEntity();
     final secondary = [ExtraId.plasma_ring, ExtraId.cluster_bomb, ExtraId.nuke_missile, ExtraId.smart_bomb].random(rng);
-    required_extras = {ExtraId.phosphor_swirl, ExtraId.ion_pulse, secondary};
+    required_extras = {ExtraId.phosphor_swirl, ExtraId.ion_pulse, secondary, ExtraId.triple_plasma};
     random_extras_count = 3;
   }
 

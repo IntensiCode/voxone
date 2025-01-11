@@ -14,6 +14,8 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
   static const _blue1 = Color(0xFFa0a0ff);
   static const _blue2 = Color(0xFF20209f);
 
+  static double power_boost = 1;
+
   PlasmaShot() {
     size.setAll(4);
     add(CircleHitbox(radius: 4, anchor: Anchor.center)
@@ -22,6 +24,9 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
   }
 
   double _start_time = 1;
+
+  @override
+  double get base_speed => 400 + power_boost * 25;
 
   void reset(Vector2 origin) {
     _start_time = 1;
@@ -53,7 +58,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          it.on_hit(intersections: intersectionPoints, damage: power_boost * 0.75);
           recycle();
         }
       });
