@@ -33,7 +33,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     paint.filterQuality = FilterQuality.none;
     priority = -1;
 
-    addTrait(EnergyShield(this, target, () => _deflect_time = 0.3));
+    addTrait(EnergyShield(target, () => _deflect_time = 0.3));
   }
 
   final String _shader_name;

@@ -1,13 +1,11 @@
 import 'dart:math';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/traits.dart';
 
-class EnergyShield extends Trait implements Target {
-  EnergyShield(super.self, this._target, this._on_hit);
+class EnergyShield implements Target {
+  EnergyShield(this._target, this._on_hit);
 
   final Target _target;
   final void Function() _on_hit;
@@ -27,6 +25,9 @@ class EnergyShield extends Trait implements Target {
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
+    if (_target case HasVisibility it) {
+      if (!it.isVisible) return;
+    }
     _on_hit();
     _energy -= damage / 25 / shield_boost;
     if (_energy < 0) {

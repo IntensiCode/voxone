@@ -1,9 +1,3 @@
-class Trait {
-  Trait(this.self);
-
-  final HasTraits self;
-}
-
 extension ObjectExtensions on Object {
   bool hasTrait<T>() => traits<T>().isNotEmpty;
 

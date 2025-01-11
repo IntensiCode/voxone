@@ -33,6 +33,9 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
+    if (this case HasVisibility it) {
+      if (!it.isVisible) return;
+    }
     remaining = max(0, remaining - damage);
     if (remaining == 0) on_destroyed();
     final p = intersections?.firstOrNull ?? position;
