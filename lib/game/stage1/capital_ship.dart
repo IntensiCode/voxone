@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
@@ -176,7 +175,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
     if (state == MarauderState.active && center_hit && _generator_hit_points > 0) {
       _generator_hit_points = max(0, _generator_hit_points - damage);
       if (_generator_hit_points <= 0) {
-        logInfo('Shield generator destroyed');
+        sendMessage(ShowInfoText(text: 'Shield Generator Destroyed', title: 'Critical Hit'));
         shield.removeFromParent();
         indicator.removeFromParent();
         entity.add(EnemyExplosion()..scale.setAll(0.2));
