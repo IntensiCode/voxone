@@ -235,19 +235,20 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   }
 
   @override
-  void on_destroyed() {
-    super.on_destroyed();
+  void on_destroyed({Vector2? direction}) {
+    super.on_destroyed(direction: direction);
     _satellites.forEach((it) => it.on_destroyed());
+    tumble_dir.setValues(-10, 10 / 4);
   }
 }
 
 mixin _MultipleExplosionsOnExploding on MarauderEntity {
-  Vector2? tumble_dir;
-
   double _add_explosion_time = 0;
 
   @override
   void on_exploding(double dt) {
+    if (tumble_dir.isZero()) tumble_dir.setValues(-10, 10 / 4);
+
     leaving_time += dt / 1.5;
     if (leaving_time >= 2) {
       leaving_time = 2;
@@ -262,8 +263,8 @@ mixin _MultipleExplosionsOnExploding on MarauderEntity {
       it.position.y += rng.nextDoublePM(100);
     }
 
-    position.x += dt * (tumble_dir?.x ?? -10);
-    position.y += dt * (tumble_dir?.y ?? 10 / 4);
+    position.x += dt * tumble_dir.x;
+    position.y += dt * tumble_dir.y;
 
     entity.sprite.opacity = leaving_time < 1 ? 1 - leaving_time / 2 : 0;
   }

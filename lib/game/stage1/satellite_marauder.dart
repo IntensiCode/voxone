@@ -162,8 +162,7 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
     if (leaving_time >= 0.95) {
       leaving_time = 0.95;
       mines.spawn(position)?.set_direction(_last_dir);
-      tumble_dir = _last_dir;
-      on_destroyed();
+      on_destroyed(direction: _last_dir);
     }
   }
 
@@ -172,8 +171,7 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
     super.onCollision(intersectionPoints, other);
     if (other.hasTrait<Friendly>() && state == MarauderState.leaving) {
       mines.spawn(position)?.set_direction(_last_dir);
-      tumble_dir = _last_dir;
-      on_destroyed();
+      on_destroyed(direction: _last_dir);
     }
   }
 }

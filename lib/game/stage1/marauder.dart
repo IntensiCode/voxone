@@ -69,13 +69,17 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
 
   @override
-  void on_destroyed() {
+  void on_destroyed({Vector2? direction}) {
     if (state == MarauderState.exploding) return;
     leaving_time = 0;
     state = MarauderState.exploding;
     entity.add(EnemyExplosion());
     if (sweep_time > 0) can_sweep = true;
     audio.play(Sound.explosion);
+
+    tumble_dir.setFrom(direction ?? raw_dir);
+    tumble_dir.normalize();
+    tumble_dir.scale(50);
   }
 
   @override
@@ -99,6 +103,12 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
   // fix(?) for recycled mines position bug
   final _live_position = Vector2.zero();
+
+  // updated each frame in on_active
+  final raw_dir = Vector2.zero();
+
+  // set from raw_dir in on_destroyed - used for movement while exploding
+  final tumble_dir = Vector2.zero();
 
   @override
   void update(double dt) {
@@ -126,6 +136,8 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
       case MarauderState.defeated:
         removeFromParent();
     }
+    raw_dir.setFrom(position);
+    raw_dir.sub(_live_position);
   }
 
   void on_incoming(double dt);
@@ -219,8 +231,8 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
   }
 
   @override
-  void on_destroyed() {
-    super.on_destroyed();
+  void on_destroyed({Vector2? direction}) {
+    super.on_destroyed(direction: direction);
     if (state.is_inactive && shielded && shield.isMounted) {
       if (shield.isRemoving) return;
       shield.removeFromParent();
@@ -327,8 +339,6 @@ mixin SweepOutOnLeaving on MarauderEntity {
 }
 
 mixin TumbleOnExploding on MarauderEntity {
-  Vector2? tumble_dir;
-
   @override
   void on_exploding(double dt) {
     leaving_time += dt;
@@ -340,8 +350,8 @@ mixin TumbleOnExploding on MarauderEntity {
     entity.rot_x += dt;
     entity.rot_y += dt * 2;
     entity.rot_z += dt * 0.5;
-    position.x += dt * (tumble_dir?.x ?? 100);
-    position.y += dt * (tumble_dir?.y ?? 100 / 4);
+    position.x += dt * tumble_dir.x;
+    position.y += dt * tumble_dir.y;
 
     entity.sprite.opacity = 1 - leaving_time / 2;
   }
