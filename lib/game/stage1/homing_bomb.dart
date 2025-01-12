@@ -21,7 +21,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
 
   HomingBomb() {
     size.setAll(4);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)
+    add(CircleHitbox(radius: 8, anchor: Anchor.center, isSolid: true)
       ..renderShape = debug
       ..paint.opacity = 0.2);
     mini_explosions_on_hit = false;
@@ -80,6 +80,8 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
       recycle();
       4.forEach((_) => decals.spawn(Decal.smoke, position));
     }
+
+    decals.spawn(Decal.smoke, position);
   }
 
   @override
@@ -92,7 +94,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
         decals.spawn(Decal.nuke_explosion, position);
-        it.on_hit(damage: 50);
+        it.on_hit(damage: 50 * integrity_in_percent);
         recycle();
       });
     }
