@@ -183,6 +183,7 @@ class ZaxxonPlayer extends PositionComponent
     addTrait(weapons);
 
     _entity = StackedEntity('entities/star_runner.png', 16, shadows);
+    _entity.sprite.force_render = true;
 
     _entity.rot_x = -0.95;
     _entity.rot_y = 1.8;

@@ -45,9 +45,6 @@ class EnemyExplosion extends CircleComponent {
     _explosion!.setFloat(1, height);
     _explosion!.setFloat(2, _time / 2);
 
-    // TODO still necessary?
-    if (kIsWeb) paint.shader = _explosion!;
-
     _time += dt;
     if (_time >= 1 && !_added) {
       add(SpriteAnimationComponent(

@@ -130,9 +130,11 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     }
   }
 
+  bool force_render = false;
+
   @override
   void render(Canvas canvas) {
-    if (_last != null) {
+    if (!force_render && _last != null) {
       if (!_render || render_count > _max_renders_per_frame) {
         _update_time = update_interval - rng.nextDoubleLimit(update_interval / 4);
         canvas.drawImage(_last!, Offset.zero, paint);
@@ -142,7 +144,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _render = false;
     _update_time = rng.nextDoubleLimit(update_interval / 4);
 
-    render_count++;
+    if (!force_render) render_count++;
 
     // bug fix \_('')_/
     if (kIsWeb) _shader!.setImageSampler(0, _sprite.image);
