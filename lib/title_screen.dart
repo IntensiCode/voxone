@@ -26,6 +26,21 @@ enum _TitleButtons {
   play,
 }
 
+final _credits = [
+  'A Psychocell Game',
+  'An IntensiCode Production',
+  'Made with Flame Engine',
+  'Powered by Flutter',
+  '',
+  'Music by suno.com',
+  'Voice Samples by elevenlabs.io',
+  'Voxel Models by maxparata.itch.io',
+  'Star Nest Shader by Pablo Roman Andrioli',
+  '2D Art by itch.io',
+  '',
+  'Code by The.French.DJ   [IntensiCode]',
+];
+
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   static _TitleButtons? _preselected;
 
@@ -42,10 +57,9 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
-    textXY('Music by suno.com', 800 - 16, 430, anchor: Anchor.topRight, scale: 1);
-    textXY('Voice Samples by elevenlabs.io', 800 - 16, 440, anchor: Anchor.topRight, scale: 1);
-    textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
-    textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
+    for (final (idx, it) in _credits.reversed.indexed) {
+      textXY(it, 784, 464 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
+    }
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
