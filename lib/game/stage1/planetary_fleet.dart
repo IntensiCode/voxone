@@ -22,7 +22,7 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
 
     after(delay, () => sendMessage(ShowInfoText(text: 'Planetary Fleet Arriving')));
 
-    if (!dev) pause(info_time);
+    if (!dev) pause_script(info_time);
 
     after(0, () => _ready = true);
 

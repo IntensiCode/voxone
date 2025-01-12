@@ -22,7 +22,7 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
 
     after(delay, () => sendMessage(ShowInfoText(text: 'Enemy Wave Incoming')));
 
-    if (!dev) pause(info_time);
+    if (!dev) pause_script(info_time);
 
     marauders_in_wave.forEach((idx) {
       after(0.5, () {

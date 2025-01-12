@@ -14,7 +14,7 @@ mixin GameScript on GameScriptFunctions {
     _active_delay = null;
   }
 
-  void pause(double deltaSeconds) => after(deltaSeconds, () {});
+  void pause_script(double deltaSeconds) => after(deltaSeconds, () {});
 
   void after(double deltaSeconds, Function() execute) => _script.add((deltaSeconds, execute));
 

@@ -15,7 +15,7 @@ class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
   void onLoad() {
     after(delay, () => sendMessage(ShowInfoText(text: 'Capital Ship Approaching')));
 
-    if (!dev) pause(info_time);
+    if (!dev) pause_script(info_time);
 
     after(1.0, () {
       final it = CapitalShip();

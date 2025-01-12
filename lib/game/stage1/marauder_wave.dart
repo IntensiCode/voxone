@@ -20,7 +20,7 @@ class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
 
     after(delay, () => sendMessage(ShowInfoText(text: 'Enemy Wave Incoming')));
 
-    if (!dev) pause(info_time);
+    if (!dev) pause_script(info_time);
 
     enemies_in_wave.forEach((idx) {
       after(0.5, () {
