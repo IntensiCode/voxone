@@ -42,8 +42,8 @@ class Extras extends Component with HasContext {
     stage.add(extra);
 
     if (index != null && count != null && count > 1) {
+      final distance = count * 6;
       final angle = 2 * pi * index / count;
-      final distance = 32;
       extra.position.x += cos(angle) * distance;
       extra.position.y += sin(angle) * distance;
     }
