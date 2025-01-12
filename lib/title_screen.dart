@@ -76,7 +76,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     >
     All Primary Weapons Available
     >
-    Recharge All Secondary Weapons :: r
+    Recharge All Secondary Weapons :: [
+    Boost Player Strength :: ]
+    >
+    Boost can be used multiple times
     ''';
     add(_cheats = FlowText(
       text: cheats,
@@ -85,7 +88,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       insets: Vector2(9, 9),
       position: Vector2(game_width - 320 - 16, 16),
       anchor: Anchor.topLeft,
-      size: Vector2(320, 160),
+      size: Vector2(320, 192),
     ));
     _cheats.isVisible = dev;
   }

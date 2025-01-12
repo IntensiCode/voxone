@@ -301,4 +301,17 @@ class ZaxxonPlayer extends PositionComponent
     _entity.rot_x = tilt;
     position.setValues(100 + move_offset / 4, 280 + move_offset);
   }
+
+  @override
+  void onMount() {
+    super.onMount();
+    if (dev) {
+      onKey('<Delete>', () => on_destroyed());
+      onKey(']', () {
+        on_collect_extra(ExtraId.integrity_boost);
+        on_collect_extra(ExtraId.shield_boost);
+        on_collect_extra(ExtraId.cooldown_boost);
+      });
+    }
+  }
 }
