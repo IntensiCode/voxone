@@ -55,7 +55,7 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
-        it.on_hit(damage: 1);
+        it.on_hit(damage: 2.5);
         recycle();
       });
     }
