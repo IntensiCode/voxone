@@ -4,7 +4,6 @@ import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/game_screen.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/stage1/enemies_stage1.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 
 class Stage2 extends GameScreen with HasContext {
@@ -15,6 +14,5 @@ class Stage2 extends GameScreen with HasContext {
     add(extras);
     add(mines);
     add(ZaxxonPlayer());
-    add(EnemiesStage1());
   }
 }
