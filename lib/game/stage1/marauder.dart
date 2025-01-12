@@ -82,7 +82,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     state = MarauderState.exploding;
     entity.add(EnemyExplosion());
     if (sweep_time > 0) can_sweep = true;
-    audio.play(Sound.explosion);
+    audio.play(Sound.explosion, volume_factor: 0.25);
 
     tumble_dir.setFrom(direction ?? raw_dir);
     tumble_dir.normalize();

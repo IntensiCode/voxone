@@ -130,7 +130,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     decals.spawn(Decal.nuke_explosion, position);
     recycle();
 
-    audio.play(Sound.explosion_hollow);
+    audio.play(Sound.explosion_hollow, volume_factor: 0.25);
   }
 
   @override
@@ -235,7 +235,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       }
       recycle();
 
-      audio.play(Sound.explosion_hollow);
+      audio.play(Sound.explosion_hollow, volume_factor: 0.25);
     });
   }
 }
