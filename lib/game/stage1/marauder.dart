@@ -76,6 +76,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   }
 
   double _explode_delay = 0;
+  double _explode_scale = 1;
 
   @override
   void on_destroyed({Vector2? direction}) {
@@ -86,6 +87,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
     leaving_time = 0;
     _explode_delay = 0.01 + rng.nextDoubleLimit(0.25);
+    _explode_scale = 1 + rng.nextDoublePM(0.25);
 
     // entity.add(EnemyExplosion());
     // audio.play(Sound.explosion, volume_factor: 0.25);
@@ -152,23 +154,27 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
       case MarauderState.exploding:
         if (_explode_delay > 0) {
-          _explode_delay = max(0, _explode_delay - dt);
-          if (_explode_delay == 0) {
-            entity.add(EnemyExplosion());
-            if (_last_explosion_time >= 0.25) {
-              audio.play(Sound.explosion, volume_factor: 0.25);
-            }
-            _last_explosion_time = 0;
-          }
-          return;
+          _on_explode_delay(dt);
+        } else {
+          on_exploding(dt * _explode_scale);
         }
-        on_exploding(dt);
 
       case MarauderState.defeated:
         removeFromParent();
     }
     raw_dir.setFrom(position);
     raw_dir.sub(_live_position);
+  }
+
+  void _on_explode_delay(double dt) {
+    _explode_delay = max(0, _explode_delay - dt);
+    if (_explode_delay > 0) return;
+
+    entity.add(EnemyExplosion());
+    if (_last_explosion_time >= 0.25) {
+      audio.play(Sound.explosion, volume_factor: 0.25);
+    }
+    _last_explosion_time = 0;
   }
 
   void on_incoming(double dt);
@@ -460,11 +466,5 @@ mixin WarpInOnIncoming on MarauderEntity {
 
     entity.sprite.paint.imageFilter = ImageFilter.blur(sigmaX: 32 * (1 - i), sigmaY: 32 * (1 - i));
     entity.sprite.paint.colorFilter = ColorFilter.mode(white, BlendMode.modulate);
-  }
-
-  @override
-  void on_destroyed({Vector2? direction}) {
-    super.on_destroyed(direction: direction);
-    scale.setAll(0.2);
   }
 }

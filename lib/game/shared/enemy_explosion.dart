@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
@@ -28,8 +29,6 @@ class EnemyExplosion extends CircleComponent {
     position.setFrom(ppc.position);
     position.x += ppc.size.x / 2;
     position.y += ppc.size.y / 2;
-    _explosion!.setFloat(0, width);
-    _explosion!.setFloat(1, height);
 
     paint.color = white;
     paint.isAntiAlias = false;
@@ -42,7 +41,13 @@ class EnemyExplosion extends CircleComponent {
 
   @override
   void update(double dt) {
+    _explosion!.setFloat(0, width);
+    _explosion!.setFloat(1, height);
     _explosion!.setFloat(2, _time / 2);
+
+    // TODO still necessary?
+    if (kIsWeb) paint.shader = _explosion!;
+
     _time += dt;
     if (_time >= 1 && !_added) {
       add(SpriteAnimationComponent(
