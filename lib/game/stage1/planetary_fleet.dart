@@ -39,7 +39,7 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
 
     defeated = _done_spawning && _wave.every((it) => it.defeated);
 
-    if (!_ready) return;
+    if (_done_spawning || !_ready) return;
 
     _spawn_time += dt;
 
@@ -62,7 +62,7 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
     (0, 8, 0.3, () => PassingRanger()),
     (5, 8, 0.3, () => PassingRanger()),
     (15, 8, 0.3, () => CirclingMarauder()..target_position.setValues(1000, 0)),
-    (27, 1, 0.0, () => MarauderCaptain()..target_position.setFrom(game_center)),
+    (27, 1, 0.0, () => MarauderCaptain()..target_position.setValues(game_center.x + 80, game_center.y - 20)),
     (28, 8, 0.3, () => CirclingMarauder()..target_position.setValues(1000, 0)),
   ];
 }
