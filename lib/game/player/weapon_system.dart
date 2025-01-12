@@ -43,20 +43,24 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   final _primaries = <PrimaryWeapon, bool>{};
   final _secondaries = <SecondaryWeapon, int>{};
 
-  void switch_primary_to(Type type) {
+  bool switch_primary_to(Type type, {bool force = false}) {
     if (type == TriplePlasmaGun) tpg.boost_power();
 
     final weapon = _primaries.keys.firstWhere((it) => it.runtimeType == type);
+    if (!force && _primaries[weapon] == true) return false;
+
     _primaries[weapon] = true;
 
     primary_weapon.removeFromParent();
     primary_weapon = weapon;
     add(primary_weapon);
+
+    return true;
   }
 
   void switch_secondary_to(Type type) {
     final weapon = _secondaries.keys.firstWhere((it) => it.runtimeType == type);
-    _secondaries[weapon] = (_secondaries[weapon] ?? 0) + (dev ? 10 : 3);
+    _secondaries[weapon] = (_secondaries[weapon] ?? 0) + 3;
 
     secondary_weapon?.removeFromParent();
     secondary_weapon = weapon;
@@ -133,14 +137,14 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   }
 
   void _switch_primary() {
-    final bank = _primaries.entries.filter((it) => it.value || dev).toList();
+    final bank = _primaries.entries.filter((it) => it.value).toList();
     if (bank.isEmpty) return;
 
     final index = bank.indexWhere((it) => it.key == primary_weapon);
     final next = bank[(index + 1) % bank.length];
     if (next.key == primary_weapon) return;
 
-    switch_primary_to(next.key.runtimeType);
+    switch_primary_to(next.key.runtimeType, force: true);
   }
 
   void _switch_secondary() {

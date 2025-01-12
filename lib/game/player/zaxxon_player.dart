@@ -90,8 +90,8 @@ class ZaxxonPlayer extends PositionComponent
   void on_collect_extra(ExtraId which) {
     switch (which) {
       case ExtraId.acid_blast:
-        info('Acid Blast', title: 'Primary Weapon', hud: true);
-        weapons.switch_primary_to(AcidBlaster);
+        final upgrade = weapons.switch_primary_to(AcidBlaster);
+        info('Acid Blast', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
       case ExtraId.cluster_bomb:
         info('Cluster Bomb', title: 'Secondary Weapon', hud: true);
@@ -120,16 +120,16 @@ class ZaxxonPlayer extends PositionComponent
         _update_sound_hint();
         break;
       case ExtraId.ion_pulse:
-        info('Ion Pulse', title: 'Primary Weapon', hud: true);
-        weapons.switch_primary_to(IonPulseGun);
+        final upgrade = weapons.switch_primary_to(IonPulseGun);
+        info('Ion Pulse', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
       case ExtraId.nuke_missile:
         info('Nuke Missile', title: 'Secondary Weapon', hud: true);
         weapons.switch_secondary_to(NukeMissileLauncher);
         break;
       case ExtraId.phosphor_swirl:
-        info('Phosphor Swirl', title: 'Primary Weapon', hud: true);
-        weapons.switch_primary_to(SwirlGun);
+        final upgrade = weapons.switch_primary_to(SwirlGun);
+        info('Phosphor Swirl', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
       case ExtraId.plasma_ring:
         info('Plasma Ring', title: 'Secondary Weapon', hud: true);
@@ -144,12 +144,12 @@ class ZaxxonPlayer extends PositionComponent
         weapons.switch_secondary_to(SmartBomb);
         break;
       case ExtraId.triple_plasma:
-        info('Triple Plasma', title: 'Primary Weapon', hud: true);
-        weapons.switch_primary_to(TriplePlasmaGun);
+        final upgrade = weapons.switch_primary_to(TriplePlasmaGun);
+        info('Triple Plasma', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
       case ExtraId.yin_yang:
-        info('Yin Yang', title: 'Primary Weapon', hud: true);
-        weapons.switch_primary_to(YinYangGun);
+        final upgrade = weapons.switch_primary_to(YinYangGun);
+        info('Yin Yang', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
     }
   }
