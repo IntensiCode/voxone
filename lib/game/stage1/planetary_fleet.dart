@@ -1,6 +1,8 @@
+import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/circling_marauder.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder.dart';
@@ -33,9 +35,20 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
 
   final _times = <(List<double>, Function())>[];
 
+  double _clear_time = 0;
+
   @override
   void update(double dt) {
     super.update(dt);
+
+    final hostiles = stage.children.any((it) => it is Hostile);
+    _clear_time = hostiles ? 0 : _clear_time + dt;
+    if (_clear_time > 1) {
+      var next = _times.map((it) => it.$1.firstOrNull).nonNulls.min();
+      if (next != null) next = next - _spawn_time;
+      dt = next ?? dt;
+      _clear_time = 0;
+    }
 
     defeated = _done_spawning && _wave.every((it) => it.defeated);
 

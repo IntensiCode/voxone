@@ -40,11 +40,21 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
     }
   }
 
+  double _clear_time = 0;
+
   @override
   void update(double dt) {
     if (player.is_dead_or_dying()) {
       return;
     } else if (_active_wave?.defeated == false) {
+      final hostiles = stage.children.any((it) => it is Hostile);
+      _clear_time = hostiles ? 0 : _clear_time + dt;
+      if (_clear_time > 5) {
+        logError('Force clear empty wave');
+        _clear_time = 0;
+        _active_wave?.defeated = true;
+        update(0);
+      }
       return;
     } else if (_waves.isEmpty) {
       logInfo("All waves defeated");

@@ -121,15 +121,16 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   void update(double dt) {
     _live_position.setFrom(position);
     super.update(dt);
-    if (player.is_dead_or_dying()) {
-      if (state == MarauderState.active) state = MarauderState.leaving;
-    }
     switch (state) {
       case MarauderState.incoming:
         on_incoming(dt);
 
       case MarauderState.active:
         on_active(dt);
+        if (player.is_dead_or_dying()) {
+          if (state == MarauderState.active) state = MarauderState.leaving;
+          if (state == MarauderState.sweeping) state = MarauderState.leaving;
+        }
 
       case MarauderState.sweeping:
         on_sweeping(dt);
