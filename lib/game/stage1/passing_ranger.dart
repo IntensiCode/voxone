@@ -94,7 +94,7 @@ mixin _MoveAlongPathOnActive on MarauderEntity {
     final rot_z = _safe_angle(_target_rz, entity.rot_z);
     entity.rot_z = lerpDouble(rot_z, _target_rz, 2 * dt) ?? rot_z;
 
-    _plant_time ??= 0.55 + rng.nextDoubleLimit(0.1);
+    _plant_time ??= 0.5 + rng.nextDoubleLimit(0.2);
     if (active_time > _plant_time! && !mine_planted) {
       mine_planted = true;
       mines.spawn(position)?.set_direction(target_dir);
