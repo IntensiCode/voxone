@@ -62,6 +62,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     if (!isVisible) return;
     if (_paused) {
       _pause_overlay.update(dt);
+      stage_keys.update(dt);
       return;
     }
     super.updateTree(dt);
