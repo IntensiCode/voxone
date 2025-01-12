@@ -13,6 +13,7 @@ import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/homing_launcher.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
@@ -205,6 +206,8 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   @override
   void on_active(double dt) {
     super.on_active(dt);
+
+    if (player.is_dead_or_dying()) return;
 
     _satellites.forEach((it) {
       if (it.state == MarauderState.left || it.state == MarauderState.defeated) {

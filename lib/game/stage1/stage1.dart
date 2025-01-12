@@ -1,7 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/acid_blast.dart';
 import 'package:voxone/game/player/plasma_blob.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
@@ -15,15 +14,15 @@ import 'package:voxone/game/shared/game_screen.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/info_overlay.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/enemies_stage1.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
-import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/on_message.dart';
 
 class Stage1 extends GameScreen with HasContext {
-  double _show_time = 0;
+  late InfoOverlay info_overlay;
 
   @override
   onLoad() async {
@@ -31,7 +30,7 @@ class Stage1 extends GameScreen with HasContext {
     await add(decals);
     await add(extras);
     await add(mines);
-    await add(InfoOverlay());
+    await add(info_overlay = InfoOverlay());
 
     await AcidBlast.preload();
     await PlasmaBlob.preload();
@@ -43,14 +42,11 @@ class Stage1 extends GameScreen with HasContext {
     logInfo(phase);
     switch (phase) {
       case GamePhase.show_stage:
-        final t1 = textXY('Stage 1', game_width / 2, game_height / 2 - 15, scale: 2);
-        final t2 = textXY('Approaching Planet Voxone', game_width / 2, game_height / 2 + 5);
-        t1.fadeInDeep();
-        t2.fadeInDeep();
-        clearScript();
-        after(dev ? 0.5 : 2.0, () => t1.fadeOutDeep());
-        after(0.0, () => t2.fadeOutDeep());
-        _show_time = 0;
+        sendMessage(ShowInfoText(
+          title: 'Stage 1',
+          text: 'Approaching Planet Voxone',
+          when_done: () => _change_phase(GamePhase.intro),
+        ));
 
       case GamePhase.intro:
         cache['player'] = ZaxxonPlayer();
@@ -63,18 +59,31 @@ class Stage1 extends GameScreen with HasContext {
         add(EnemiesStage1());
 
       case GamePhase.complete:
-        break;
+        sendMessage(ShowInfoText(
+          title: 'Stage Complete',
+          text: 'Prepare for next challenge',
+          when_done: () => showScreen(Screen.title),
+        ));
 
       case GamePhase.game_over:
-        break;
+        sendMessage(ShowInfoText(
+          title: 'Game Over',
+          text: 'All Hope Is Lost',
+          when_done: () => showScreen(Screen.title),
+        ));
     }
   }
 
   @override
   void onMount() {
     super.onMount();
+
     onMessage<GamePhaseUpdate>((it) => _change_phase(it.phase));
+    onMessage<EnemiesDefeated>((it) => _change_phase(GamePhase.complete));
+    onMessage<PlayerDestroyed>((it) => _change_phase(GamePhase.game_over));
     onMessage<PlayerReady>((it) => _change_phase(GamePhase.playing));
+
+    info_overlay.mounted.then((_) => _change_phase(phase));
   }
 
   @override
@@ -88,10 +97,7 @@ class Stage1 extends GameScreen with HasContext {
     super.update(dt);
     switch (phase) {
       case GamePhase.show_stage:
-        _show_time += dt;
-        if (_show_time >= (dev ? 0.5 : 2.5)) {
-          phase = GamePhase.intro;
-        }
+        break; // waiting for ShowInfoText
 
       case GamePhase.intro:
         break; // waiting for PlayerReady
@@ -100,10 +106,10 @@ class Stage1 extends GameScreen with HasContext {
         break; // waiting for EnemiesDefeated
 
       case GamePhase.complete:
-        break;
+        break; // waiting for ShowInfoText
 
       case GamePhase.game_over:
-        break;
+        break; // waiting for ShowInfoText
     }
   }
 }

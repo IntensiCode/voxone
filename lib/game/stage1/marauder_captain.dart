@@ -9,6 +9,7 @@ import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/homing_launcher.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
@@ -86,6 +87,7 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
   @override
   void on_active(double dt) {
     super.on_active(dt);
+    if (player.is_dead_or_dying()) return;
     if (_last_remaining || _shield_low) _on_release_mine(dt);
   }
 

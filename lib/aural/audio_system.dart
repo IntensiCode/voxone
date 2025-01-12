@@ -16,6 +16,7 @@ enum Sound {
   clash,
   explosion,
   explosion_hollow,
+  game_over,
   incoming,
   plasma,
   pulse,
@@ -181,6 +182,7 @@ abstract class AudioSystem extends Component {
     bool cache = true,
     bool loop = false,
   }) async {
+    logInfo('play one shot sample $filename volume=$volume_factor');
     if (_muted) return Disposable.disposed;
     return await do_play_one_shot_sample(filename, volume_factor: volume_factor, cache: cache, loop: loop);
   }

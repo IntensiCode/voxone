@@ -12,20 +12,24 @@ import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
 import 'package:voxone/game/player/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/plasma_emitter.dart';
-import 'package:voxone/game/player/player_state.dart';
 import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/player/smart_bomb.dart';
 import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/player/yin_yang_gun.dart';
+import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
+import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/player_state.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/input/shortcuts.dart';
+import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 
 enum _SoundHint {
@@ -35,13 +39,14 @@ enum _SoundHint {
 }
 
 class ZaxxonPlayer extends PositionComponent
-    with HasContext, HasTraits, PlayerStrafe
+    with AutoDispose, HasAutoDisposeShortcuts, HasContext, HasTraits, PlayerStrafe
     implements Friendly, Player, Target {
   //
   late final StackedEntity _entity;
 
   PlayerState _state = PlayerState.incoming;
 
+  @override
   PlayerState get state => _state;
 
   set state(PlayerState value) {
@@ -71,9 +76,21 @@ class ZaxxonPlayer extends PositionComponent
     if (integrity == 0 && was > 0.5) {
       integrity = 0.15;
       _hint = _SoundHint.danger;
+    } else if (integrity == 0) {
+      on_destroyed();
     } else {
       _update_sound_hint();
     }
+  }
+
+  void on_destroyed() {
+    if (state == PlayerState.exploding) return;
+    if (state == PlayerState.destroyed) return;
+    _state_time = 0;
+    state = PlayerState.exploding;
+    audio.play(Sound.explosion);
+    _entity.add(EnemyExplosion());
+    _shield.removeFromParent();
   }
 
   void _update_sound_hint() {
@@ -196,16 +213,18 @@ class ZaxxonPlayer extends PositionComponent
       ..opacity = 0.2
       ..renderShape = debug);
 
-    final shield = DeflectorShield(this);
-    shield.scale.setAll(4);
-    shield.addTrait(Friendly());
-    await add(shield);
-    addTrait(shield);
+    _shield = DeflectorShield(this);
+    _shield.scale.setAll(4);
+    _shield.addTrait(Friendly());
+    await add(_shield);
+    addTrait(_shield);
 
     priority = 100;
   }
 
-  double _incoming_time = 0;
+  late DeflectorShield _shield;
+
+  double _state_time = 0;
 
   @override
   void update(double dt) {
@@ -223,6 +242,24 @@ class ZaxxonPlayer extends PositionComponent
         break;
 
       case PlayerState.exploding:
+        _state_time = min(2, _state_time + dt);
+        if (_state_time >= 2) {
+          state = PlayerState.destroyed;
+          removeFromParent();
+          sendMessage(PlayerDestroyed());
+        } else if (_state_time > 1) {
+          if (_entity.sprite.isVisible) audio.play(Sound.explosion_hollow);
+          _entity.sprite.isVisible = false;
+        } else {
+          _entity.sprite.opacity = 1 - _state_time;
+          _entity.rot_x += 0.01;
+          _entity.rot_y -= 0.01;
+          _entity.rot_z += 0.03;
+          position.x += 40 * dt;
+          position.y += 2 * dt;
+
+          decals.spawn(Decal.smoke, position, pos_range: 16);
+        }
         break;
 
       case PlayerState.destroyed:
@@ -245,16 +282,16 @@ class ZaxxonPlayer extends PositionComponent
   }
 
   void _on_incoming(double dt) {
-    _incoming_time += dt * 2 / 3;
-    if (_incoming_time >= 1) {
-      _incoming_time = 1;
+    _state_time += dt * 2 / 3;
+    if (_state_time >= 1) {
+      _state_time = 1;
       state = PlayerState.playing;
       sendMessage(PlayerReady());
     }
     scale.setAll(0.3);
     _entity.size.setAll(256);
 
-    final i = Curves.easeOut.transform(_incoming_time);
+    final i = Curves.easeOut.transform(_state_time);
     position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
   }
 

@@ -42,7 +42,9 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
 
   @override
   void update(double dt) {
-    if (_active_wave?.defeated == false) {
+    if (player.is_dead_or_dying()) {
+      return;
+    } else if (_active_wave?.defeated == false) {
       return;
     } else if (_waves.isEmpty) {
       logInfo("All waves defeated");

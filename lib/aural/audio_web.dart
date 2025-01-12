@@ -110,7 +110,7 @@ class PlatformAudioSystem extends AudioSystem {
 
     await FlameAudio.audioCache.load(filename);
 
-    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, volume_factor * master);
     final it = await FlameAudio.play(filename, volume: volume);
     it.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
 

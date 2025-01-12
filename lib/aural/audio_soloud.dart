@@ -113,7 +113,8 @@ class PlatformAudioSystem extends AudioSystem {
     _last_time[filename] = now;
 
     final source = _one_shots.putIfAbsent(filename, () => soloud.loadAsset('assets/audio/$filename'));
-    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, volume_factor * master);
+    logInfo('play one shot sample: $volume_factor $sound $master => $volume');
     final active = await source;
     final handle = await soloud.play(active, volume: volume, looping: loop);
 

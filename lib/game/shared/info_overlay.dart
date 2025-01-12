@@ -24,20 +24,6 @@ class InfoOverlay extends GameScriptComponent {
     onMessage<ShowInfoText>((it) {
       final target = it.hud_align ? _hud : _info;
       target.pipe.add(it);
-
-      if (it.text == 'Enemy Wave Incoming') {
-        audio.play_one_shot_sample('voice/enemy_wave_incoming.ogg');
-      } else if (it.text == 'Minefield Ahead') {
-        audio.play_one_shot_sample('voice/minefield_ahead.ogg');
-      } else if (it.text == 'Planetary Fleet Arriving') {
-        audio.play_one_shot_sample('voice/planetary_fleet_arriving.ogg');
-      } else if (it.text == 'Capital Ship Approaching') {
-        audio.play_one_shot_sample('voice/capital_ship_approaching.ogg');
-      } else if (it.title == 'Primary Weapon') {
-        audio.play_one_shot_sample('voice/primary_weapon_upgrade.ogg', volume_factor: 2);
-      } else if (it.title == 'Secondary Weapon') {
-        audio.play_one_shot_sample('voice/secondary_weapon_upgrade.ogg', volume_factor: 2);
-      }
     });
   }
 }
@@ -59,6 +45,8 @@ class _InfoOverlay extends GameScriptComponent {
     if (_active != null || pipe.isEmpty) return;
 
     final it = pipe.first;
+
+    _play_sound(it);
 
     clearScript();
     removeAll(children);
@@ -96,5 +84,25 @@ class _InfoOverlay extends GameScriptComponent {
       pipe.removeAt(0);
       if (_active == active) _active = null;
     });
+  }
+
+  void _play_sound(ShowInfoText it) {
+    if (it.text == 'Enemy Wave Incoming') {
+      audio.play_one_shot_sample('voice/enemy_wave_incoming.ogg');
+    } else if (it.text == 'Minefield Ahead') {
+      audio.play_one_shot_sample('voice/minefield_ahead.ogg');
+    } else if (it.text == 'Planetary Fleet Arriving') {
+      audio.play_one_shot_sample('voice/planetary_fleet_arriving.ogg');
+    } else if (it.text == 'Capital Ship Approaching') {
+      audio.play_one_shot_sample('voice/capital_ship_approaching.ogg');
+    } else if (it.title == 'Primary Weapon') {
+      audio.play_one_shot_sample('voice/primary_weapon_upgrade.ogg', volume_factor: 2);
+    } else if (it.title == 'Secondary Weapon') {
+      audio.play_one_shot_sample('voice/secondary_weapon_upgrade.ogg', volume_factor: 2);
+    } else if (it.title == 'Stage Complete') {
+      audio.play_one_shot_sample('voice/stage_complete.ogg', volume_factor: 2);
+    } else if (it.title == 'Game Over') {
+      audio.play(Sound.game_over, volume_factor: 2);
+    }
   }
 }

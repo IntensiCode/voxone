@@ -53,7 +53,7 @@ class Decals extends Component {
   final _active = <Decal, List<DecalObj>>{};
   final _anim = <Decal, SpriteSheet>{};
 
-  DecalObj spawn(Decal decal, Vector2 start) {
+  DecalObj spawn(Decal decal, Vector2 start, {double? pos_range, double? vel_range}) {
     late final DecalObj result;
 
     final instances = _active[decal] ??= List.empty(growable: true);
@@ -66,13 +66,13 @@ class Decals extends Component {
     result.time = 0;
 
     if (decal == Decal.mini_explosion) {
-      result.randomize_position(range: 20);
-      result.randomize_velocity(range: 20);
+      result.randomize_position(range: pos_range ?? 20);
+      result.randomize_velocity(range: vel_range ?? 20);
       result.row = rng.nextInt(8);
     }
     if (decal == Decal.smoke) {
-      result.randomize_position(range: 8);
-      result.randomize_velocity(range: 8);
+      result.randomize_position(range: pos_range ?? 8);
+      result.randomize_velocity(range: vel_range ?? 8);
     }
     return result;
   }

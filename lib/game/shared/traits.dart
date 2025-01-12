@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/player_state.dart';
 import 'package:voxone/input/game_keys.dart';
 
 class Friendly {}
@@ -15,6 +16,8 @@ abstract interface class Integrity {
 }
 
 abstract interface class Player {
+  PlayerState get state;
+
   NotifyingVector2 get position;
 
   double get integrity;
@@ -63,4 +66,10 @@ extension HasContextExtensions on HasContext {
 
 extension ShapeHitboxExtensions on ShapeHitbox {
   bool isFriendly() => parent is Friendly || parent is HasTraits && (parent as HasTraits).hasTrait<Friendly>();
+}
+
+extension PlayerExtension on Player {
+  bool is_dead_or_dying() => state == PlayerState.exploding || state == PlayerState.destroyed;
+
+  bool is_dead() => state == PlayerState.destroyed;
 }

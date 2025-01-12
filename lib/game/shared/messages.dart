@@ -9,6 +9,8 @@ class GamePhaseUpdate with Message {
   final GamePhase phase;
 }
 
+class PlayerDestroyed with Message {}
+
 class PlayerReady with Message {}
 
 class ShowInfoText with Message {
