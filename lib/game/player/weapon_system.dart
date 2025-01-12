@@ -58,13 +58,32 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     return true;
   }
 
-  void switch_secondary_to(Type type) {
+  void switch_secondary_to(Type type, {bool reload = true}) {
+    final reload_count = _reload_count(type);
+
     final weapon = _secondaries.keys.firstWhere((it) => it.runtimeType == type);
-    _secondaries[weapon] = (_secondaries[weapon] ?? 0) + 3;
+    _secondaries[weapon] = (_secondaries[weapon] ?? 0) + (reload ? reload_count : 0);
+    if (reload) logInfo('reloaded to ${_secondaries[weapon]}');
 
     secondary_weapon?.removeFromParent();
     secondary_weapon = weapon;
     add(secondary_weapon!);
+  }
+
+  int _reload_count(Type type) {
+    int reload_count;
+    if (type == SmartBomb) {
+      reload_count = 1;
+    } else if (type == PlasmaEmitter) {
+      reload_count = 5;
+    } else if (type == ClusterBombCannon) {
+      reload_count = 3;
+    } else if (type == NukeMissileLauncher) {
+      reload_count = 2;
+    } else {
+      reload_count = 3;
+    }
+    return reload_count;
   }
 
   void on_cooldown_boost() => _cooldown_boost = min(2, _cooldown_boost + 0.1);
@@ -159,6 +178,6 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     final next = bank[(index + 1) % bank.length];
     if (next.key == secondary_weapon) return;
 
-    switch_secondary_to(next.key.runtimeType);
+    switch_secondary_to(next.key.runtimeType, reload: false);
   }
 }
