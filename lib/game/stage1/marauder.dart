@@ -75,14 +75,20 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     }
   }
 
+  double _explode_delay = 0;
+
   @override
   void on_destroyed({Vector2? direction}) {
     if (state == MarauderState.exploding) return;
-    leaving_time = 0;
     state = MarauderState.exploding;
-    entity.add(EnemyExplosion());
+
     if (sweep_time > 0) can_sweep = true;
-    audio.play(Sound.explosion, volume_factor: 0.25);
+
+    leaving_time = 0;
+    _explode_delay = 0.01 + rng.nextDoubleLimit(0.25);
+
+    // entity.add(EnemyExplosion());
+    // audio.play(Sound.explosion, volume_factor: 0.25);
 
     tumble_dir.setFrom(direction ?? raw_dir);
     tumble_dir.normalize();
@@ -117,8 +123,11 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   // set from raw_dir in on_destroyed - used for movement while exploding
   final tumble_dir = Vector2.zero();
 
+  double _last_explosion_time = 0;
+
   @override
   void update(double dt) {
+    _last_explosion_time = min(0.25, _last_explosion_time + dt);
     _live_position.setFrom(position);
     super.update(dt);
     switch (state) {
@@ -142,6 +151,17 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
         removeFromParent();
 
       case MarauderState.exploding:
+        if (_explode_delay > 0) {
+          _explode_delay = max(0, _explode_delay - dt);
+          if (_explode_delay == 0) {
+            entity.add(EnemyExplosion());
+            if (_last_explosion_time >= 0.25) {
+              audio.play(Sound.explosion, volume_factor: 0.25);
+            }
+            _last_explosion_time = 0;
+          }
+          return;
+        }
         on_exploding(dt);
 
       case MarauderState.defeated:
