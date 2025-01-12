@@ -19,6 +19,7 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/enemies_stage1.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/on_message.dart';
 
 class Stage1 extends GameScreen with HasContext {
@@ -59,16 +60,24 @@ class Stage1 extends GameScreen with HasContext {
         add(EnemiesStage1());
 
       case GamePhase.complete:
+        for (final it in children) {
+          if (it is Hostile) it.fadeOutDeep();
+        }
         sendMessage(ShowInfoText(
           title: 'Stage Complete',
           text: 'Prepare for next challenge',
+          stay_longer: true,
           when_done: () => showScreen(Screen.title),
         ));
 
       case GamePhase.game_over:
+        for (final it in children) {
+          if (it is Hostile) it.fadeOutDeep();
+        }
         sendMessage(ShowInfoText(
           title: 'Game Over',
           text: 'All Hope Is Lost',
+          stay_longer: true,
           when_done: () => showScreen(Screen.title),
         ));
     }

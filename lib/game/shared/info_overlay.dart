@@ -61,6 +61,7 @@ class _InfoOverlay extends GameScriptComponent {
       text = textXY(it.text, game_width / 2, pos_y + 5);
       text.fadeInDeep();
     });
+    if (it.stay_longer) after(2, () {});
     if (pipe.length > 3) {
       after(0.4, () => text.fadeOutDeep());
       after(0.0, () => title_text?.fadeOutDeep());

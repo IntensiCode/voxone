@@ -14,12 +14,20 @@ class PlayerDestroyed with Message {}
 class PlayerReady with Message {}
 
 class ShowInfoText with Message {
-  ShowInfoText({this.title, required this.text, this.blink_text = true, this.hud_align = false, this.when_done});
+  ShowInfoText({
+    this.title,
+    required this.text,
+    this.blink_text = true,
+    this.hud_align = false,
+    this.stay_longer = false,
+    this.when_done,
+  });
 
   final String? title;
   final String text;
   final bool blink_text;
   final bool hud_align;
+  final bool stay_longer;
   final Function? when_done;
 }
 
