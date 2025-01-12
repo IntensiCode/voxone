@@ -13,8 +13,8 @@ import 'package:voxone/util/mutable.dart';
 
 class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   ZaxxonHud(this._player) {
-    add(BitmapText(text: 'SHIELD', position: Vector2(16, 16)));
-    add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32)));
+    add(_shield = BitmapText(text: 'SHIELD', position: Vector2(16, 16)));
+    add(_integrity = BitmapText(text: 'INTEGRITY', position: Vector2(16, 32)));
     add(_cooldown = BitmapText(text: 'COOLDOWN', position: Vector2(16, 48)));
 
     add(BitmapText(text: 'PRIMARY', position: Vector2(192 + 32, 16)));
@@ -24,10 +24,17 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   }
 
   final Player _player;
-  late EnergyShield _shield;
+  late EnergyShield _player_shield;
   late WeaponSystem _weapons;
 
+  late BitmapText _shield;
+  late BitmapText _integrity;
   late BitmapText _cooldown;
+
+  double? _shield_boost;
+  double? _integrity_boost;
+  double? _cooldown_boost;
+
   BitmapText? _primary;
   BitmapText? _secondary;
   SpriteComponent? _primary_weapon;
@@ -36,7 +43,7 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   @override
   void onMount() {
     super.onMount();
-    _shield = _player.singleTrait<EnergyShield>();
+    _player_shield = _player.singleTrait<EnergyShield>();
     _weapons = _player.singleTrait<WeaponSystem>();
   }
 
@@ -44,6 +51,27 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   void update(double dt) {
     super.update(dt);
     _cooldown.isVisible = _weapons.secondary_weapon != null;
+
+    final i = _player.integrity_boost;
+    if (i != _integrity_boost) {
+      _integrity_boost = i;
+      _integrity.change_text_in_place('INTEGRITY:${i.toStringAsFixed(2)}');
+      _integrity.fadeInDeep();
+    }
+
+    final s = _player.shield_boost;
+    if (s != _shield_boost) {
+      _shield_boost = s;
+      _shield.change_text_in_place('SHIELD:${s.toStringAsFixed(2)}');
+      _shield.fadeInDeep();
+    }
+
+    final c = _player.cooldown_boost;
+    if (c != _cooldown_boost) {
+      _cooldown_boost = c;
+      _cooldown.change_text_in_place('COOLDOWN:${c.toStringAsFixed(2)}');
+      _cooldown.fadeInDeep();
+    }
 
     final primary = _weapons.primary_weapon.display_name;
     if (_primary?.text != primary) {
@@ -73,7 +101,7 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
 
   @override
   void render(Canvas canvas) {
-    _draw_indicator(canvas, _shield.energy, 0);
+    _draw_indicator(canvas, _player_shield.energy, 0);
     _draw_indicator(canvas, _player.integrity, 16);
     if (_weapons.secondary_weapon != null) {
       _draw_indicator(canvas, (1 - (_weapons.secondary_cooldown ?? 1)), 32);

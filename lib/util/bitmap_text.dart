@@ -5,26 +5,29 @@ import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/bitmap_font.dart';
 
 class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapshot {
-  final String text;
+  String _text;
   final BitmapFont font;
   final double fontScale;
 
   bool default_snapshot;
 
+  String get text => _text;
+
   BitmapText({
-    required this.text,
+    required String text,
     required Vector2 position,
     BitmapFont? font,
     double scale = 1,
     Color? tint,
     this.default_snapshot = true,
     Anchor anchor = Anchor.topLeft,
-  })  : font = font ?? mini_font,
+  })  : _text = text,
+        font = font ?? mini_font,
         fontScale = scale {
     if (tint != null) this.tint(tint);
     this.position.setFrom(position);
     this.font.scale = fontScale;
-    final w = this.font.lineWidth(text);
+    final w = this.font.lineWidth(_text);
     final h = this.font.lineHeight(fontScale);
     final x = anchor.x * w;
     final y = anchor.y * h;
@@ -32,6 +35,12 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
     this.position.y -= y;
     size.setValues(w, h);
     renderSnapshot = false;
+  }
+
+  void change_text_in_place(String text) {
+    _text = text;
+    size.x = font.lineWidth(_text);
+    clearSnapshot();
   }
 
   @override
@@ -49,6 +58,6 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
     font.paint.isAntiAlias = false;
     font.paint.blendMode = paint.blendMode;
     font.scale = fontScale;
-    font.drawString(canvas, 0, 0, text);
+    font.drawString(canvas, 0, 0, _text);
   }
 }

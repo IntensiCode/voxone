@@ -59,6 +59,15 @@ class ZaxxonPlayer extends PositionComponent
 
   double _integrity_boost = 1;
 
+  @override
+  double get integrity_boost => _integrity_boost;
+
+  @override
+  double get shield_boost => _shield.shield.shield_boost;
+
+  @override
+  double get cooldown_boost => weapons.cooldown_boost;
+
   var _hint = _SoundHint.none;
 
   double _hint_time = 0;

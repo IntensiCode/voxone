@@ -40,6 +40,8 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
   double _cooldown_boost = 1;
 
+  double get cooldown_boost => _cooldown_boost;
+
   final _primaries = <PrimaryWeapon, bool>{};
   final _secondaries = <SecondaryWeapon, int>{};
 

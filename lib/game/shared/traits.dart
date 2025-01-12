@@ -22,6 +22,12 @@ abstract interface class Player {
 
   double get integrity;
 
+  double get integrity_boost;
+
+  double get shield_boost;
+
+  double get cooldown_boost;
+
   void on_collect_extra(ExtraId which);
 }
 
