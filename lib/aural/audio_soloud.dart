@@ -84,6 +84,10 @@ class PlatformAudioSystem extends AudioSystem {
   Future do_preload_one_shot_sample(String filename) async =>
       await _one_shots.putIfAbsent(filename, () => soloud.loadAsset('assets/audio/$filename'));
 
+  final _queued = <(String, double, bool, bool, Function(Disposable))>[];
+
+  SoundHandle? _active_one_shot;
+
   @override
   Future<Disposable> do_play_one_shot_sample(
     String filename, {
@@ -91,6 +95,18 @@ class PlatformAudioSystem extends AudioSystem {
     required bool cache,
     required bool loop,
   }) async {
+    if (_queued.any((it) => it.$1 == filename)) return Disposable.disposed;
+
+    Disposable? late;
+    if (_active_one_shot != null) {
+      final it = (filename, volume_factor, cache, loop, (it) => late = it);
+      _queued.add(it);
+      return Disposable.wrap(() {
+        late?.dispose();
+        _queued.remove(it);
+      });
+    }
+
     final last_played_at = _last_time[filename] ?? 0;
     final now = DateTime.timestamp().millisecondsSinceEpoch;
     if (now < last_played_at + 100) return Disposable.disposed;
@@ -98,7 +114,21 @@ class PlatformAudioSystem extends AudioSystem {
 
     final source = _one_shots.putIfAbsent(filename, () => soloud.loadAsset('assets/audio/$filename'));
     final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
-    final handle = await soloud.play(await source, volume: volume, looping: loop);
+    final active = await source;
+    final handle = await soloud.play(active, volume: volume, looping: loop);
+
+    _active_one_shot = handle;
+
+    active.allInstancesFinished.listen((it) async {
+      if (_active_one_shot != handle) return;
+      _active_one_shot = null;
+      if (_queued.isNotEmpty) {
+        final (filename, volume_factor, cache, loop, hook) = _queued.removeAt(0);
+        final it = await do_play_one_shot_sample(filename, volume_factor: volume_factor, cache: cache, loop: loop);
+        hook(it);
+      }
+    });
+
     return Disposable.wrap(() => soloud.stop(handle));
   }
 

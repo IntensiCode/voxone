@@ -80,6 +80,10 @@ class PlatformAudioSystem extends AudioSystem {
   @override
   Future do_preload_one_shot_sample(String filename) async => await FlameAudio.audioCache.load(filename);
 
+  final _queued = <(String, double, bool, bool, Function(Disposable))>[];
+
+  AudioPlayer? _active_one_shot;
+
   @override
   Future<Disposable> do_play_one_shot_sample(
     String filename, {
@@ -87,15 +91,41 @@ class PlatformAudioSystem extends AudioSystem {
     required bool cache,
     required bool loop,
   }) async {
+    if (_queued.any((it) => it.$1 == filename)) return Disposable.disposed;
+
+    Disposable? late;
+    if (_active_one_shot?.state == PlayerState.playing) {
+      final it = (filename, volume_factor, cache, loop, (it) => late = it);
+      _queued.add(it);
+      return Disposable.wrap(() {
+        late?.dispose();
+        _queued.remove(it);
+      });
+    }
+
     final last_played_at = _last_time[filename] ?? 0;
     final now = DateTime.timestamp().millisecondsSinceEpoch;
     if (now < last_played_at + 100) return Disposable.disposed;
     _last_time[filename] = now;
 
     await FlameAudio.audioCache.load(filename);
+
     final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
     final it = await FlameAudio.play(filename, volume: volume);
     it.setReleaseMode(loop ? ReleaseMode.loop : ReleaseMode.release);
+
+    it.onPlayerStateChanged.listen((event) async {
+      if (event == PlayerState.stopped || event == PlayerState.completed || event == PlayerState.disposed) {
+        if (_active_one_shot != it) return;
+        _active_one_shot = null;
+        if (_queued.isNotEmpty) {
+          final (filename, volume_factor, cache, loop, hook) = _queued.removeAt(0);
+          final it = await do_play_one_shot_sample(filename, volume_factor: volume_factor, cache: cache, loop: loop);
+          hook(it);
+        }
+      }
+    });
+
     return Disposable.wrap(() {
       it.setReleaseMode(ReleaseMode.release);
       it.stop();
