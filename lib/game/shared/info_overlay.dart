@@ -58,16 +58,22 @@ class _InfoOverlay extends GameScriptComponent {
       text = textXY(it.text, game_width / 2, pos_y + 5);
       text.fadeInDeep();
     });
-    after(quick ? 0.2 : 0.4, () {
-      if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
-    });
-    after(quick ? 0.9 : 1.8, () => text.removeAll(text.children)); // remove blink?
-    if (pipe.length == 1) {
-      after(quick ? 0.0 : 1.0, () => text.fadeOutDeep());
+    if (pipe.length > 3) {
+      after(0.4, () => text.fadeOutDeep());
       after(0.0, () => title_text?.fadeOutDeep());
-      after(quick ? 0.2 : 0.5, () => it.when_done?.call());
+      after(0.4, () => it.when_done?.call());
     } else {
-      after(0.0, () => it.when_done?.call());
+      after(quick ? 0.2 : 0.4, () {
+        if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
+      });
+      after(quick ? 0.9 : 1.8, () => text.removeAll(text.children)); // remove blink?
+      if (pipe.length == 1) {
+        after(quick ? 0.0 : 1.0, () => text.fadeOutDeep());
+        after(0.0, () => title_text?.fadeOutDeep());
+        after(quick ? 0.2 : 0.5, () => it.when_done?.call());
+      } else {
+        after(0.0, () => it.when_done?.call());
+      }
     }
 
     final active = _active = executeScript();
