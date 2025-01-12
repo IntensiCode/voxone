@@ -71,6 +71,8 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
+    if (is_dead_or_dying()) return;
+
     final was = integrity;
     integrity -= damage / 50 / _integrity_boost;
     if (integrity < 0) integrity = 0;
@@ -85,8 +87,8 @@ class ZaxxonPlayer extends PositionComponent
   }
 
   void on_destroyed() {
-    if (state == PlayerState.exploding) return;
-    if (state == PlayerState.destroyed) return;
+    if (is_dead_or_dying()) return;
+
     _state_time = 0;
     state = PlayerState.exploding;
     audio.play(Sound.explosion);
@@ -106,6 +108,8 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void on_collect_extra(ExtraId which) {
+    if (is_dead_or_dying()) return;
+
     switch (which) {
       case ExtraId.acid_blast:
         final upgrade = weapons.switch_primary_to(AcidBlaster);
