@@ -170,7 +170,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     _explode_delay = max(0, _explode_delay - dt);
     if (_explode_delay > 0) return;
 
-    entity.add(EnemyExplosion());
+    add(EnemyExplosion(entity));
     if (_last_explosion_time >= 0.25) {
       audio.play(Sound.explosion, volume_factor: 0.25);
     }

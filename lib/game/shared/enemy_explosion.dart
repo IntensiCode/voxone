@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
@@ -19,16 +18,12 @@ class EnemyExplosion extends CircleComponent {
     _anim ??= animCR('explosion96.png', 6, 2, stepTime: 0.1);
   }
 
-  @override
-  void onMount() {
-    super.onMount();
-
-    final ppc = parent as PositionComponent;
-    radius = ppc.size.x / 2;
+  EnemyExplosion(PositionComponent origin) {
+    radius = origin.size.x / 2;
     anchor = Anchor.center;
-    position.setFrom(ppc.position);
-    position.x += ppc.size.x / 2;
-    position.y += ppc.size.y / 2;
+    position.setFrom(origin.position);
+    // position.x += origin.size.x / 2;
+    // position.y += origin.size.y / 2;
 
     paint.color = white;
     paint.isAntiAlias = false;
