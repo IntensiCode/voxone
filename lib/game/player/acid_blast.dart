@@ -23,9 +23,9 @@ class AcidBlast extends PositionComponent with CollisionCallbacks, Recyclable, D
   static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
 
-  static preload() {
+  static Future<FragmentShader> preload() {
     logInfo('preload acid blast shader');
-    await_shader = loadShader('acid_blast.frag');
+    return await_shader = loadShader('acid_blast.frag');
   }
 
   AcidBlast() {

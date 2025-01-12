@@ -19,9 +19,9 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
   static late Future<FragmentShader> await_shader;
   static FragmentShader? _shader;
 
-  static preload() {
+  static Future<FragmentShader> preload() {
     logInfo('preload plasma blob shader');
-    PlasmaBlob.await_shader = loadShader('plasma_blob.frag');
+    return PlasmaBlob.await_shader = loadShader('plasma_blob.frag');
   }
 
   PlasmaBlob(this._emit_plasma_ring) {

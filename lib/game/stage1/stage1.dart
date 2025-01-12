@@ -27,16 +27,15 @@ class Stage1 extends GameScreen with HasContext {
 
   @override
   onLoad() async {
-    add(space);
-    _change_phase(phase);
-    add(decals);
-    add(extras);
-    add(mines);
-    add(InfoOverlay());
+    await add(space);
+    await add(decals);
+    await add(extras);
+    await add(mines);
+    await add(InfoOverlay());
 
-    AcidBlast.preload();
-    PlasmaBlob.preload();
-    DeflectorShield.preload();
+    await AcidBlast.preload();
+    await PlasmaBlob.preload();
+    await DeflectorShield.preload();
     await EnemyExplosion.preload();
   }
 

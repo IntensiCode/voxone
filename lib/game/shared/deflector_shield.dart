@@ -17,10 +17,13 @@ import 'package:voxone/util/uniforms.dart';
 class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTraits implements Integrity {
   static final _shaders = <String, FragmentShader>{};
 
-  static preload() async {
+  static Future<FragmentShader> preload() async {
     logInfo('preload deflector shield shaders');
+
+    // FIXME this breaks the player shield when an enemy shield is active
     // _shaders['plasma_shield.frag'] = await loadShader('plasma_shield.frag');
-    _shaders['hex_shield.frag'] = await loadShader('hex_shield.frag');
+
+    return _shaders['hex_shield.frag'] = await loadShader('hex_shield.frag');
   }
 
   DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
