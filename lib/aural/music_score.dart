@@ -1,8 +1,9 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/on_message.dart';
 
 final music_score = MusicScore();
 
@@ -11,19 +12,20 @@ class MusicScore extends AutoDisposeComponent {
 
   String? _current_score;
 
-  Screen? _current_screen;
-
   @override
   onLoad() {
-    messaging.listen<ScreenShowing>((it) {
-      _current_screen = it.screen;
-
+    onMessage<ScreenShowing>((it) {
       final score = _target_score_for(it.screen);
       if (score == null) return;
 
       if (_target_score == score) return;
       _target_score = score;
       logInfo('target screen: ${it.screen} => score: $_target_score');
+    });
+    onMessage<ShowInfoText>((it) {
+      if (it.text == 'Capital Ship Approaching') {
+        _target_score = 'music/voxone_ingame_1.ogg';
+      }
     });
   }
 
