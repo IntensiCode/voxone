@@ -29,6 +29,11 @@ class MarauderCaptain extends MarauderEntity
         TumbleOnExploding,
         SpawnExtrasOnExploding {
   //
+  MarauderCaptain({this.homing = true});
+
+  @override
+  final bool homing;
+
   @override
   void createEntity() {
     super.createEntity();
@@ -46,6 +51,8 @@ class MarauderCaptain extends MarauderEntity
 }
 
 mixin _CreateMarauderCaptainEntity on MarauderEntity {
+  bool get homing;
+
   @override
   createEntity() async {
     reset_hit_points_to(40);
@@ -73,7 +80,7 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
 
     await add(RangerLaser(this)..damage = 0.3);
 
-    await add(HomingLauncher(this));
+    if (homing) await add(HomingLauncher(this));
   }
 }
 
@@ -93,7 +100,7 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
 
   void _on_release_mine(double dt) {
     if (_mine_spawn_time <= 0) {
-      _mine_spawn_time = 1;
+      _mine_spawn_time = 2;
       mines.spawn(position, drift: rng.nextDoublePM(40));
     } else {
       _mine_spawn_time -= dt;

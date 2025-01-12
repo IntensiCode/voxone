@@ -34,7 +34,7 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
       });
     });
     after(1.0, () {
-      final it = MarauderCaptain();
+      final it = MarauderCaptain(homing: false);
       it.target_position.x = 600;
       it.target_position.y = 160;
       _wave.add(it);
