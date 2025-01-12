@@ -9,12 +9,15 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
   final BitmapFont font;
   final double fontScale;
 
+  bool default_snapshot;
+
   BitmapText({
     required this.text,
     required Vector2 position,
     BitmapFont? font,
     double scale = 1,
     Color? tint,
+    this.default_snapshot = true,
     Anchor anchor = Anchor.topLeft,
   })  : font = font ?? mini_font,
         fontScale = scale {
@@ -29,6 +32,12 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
     this.position.y -= y;
     size.setValues(w, h);
     renderSnapshot = false;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (default_snapshot) renderSnapshot = opacity == 1;
   }
 
   @override

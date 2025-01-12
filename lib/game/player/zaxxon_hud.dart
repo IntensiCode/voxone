@@ -1,8 +1,6 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
-import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/weapon_system.dart';
@@ -15,12 +13,14 @@ import 'package:voxone/util/mutable.dart';
 
 class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   ZaxxonHud(this._player) {
-    add(BitmapText(text: 'SHIELD', position: Vector2(16, 16))..renderSnapshot = true);
-    add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32))..renderSnapshot = true);
-    add(_cooldown = BitmapText(text: 'COOLDOWN', position: Vector2(16, 48))..renderSnapshot = true);
+    add(BitmapText(text: 'SHIELD', position: Vector2(16, 16)));
+    add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32)));
+    add(_cooldown = BitmapText(text: 'COOLDOWN', position: Vector2(16, 48)));
 
-    add(BitmapText(text: 'PRIMARY', position: Vector2(192 + 32, 16))..renderSnapshot = true);
-    add(BitmapText(text: 'SECONDARY', position: Vector2(192 * 2, 16))..renderSnapshot = true);
+    add(BitmapText(text: 'PRIMARY', position: Vector2(192 + 32, 16)));
+    add(BitmapText(text: 'SECONDARY', position: Vector2(192 * 2, 16)));
+
+    this.fadeInDeep();
   }
 
   final Player _player;
@@ -38,9 +38,6 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
     super.onMount();
     _shield = _player.singleTrait<EnergyShield>();
     _weapons = _player.singleTrait<WeaponSystem>();
-
-    scale.setAll(0);
-    add(ScaleEffect.to(Vector2(1, 1), CurvedEffectController(0.2, Curves.easeIn)));
   }
 
   @override
@@ -54,6 +51,8 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
       add(_primary = BitmapText(text: primary, position: Vector2(192 + 32, 32))..renderSnapshot = true);
       _primary_weapon ??= added(SpriteComponent()..position = Vector2(192 + 32 - 26, 18));
       _primary_weapon?.sprite = _weapons.primary_weapon.icon;
+      _primary?.fadeInDeep();
+      _primary_weapon?.fadeInDeep();
     }
 
     final secondary = _weapons.secondary_weapon?.display_name ?? 'N/A';
@@ -67,6 +66,8 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
       } else if (_secondary_weapon?.parent == null) {
         add(_secondary_weapon!);
       }
+      _secondary?.fadeInDeep();
+      _secondary_weapon?.fadeInDeep();
     }
   }
 
@@ -87,6 +88,10 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
       > .2 => _danger,
       _ => _critical,
     };
+
+    // FIXME why does this.opacity not work? ‾\_('')_/‾
+    paint.opacity = _cooldown.opacity;
+
     _rect.left = 16;
     _rect.top = 26 + offset_y;
     _rect.right = 16 + value * 100;

@@ -62,6 +62,7 @@ class Stage1 extends GameScreen with HasContext {
       case GamePhase.complete:
         for (final it in children) {
           if (it is Hostile) it.fadeOutDeep();
+          if (it is ZaxxonHud) it.fadeOutDeep();
         }
         sendMessage(ShowInfoText(
           title: 'Stage Complete',
@@ -73,6 +74,7 @@ class Stage1 extends GameScreen with HasContext {
       case GamePhase.game_over:
         for (final it in children) {
           if (it is Hostile) it.fadeOutDeep();
+          if (it is ZaxxonHud) it.fadeOutDeep();
         }
         sendMessage(ShowInfoText(
           title: 'Game Over',
