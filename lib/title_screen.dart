@@ -72,12 +72,13 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     Back To Title :: 0
     Toggle Debug :: =
     >
-    Kill All Enemies :: Backspace
-    >
     All Primary Weapons Available
     >
     Recharge All Secondary Weapons :: [
     Boost Player Strength :: ]
+    Kill Your Self :: Delete
+    Kill All Enemies :: Insert
+    Remove All Enemies :: Backspace
     >
     Boost can be used multiple times
     ''';
@@ -88,7 +89,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       insets: Vector2(9, 9),
       position: Vector2(game_width - 320 - 16, 16),
       anchor: Anchor.topLeft,
-      size: Vector2(320, 192),
+      size: Vector2(320, 208),
     ));
     _cheats.isVisible = dev;
   }

@@ -21,6 +21,7 @@ import 'package:voxone/game/player/yin_yang_gun.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -307,6 +308,11 @@ class ZaxxonPlayer extends PositionComponent
     super.onMount();
     if (dev) {
       onKey('<Delete>', () => on_destroyed());
+      onKey('<Insert>', () {
+        for (final it in stage.children) {
+          if (it case EnemyHitPoints it) it.on_destroyed();
+        }
+      });
       onKey(']', () {
         on_collect_extra(ExtraId.integrity_boost);
         on_collect_extra(ExtraId.shield_boost);
