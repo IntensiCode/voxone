@@ -61,8 +61,6 @@ class CapitalShip extends MarauderEntity
     shield.max_rotate_time = 360;
     indicator.scale.setAll(0.25);
     indicator.position.setValues(0, -16);
-
-    sendMessage(ShowInfoText(title: 'The End For Now', text: 'Work In Progress'));
   }
 }
 
