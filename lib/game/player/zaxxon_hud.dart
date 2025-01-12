@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
+import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/weapon_system.dart';
@@ -11,7 +13,7 @@ import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
 
-class ZaxxonHud extends Component with HasContext, HasPaint {
+class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   ZaxxonHud(this._player) {
     add(BitmapText(text: 'SHIELD', position: Vector2(16, 16))..renderSnapshot = true);
     add(BitmapText(text: 'INTEGRITY', position: Vector2(16, 32))..renderSnapshot = true);
@@ -36,6 +38,9 @@ class ZaxxonHud extends Component with HasContext, HasPaint {
     super.onMount();
     _shield = _player.singleTrait<EnergyShield>();
     _weapons = _player.singleTrait<WeaponSystem>();
+
+    scale.setAll(0);
+    add(ScaleEffect.to(Vector2(1, 1), CurvedEffectController(0.2, Curves.easeIn)));
   }
 
   @override
