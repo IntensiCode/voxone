@@ -42,6 +42,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
+    textXY('Music by suno.com', 800 - 16, 430, anchor: Anchor.topRight, scale: 1);
     textXY('Voice Samples by elevenlabs.io', 800 - 16, 440, anchor: Anchor.topRight, scale: 1);
     textXY('Voxel Models by maxparata.itch.io', 800 - 16, 450, anchor: Anchor.topRight, scale: 1);
     textXY('Star Nest Shader by Pablo Roman Andrioli', 800 - 16, 460, anchor: Anchor.topRight, scale: 1);
