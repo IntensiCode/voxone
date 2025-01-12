@@ -9,7 +9,7 @@ mixin HasAutoDisposeShortcuts on Component, AutoDispose {
   bool get is_active => isMounted && !isRemoving;
 
   void onKey(String pattern, void Function() callback) {
-    logInfo('onKey $pattern');
+    logVerbose('onKey $pattern');
     autoDispose(
       'onKey-$pattern',
       shortcuts.onKey(pattern, callback, is_active: () => is_active),
