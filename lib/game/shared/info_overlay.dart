@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -11,7 +12,7 @@ import 'package:voxone/util/on_message.dart';
 
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
-    add(_info = _InfoOverlay());
+    add(_info = _InfoOverlay(quick: dev && !kReleaseMode));
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
   }
 
