@@ -17,7 +17,7 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void onLoad() {
-    after(delay, () => sendMessage(ShowInfoText(text: 'Approaching Minefield')));
+    after(delay, () => sendMessage(ShowInfoText(text: 'Minefield Ahead')));
 
     if (!dev) pause(info_time);
 

@@ -4,6 +4,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
@@ -27,6 +28,12 @@ import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 
+enum _SoundHint {
+  danger,
+  none,
+  warning,
+}
+
 class ZaxxonPlayer extends PositionComponent
     with HasContext, HasTraits, PlayerStrafe
     implements Friendly, Player, Target {
@@ -46,6 +53,10 @@ class ZaxxonPlayer extends PositionComponent
 
   double _integrity_boost = 1;
 
+  var _hint = _SoundHint.none;
+
+  double _hint_time = 0;
+
   @override
   double integrity = 1;
 
@@ -54,8 +65,25 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
+    final was = integrity;
     integrity -= damage / 50 / _integrity_boost;
     if (integrity < 0) integrity = 0;
+    if (integrity == 0 && was > 0.5) {
+      integrity = 0.15;
+      _hint = _SoundHint.danger;
+    } else {
+      _update_sound_hint();
+    }
+  }
+
+  void _update_sound_hint() {
+    if (integrity <= 0.15) {
+      _hint = _SoundHint.danger;
+    } else if (integrity <= 0.35) {
+      _hint = _SoundHint.warning;
+    } else {
+      _hint = _SoundHint.none;
+    }
   }
 
   @override
@@ -80,6 +108,7 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.integrity_boost:
         info('Integrity Boost', hud: true);
         _integrity_boost = min(2, _integrity_boost + 0.1);
+        _update_sound_hint();
         break;
       case ExtraId.shield_boost:
         info('Shield Boost', hud: true);
@@ -88,6 +117,7 @@ class ZaxxonPlayer extends PositionComponent
       case ExtraId.integrity:
         info('Integrity Repair', hud: true);
         integrity = min(1, integrity + 0.25);
+        _update_sound_hint();
         break;
       case ExtraId.ion_pulse:
         info('Ion Pulse', title: 'Primary Weapon', hud: true);
@@ -179,6 +209,10 @@ class ZaxxonPlayer extends PositionComponent
 
   @override
   void update(double dt) {
+    super.update(dt);
+
+    _update_sound(dt);
+
     switch (state) {
       case PlayerState.incoming:
         _on_incoming(dt);
@@ -193,6 +227,20 @@ class ZaxxonPlayer extends PositionComponent
 
       case PlayerState.destroyed:
         break;
+    }
+  }
+
+  void _update_sound(double dt) {
+    if (_hint_time > 0) _hint_time = max(0, _hint_time - dt);
+
+    if (_hint != _SoundHint.none && _hint_time <= 0) {
+      _hint_time = 2;
+      final name = switch (_hint) {
+        _SoundHint.danger => 'danger',
+        _SoundHint.warning => 'warning',
+        _SoundHint.none => 'none',
+      };
+      audio.play_one_shot_sample('voice/$name.ogg', volume_factor: 2);
     }
   }
 

@@ -176,6 +176,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
       _generator_hit_points = max(0, _generator_hit_points - damage);
       if (_generator_hit_points <= 0) {
         sendMessage(ShowInfoText(text: 'Shield Generator Destroyed', title: 'Critical Hit'));
+        audio.play_one_shot_sample('voice/shield_generator_destroyed.ogg', volume_factor: 2);
         shield.removeFromParent();
         indicator.removeFromParent();
         entity.add(EnemyExplosion()..scale.setAll(0.2));
