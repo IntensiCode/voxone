@@ -101,7 +101,7 @@ class ZaxxonPlayer extends PositionComponent
     _state_time = 0;
     state = PlayerState.exploding;
     audio.play(Sound.explosion);
-    add(EnemyExplosion(_entity));
+    add(explosions.spawn(_entity));
     _shield.removeFromParent();
   }
 

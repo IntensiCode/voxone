@@ -179,7 +179,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
         audio.play_one_shot_sample('voice/shield_generator_destroyed.ogg', volume_factor: 2);
         shield.removeFromParent();
         indicator.removeFromParent();
-        add(EnemyExplosion(entity)..scale.setAll(0.2));
+        add(explosions.spawn(entity)..scale.setAll(0.2));
       }
     }
 

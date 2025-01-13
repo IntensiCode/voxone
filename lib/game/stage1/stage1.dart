@@ -29,6 +29,7 @@ class Stage1 extends GameScreen with HasContext {
   onLoad() async {
     await add(space);
     await add(decals);
+    await add(explosions);
     await add(extras);
     await add(mines);
     await add(info_overlay = InfoOverlay());
@@ -36,7 +37,6 @@ class Stage1 extends GameScreen with HasContext {
     await AcidBlast.preload();
     await PlasmaBlob.preload();
     await DeflectorShield.preload();
-    await EnemyExplosion.preload();
   }
 
   void _change_phase(GamePhase phase) {

@@ -1,12 +1,10 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:kart/kart.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
@@ -181,7 +179,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     _explode_delay = max(0, _explode_delay - dt);
     if (_explode_delay > 0) return;
 
-    add(EnemyExplosion(entity));
+    add(explosions.spawn(entity));
     if (_last_explosion_time >= 0.25) {
       audio.play(Sound.explosion, volume_factor: 0.25);
     }
