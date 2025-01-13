@@ -247,6 +247,9 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
 
 mixin _MultipleExplosionsOnExploding on MarauderEntity {
   double _add_explosion_time = 0;
+  int _sound_trigger = 5;
+
+  final _tmp = Vector2.zero();
 
   @override
   void on_exploding(double dt) {
@@ -258,12 +261,23 @@ mixin _MultipleExplosionsOnExploding on MarauderEntity {
       state = MarauderState.defeated;
     }
 
+    _tmp.setFrom(position);
+    _tmp.x += rng.nextDoublePM(100);
+    _tmp.y += rng.nextDoublePM(100);
+    decals.spawn(Decal.smoke, _tmp);
+
     _add_explosion_time += dt;
     if (_add_explosion_time > 0.1) {
       _add_explosion_time -= 0.1;
+
       final it = decals.spawn(Decal.nuke_explosion, position);
       it.position.x += rng.nextDoublePM(100);
       it.position.y += rng.nextDoublePM(100);
+
+      if (leaving_time < 1 && --_sound_trigger <= 0) {
+        audio.play(Sound.explosion);
+        _sound_trigger = 5;
+      }
     }
 
     position.x += dt * tumble_dir.x;
