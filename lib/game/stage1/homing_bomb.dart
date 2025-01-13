@@ -16,6 +16,19 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
+class _Halo extends CircleComponent with HasVisibility {
+  _Halo() {
+    anchor = Anchor.center;
+    radius = 12;
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 2;
+    paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
+    paint.color = yellow;
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
+  }
+}
+
 class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
   static late SpriteSheet sheet;
 
@@ -25,6 +38,13 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
       ..renderShape = debug
       ..paint.opacity = 0.2);
     mini_explosions_on_hit = false;
+
+    add(_Halo());
+
+    paint.color = yellow;
+    paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
+    paint.isAntiAlias = false;
+    paint.filterQuality = FilterQuality.none;
   }
 
   void reset() {
@@ -85,7 +105,10 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
   }
 
   @override
-  void render(Canvas canvas) => sheet.getSpriteById(0).render(canvas, anchor: Anchor.center);
+  void render(Canvas canvas) {
+    canvas.drawCircle(Offset.zero, 12, paint);
+    sheet.getSpriteById(0).render(canvas, anchor: Anchor.center);
+  }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {

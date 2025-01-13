@@ -12,7 +12,7 @@ class HomingLauncher extends Component with HasContext {
 
   final Marauder source;
 
-  double _cool_down = rng.nextDouble();
+  double _cool_down = 3 + rng.nextDouble();
 
   final _projectiles = ComponentRecycler(() => HomingBomb());
 
