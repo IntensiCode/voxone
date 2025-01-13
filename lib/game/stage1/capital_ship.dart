@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dart_extensions_methods/dart_extension_methods.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
@@ -9,6 +10,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
@@ -240,8 +242,13 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   @override
   void on_destroyed({Vector2? direction}) {
     super.on_destroyed(direction: direction);
-    _satellites.forEach((it) => it.on_destroyed());
+    // _satellites.forEach((it) => it.on_destroyed());
     tumble_dir.setValues(-10, 10 / 4);
+    stage.children
+        .whereType<Hostile>()
+        .whereType<EnemyHitPoints>()
+        .filterNot((it) => it == this)
+        .forEach((it) => it.on_destroyed());
   }
 }
 

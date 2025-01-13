@@ -116,9 +116,8 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
-        decals.spawn(Decal.nuke_explosion, position);
         it.on_hit(damage: 50 * integrity_in_percent);
-        recycle();
+        on_destroyed();
       });
     }
   }
@@ -126,6 +125,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
   @override
   void on_destroyed() {
     recycle();
+    decals.spawn(Decal.nuke_explosion, position);
     audio.play(Sound.explosion, volume_factor: 0.1);
   }
 }
