@@ -13,6 +13,8 @@ import 'audio_soloud.dart' if (dart.library.html) 'audio_web.dart';
 
 enum Sound {
   acid_blast,
+  bonus1,
+  bonus2,
   clash,
   explosion,
   explosion_hollow,

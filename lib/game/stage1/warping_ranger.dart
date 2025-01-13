@@ -9,4 +9,6 @@ class WarpingRanger extends MarauderEntity
         PlantMineOnSweeping,
         SweepOutOnLeaving,
         TumbleOnExploding,
-        SpawnExtrasOnExploding {}
+        SpawnExtrasOnExploding {
+  WarpingRanger(super.wave);
+}

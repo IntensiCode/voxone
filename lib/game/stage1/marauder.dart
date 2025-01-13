@@ -1,10 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:kart/kart.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
@@ -18,6 +20,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/stage1/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_gun.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
@@ -28,6 +31,8 @@ bool can_sweep = true;
 
 mixin Marauder implements Hostile, Target {
   bool get defeated => state == MarauderState.defeated || state == MarauderState.left;
+
+  bool get dead_or_gone => defeated || state == MarauderState.exploding || state == MarauderState.left;
 
   MarauderState get state;
 
@@ -48,6 +53,10 @@ enum MarauderState {
 }
 
 abstract class MarauderEntity extends PositionComponent with HasContext, Marauder, EnemyHitPoints {
+  MarauderEntity(this.wave);
+
+  final EnemyWave wave;
+
   late final StackedEntity entity;
 
   @override
@@ -82,6 +91,8 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   void on_destroyed({Vector2? direction}) {
     if (state == MarauderState.exploding) return;
     state = MarauderState.exploding;
+
+    wave.killed.add(this);
 
     if (sweep_time > 0) can_sweep = true;
 
@@ -395,8 +406,6 @@ mixin TumbleOnExploding on MarauderEntity {
 }
 
 mixin SpawnExtrasOnExploding on MarauderEntity {
-  bool get _last_remaining => stage.children.whereType<Marauder>().singleOrNull == this;
-
   int random_extras_count = 1;
   Set<ExtraId> allowed_random_extras = ExtraId.defaults;
   Set<ExtraId>? required_extras;
@@ -409,8 +418,9 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
 
     if (leaving_time < 1 || _extras_spawned) return;
 
-    final required = required_extras ?? {};
-    final random_count = random_extras_count + (_last_remaining ? 3 : 0);
+    final fallback = wave.kill_bonus ? {ExtraId.primaries.random(rng), ExtraId.secondaries.random(rng)} : <ExtraId>{};
+    final required = required_extras ?? fallback;
+    final random_count = random_extras_count + (wave.kill_bonus ? 3 : 0);
     final all_count = required.length + random_count;
     var index = 0;
     for (final e in required) {
@@ -421,6 +431,11 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
     });
 
     _extras_spawned = true;
+
+    if (wave.kill_bonus) {
+      wave.killed.clear();
+      audio.play(Sound.bonus1, volume_factor: 0.5);
+    }
   }
 }
 

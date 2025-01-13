@@ -12,13 +12,16 @@ class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
   final _wave = List<Marauder>.empty(growable: true);
 
   @override
+  bool get kill_bonus => false;
+
+  @override
   void onLoad() {
     after(delay, () => sendMessage(ShowInfoText(text: 'Capital Ship Approaching')));
 
     if (!dev) pause_script(info_time);
 
     after(1.0, () {
-      final it = CapitalShip();
+      final it = CapitalShip(this);
       it.target_position.x = 600;
       it.target_position.y = 160;
       _wave.add(it);

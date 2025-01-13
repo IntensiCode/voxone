@@ -8,4 +8,6 @@ class SweepingMarauder extends MarauderEntity
         PlantMineOnSweeping,
         SweepOutOnLeaving,
         TumbleOnExploding,
-        SpawnExtrasOnExploding {}
+        SpawnExtrasOnExploding {
+  SweepingMarauder(super.wave);
+}

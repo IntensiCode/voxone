@@ -38,7 +38,8 @@ class CapitalShip extends MarauderEntity
         NopOnLeaving,
         _MultipleExplosionsOnExploding,
         SpawnExtrasOnExploding {
-  //
+  CapitalShip(super.wave);
+
   @override
   String get shield_shader => 'hex_shield.frag';
 
@@ -225,7 +226,7 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
       target.setValues(-200 * cos(angle) - index * 10, 30 + 130 * sin(angle));
       target.add(position);
 
-      final satellite = SatelliteMarauder();
+      final satellite = SatelliteMarauder(wave);
       satellite.target_position.setFrom(target);
       satellite.init_formation(position, index / _satellite_count, index * 2 - 5);
 

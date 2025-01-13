@@ -26,7 +26,8 @@ class SatelliteMarauder extends MarauderEntity
         TumbleOnExploding,
         SpawnExtrasOnExploding,
         _KamikazeOnLeaving {
-  //
+  SatelliteMarauder(super.wave);
+
   @override
   double get volatile_incoming_time => 0.1;
 }

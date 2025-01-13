@@ -19,7 +19,8 @@ class PassingRanger extends MarauderEntity
         NopOnLeaving,
         TumbleOnExploding,
         SpawnExtrasOnExploding {
-  //
+  PassingRanger(super.wave);
+
   @override
   void update(double dt) {
     super.update(dt);

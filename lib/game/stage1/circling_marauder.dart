@@ -21,7 +21,8 @@ class CirclingMarauder extends MarauderEntity
         NopOnLeaving,
         TumbleOnExploding,
         SpawnExtrasOnExploding {
-  //
+  CirclingMarauder(super.wave);
+
   @override
   void createEntity() {
     super.createEntity();

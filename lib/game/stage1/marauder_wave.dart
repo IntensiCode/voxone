@@ -15,6 +15,9 @@ class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
   final _wave = List<Marauder>.empty(growable: true);
 
   @override
+  bool get kill_bonus => killed.length == enemies_in_wave;
+
+  @override
   void onLoad() {
     can_sweep = true;
 
@@ -24,7 +27,7 @@ class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
 
     enemies_in_wave.forEach((idx) {
       after(0.5, () {
-        final it = SweepingMarauder();
+        final it = SweepingMarauder(this);
         it.target_position.x = 600 + sin(_wave.length * 2 * pi / enemies_in_wave) * 100;
         it.target_position.y = 160 + cos(_wave.length * 2 * pi / enemies_in_wave) * 100;
         _wave.add(it);

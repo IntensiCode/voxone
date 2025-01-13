@@ -63,4 +63,19 @@ enum ExtraId {
     shield_boost,
     cooldown_boost,
   };
+
+  static final primaries = {
+    triple_plasma,
+    acid_blast,
+    ion_pulse,
+    phosphor_swirl,
+    yin_yang,
+  };
+
+  static final secondaries = {
+    plasma_ring,
+    cluster_bomb,
+    nuke_missile,
+    smart_bomb,
+  };
 }

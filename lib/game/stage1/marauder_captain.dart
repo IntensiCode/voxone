@@ -28,8 +28,7 @@ class MarauderCaptain extends MarauderEntity
         NopOnLeaving,
         TumbleOnExploding,
         SpawnExtrasOnExploding {
-  //
-  MarauderCaptain({this.homing = true});
+  MarauderCaptain(super._wave, {this.homing = true});
 
   @override
   final bool homing;

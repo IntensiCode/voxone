@@ -17,6 +17,13 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
   bool _done_spawning = false;
 
   @override
+  bool get kill_bonus {
+    if (killed.whereType<PassingRanger>().length == 16) return true;
+    if (killed.whereType<CirclingMarauder>().length == 16) return true;
+    return false;
+  }
+
+  @override
   void onLoad() {
     can_sweep = false;
 
@@ -71,11 +78,11 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
 
   double _spawn_time = 0.0;
 
-  final _passes = [
-    (0, 8, 0.3, () => PassingRanger()),
-    (5, 8, 0.3, () => PassingRanger()),
-    (15, 8, 0.3, () => CirclingMarauder()..target_position.setValues(1000, 0)),
-    (27, 1, 0.0, () => MarauderCaptain()..target_position.setValues(game_center.x + 80, game_center.y - 20)),
-    (28, 8, 0.3, () => CirclingMarauder()..target_position.setValues(1000, 0)),
+  late final _passes = [
+    (0, 8, 0.3, () => PassingRanger(this)),
+    (5, 8, 0.3, () => PassingRanger(this)),
+    (15, 8, 0.3, () => CirclingMarauder(this)..x = 1000),
+    (27, 1, 0.0, () => MarauderCaptain(this)..target_position.setValues(game_center.x + 80, game_center.y - 20)),
+    (28, 8, 0.3, () => CirclingMarauder(this)..x = 1000),
   ];
 }

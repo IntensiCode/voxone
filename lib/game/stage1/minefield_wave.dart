@@ -13,7 +13,8 @@ import 'package:voxone/util/random.dart';
 class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 128;
 
-  Iterable<MarauderMine> get _wave => stage.children.whereType<MarauderMine>();
+  @override
+  bool get kill_bonus => false;
 
   @override
   void onLoad() {
