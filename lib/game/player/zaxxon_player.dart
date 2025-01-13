@@ -78,9 +78,11 @@ class ZaxxonPlayer extends PositionComponent
   @override
   bool get susceptible => true;
 
+  bool invincible = false;
+
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
-    if (is_dead_or_dying()) return;
+    if (invincible || is_dead_or_dying()) return;
 
     final was = integrity;
     integrity -= damage / 50 / _integrity_boost;
@@ -326,11 +328,22 @@ class ZaxxonPlayer extends PositionComponent
         for (final it in stage.children) {
           if (it case EnemyHitPoints it) it.on_destroyed();
         }
+        sendMessage(ShowInfoText(text: 'Destroy all enemies', title: 'Cheat'));
       });
       onKey(']', () {
         on_collect_extra(ExtraId.integrity_boost);
         on_collect_extra(ExtraId.shield_boost);
         on_collect_extra(ExtraId.cooldown_boost);
+        sendMessage(ShowInfoText(text: 'Boost Stats', title: 'Cheat'));
+      });
+      onKey('{', () {
+        integrity = 1;
+        _shield.shield.recharge(1);
+        sendMessage(ShowInfoText(text: 'Recharge', title: 'Cheat'));
+      });
+      onKey('}', () {
+        invincible = !invincible;
+        sendMessage(ShowInfoText(text: 'Invincible: $invincible', title: 'Cheat'));
       });
     }
   }

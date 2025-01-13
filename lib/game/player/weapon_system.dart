@@ -15,6 +15,7 @@ import 'package:voxone/game/player/swirl_gun.dart';
 import 'package:voxone/game/player/triple_plasma_gun.dart';
 import 'package:voxone/game/player/yin_yang_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -128,6 +129,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
         _primaries.forEach((key, value) => _primaries[key] = true);
         _secondaries.forEach((key, value) => _secondaries[key] = 10);
         switch_secondary_to(_secondaries.keys.last.runtimeType);
+        sendMessage(ShowInfoText(text: 'Grant All Weapons', title: 'Cheat'));
       });
     }
   }

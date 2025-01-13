@@ -74,7 +74,7 @@ class MainController extends World
     logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
     if (timeScale < 0.25) timeScale = 0.25;
     if (timeScale > 4.0) timeScale = 4.0;
-    sendMessage(ShowInfoText(text: 'Time scale: ${timeScale.toStringAsFixed(2)}'));
+    sendMessage(ShowInfoText(text: 'Time scale: ${timeScale.toStringAsFixed(2)}', title: 'Cheat'));
   }
 
   @override

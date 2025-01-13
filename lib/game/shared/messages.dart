@@ -23,7 +23,7 @@ class ShowInfoText with Message {
     this.when_done,
   });
 
-  final String? title;
+  String? title;
   final String text;
   final bool blink_text;
   final bool hud_align;

@@ -90,6 +90,8 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     >
     Recharge All Secondary Weapons :: [
     Boost Player Strength :: ]
+    Repair Player :: {
+    Toggle Indestructible :: }
     Kill Your Self :: Delete
     Kill All Enemies :: Insert
     Remove All Enemies :: Backspace
@@ -103,7 +105,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       insets: Vector2(9, 9),
       position: Vector2(game_width - 320 - 16, 16),
       anchor: Anchor.topLeft,
-      size: Vector2(320, 208),
+      size: Vector2(320, 224),
     ));
     _cheats.isVisible = dev;
   }

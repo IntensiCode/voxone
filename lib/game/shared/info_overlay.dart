@@ -14,17 +14,23 @@ class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
     add(_info = _InfoOverlay(quick: dev && !kReleaseMode));
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
+    add(_cheat = _InfoOverlay(pos_y: 480 - 16, quick: true));
   }
 
   late _InfoOverlay _info;
   late _InfoOverlay _hud;
+  late _InfoOverlay _cheat;
 
   @override
   void onMount() {
     super.onMount();
     onMessage<ShowInfoText>((it) {
-      final target = it.hud_align ? _hud : _info;
-      target.pipe.add(it);
+      if (it.title == 'Cheat') {
+        _cheat.pipe.add(it..title = null);
+      } else {
+        final target = it.hud_align ? _hud : _info;
+        target.pipe.add(it);
+      }
     });
   }
 }
