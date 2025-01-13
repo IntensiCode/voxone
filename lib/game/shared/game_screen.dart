@@ -18,7 +18,7 @@ import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
-abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasVisibility {
+abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
   GameScreen() {
     add(stage_keys);
     add(stage_cache);
@@ -43,6 +43,24 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   @override
   bool get is_active => phase == GamePhase.playing;
+
+  @override
+  void onMount() {
+    super.onMount();
+
+    if (dev) {
+      onKey('-', () => _time_scale(-0.25));
+      onKey('+', () => _time_scale(0.25));
+    }
+  }
+
+  void _time_scale(double delta) {
+    timeScale += delta;
+    logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
+    if (timeScale < 0.25) timeScale = 0.25;
+    if (timeScale > 4.0) timeScale = 4.0;
+    sendMessage(ShowInfoText(text: 'Time scale: ${timeScale.toStringAsFixed(2)}', title: 'Cheat'));
+  }
 
   @override
   void update(double dt) {

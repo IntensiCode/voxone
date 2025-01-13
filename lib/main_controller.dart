@@ -21,7 +21,7 @@ import 'package:voxone/util/on_message.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World
-    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>, HasTimeScale
+    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>
     implements ScreenNavigation {
   //
   final _stack = <Screen>[];
@@ -49,9 +49,6 @@ class MainController extends World
     if (dev) {
       logInfo('activate cheat keys');
 
-      onKey('-', () => _time_scale(-0.25));
-      onKey('+', () => _time_scale(0.25));
-
       onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
       onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
       onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
@@ -67,14 +64,6 @@ class MainController extends World
     } else {
       disposeWhereTag((it) => it.startsWith('onKey-'));
     }
-  }
-
-  void _time_scale(double delta) {
-    timeScale += delta;
-    logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
-    if (timeScale < 0.25) timeScale = 0.25;
-    if (timeScale > 4.0) timeScale = 4.0;
-    sendMessage(ShowInfoText(text: 'Time scale: ${timeScale.toStringAsFixed(2)}', title: 'Cheat'));
   }
 
   @override
