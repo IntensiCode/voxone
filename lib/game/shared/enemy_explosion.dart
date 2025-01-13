@@ -56,9 +56,6 @@ class Explosion extends CircleComponent with Recyclable {
 
   @override
   void update(double dt) {
-    _explosion!.setFloat(0, width);
-    _explosion!.setFloat(1, height);
-    _explosion!.setFloat(2, _time / 2);
 
     _time += dt;
     if (_time >= 1 && _anim_overlay == null) {
@@ -70,5 +67,13 @@ class Explosion extends CircleComponent with Recyclable {
       ));
     }
     if (_time >= 2) recycle();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    _explosion!.setFloat(0, width);
+    _explosion!.setFloat(1, height);
+    _explosion!.setFloat(2, _time / 2);
+    super.render(canvas);
   }
 }
