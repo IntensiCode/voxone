@@ -96,10 +96,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     scale.setAll(1 + sin(_anim_time * 2 * pi) * 0.25);
 
     _life_time += dt;
-    if (_life_time > 4.25) {
-      recycle();
-      4.forEach((_) => decals.spawn(Decal.smoke, position));
-    }
+    if (_life_time > 4.25) on_destroyed();
 
     decals.spawn(Decal.smoke, position);
   }
@@ -127,5 +124,6 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     recycle();
     decals.spawn(Decal.nuke_explosion, position);
     audio.play(Sound.explosion, volume_factor: 0.1);
+    16.forEach((_) => decals.spawn(Decal.smoke, position));
   }
 }
