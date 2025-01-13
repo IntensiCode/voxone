@@ -24,6 +24,7 @@ class PassingRanger extends MarauderEntity
   @override
   void update(double dt) {
     super.update(dt);
+    laser.damage = 0.25;
     laser.set_laser_direction(target_dir);
   }
 }
