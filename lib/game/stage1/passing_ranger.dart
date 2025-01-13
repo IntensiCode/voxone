@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/game/stage1/ranger.dart';
@@ -22,9 +23,19 @@ class PassingRanger extends MarauderEntity
   PassingRanger(super.wave);
 
   @override
+  void onMount() {
+    super.onMount();
+    laser.damage = 0.25;
+    laser.damage = switch (difficulty) {
+      Difficulty.easy => 0.10,
+      Difficulty.normal => 0.25,
+      Difficulty.hard => 0.4,
+    };
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
-    laser.damage = 0.25;
     laser.set_laser_direction(target_dir);
   }
 }

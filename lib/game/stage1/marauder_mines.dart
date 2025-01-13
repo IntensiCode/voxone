@@ -7,6 +7,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -224,7 +225,12 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
     other.onTraits<Target>((it) {
       if (!it.susceptible) return;
 
-      it.on_hit(damage: 25);
+      final damage = switch (difficulty) {
+        Difficulty.easy => 20.0,
+        Difficulty.normal => 25.0,
+        Difficulty.hard => 27.5,
+      };
+      it.on_hit(damage: damage);
 
       position.x -= 10;
       position.y += 10 / 4;

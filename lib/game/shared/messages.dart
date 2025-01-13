@@ -32,3 +32,5 @@ class ShowInfoText with Message {
 }
 
 class ToggleCheatMode with Message {}
+
+class UpdateDifficulty with Message {}

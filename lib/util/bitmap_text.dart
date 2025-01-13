@@ -5,11 +5,14 @@ import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/bitmap_font.dart';
 
 class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapshot {
-  String _text;
+  final _reference = Vector2.zero();
+
   final BitmapFont font;
   final double fontScale;
 
   bool default_snapshot;
+
+  String _text;
 
   String get text => _text;
 
@@ -25,6 +28,7 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
         font = font ?? mini_font,
         fontScale = scale {
     if (tint != null) this.tint(tint);
+    _reference.setFrom(position);
     this.position.setFrom(position);
     this.font.scale = fontScale;
     final w = this.font.lineWidth(_text);

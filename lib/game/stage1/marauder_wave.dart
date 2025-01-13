@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/stage1/enemy_wave.dart';
@@ -10,7 +11,11 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
 class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
-  static const enemies_in_wave = 8;
+  final enemies_in_wave = switch (difficulty) {
+    Difficulty.easy => 8,
+    Difficulty.normal => 9,
+    Difficulty.hard => 10,
+  };
 
   final _wave = List<Marauder>.empty(growable: true);
 

@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
@@ -15,6 +16,7 @@ import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
+import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
@@ -47,6 +49,8 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   final _shadows = Shadows()..isVisible = false;
   final _keys = Keys();
 
+  BitmapText? _difficulty;
+
   @override
   onLoad() {
     add(_keys);
@@ -60,6 +64,9 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     for (final (idx, it) in _credits.reversed.indexed) {
       textXY(it, 784, 464 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
     }
+
+    textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
@@ -132,10 +139,26 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   void onMount() {
     super.onMount();
+
+    onKey('<Left>', () => _change_difficulty(-1));
+    onKey('<Right>', () => _change_difficulty(1));
+    onKey('<', () => _change_difficulty(-1));
+    onKey('>', () => _change_difficulty(1));
+
     onKey('t', () => _check_cheat('t'));
     onKey('f', () => _check_cheat('f'));
     onKey('d', () => _check_cheat('d'));
     onKey('j', () => _check_cheat('j'));
+  }
+
+  void _change_difficulty(int add) {
+    final values = Difficulty.values;
+    final index = (values.indexOf(difficulty) + add + values.length) % values.length;
+    difficulty = values[index];
+    _difficulty?.removeFromParent();
+    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty?.fadeInDeep();
+    sendMessage(UpdateDifficulty());
   }
 
   void _check_cheat(String add) {
@@ -156,6 +179,9 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   void update(double dt) {
     super.update(dt);
     if (_keys.check_and_consume(GameKey.start)) pushScreen(Screen.stage1);
+
+    if (_keys.check_and_consume(GameKey.left)) _change_difficulty(-1);
+    if (_keys.check_and_consume(GameKey.right)) _change_difficulty(1);
   }
 
   @override

@@ -1,6 +1,8 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/atlas.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/stage1/homing_bomb.dart';
 import 'package:voxone/game/stage1/marauder.dart';
@@ -12,12 +14,22 @@ class HomingLauncher extends Component with HasContext {
 
   final Marauder source;
 
-  double _cool_down = 3 + rng.nextDouble();
+  final _base_time = switch (difficulty) {
+    Difficulty.easy => 3.0,
+    Difficulty.normal => 2.5,
+    Difficulty.hard => 2.0,
+  };
+
+  late double _cool_down = _base_time + rng.nextDouble();
 
   final _projectiles = ComponentRecycler(() => HomingBomb());
 
   @override
-  onLoad() => HomingBomb.sheet = atlas.sheetI('nuke_core.png', 8, 1);
+  onLoad() {
+    HomingBomb.sheet = atlas.sheetI('nuke_core.png', 8, 1);
+
+    logInfo('base time: $_base_time');
+  }
 
   @override
   void update(double dt) {
@@ -31,7 +43,7 @@ class HomingLauncher extends Component with HasContext {
       return;
     }
 
-    _cool_down += 5.4 + rng.nextDoubleLimit(0.9);
+    _cool_down += _base_time + 2.4 + rng.nextDoubleLimit(0.9);
 
     final it = _projectiles.acquire()..reset();
     it.position.setFrom(source.position);

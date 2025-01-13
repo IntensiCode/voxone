@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -8,6 +9,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -34,9 +36,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
 
   HomingBomb() {
     size.setAll(4);
-    add(CircleHitbox(radius: 8, anchor: Anchor.center, isSolid: true)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 8, anchor: Anchor.center, isSolid: true)..debug());
     mini_explosions_on_hit = false;
 
     add(_Halo());
@@ -45,6 +45,8 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
+
+    logInfo('timeout: $_timeout');
   }
 
   void reset() {
@@ -96,10 +98,16 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     scale.setAll(1 + sin(_anim_time * 2 * pi) * 0.25);
 
     _life_time += dt;
-    if (_life_time > 4.25) on_destroyed();
+    if (_life_time > _timeout) on_destroyed();
 
     decals.spawn(Decal.smoke, position);
   }
+
+  final _timeout = switch (difficulty) {
+    Difficulty.easy => 3.75,
+    Difficulty.normal => 4,
+    Difficulty.hard => 4.25,
+  };
 
   @override
   void render(Canvas canvas) {
@@ -113,7 +121,12 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
-        it.on_hit(damage: 50 * integrity_in_percent);
+        final damage = switch (difficulty) {
+          Difficulty.easy => 45,
+          Difficulty.normal => 50,
+          Difficulty.hard => 55,
+        };
+        it.on_hit(damage: damage * integrity_in_percent);
         on_destroyed();
       });
     }

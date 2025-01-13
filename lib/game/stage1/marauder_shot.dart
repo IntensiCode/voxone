@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -32,6 +33,18 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
   @override
   set highlight_mode(HighlightMode mode) {}
 
+  double _damage = 2.5;
+
+  @override
+  void onMount() {
+    super.onMount();
+    _damage = switch (difficulty) {
+      Difficulty.easy => 1.5,
+      Difficulty.normal => 2.5,
+      Difficulty.hard => 3.5,
+    };
+  }
+
   @override
   void update(double dt) {
     x -= 300 * dt;
@@ -55,7 +68,7 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
-        it.on_hit(damage: 2.5);
+        it.on_hit(damage: _damage);
         recycle();
       });
     }

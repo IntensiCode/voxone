@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/game_state.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -16,6 +17,7 @@ import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/on_message.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
@@ -48,10 +50,22 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   void onMount() {
     super.onMount();
 
+    onMessage<UpdateDifficulty>((_) => _update_time_scale());
+    _update_time_scale();
+
     if (dev) {
       onKey('-', () => _time_scale(-0.25));
       onKey('+', () => _time_scale(0.25));
     }
+  }
+
+  void _update_time_scale() {
+    timeScale = switch (difficulty) {
+      Difficulty.easy => 1.0,
+      Difficulty.normal => 1.25,
+      Difficulty.hard => 1.5,
+    };
+    logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
   }
 
   void _time_scale(double delta) {
