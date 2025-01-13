@@ -4,11 +4,11 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 class StackedEntity extends PositionComponent {
-  StackedEntity.image(Image image, int frames, this._shadows) {
+  StackedEntity.sprite(Sprite sprite, int frames, this._shadows) {
     anchor = Anchor.center;
-    sprite = StackedSprite.image(image, frames, highlight_mode: HighlightMode.none);
-    size.addListener(() => sprite.size.setFrom(this.size));
-    add(sprite);
+    this.sprite = StackedSprite.sprite(sprite, frames, highlight_mode: HighlightMode.none);
+    size.addListener(() => this.sprite.size.setFrom(this.size));
+    add(this.sprite);
   }
 
   StackedEntity(String asset, int frames, this._shadows) {

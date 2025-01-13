@@ -13,6 +13,8 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
@@ -26,8 +28,7 @@ class Extras extends Component with HasContext {
   }
 
   late final SpriteSheet _sheet;
-
-  final _animations = <ExtraId, List<Image>>{};
+  late final ComponentRecycler<_Extra> _pool;
 
   Sprite icon_for(ExtraId which) => _sheet.getSpriteById(which.sheet_index);
 
@@ -35,12 +36,7 @@ class Extras extends Component with HasContext {
     final pick = _pick_power_up(choices);
     if (pick == null) return;
 
-    final animation = _animations[pick] ??= _make_animation(pick);
-    final extra = _Extra(animation, shadows);
-    extra.which = pick;
-    extra.position.setFrom(position);
-    stage.add(extra);
-
+    final extra = stage.added(_pool.acquire()..reset(pick, position));
     if (index != null && count != null && count > 1) {
       final distance = count * 6;
       final angle = 2 * pi * index / count;
@@ -69,8 +65,18 @@ class Extras extends Component with HasContext {
     throw 'oh really?';
   }
 
-  List<Image> _make_animation(ExtraId which) {
-    final result = List<Image>.empty(growable: true);
+  @override
+  onLoad() {
+    _sheet = sheetI('extras.png', 8, 4);
+    final animations = <ExtraId, List<Sprite>>{};
+    for (final it in ExtraId.values) {
+      animations[it] = _make_animation(it);
+    }
+    _pool = ComponentRecycler<_Extra>(() => _Extra(animations, shadows));
+  }
+
+  List<Sprite> _make_animation(ExtraId which) {
+    final result = List<Sprite>.empty(growable: true);
     for (int a = 0; a < 1; a++) {
       final src = _sheet.getSpriteById(which.sheet_index);
       final recorder = PictureRecorder();
@@ -81,19 +87,15 @@ class Extras extends Component with HasContext {
       final picture = recorder.endRecording();
       final image = picture.toImageSync(16, 256);
       picture.dispose();
-      result.add(image);
+      result.add(Sprite(image));
     }
     return result;
   }
-
-  @override
-  onLoad() async {
-    _sheet = sheetI('extras.png', 8, 4);
-  }
 }
 
-class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint {
-  _Extra(this.animation, Shadows shadows) : entity = StackedEntity.image(animation.first, 16, shadows) {
+class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, Recyclable {
+  _Extra(this.animations, Shadows shadows)
+      : entity = StackedEntity.sprite(animations[ExtraId.values.first]!.first, 16, shadows) {
     // priority = 0;
 
     entity.scale_x = 1.2;
@@ -110,12 +112,22 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
       ..renderShape = debug);
   }
 
-  final List<Image> animation;
+  final Map<ExtraId, List<Sprite>> animations;
   final StackedEntity entity;
 
   late ExtraId which;
 
   double _anim_time = rng.nextDouble();
+
+  void reset(ExtraId which, Vector2 origin) {
+    this.which = which;
+    position.setFrom(origin);
+    _anim_time = rng.nextDouble();
+
+    entity.sprite.loaded.then((_) {
+      entity.sprite.change_sprite(animations[which]!.first);
+    });
+  }
 
   @override
   void update(double dt) {
@@ -126,9 +138,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     entity.rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
     position.x -= 100 * dt;
     position.y += 100 / 4 * dt;
-    if (position.x < -100) {
-      removeFromParent();
-    }
+    if (position.x < -100) recycle();
   }
 
   @override
@@ -136,8 +146,8 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     super.onCollision(intersectionPoints, other);
     other.onTraits<Friendly>((it) {
       decals.spawn(Decal.teleport, position);
-      removeFromParent();
       player.on_collect_extra(which);
+      recycle();
     });
   }
 }

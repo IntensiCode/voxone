@@ -20,13 +20,6 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     paint.filterQuality = FilterQuality.none;
   }
 
-  StackedSprite.image(Image image, this._frames, {this.highlight_mode = HighlightMode.none})
-      : _asset = null,
-        _sprite = Sprite(image) {
-    paint.isAntiAlias = false;
-    paint.filterQuality = FilterQuality.none;
-  }
-
   StackedSprite.sprite(this._sprite, this._frames, {this.highlight_mode = HighlightMode.none}) : _asset = null {
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;

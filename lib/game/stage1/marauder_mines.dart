@@ -77,7 +77,7 @@ class MarauderMines extends Component with HasContext {
 
 class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
   MarauderMine(this.animation, Shadows shadows)
-      : entity = StackedEntity.image(animation.frames.first.sprite.image, 8, shadows) {
+      : entity = StackedEntity.sprite(animation.frames.first.sprite, 8, shadows) {
     entity.scale_x = 1.2;
     entity.scale_y = 1.8;
     entity.scale_z = 1.2;
