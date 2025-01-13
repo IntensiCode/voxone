@@ -416,9 +416,25 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
 
     if (leaving_time < 1 || _extras_spawned) return;
 
-    final fallback = wave.kill_bonus ? {ExtraId.primaries.random(rng), ExtraId.secondaries.random(rng)} : <ExtraId>{};
-    final required = required_extras ?? fallback;
-    final random_count = random_extras_count + (wave.kill_bonus ? 3 : 0);
+    if (wave.kill_bonus) {
+      wave.killed.clear();
+      spawn_bonus();
+    } else {
+      spawn_default();
+    }
+
+    _extras_spawned = true;
+  }
+
+  void spawn_default() => _spawn_extras(required_extras ?? {}, random_extras_count);
+
+  void spawn_bonus() {
+    final bonus = {ExtraId.primaries.random(rng), ExtraId.secondaries.random(rng)};
+    _spawn_extras(required_extras ?? bonus, random_extras_count + 3);
+    audio.play(Sound.bonus1, volume_factor: 0.5);
+  }
+
+  void _spawn_extras(Set<ExtraId> required, int random_count) {
     final all_count = required.length + random_count;
     var index = 0;
     for (final e in required) {
@@ -427,13 +443,6 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
     random_count.forEach((_) {
       extras.spawn(position, choices: allowed_random_extras, index: index++, count: all_count);
     });
-
-    _extras_spawned = true;
-
-    if (wave.kill_bonus) {
-      wave.killed.clear();
-      audio.play(Sound.bonus1, volume_factor: 0.5);
-    }
   }
 }
 

@@ -37,7 +37,7 @@ mixin _CreateSatelliteEntity on MarauderEntity, HasVisibility {
   createEntity() async {
     reset_hit_points_to(10);
 
-    active_time_limit = dev ? 5 : 45;
+    active_time_limit = dev ? 20 : 45;
     active_time_limit += rng.nextDoubleLimit(5);
 
     isVisible = false;
@@ -123,6 +123,8 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
 
   final _last_dir = Vector2.zero();
 
+  bool self_destruct = false;
+
   @override
   void on_leaving(double dt) {
     on_active(dt);
@@ -164,6 +166,7 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
       leaving_time = 0.95;
       mines.spawn(position)?.set_direction(_last_dir);
       on_destroyed(direction: _last_dir);
+      self_destruct = true;
     }
   }
 
@@ -173,6 +176,7 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
     if (other.hasTrait<Friendly>() && state == MarauderState.leaving) {
       mines.spawn(position)?.set_direction(_last_dir);
       on_destroyed(direction: _last_dir);
+      self_destruct = true;
     }
   }
 }

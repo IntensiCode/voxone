@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:dart_extensions_methods/dart_extension_methods.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
@@ -18,6 +20,7 @@ import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/homing_launcher.dart';
 import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/stage1/marauder_mines.dart';
 import 'package:voxone/game/stage1/ranger_laser.dart';
 import 'package:voxone/game/stage1/satellite_marauder.dart';
 import 'package:voxone/util/extensions.dart';
@@ -39,6 +42,7 @@ class CapitalShip extends MarauderEntity
         NopOnSweeping,
         NopOnLeaving,
         _MultipleExplosionsOnExploding,
+        _ReleaseMinesOnActive,
         SpawnExtrasOnExploding {
   CapitalShip(super.wave);
 
@@ -204,7 +208,7 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
 
   int _waves = 10;
 
-  final _satellites = <MarauderEntity>[];
+  final _satellites = <SatelliteMarauder>[];
 
   @override
   void on_active(double dt) {
@@ -217,8 +221,15 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
         it.removeFromParent();
       }
     });
-    _satellites.removeWhere((it) => it.state == MarauderState.left);
-    _satellites.removeWhere((it) => it.state == MarauderState.defeated);
+
+    if (_satellites.isNotEmpty && _satellites.every((it) => it.isRemoved)) {
+      if (_satellites.every((it) => it.state == MarauderState.defeated)) {
+        if (_satellites.none((it) => it.self_destruct)) {
+          _satellites.random(rng).spawn_bonus();
+        }
+      }
+      _satellites.clear();
+    }
 
     if (_satellites.isNotEmpty || _waves <= 0) return;
 
@@ -242,7 +253,6 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   @override
   void on_destroyed({Vector2? direction}) {
     super.on_destroyed(direction: direction);
-    // _satellites.forEach((it) => it.on_destroyed());
     tumble_dir.setValues(-10, 10 / 4);
     stage.children
         .whereType<Hostile>()
@@ -291,5 +301,22 @@ mixin _MultipleExplosionsOnExploding on MarauderEntity {
     position.y += dt * tumble_dir.y;
 
     entity.sprite.opacity = leaving_time < 1 ? 1 - leaving_time / 2 : 0;
+  }
+}
+
+mixin _ReleaseMinesOnActive on MarauderEntity {
+  double _mine_spawn_time = 0;
+
+  @override
+  void on_active(double dt) {
+    super.on_active(dt);
+    if (player.is_dead_or_dying()) return;
+
+    if (_mine_spawn_time <= 0) {
+      _mine_spawn_time = 3;
+      mines.spawn(position, drift: rng.nextDoublePM(40));
+    } else {
+      _mine_spawn_time -= dt;
+    }
   }
 }
