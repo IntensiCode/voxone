@@ -44,9 +44,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   bool _paused = false;
 
   @override
-  bool get is_active => phase == GamePhase.playing;
-
-  @override
   void onMount() {
     super.onMount();
 
@@ -54,8 +51,8 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     _update_time_scale();
 
     if (dev) {
-      onKey('-', () => _time_scale(-0.25));
-      onKey('+', () => _time_scale(0.25));
+      onKey('-', () => _change_time_scale(-0.25));
+      onKey('+', () => _change_time_scale(0.25));
     }
   }
 
@@ -68,7 +65,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
   }
 
-  void _time_scale(double delta) {
+  void _change_time_scale(double delta) {
     timeScale += delta;
     logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
     if (timeScale < 0.25) timeScale = 0.25;
