@@ -50,7 +50,6 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   @override
   void update(double dt) {
     super.update(dt);
-    _cooldown.isVisible = _weapons.secondary_weapon != null;
 
     final i = _player.integrity_boost;
     if (i != _integrity_boost) {
