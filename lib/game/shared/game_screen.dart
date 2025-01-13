@@ -102,7 +102,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   @override
   void renderTree(Canvas canvas) {
-    StackedSprite.update_interval = 0.2;
+    StackedSprite.update_interval = 0.15;
     StackedSprite.render_count = 0;
     super.renderTree(canvas);
   }

@@ -33,6 +33,7 @@ dependencies:
   supercharged: ^2.1.1
   web: ^1.1.0
   flame_texturepacker: ^4.1.4
+  canister: ^1.2.2
 
 dev_dependencies:
   flutter_test:

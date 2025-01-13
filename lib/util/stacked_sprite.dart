@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:canister/canister.dart';
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/atlas.dart';
@@ -13,6 +15,15 @@ enum HighlightMode {
   shadow,
   hit,
 }
+
+typedef CacheKey = (Sprite sprite, double rot_x, double rot_y, double rot_z);
+
+final stacked_cache = CacheBuilder<CacheKey, Image>()
+    .capacity(2048)
+    .expireAfterRead(Duration(seconds: 30))
+    .expireAfterWrite(Duration(seconds: 30))
+    .removalListener((key, value) => value.dispose())
+    .build();
 
 class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   StackedSprite(this._asset, this._frames, {this.highlight_mode = HighlightMode.none}) {
@@ -55,6 +66,8 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   HighlightMode highlight_mode;
 
+  bool cache = true;
+
   void change_sprite(Sprite sprite) {
     _sprite = sprite;
     _uniforms.set(_Uniform.tex_width, _sprite.image.width.toDouble());
@@ -71,7 +84,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   void reset() {
     highlight_mode = HighlightMode.none;
-    _last?.dispose();
+    // _last?.dispose();
     _last = null;
     _update_time = 0;
     _render = true;
@@ -106,7 +119,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   }
 
   static double update_interval = 0.1;
-  static final _max_renders_per_frame = kDebugMode ? 3 : 6;
+  static final _max_renders_per_frame = kDebugMode ? 5 : 8;
 
   double _update_time = 0;
   bool _render = true;
@@ -125,13 +138,29 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   bool force_render = false;
 
+  static const _rot_steps = 24;
+
   @override
   void render(Canvas canvas) {
+    final rx = (rot_x * _rot_steps).round() / _rot_steps;
+    final ry = (rot_y * _rot_steps).round() / _rot_steps;
+    final rz = (rot_z * _rot_steps).round() / _rot_steps;
+    final key = (_sprite, rx, ry, rz);
+    final cached = stacked_cache[key];
+    if (cache && cached != null) {
+      canvas.drawImage(cached, Offset.zero, paint);
+      return;
+    }
+
     if (!force_render && _last != null) {
       if (!_render || render_count > _max_renders_per_frame) {
         _update_time = update_interval - rng.nextDoubleLimit(update_interval / 4);
-        canvas.drawImage(_last!, Offset.zero, paint);
-        return;
+        try {
+          canvas.drawImage(_last!, Offset.zero, paint);
+          return;
+        } catch (e) {
+          if (dev) logError('last image disposed - ignored: $e');
+        }
       }
     }
     _render = false;
@@ -142,9 +171,9 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     // bug fix \_('')_/
     if (kIsWeb) _shader!.setImageSampler(0, _sprite.image);
 
-    _x_rot_mat.setRotationX(rot_x);
-    _y_rot_mat.setRotationY(rot_y);
-    _z_rot_mat.setRotationZ(rot_z);
+    _x_rot_mat.setRotationX(rx);
+    _y_rot_mat.setRotationY(ry);
+    _z_rot_mat.setRotationZ(rz);
 
     _rot_mat.setIdentity();
     _rot_mat.multiply(_x_rot_mat);
@@ -188,8 +217,6 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _rect.bottom = height;
     c.drawRect(_rect, _paint);
 
-    _last?.dispose();
-
     final picture = recorder.endRecording();
     _last = picture.toImageSync(width.toInt(), height.toInt());
     picture.dispose();
@@ -198,6 +225,12 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
     _src ??= Rect.fromLTWH(0, 0, width, height);
     _dst ??= MutRect(0, 0, width, height);
+
+    try {
+      if (cache) stacked_cache[key] = _last!;
+    } catch (e) {
+      if (dev) logError('cache error - ignored: $e');
+    }
   }
 
   Image? _last;

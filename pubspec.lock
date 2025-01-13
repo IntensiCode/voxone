@@ -118,6 +118,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  canister:
+    dependency: "direct main"
+    description:
+      name: canister
+      sha256: "7b011650187a0e908e283fec2a02f1f9fa6bfe87eade735ef5891e95592d33d0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.2"
   characters:
     dependency: transitive
     description:

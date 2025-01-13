@@ -144,12 +144,6 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
 
     if (_anim_time >= 1) _anim_time -= 1;
 
-    final anim_frame = (_anim_time * (animation.frames.length - 1)).toInt();
-
-    if (entity.sprite.isLoaded) {
-      entity.sprite.change_sprite(animation.frames[anim_frame].sprite);
-    }
-
     entity.rot_x += dt;
     entity.rot_y += dt / 2;
     entity.rot_z += dt * 3;

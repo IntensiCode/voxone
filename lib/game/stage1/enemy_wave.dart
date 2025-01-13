@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/game/stage1/marauder.dart';
 
 mixin EnemyWave on Component {
-  double delay = 1;
+  double delay = 3;
   double info_time = 1;
   bool defeated = false;
 

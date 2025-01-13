@@ -327,12 +327,15 @@ mixin PlantMineOnSweeping on MarauderEntity {
   void on_sweeping(double dt) {
     on_active(dt); // to keep position and scale in sync after sweep
 
+    entity.sprite.cache = false;
+
     sweep_time += dt;
     if (sweep_time >= 10) {
       can_sweep = true;
       mine_planted = false;
       sweep_time = 0;
       state = MarauderState.active;
+      entity.sprite.cache = true;
       return;
     }
 

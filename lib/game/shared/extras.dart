@@ -106,10 +106,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     add(entity);
 
     size.setAll(32);
-    add(RectangleHitbox(anchor: Anchor.center)
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    add(RectangleHitbox(anchor: Anchor.center)..debug());
   }
 
   final Map<ExtraId, List<Sprite>> animations;
