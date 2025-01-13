@@ -90,13 +90,13 @@ class _InfoOverlay extends GameScriptComponent {
 
   void _play_sound(ShowInfoText it) {
     if (it.text == 'Enemy Wave Incoming') {
-      audio.play_one_shot_sample('voice/enemy_wave_incoming.ogg');
+      audio.play_one_shot_sample('voice/enemy_wave_incoming.ogg', volume_factor: 2);
     } else if (it.text == 'Minefield Ahead') {
-      audio.play_one_shot_sample('voice/minefield_ahead.ogg');
+      audio.play_one_shot_sample('voice/minefield_ahead.ogg', volume_factor: 2);
     } else if (it.text == 'Planetary Fleet Arriving') {
-      audio.play_one_shot_sample('voice/planetary_fleet_arriving.ogg');
+      audio.play_one_shot_sample('voice/planetary_fleet_arriving.ogg', volume_factor: 2);
     } else if (it.text == 'Capital Ship Approaching') {
-      audio.play_one_shot_sample('voice/capital_ship_approaching.ogg');
+      audio.play_one_shot_sample('voice/capital_ship_approaching.ogg', volume_factor: 2);
     } else if (it.title == 'Primary Weapon') {
       audio.play_one_shot_sample('voice/primary_weapon_upgrade.ogg', volume_factor: 2);
     } else if (it.title == 'Secondary Weapon') {
