@@ -34,6 +34,7 @@ dependencies:
   web: ^1.1.0
   flame_texturepacker: ^4.1.4
   canister: ^1.2.2
+  image: ^4.3.0
 
 dev_dependencies:
   flutter_test:

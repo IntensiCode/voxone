@@ -1,11 +1,9 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/common.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -68,34 +66,17 @@ class Extras extends Component with HasContext {
   @override
   onLoad() {
     _sheet = sheetI('extras.png', 8, 4);
-    final animations = <ExtraId, List<Sprite>>{};
-    for (final it in ExtraId.values) {
-      animations[it] = _make_animation(it);
-    }
-    _pool = ComponentRecycler<_Extra>(() => _Extra(animations, shadows));
-  }
 
-  List<Sprite> _make_animation(ExtraId which) {
-    final result = List<Sprite>.empty(growable: true);
-    for (int a = 0; a < 1; a++) {
-      final src = _sheet.getSpriteById(which.sheet_index);
-      final recorder = PictureRecorder();
-      final canvas = Canvas(recorder);
-      for (int i = 0; i < 16; i++) {
-        src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
-      }
-      final picture = recorder.endRecording();
-      final image = picture.toImageSync(16, 256);
-      picture.dispose();
-      result.add(Sprite(image));
+    final sprites = <ExtraId, Sprite>{};
+    for (final it in ExtraId.values) {
+      sprites[it] = atlas.sprite('extra_${it.name}.png');
     }
-    return result;
+    _pool = ComponentRecycler<_Extra>(() => _Extra(sprites, shadows));
   }
 }
 
 class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, Recyclable {
-  _Extra(this.animations, Shadows shadows)
-      : entity = StackedEntity.sprite(animations[ExtraId.values.first]!.first, 16, shadows) {
+  _Extra(this.sprites, Shadows shadows) : entity = StackedEntity.sprite(sprites[ExtraId.values.first]!, 16, shadows) {
     // priority = 0;
 
     entity.scale_x = 1.2;
@@ -109,7 +90,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     add(RectangleHitbox(anchor: Anchor.center)..debug());
   }
 
-  final Map<ExtraId, List<Sprite>> animations;
+  final Map<ExtraId, Sprite> sprites;
   final StackedEntity entity;
 
   late ExtraId which;
@@ -122,7 +103,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     _anim_time = rng.nextDouble();
 
     entity.sprite.loaded.then((_) {
-      entity.sprite.change_sprite(animations[which]!.first);
+      entity.sprite.change_sprite(sprites[which]!);
     });
   }
 

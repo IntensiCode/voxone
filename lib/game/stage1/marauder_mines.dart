@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/sprite.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
@@ -14,7 +11,6 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
@@ -26,54 +22,13 @@ extension HasContextExtensions on HasContext {
 }
 
 class MarauderMines extends Component with HasContext {
-  ComponentRecycler<MarauderMine>? _mines;
+  late ComponentRecycler<MarauderMine> _mines;
 
-  MarauderMine? spawn(Vector2 position, {double drift = 0}) {
-    if (_mines == null) return null;
-    return stage.added(_mines!.acquire()..reset(position, drift: drift));
-  }
+  MarauderMine? spawn(Vector2 position, {double drift = 0}) =>
+      stage.added(_mines.acquire()..reset(position, drift: drift));
 
   @override
-  onLoad() async {
-    final animation = cache.putIfAbsent('mines_animation', () async {
-      final sheet = sheetI('acid_bomb.png', 8, 2);
-      return _make_animation(sheet);
-    });
-    animation.then((animation) => _mines = ComponentRecycler(() => MarauderMine(animation, shadows)));
-  }
-
-  Future<SpriteAnimation> _make_animation(SpriteSheet sheet) async {
-    final frames = List.generate(8, (frame) => _render_frame(sheet, frame));
-
-    // make single image from the frames in result:
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder);
-    for (int i = 0; i < frames.length; i++) {
-      canvas.drawImage(frames[i], Offset(i * 16.0, 0), Paint());
-    }
-    final picture = recorder.endRecording();
-    final image = picture.toImageSync(frames.first.width * 8, frames.first.height);
-    picture.dispose();
-    cache.addDisposable(Disposable.wrap(() => image.dispose()));
-
-    frames.forEach((it) => it.dispose());
-
-    final result_sheet = SpriteSheet.fromColumnsAndRows(image: image, columns: 8, rows: 1);
-    return result_sheet.createAnimation(row: 0, stepTime: 0.1, loop: true);
-  }
-
-  Image _render_frame(SpriteSheet sheet, int a) {
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder);
-    for (int i = 0; i < 8; i++) {
-      final src = sheet.getSprite(a == i ? 1 : 0, i);
-      src.render(canvas, position: Vector2(0, i * 16), size: Vector2(16, 16));
-    }
-    final picture = recorder.endRecording();
-    final image = picture.toImageSync(16, 128);
-    picture.dispose();
-    return image;
-  }
+  onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1), shadows));
 }
 
 class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
