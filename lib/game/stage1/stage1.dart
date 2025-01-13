@@ -1,7 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
-import 'package:voxone/game/player/acid_blast.dart';
 import 'package:voxone/game/player/plasma_blob.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
 import 'package:voxone/game/player/zaxxon_player.dart';
@@ -34,7 +33,6 @@ class Stage1 extends GameScreen with HasContext {
     await add(mines);
     await add(info_overlay = InfoOverlay());
 
-    await AcidBlast.preload();
     await PlasmaBlob.preload();
     await DeflectorShield.preload();
   }
