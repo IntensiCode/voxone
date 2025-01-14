@@ -68,5 +68,6 @@ class AppearingMoon extends RectangleComponent {
       Rect.fromCenter(center: Offset(game_width / 2, game_height / 2), width: s, height: s),
       paint,
     );
+    img.dispose();
   }
 }

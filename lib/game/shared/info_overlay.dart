@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -11,7 +12,7 @@ import 'package:voxone/util/on_message.dart';
 
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
-    add(_info = _InfoOverlay());
+    add(_info = _InfoOverlay(quick: dev && !kReleaseMode));
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
     add(_cheat = _InfoOverlay(pos_y: 480 - 16, quick: true));
     priority = 9000;
@@ -65,7 +66,6 @@ class _InfoOverlay extends GameScriptComponent {
     _play_sound(it);
 
     clearScript();
-    // removeAll(children);
 
     after(0.0, () {
       _title_text.isVisible = it.title != null;
@@ -76,7 +76,7 @@ class _InfoOverlay extends GameScriptComponent {
       _text.change_text_in_place(it.text);
       _text.fadeInDeep();
     });
-    if (it.stay_longer) after(2, () {});
+    if (kReleaseMode && it.stay_longer) after(2, () {});
     if (pipe.length > 3) {
       after(0.4, () => _text.fadeOutDeep(and_remove: false));
       after(0.0, () {

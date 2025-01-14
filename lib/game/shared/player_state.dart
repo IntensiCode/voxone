@@ -3,4 +3,5 @@ enum PlayerState {
   playing,
   exploding,
   destroyed,
+  leaving,
 }

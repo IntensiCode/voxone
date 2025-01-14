@@ -136,6 +136,7 @@ class ZaxxonPlayer extends PositionComponent
         break;
 
       case PlayerState.playing:
+        if (stage.phase == GamePhase.transition) state = PlayerState.leaving;
         update_strafe(dt);
         break;
 
@@ -145,9 +146,17 @@ class ZaxxonPlayer extends PositionComponent
 
       case PlayerState.destroyed:
         break;
+
+      case PlayerState.leaving:
+        _entity.rot_z += 0.1;
+        position.add(_leave_speed * dt);
+        _leave_speed.add(_leave_speed * dt / 1.1);
+        if (position.x > 900) removeFromParent();
+        break;
     }
   }
 
+  final _leave_speed = Vector2(100, -25);
   double _state_time = 0;
 
   void _on_incoming(double dt) {
