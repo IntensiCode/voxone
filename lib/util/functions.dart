@@ -35,8 +35,6 @@ SpriteSheet sheetI(String filename, int columns, int rows) => atlas.sheetI(filen
 SpriteSheet sheet(Image image, int columns, int rows) =>
     SpriteSheet.fromColumnsAndRows(image: image, columns: columns, rows: rows);
 
-Sprite sprite(String filename) => atlas.sprite(filename);
-
 SpriteComponent sprite_comp(
   String filename, {
   Vector2? position,
