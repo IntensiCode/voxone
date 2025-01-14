@@ -13,6 +13,13 @@ enum Uniform {
   image_height,
 }
 
+Ground? _ground;
+
+Ground get ground {
+  _ground?.removeFromParent();
+  return _ground ??= Ground._();
+}
+
 class Ground extends Component with HasPaint {
   final _rect = const Rect.fromLTWH(0, 0, game_width, game_height);
 
@@ -26,6 +33,8 @@ class Ground extends Component with HasPaint {
 
   double _time = 0;
   final _pos = Vector2(160, 120);
+
+  Ground._();
 
   @override
   Future<void> onLoad() async {

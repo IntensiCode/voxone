@@ -9,10 +9,9 @@ import 'package:voxone/game/stage1/marauder_mines.dart';
 class Stage2 extends GameScreen with HasContext {
   @override
   onLoad() async {
-    add(Ground());
+    add(ground);
     add(shadows);
     add(extras);
-    add(mines);
     add(ZaxxonPlayer());
   }
 }

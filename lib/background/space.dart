@@ -15,7 +15,7 @@ Space? _space;
 
 Space get space {
   _space?.removeFromParent();
-  return _space ??= Space();
+  return _space ??= Space._();
 }
 
 class Space extends Component with HasPaint {
@@ -26,6 +26,8 @@ class Space extends Component with HasPaint {
   static Paint? _paint;
 
   static double _time = 0;
+
+  Space._();
 
   @override
   Future<void> onLoad() async {
