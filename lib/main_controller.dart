@@ -86,8 +86,12 @@ class MainController extends World
   StackTrace? _previous;
 
   @override
-  void showScreen(Screen screen, {bool skip_fade_out = false, bool skip_fade_in = false}) {
+  void showScreen(
+    Screen screen, {
+    ScreenTransition transition = ScreenTransition.fade_out_then_in,
+  }) {
     if (_triggered == screen) {
+      logError('show $screen with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
       logError('duplicate trigger ignored: $screen', StackTrace.current);
       logError('previous trigger', _previous);
       return;
@@ -95,28 +99,58 @@ class MainController extends World
     _triggered = screen;
     _previous = StackTrace.current;
 
-    if (skip_fade_out) logInfo('show $screen');
-    logVerbose('screen stack: $_stack');
-    logVerbose('children: ${children.map((it) => it.runtimeType)}');
-
-    if (!skip_fade_out && children.isNotEmpty) {
-      children.last.fadeOutDeep(and_remove: true);
-      children.last.removed.then((_) {
-        if (_triggered == screen) {
-          _triggered = null;
-        } else if (_triggered != screen) {
-          return;
-        }
-        logInfo('show $screen');
-        showScreen(screen, skip_fade_out: skip_fade_out, skip_fade_in: skip_fade_in);
+    if (children.length > 1) {
+      3.forEach((_) {
+        logWarn('show $screen with stack=$_stack and more than one children=${children.map((it) => it.runtimeType)}');
       });
-    } else {
-      final it = added(_makeScreen(screen));
-      if (!skip_fade_in) {
-        it.mounted.then((_) => it.fadeInDeep());
-      }
-      messaging.send(ScreenShowing(screen));
     }
+
+    void call_again() {
+      // still the same? you never know.. :]
+      if (_triggered == screen) {
+        _triggered = null;
+        showScreen(screen, transition: transition);
+      } else {
+        logWarn('triggered screen changed: $screen != $_triggered');
+        logWarn('show $screen with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
+      }
+    }
+
+    final out = children.lastOrNull;
+    if (out != null) {
+      switch (transition) {
+        case ScreenTransition.cross_fade:
+          out.fadeOutDeep(and_remove: true);
+          break;
+        case ScreenTransition.fade_out_then_in:
+          out.fadeOutDeep(and_remove: true);
+          out.removed.then((_) => call_again());
+          return;
+        case ScreenTransition.switch_in_place:
+          out.removeFromParent();
+          break;
+        case ScreenTransition.remove_then_add:
+          out.removeFromParent();
+          out.removed.then((_) => call_again());
+          return;
+      }
+    }
+
+    final it = added(_makeScreen(screen));
+    switch (transition) {
+      case ScreenTransition.cross_fade:
+        it.mounted.then((_) => it.fadeInDeep());
+        break;
+      case ScreenTransition.fade_out_then_in:
+        it.mounted.then((_) => it.fadeInDeep());
+        break;
+      case ScreenTransition.switch_in_place:
+        break;
+      case ScreenTransition.remove_then_add:
+        break;
+    }
+
+    messaging.send(ScreenShowing(screen));
   }
 
   Component _makeScreen(Screen it) => switch (it) {

@@ -21,12 +21,22 @@ class ScreenShowing with Message {
   final Screen screen;
 }
 
+enum ScreenTransition {
+  cross_fade,
+  fade_out_then_in,
+  switch_in_place,
+  remove_then_add,
+}
+
 abstract interface class ScreenNavigation {
   void popScreen();
 
   void pushScreen(Screen screen);
 
-  void showScreen(Screen screen, {bool skip_fade_out = false, bool skip_fade_in = false});
+  void showScreen(
+    Screen screen, {
+    ScreenTransition transition = ScreenTransition.fade_out_then_in,
+  });
 }
 
 void popScreen() {
@@ -39,7 +49,6 @@ void pushScreen(Screen it) {
   (world as ScreenNavigation).pushScreen(it);
 }
 
-void showScreen(Screen it, {bool skip_fade_out = false, bool skip_fade_in = false}) {
-  final world = game.world;
-  (world as ScreenNavigation).showScreen(it, skip_fade_out: skip_fade_out, skip_fade_in: skip_fade_in);
+void showScreen(Screen it, {ScreenTransition transition = ScreenTransition.fade_out_then_in}) {
+  (game.world as ScreenNavigation).showScreen(it, transition: transition);
 }
