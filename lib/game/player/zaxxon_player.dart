@@ -41,10 +41,21 @@ enum _SoundHint {
 }
 
 class ZaxxonPlayer extends PositionComponent
-    with AutoDispose, HasAutoDisposeShortcuts, HasContext, HasTraits, Player, Target, _CreateEntityOnLoad, PlayerStrafe
+    with
+        AutoDispose,
+        HasAutoDisposeShortcuts,
+        HasContext,
+        HasTraits,
+        Player,
+        Target,
+        _CreateEntityOnLoad,
+        _CollectExtras,
+        PlayerStrafe
     implements Friendly {
   //
   PlayerState _state = PlayerState.incoming;
+
+  bool invincible = false;
 
   @override
   PlayerState get state => _state;
@@ -54,28 +65,8 @@ class ZaxxonPlayer extends PositionComponent
     _state = value;
   }
 
-  double _integrity_boost = 1;
-
-  @override
-  double get integrity_boost => _integrity_boost;
-
-  @override
-  double get shield_boost => _shield.shield.shield_boost;
-
-  @override
-  double get cooldown_boost => weapons.cooldown_boost;
-
-  var _hint = _SoundHint.none;
-
-  double _hint_time = 0;
-
-  @override
-  double integrity = 1;
-
   @override
   bool get susceptible => stage.phase == GamePhase.playing;
-
-  bool invincible = false;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
@@ -104,15 +95,182 @@ class ZaxxonPlayer extends PositionComponent
     _shield.removeFromParent();
   }
 
-  void _update_sound_hint() {
-    if (integrity <= 0.15) {
-      _hint = _SoundHint.danger;
-    } else if (integrity <= 0.35) {
-      _hint = _SoundHint.warning;
-    } else {
-      _hint = _SoundHint.none;
+  @override
+  void onMount() {
+    super.onMount();
+    if (dev) {
+      onKey('<Delete>', () => on_destroyed());
+      onKey('<Insert>', () {
+        for (final it in stage.children) {
+          if (it case EnemyHitPoints it) it.on_destroyed();
+        }
+        sendMessage(ShowInfoText(text: 'Destroy all enemies', title: 'Cheat'));
+      });
+      onKey(']', () {
+        on_collect_extra(ExtraId.integrity_boost);
+        on_collect_extra(ExtraId.shield_boost);
+        on_collect_extra(ExtraId.cooldown_boost);
+        sendMessage(ShowInfoText(text: 'Boost Stats', title: 'Cheat'));
+      });
+      onKey('{', () {
+        integrity = 1;
+        _shield.shield.recharge(1);
+        sendMessage(ShowInfoText(text: 'Recharge', title: 'Cheat'));
+      });
+      onKey('}', () {
+        invincible = !invincible;
+        sendMessage(ShowInfoText(text: 'Invincible: $invincible', title: 'Cheat'));
+      });
     }
   }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    _update_sound(dt);
+
+    switch (state) {
+      case PlayerState.incoming:
+        _on_incoming(dt);
+        break;
+
+      case PlayerState.playing:
+        update_strafe(dt);
+        break;
+
+      case PlayerState.exploding:
+        _on_exploding(dt);
+        break;
+
+      case PlayerState.destroyed:
+        break;
+    }
+  }
+
+  double _state_time = 0;
+
+  void _on_incoming(double dt) {
+    _state_time += dt * 2 / 3;
+    if (_state_time >= 1) {
+      _state_time = 1;
+      state = PlayerState.playing;
+      sendMessage(PlayerReady());
+    }
+    scale.setAll(0.3);
+    _entity.size.setAll(256);
+
+    final i = Curves.easeOut.transform(_state_time);
+    position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
+  }
+
+  void _on_exploding(double dt) {
+    _state_time = min(2, _state_time + dt);
+    if (_state_time >= 2) {
+      state = PlayerState.destroyed;
+      removeFromParent();
+      sendMessage(PlayerDestroyed());
+    } else if (_state_time > 1) {
+      if (_entity.sprite.isVisible) audio.play(Sound.explosion_hollow);
+      _entity.sprite.isVisible = false;
+    } else {
+      _entity.sprite.opacity = 1 - _state_time;
+      _entity.rot_x += 0.01;
+      _entity.rot_y -= 0.01;
+      _entity.rot_z += 0.03;
+      position.x += 40 * dt;
+      position.y += 2 * dt;
+
+      decals.spawn(Decal.smoke, position, pos_range: 16);
+    }
+  }
+
+  @override
+  void set_strafe(double tilt, double move_offset) {
+    super.set_strafe(tilt, move_offset);
+    _entity.rot_x = tilt;
+    position.setValues(100 + move_offset / 4, 280 + move_offset);
+  }
+}
+
+mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, Target {
+  late final StackedEntity _entity;
+
+  late final weapons = added(WeaponSystem(this));
+
+  late final DeflectorShield _shield;
+
+  @override
+  Future onLoad() async {
+    super.onLoad();
+
+    addTrait(weapons);
+
+    _entity = StackedEntity('entities/star_runner.png', 16, shadows);
+    _entity.sprite.force_render = true;
+
+    _entity.rot_x = -0.95;
+    _entity.rot_y = 1.8;
+    _entity.rot_z = -0.2;
+    _entity.scale_x = 1.2;
+    _entity.scale_y = 2.5;
+    _entity.scale_z = 1.2;
+    scale.setAll(0.3);
+    _entity.size.setAll(256);
+    position.setValues(100, 280);
+
+    await add(_entity);
+
+    size.setAll(256 * 0.3);
+
+    await add(CircleHitbox(
+      radius: 16,
+      position: Vector2(-10, 2),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    await add(CircleHitbox(
+      radius: 8,
+      position: Vector2(15, -5),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    _shield = DeflectorShield(this);
+    _shield.scale.setAll(4);
+    _shield.addTrait(Friendly());
+    await add(_shield);
+    addTrait(_shield);
+
+    priority = 100;
+  }
+}
+
+mixin _CollectExtras on Player, _CreateEntityOnLoad {
+  double _integrity_boost = 1;
+
+  double _hint_time = 0;
+
+  var _hint = _SoundHint.none;
+
+  @override
+  double integrity = 1;
+
+  @override
+  double get integrity_boost => _integrity_boost;
+
+  @override
+  double get shield_boost => _shield.shield.shield_boost;
+
+  @override
+  double get cooldown_boost => weapons.cooldown_boost;
 
   @override
   void on_collect_extra(ExtraId which) {
@@ -184,46 +342,13 @@ class ZaxxonPlayer extends PositionComponent
     }
   }
 
-  double _state_time = 0;
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-
-    _update_sound(dt);
-
-    switch (state) {
-      case PlayerState.incoming:
-        _on_incoming(dt);
-        break;
-
-      case PlayerState.playing:
-        update_strafe(dt);
-        break;
-
-      case PlayerState.exploding:
-        _state_time = min(2, _state_time + dt);
-        if (_state_time >= 2) {
-          state = PlayerState.destroyed;
-          removeFromParent();
-          sendMessage(PlayerDestroyed());
-        } else if (_state_time > 1) {
-          if (_entity.sprite.isVisible) audio.play(Sound.explosion_hollow);
-          _entity.sprite.isVisible = false;
-        } else {
-          _entity.sprite.opacity = 1 - _state_time;
-          _entity.rot_x += 0.01;
-          _entity.rot_y -= 0.01;
-          _entity.rot_z += 0.03;
-          position.x += 40 * dt;
-          position.y += 2 * dt;
-
-          decals.spawn(Decal.smoke, position, pos_range: 16);
-        }
-        break;
-
-      case PlayerState.destroyed:
-        break;
+  void _update_sound_hint() {
+    if (integrity <= 0.15) {
+      _hint = _SoundHint.danger;
+    } else if (integrity <= 0.35) {
+      _hint = _SoundHint.warning;
+    } else {
+      _hint = _SoundHint.none;
     }
   }
 
@@ -239,115 +364,5 @@ class ZaxxonPlayer extends PositionComponent
       };
       audio.play_one_shot_sample('voice/$name.ogg', volume_factor: 2);
     }
-  }
-
-  void _on_incoming(double dt) {
-    _state_time += dt * 2 / 3;
-    if (_state_time >= 1) {
-      _state_time = 1;
-      state = PlayerState.playing;
-      sendMessage(PlayerReady());
-    }
-    scale.setAll(0.3);
-    _entity.size.setAll(256);
-
-    final i = Curves.easeOut.transform(_state_time);
-    position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
-  }
-
-  @override
-  void set_strafe(double tilt, double move_offset) {
-    super.set_strafe(tilt, move_offset);
-    _entity.rot_x = tilt;
-    position.setValues(100 + move_offset / 4, 280 + move_offset);
-  }
-
-  @override
-  void onMount() {
-    super.onMount();
-    if (dev) {
-      onKey('<Delete>', () => on_destroyed());
-      onKey('<Insert>', () {
-        for (final it in stage.children) {
-          if (it case EnemyHitPoints it) it.on_destroyed();
-        }
-        sendMessage(ShowInfoText(text: 'Destroy all enemies', title: 'Cheat'));
-      });
-      onKey(']', () {
-        on_collect_extra(ExtraId.integrity_boost);
-        on_collect_extra(ExtraId.shield_boost);
-        on_collect_extra(ExtraId.cooldown_boost);
-        sendMessage(ShowInfoText(text: 'Boost Stats', title: 'Cheat'));
-      });
-      onKey('{', () {
-        integrity = 1;
-        _shield.shield.recharge(1);
-        sendMessage(ShowInfoText(text: 'Recharge', title: 'Cheat'));
-      });
-      onKey('}', () {
-        invincible = !invincible;
-        sendMessage(ShowInfoText(text: 'Invincible: $invincible', title: 'Cheat'));
-      });
-    }
-  }
-}
-
-mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, Target {
-  late final StackedEntity _entity;
-
-  late final weapons = added(WeaponSystem(this));
-
-  late final DeflectorShield _shield;
-
-  @override
-  Future onLoad() async {
-    super.onLoad();
-
-    addTrait(weapons);
-
-    _entity = StackedEntity('entities/star_runner.png', 16, shadows);
-    _entity.sprite.force_render = true;
-
-    _entity.rot_x = -0.95;
-    _entity.rot_y = 1.8;
-    _entity.rot_z = -0.2;
-    _entity.scale_x = 1.2;
-    _entity.scale_y = 2.5;
-    _entity.scale_z = 1.2;
-    scale.setAll(0.3);
-    _entity.size.setAll(256);
-    position.setValues(100, 280);
-
-    await add(_entity);
-
-    size.setAll(256 * 0.3);
-
-    await add(CircleHitbox(
-      radius: 16,
-      position: Vector2(-10, 2),
-      anchor: Anchor.center,
-      collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
-
-    await add(CircleHitbox(
-      radius: 8,
-      position: Vector2(15, -5),
-      anchor: Anchor.center,
-      collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
-
-    _shield = DeflectorShield(this);
-    _shield.scale.setAll(4);
-    _shield.addTrait(Friendly());
-    await add(_shield);
-    addTrait(_shield);
-
-    priority = 100;
   }
 }
