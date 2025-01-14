@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/effects.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
@@ -12,7 +11,7 @@ import 'package:voxone/util/on_message.dart';
 
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay() {
-    add(_info = _InfoOverlay(quick: dev && !kReleaseMode));
+    add(_info = _InfoOverlay());
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
     add(_cheat = _InfoOverlay(pos_y: 480 - 16, quick: true));
   }
@@ -45,6 +44,15 @@ class _InfoOverlay extends GameScriptComponent {
 
   Future? _active;
 
+  late final BitmapText _title_text;
+  late final BitmapText _text;
+
+  @override
+  onLoad() {
+    _title_text = added(textXY('', game_width / 2, pos_y - 15, scale: 2)..isVisible = false);
+    _text = added(textXY('', game_width / 2, pos_y + 5)..isVisible = false);
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -56,31 +64,34 @@ class _InfoOverlay extends GameScriptComponent {
     _play_sound(it);
 
     clearScript();
-    removeAll(children);
-
-    Component? title_text;
-    late Component text;
+    // removeAll(children);
 
     after(0.0, () {
-      final t = it.title;
-      if (t != null) title_text = textXY(t, game_width / 2, pos_y - 15, scale: 2);
-      title_text?.fadeInDeep();
-      text = textXY(it.text, game_width / 2, pos_y + 5);
-      text.fadeInDeep();
+      _title_text.isVisible = it.title != null;
+      _title_text.change_text_in_place(it.title ?? '');
+      if (it.title != null) _title_text.fadeInDeep();
+
+      _text.isVisible = true;
+      _text.change_text_in_place(it.text);
+      _text.fadeInDeep();
     });
     if (it.stay_longer) after(2, () {});
     if (pipe.length > 3) {
-      after(0.4, () => text.fadeOutDeep());
-      after(0.0, () => title_text?.fadeOutDeep());
+      after(0.4, () => _text.fadeOutDeep(and_remove: false));
+      after(0.0, () {
+        if (it.title != null) _title_text.fadeOutDeep(and_remove: false);
+      });
       after(0.4, () => it.when_done?.call());
     } else {
       after(quick ? 0.2 : 0.4, () {
-        if (it.blink_text) text.add(BlinkEffect(on: 0.35, off: 0.15));
+        if (it.blink_text) _text.add(BlinkEffect(on: 0.35, off: 0.15));
       });
-      after(quick ? 0.9 : 1.8, () => text.removeAll(text.children)); // remove blink?
+      after(quick ? 0.9 : 1.8, () => _text.removeAll(_text.children)); // remove blink?
       if (pipe.length == 1) {
-        after(quick ? 0.0 : 1.0, () => text.fadeOutDeep());
-        after(0.0, () => title_text?.fadeOutDeep());
+        after(quick ? 0.0 : 1.0, () => _text.fadeOutDeep(and_remove: false));
+        after(0.0, () {
+          if (it.title != null) _title_text.fadeOutDeep(and_remove: false);
+        });
         after(quick ? 0.2 : 0.5, () => it.when_done?.call());
       } else {
         after(0.0, () => it.when_done?.call());
