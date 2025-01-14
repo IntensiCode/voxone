@@ -48,6 +48,12 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
   }
 
   @override
+  set isVisible(bool it) {
+    super.isVisible = it;
+    clearSnapshot();
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
     if (default_snapshot) renderSnapshot = opacity == 1;
