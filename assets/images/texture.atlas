@@ -51,10 +51,10 @@ entities/warship
 bounds:298,544,34,1500
 explosion
 bounds:467,736,448,32
-explosion1
-bounds:216,444,576,32
-explosion2
+explosion16
 bounds:368,426,240,16
+explosion32
+bounds:216,444,576,32
 explosion96
 bounds:654,1028,288,384
 explosion_small

@@ -12,6 +12,8 @@ extension HasContextExtensions on HasContext {
 }
 
 enum Decal {
+  explosion16(1.0),
+  explosion32(1.0),
   mini_explosion(1.0),
   nuke_explosion(1.0),
   smoke(1.0),
@@ -79,6 +81,8 @@ class Decals extends Component {
 
   @override
   onLoad() {
+    _anim[Decal.explosion16] = sheetI('explosion16.png', 15, 1);
+    _anim[Decal.explosion32] = sheetI('explosion32.png', 18, 1);
     _anim[Decal.mini_explosion] = sheetI('explosions.png', 7, 8);
     _anim[Decal.nuke_explosion] = sheetI('explosion.png', 14, 1);
     _anim[Decal.smoke] = sheetI('smoke.png', 11, 1);
