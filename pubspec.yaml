@@ -57,6 +57,7 @@ flutter:
     - assets/shaders/fracture.frag
     - assets/shaders/ground.frag
     - assets/shaders/hex_shield.frag
+    - assets/shaders/moon.frag
     - assets/shaders/noise.frag
     - assets/shaders/plasma_blob.frag
     - assets/shaders/plasma_shield.frag
