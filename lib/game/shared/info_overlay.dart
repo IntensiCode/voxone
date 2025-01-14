@@ -14,6 +14,7 @@ class InfoOverlay extends GameScriptComponent {
     add(_info = _InfoOverlay());
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
     add(_cheat = _InfoOverlay(pos_y: 480 - 16, quick: true));
+    priority = 9000;
   }
 
   late _InfoOverlay _info;
