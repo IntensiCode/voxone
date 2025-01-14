@@ -23,6 +23,7 @@ import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/player_state.dart';
@@ -40,11 +41,9 @@ enum _SoundHint {
 }
 
 class ZaxxonPlayer extends PositionComponent
-    with AutoDispose, HasAutoDisposeShortcuts, HasContext, HasTraits, PlayerStrafe
-    implements Friendly, Player, Target {
+    with AutoDispose, HasAutoDisposeShortcuts, HasContext, HasTraits, Player, Target, _CreateEntityOnLoad, PlayerStrafe
+    implements Friendly {
   //
-  late final StackedEntity _entity;
-
   PlayerState _state = PlayerState.incoming;
 
   @override
@@ -54,8 +53,6 @@ class ZaxxonPlayer extends PositionComponent
     logInfo(value);
     _state = value;
   }
-
-  late final weapons = added(WeaponSystem(this));
 
   double _integrity_boost = 1;
 
@@ -76,13 +73,13 @@ class ZaxxonPlayer extends PositionComponent
   double integrity = 1;
 
   @override
-  bool get susceptible => true;
+  bool get susceptible => stage.phase == GamePhase.playing;
 
   bool invincible = false;
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
-    if (invincible || is_dead_or_dying()) return;
+    if (invincible || is_dead_or_dying() || !susceptible) return;
 
     final was = integrity;
     integrity -= damage / 50 / _integrity_boost;
@@ -98,7 +95,7 @@ class ZaxxonPlayer extends PositionComponent
   }
 
   void on_destroyed() {
-    if (is_dead_or_dying()) return;
+    if (invincible || is_dead_or_dying() || !susceptible) return;
 
     _state_time = 0;
     state = PlayerState.exploding;
@@ -186,60 +183,6 @@ class ZaxxonPlayer extends PositionComponent
         break;
     }
   }
-
-  @override
-  Future onLoad() async {
-    super.onLoad();
-
-    addTrait(weapons);
-
-    _entity = StackedEntity('entities/star_runner.png', 16, shadows);
-    _entity.sprite.force_render = true;
-
-    _entity.rot_x = -0.95;
-    _entity.rot_y = 1.8;
-    _entity.rot_z = -0.2;
-    _entity.scale_x = 1.2;
-    _entity.scale_y = 2.5;
-    _entity.scale_z = 1.2;
-    scale.setAll(0.3);
-    _entity.size.setAll(256);
-    position.setValues(100, 280);
-
-    await add(_entity);
-
-    size.setAll(256 * 0.3);
-
-    await add(CircleHitbox(
-      radius: 16,
-      position: Vector2(-10, 2),
-      anchor: Anchor.center,
-      collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
-
-    await add(CircleHitbox(
-      radius: 8,
-      position: Vector2(15, -5),
-      anchor: Anchor.center,
-      collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
-
-    _shield = DeflectorShield(this);
-    _shield.scale.setAll(4);
-    _shield.addTrait(Friendly());
-    await add(_shield);
-    addTrait(_shield);
-
-    priority = 100;
-  }
-
-  late DeflectorShield _shield;
 
   double _state_time = 0;
 
@@ -346,5 +289,65 @@ class ZaxxonPlayer extends PositionComponent
         sendMessage(ShowInfoText(text: 'Invincible: $invincible', title: 'Cheat'));
       });
     }
+  }
+}
+
+mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, Target {
+  late final StackedEntity _entity;
+
+  late final weapons = added(WeaponSystem(this));
+
+  late final DeflectorShield _shield;
+
+  @override
+  Future onLoad() async {
+    super.onLoad();
+
+    addTrait(weapons);
+
+    _entity = StackedEntity('entities/star_runner.png', 16, shadows);
+    _entity.sprite.force_render = true;
+
+    _entity.rot_x = -0.95;
+    _entity.rot_y = 1.8;
+    _entity.rot_z = -0.2;
+    _entity.scale_x = 1.2;
+    _entity.scale_y = 2.5;
+    _entity.scale_z = 1.2;
+    scale.setAll(0.3);
+    _entity.size.setAll(256);
+    position.setValues(100, 280);
+
+    await add(_entity);
+
+    size.setAll(256 * 0.3);
+
+    await add(CircleHitbox(
+      radius: 16,
+      position: Vector2(-10, 2),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    await add(CircleHitbox(
+      radius: 8,
+      position: Vector2(15, -5),
+      anchor: Anchor.center,
+      collisionType: CollisionType.passive,
+    )
+      ..paint.color = red
+      ..opacity = 0.2
+      ..renderShape = debug);
+
+    _shield = DeflectorShield(this);
+    _shield.scale.setAll(4);
+    _shield.addTrait(Friendly());
+    await add(_shield);
+    addTrait(_shield);
+
+    priority = 100;
   }
 }

@@ -15,7 +15,7 @@ abstract interface class Integrity {
   double get integrity_in_percent;
 }
 
-abstract interface class Player {
+mixin Player {
   PlayerState get state;
 
   NotifyingVector2 get position;
@@ -60,7 +60,7 @@ mixin SecondaryWeapon on HasContext {
   void do_fire();
 }
 
-abstract class Target {
+mixin Target {
   bool get susceptible;
 
   void on_hit({Set<Vector2>? intersections, double damage = 1});
