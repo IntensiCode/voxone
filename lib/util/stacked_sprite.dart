@@ -227,7 +227,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _dst ??= MutRect(0, 0, width, height);
 
     try {
-      if (cache) stacked_cache[key] = _last!;
+      if (cache && highlight_mode == HighlightMode.none) stacked_cache[key] = _last!;
     } catch (e) {
       if (dev) logError('cache error - ignored: $e');
     }
