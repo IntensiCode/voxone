@@ -9,6 +9,7 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
 
   final BitmapFont font;
   final double fontScale;
+  final Anchor _text_anchor;
 
   bool default_snapshot;
 
@@ -25,25 +26,33 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
     this.default_snapshot = true,
     Anchor anchor = Anchor.topLeft,
   })  : _text = text,
+        _text_anchor = anchor,
         font = font ?? mini_font,
         fontScale = scale {
     if (tint != null) this.tint(tint);
     _reference.setFrom(position);
-    this.position.setFrom(position);
     this.font.scale = fontScale;
-    final w = this.font.lineWidth(_text);
-    final h = this.font.lineHeight(fontScale);
-    final x = anchor.x * w;
-    final y = anchor.y * h;
-    this.position.x -= x;
-    this.position.y -= y;
+    _update_position(text);
+  }
+
+  void _update_position(String text) {
+    _text = text;
+
+    font.scale = fontScale;
+    final w = font.lineWidth(_text);
+    final h = font.lineHeight(fontScale);
     size.setValues(w, h);
-    renderSnapshot = false;
+
+    final x = _text_anchor.x * w;
+    final y = _text_anchor.y * h;
+    position.setFrom(_reference);
+    position.x -= x;
+    position.y -= y;
   }
 
   void change_text_in_place(String text) {
     _text = text;
-    size.x = font.lineWidth(_text);
+    _update_position(text);
     clearSnapshot();
   }
 
