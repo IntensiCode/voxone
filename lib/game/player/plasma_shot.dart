@@ -26,7 +26,9 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
   double _start_time = 1;
 
   @override
-  double get base_speed => 400 + power_boost * 25;
+  double get base_speed => 400 + power_boost * 25 + speed_buff;
+
+  double speed_buff = 0;
 
   void reset(Vector2 origin) {
     _start_time = 1;

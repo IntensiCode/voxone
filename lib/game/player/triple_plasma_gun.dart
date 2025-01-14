@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/plasma_shot.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -39,12 +40,18 @@ class TriplePlasmaGun extends Component with HasContext, PrimaryWeapon {
     if (keys.a_button) {
       _cool_down += 0.35;
 
-      final count = 2 + PlasmaShot.power_boost.round();
-
+      final bonus = switch (difficulty) {
+        Difficulty.easy => 2,
+        Difficulty.normal => 1,
+        Difficulty.hard => 0,
+      };
+      final count = 2 + PlasmaShot.power_boost.round() + bonus;
       for (var i = 0; i < count; i++) {
+        final d = pi / 48 * (i - (count - 1) / 2);
         stage.add(_projectiles.acquire()
           ..reset(_player.position)
-          ..change_direction(pi / 48 * (i - count / 2)));
+          ..speed_buff = -d.abs() * 250
+          ..change_direction(d));
       }
 
       audio.play(Sound.shot, volume_factor: 0.5);
