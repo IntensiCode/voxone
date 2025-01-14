@@ -20,7 +20,7 @@ class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
   late final _nukes = ComponentRecycler(() => Nuke());
 
   @override
-  double get cooldown_time => 5;
+  double get cooldown_time => 4;
 
   @override
   String get display_name => 'Nuke Missile';

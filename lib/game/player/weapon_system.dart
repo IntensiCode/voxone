@@ -82,7 +82,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     } else if (type == ClusterBombCannon) {
       reload_count = 3;
     } else if (type == NukeMissileLauncher) {
-      reload_count = 2;
+      reload_count = 3;
     } else {
       reload_count = 3;
     }
