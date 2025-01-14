@@ -58,9 +58,9 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   void _update_time_scale() {
     timeScale = switch (difficulty) {
-      Difficulty.easy => 1.0,
-      Difficulty.normal => 1.25,
-      Difficulty.hard => 1.5,
+      Difficulty.easy => 1.2,
+      Difficulty.normal => 1.4,
+      Difficulty.hard => 1.6,
     };
     logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
   }
