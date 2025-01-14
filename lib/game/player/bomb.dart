@@ -13,7 +13,7 @@ class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, Directio
   Bomb() {
     anchor = Anchor.center;
     size.setAll(10);
-    _sprites = atlas.sheetI('bomb.png', 16, 1);
+    _sprites = atlas.sheetI('bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
     add(CircleHitbox(radius: 5)
       ..renderShape = debug
@@ -40,8 +40,8 @@ class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, Directio
     _life_time += dt;
 
     final anim_time = _life_time % 1;
-    final sprite_index = (anim_time * (_sprites.columns - 1)).toInt();
-    sprite = _sprites.getSprite(0, sprite_index);
+    final sprite_index = (anim_time * (_sprites.rows - 1)).toInt();
+    sprite = _sprites.getSprite(sprite_index, 0);
 
     if (_life_time > 5 || position.is_outside()) recycle();
   }

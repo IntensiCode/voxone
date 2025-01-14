@@ -14,7 +14,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
   ClusterBomb(this._emit_bombs) {
     anchor = Anchor.center;
     size.setAll(20);
-    _sprites = atlas.sheetI('cluster_bomb.png', 16, 1);
+    _sprites = atlas.sheetI('cluster_bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
     add(CircleHitbox(radius: 10)
       ..renderShape = debug
@@ -42,8 +42,8 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
     _life_time += dt;
 
     final anim_time = _life_time % 1;
-    final sprite_index = (anim_time * (_sprites.columns - 1)).toInt();
-    sprite = _sprites.getSprite(0, sprite_index);
+    final sprite_index = (anim_time * (_sprites.rows - 1)).toInt();
+    sprite = _sprites.getSprite(sprite_index, 0);
 
     if (_life_time > 2) {
       _emit_bombs(position);
