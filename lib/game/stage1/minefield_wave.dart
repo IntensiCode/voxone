@@ -19,6 +19,8 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void onLoad() {
+    rotate_mines = false;
+
     after(delay, () => sendMessage(ShowInfoText(text: 'Minefield Ahead')));
 
     if (!dev) pause_script(info_time);
@@ -41,5 +43,11 @@ class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
       });
     });
     after(5, () => defeated = true);
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    rotate_mines = true;
   }
 }

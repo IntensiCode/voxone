@@ -17,6 +17,8 @@ import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
+var rotate_mines = true;
+
 extension HasContextExtensions on HasContext {
   MarauderMines get mines => cache.putIfAbsent('mines', () => MarauderMines());
 }
@@ -99,9 +101,11 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
 
     if (_anim_time >= 1) _anim_time -= 1;
 
-    entity.rot_x += dt;
-    entity.rot_y += dt / 2;
-    entity.rot_z += dt * 3;
+    if (rotate_mines) {
+      entity.rot_x += dt;
+      entity.rot_y += dt / 2;
+      entity.rot_z += dt * 3;
+    }
 
     if (_dir_override.isZero()) {
       position.x -= 100 * dt;
