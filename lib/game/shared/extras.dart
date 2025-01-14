@@ -105,6 +105,8 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     entity.sprite.loaded.then((_) {
       entity.sprite.change_sprite(sprites[which]!);
     });
+
+    entity.sprite.reset();
   }
 
   @override
