@@ -79,6 +79,7 @@ abstract class AudioSystem extends Component {
     if (_master == value) return;
     _master = value;
     _save();
+    do_update_volume();
   }
 
   double _music = 0.4;

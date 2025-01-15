@@ -38,7 +38,7 @@ class PlatformAudioSystem extends AudioSystem {
       final paused = soloud.getPause(active.$2);
       if (!paused) soloud.pauseSwitch(active.$2);
     } else {
-      soloud.setVolume(active.$2, it);
+      soloud.setVolume(active.$2, it * master);
       final paused = soloud.getPause(active.$2);
       if (paused) soloud.pauseSwitch(active.$2);
     }

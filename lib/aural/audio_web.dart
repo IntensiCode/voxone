@@ -20,7 +20,7 @@ class PlatformAudioSystem extends AudioSystem {
   set active_music_volume(double? it) {
     final ap = FlameAudio.bgm.audioPlayer;
     if (ap.source == null || !FlameAudio.bgm.isPlaying) return;
-    ap.setVolume(it ?? music);
+    ap.setVolume((it ?? music) * master);
     // if (it == 0 && ap.state == PlayerState.playing) FlameAudio.bgm.pause();
     // if (it > 0 && ap.state != PlayerState.playing) FlameAudio.bgm.resume();
   }
