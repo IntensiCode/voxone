@@ -67,15 +67,24 @@ Voxels read_vox(Uint8List riff) {
   return Voxels(width, height, depth, voxels, palette);
 }
 
-Image vox_to_image(Voxels voxels, [List<int>? blurred_argb32]) {
+Image vox_to_image(
+  Voxels voxels, {
+  int dx = 0,
+  int dy = 0,
+  int dz = 0,
+  List<int>? blurred_argb32,
+}) {
   final blurred = blurred_argb32 ??= [];
   return pixelate(voxels.width, voxels.height * voxels.depth, (canvas) {
     final paint = Paint()..style = PaintingStyle.fill;
     final blur = MaskFilter.blur(BlurStyle.outer, 1);
-    for (var y = 0; y < voxels.height; y++) {
-      for (var z = 0; z < voxels.depth; z++) {
-        for (var x = 0; x < voxels.width; x++) {
-          final v = voxels.voxels[voxels.height - 1 - y][voxels.depth - 1 - z][voxels.width - 1 - x];
+    for (var y = dy; y < voxels.height + dy; y++) {
+      for (var z = dz; z < voxels.depth + dz; z++) {
+        for (var x = dx; x < voxels.width + dx; x++) {
+          final yy = voxels.height - 1 - y + dy;
+          final zz = voxels.depth - 1 - z + dz;
+          final xx = voxels.width - 1 - x + dx;
+          final v = voxels.voxels[yy][zz][xx];
           if (v == 0) continue;
           final color = voxels.palette[v - 1];
           paint.color = Color(color);

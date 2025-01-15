@@ -7,6 +7,7 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/core/vox.dart';
 import 'package:voxone/game/player/acid_blaster.dart';
 import 'package:voxone/game/player/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/ion_pulse_gun.dart';
@@ -219,15 +220,15 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
 
     addTrait(weapons);
 
-    _entity = StackedEntity('entities/star_runner.png', 16, shadows);
+    _entity = await vox('interstellar_runner', shadows, dy: -10, blurred_argb32: [0xffff3200]);
     _entity.sprite.force_render = true;
 
     _entity.rot_x = -0.95;
     _entity.rot_y = 1.8;
     _entity.rot_z = -0.2;
-    _entity.scale_x = 1.2;
-    _entity.scale_y = 2.5;
-    _entity.scale_z = 1.2;
+    _entity.scale_x = 1.0;
+    _entity.scale_y = 2.0;
+    _entity.scale_z = 1.0;
     scale.setAll(0.3);
     _entity.size.setAll(256);
     position.setValues(100, 280);
