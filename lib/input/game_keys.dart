@@ -17,6 +17,23 @@ enum GameKey {
   soft2,
 }
 
+enum GamePadConfig {
+  Default({}),
+  Alternative({
+    GameKey.b_button: GameKey.x_button,
+    GameKey.x_button: GameKey.b_button,
+    GameKey.select: GameKey.soft1,
+    GameKey.start: GameKey.soft2,
+    GameKey.soft1: GameKey.x_button,
+    GameKey.soft2: GameKey.y_button,
+  }),
+  ;
+
+  final Map<GameKey, GameKey> mapping;
+
+  const GamePadConfig(this.mapping);
+}
+
 mixin HasGameKeys on KeyboardHandler {
   late final keyboard = HardwareKeyboard.instance;
 
@@ -47,6 +64,8 @@ mixin HasGameKeys on KeyboardHandler {
     GameKey.soft1: softKeys1,
     GameKey.soft2: softKeys2,
   };
+
+  static var gamepad_mapping = GamePadConfig.Default.mapping;
 
   late void Function(GameKey) onPressed = (it) => held[it] = true;
   late void Function(GameKey) onReleased = (it) => held[it] = false;

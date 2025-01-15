@@ -35,7 +35,7 @@ class NinePatchComponent extends PositionComponent with HasPaint {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    ninePatchImage.draw(canvas, 0, 0, width, height);
+    ninePatchImage.draw(canvas, 0, 0, width, height, paint);
   }
 }
 

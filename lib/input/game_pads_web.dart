@@ -39,8 +39,8 @@ enum _GamePadAxis {
 }
 
 mixin HasGamePads {
-  abstract void Function(GameKey) onPressed;
-  abstract void Function(GameKey) onReleased;
+  late void Function(GameKey) onGamePadPressed;
+  late void Function(GameKey) onGamePadReleased;
 
   static final _buttons = _GamePadButton.values.associate((it) => MapEntry(it, false));
   static final _axes = _GamePadAxis.values.associate((it) => MapEntry(it, 0.0));
@@ -64,9 +64,9 @@ mixin HasGamePads {
       if (key == null) continue;
 
       if (button.pressed) {
-        onPressed(key);
+        onGamePadPressed(key);
       } else {
-        onReleased(key);
+        onGamePadReleased(key);
       }
     }
 
@@ -78,22 +78,22 @@ mixin HasGamePads {
 
       if (it == _GamePadAxis.left_stick_x || it == _GamePadAxis.right_stick_x) {
         if (now < -0.8) {
-          onPressed(GameKey.left);
+          onGamePadPressed(GameKey.left);
         } else if (now > 0.8) {
-          onPressed(GameKey.right);
+          onGamePadPressed(GameKey.right);
         } else {
-          onReleased(GameKey.left);
-          onReleased(GameKey.right);
+          onGamePadReleased(GameKey.left);
+          onGamePadReleased(GameKey.right);
         }
       }
       if (it == _GamePadAxis.left_stick_y || it == _GamePadAxis.right_stick_y) {
         if (now < -0.8) {
-          onPressed(GameKey.up);
+          onGamePadPressed(GameKey.up);
         } else if (now > 0.8) {
-          onPressed(GameKey.down);
+          onGamePadPressed(GameKey.down);
         } else {
-          onReleased(GameKey.up);
-          onReleased(GameKey.down);
+          onGamePadReleased(GameKey.up);
+          onGamePadReleased(GameKey.down);
         }
       }
     }

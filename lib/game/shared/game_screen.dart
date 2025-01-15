@@ -54,6 +54,14 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
       onKey('-', () => _change_time_scale(-0.25));
       onKey('+', () => _change_time_scale(0.25));
     }
+
+    stage_keys.game_pad_mapping = true;
+  }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    stage_keys.game_pad_mapping = false;
   }
 
   void _update_time_scale() {

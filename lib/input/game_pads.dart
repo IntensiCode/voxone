@@ -31,8 +31,8 @@ enum _GamePadButton {
 const _analog_sensitivity = 8192;
 
 mixin HasGamePads {
-  abstract void Function(GameKey) onPressed;
-  abstract void Function(GameKey) onReleased;
+  late void Function(GameKey) onGamePadPressed;
+  late void Function(GameKey) onGamePadReleased;
 
   Disposable observe_gamepads() {
     final stream = Gamepads.events.listen((event) {
@@ -44,9 +44,9 @@ mixin HasGamePads {
           final key = gpb.key;
           if (key != null) {
             if (event.value == 1) {
-              onPressed(key);
+              onGamePadPressed(key);
             } else {
-              onReleased(key);
+              onGamePadReleased(key);
             }
           }
         } catch (e, st) {
@@ -55,21 +55,21 @@ mixin HasGamePads {
       } else if (event.type == KeyType.analog) {
         if (event.key == "6" || event.key == "0" || event.key == "3") {
           if (event.value < -_analog_sensitivity) {
-            onPressed(GameKey.left);
+            onGamePadPressed(GameKey.left);
           } else if (event.value > _analog_sensitivity) {
-            onPressed(GameKey.right);
+            onGamePadPressed(GameKey.right);
           } else {
-            onReleased(GameKey.left);
-            onReleased(GameKey.right);
+            onGamePadReleased(GameKey.left);
+            onGamePadReleased(GameKey.right);
           }
         } else if (event.key == "7" || event.key == "1" || event.key == "4") {
           if (event.value < -_analog_sensitivity) {
-            onPressed(GameKey.up);
+            onGamePadPressed(GameKey.up);
           } else if (event.value > _analog_sensitivity) {
-            onPressed(GameKey.down);
+            onGamePadPressed(GameKey.down);
           } else {
-            onReleased(GameKey.up);
-            onReleased(GameKey.down);
+            onGamePadReleased(GameKey.up);
+            onGamePadReleased(GameKey.down);
           }
         }
       } else {

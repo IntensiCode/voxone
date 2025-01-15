@@ -16,6 +16,8 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     logInfo('Keys created');
     _instances++;
     logInfo('Keys instances: $_instances');
+
+    game_pad_mapping = false;
   }
 
   @override
@@ -59,8 +61,21 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
 
     onPressed = (it) => _update(it, true);
     onReleased = (it) => _update(it, false);
+
     autoDispose("gamepads", observe_gamepads());
   }
+
+  set game_pad_mapping(bool enabled) {
+    if (enabled) {
+      onGamePadPressed = (it) => _mapped(it, (it) => _update(it, true));
+      onGamePadReleased = (it) => _mapped(it, (it) => _update(it, false));
+    } else {
+      onGamePadPressed = (it) => _update(it, true);
+      onGamePadReleased = (it) => _update(it, false);
+    }
+  }
+
+  void _mapped(GameKey it, void Function(GameKey) f) => f(HasGameKeys.gamepad_mapping[it] ?? it);
 
   @override
   void update(double dt) {
