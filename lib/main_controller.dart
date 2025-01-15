@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_menu.dart';
+import 'package:voxone/aural/video_menu.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -155,5 +156,6 @@ class MainController extends World
         Screen.stage2 => Stage2(),
         Screen.stage3 => Stage3(),
         Screen.title => TitleScreen(),
+        Screen.video => VideoMenu(show_back: true),
       };
 }

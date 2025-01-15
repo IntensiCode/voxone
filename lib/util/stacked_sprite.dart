@@ -119,7 +119,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   }
 
   static double update_interval = 0.1;
-  static final _max_renders_per_frame = kDebugMode ? 5 : 8;
+  static int max_renders_per_frame = kDebugMode ? 5 : 8;
 
   double _update_time = 0;
   bool _render = true;
@@ -138,13 +138,13 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   bool force_render = false;
 
-  static const _rot_steps = 24;
+  static int rot_steps = 24;
 
   @override
   void render(Canvas canvas) {
-    final rx = (rot_x * _rot_steps).round() / _rot_steps;
-    final ry = (rot_y * _rot_steps).round() / _rot_steps;
-    final rz = (rot_z * _rot_steps).round() / _rot_steps;
+    final rx = (rot_x * rot_steps).round() / rot_steps;
+    final ry = (rot_y * rot_steps).round() / rot_steps;
+    final rz = (rot_z * rot_steps).round() / rot_steps;
     final key = (_sprite, rx, ry, rz);
     final cached = stacked_cache[key];
     if (cache && cached != null) {
@@ -153,7 +153,7 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     }
 
     if (!force_render && _last != null) {
-      if (!_render || render_count > _max_renders_per_frame) {
+      if (!_render || render_count > max_renders_per_frame) {
         _update_time = update_interval - rng.nextDoubleLimit(update_interval / 4);
         try {
           canvas.drawImage(_last!, Offset.zero, paint);

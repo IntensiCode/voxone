@@ -11,6 +11,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
+import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
@@ -24,6 +25,7 @@ import 'package:voxone/util/stacked_sprite.dart';
 
 enum _TitleButtons {
   audio,
+  video,
   controls,
   play,
 }
@@ -50,6 +52,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   final _keys = Keys();
 
   BitmapText? _difficulty;
+  BitmapText? _video_mode;
 
   @override
   onLoad() {
@@ -68,6 +71,8 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
 
+    _video_mode = textXY(video.name, 280, 480 - 76, anchor: Anchor.bottomCenter, scale: 1);
+
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
       button: atlas.sheetI('button_option.png', 1, 2),
@@ -78,6 +83,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       fixed_anchor: Anchor.bottomLeft,
     )
       ..addEntry(_TitleButtons.audio, 'Audio')
+      ..addEntry(_TitleButtons.video, 'Video')
       ..addEntry(_TitleButtons.controls, 'Controls')
       ..addEntry(_TitleButtons.play, 'Play')
       ..preselectEntry(_preselected ?? _TitleButtons.play));
@@ -124,6 +130,9 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     switch (id) {
       case _TitleButtons.audio:
         pushScreen(Screen.audio);
+        break;
+      case _TitleButtons.video:
+        pushScreen(Screen.video);
         break;
       case _TitleButtons.controls:
         pushScreen(Screen.controls);
@@ -186,7 +195,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
 
   @override
   void renderTree(Canvas canvas) {
-    StackedSprite.update_interval = 0.05;
     StackedSprite.render_count = 0;
     super.renderTree(canvas);
   }
@@ -206,6 +214,7 @@ class _TitleShip extends Component {
     super.onLoad();
 
     _entity = StackedEntity('entities/dual_striker.png', 16, _shadows);
+    _entity.sprite.force_render = true;
 
     _entity.scale_x = 1.4;
     _entity.scale_y = 4.5;

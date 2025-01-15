@@ -53,6 +53,10 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     }
 
     stage_keys.game_pad_mapping = true;
+
+    logInfo('update interval: ${StackedSprite.update_interval}');
+    logInfo('max_renders_per_frame: ${StackedSprite.max_renders_per_frame}');
+    logInfo('rot_steps: ${StackedSprite.rot_steps}');
   }
 
   @override
@@ -104,7 +108,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   @override
   void renderTree(Canvas canvas) {
-    StackedSprite.update_interval = 0.15;
     StackedSprite.render_count = 0;
     super.renderTree(canvas);
   }
