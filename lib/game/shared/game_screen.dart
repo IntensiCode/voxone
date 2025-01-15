@@ -140,8 +140,10 @@ class _PauseOverlay extends GameScriptComponent with HasContext {
     super.update(dt);
     if (keys.check_and_consume(GameKey.a_button)) _resume();
     if (keys.check_and_consume(GameKey.b_button)) _resume();
-    if (keys.check_and_consume(GameKey.select)) _resume();
-    if (keys.check_and_consume(GameKey.start)) _resume();
+    if (game_pad_config == GamePadConfig.Default) {
+      if (keys.check_and_consume(GameKey.select)) _back_to_title();
+      if (keys.check_and_consume(GameKey.start)) _resume();
+    }
     if (keys.check_and_consume(GameKey.soft1)) _resume();
     if (keys.check_and_consume(GameKey.soft2)) _back_to_title();
   }

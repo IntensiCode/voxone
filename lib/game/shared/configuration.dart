@@ -42,7 +42,7 @@ class Configuration with HasGameData {
       orElse: () => d.difficulty,
     );
     keys.game_pad_config = keys.GamePadConfig.values.firstWhere(
-      (it) => it.mapping == data['game_pad_config'],
+      (it) => it.name == data['game_pad_config'],
       orElse: () => keys.game_pad_config,
     );
   }
@@ -51,5 +51,5 @@ class Configuration with HasGameData {
   GameData save_state(Map<String, dynamic> data) => data
     ..['debug'] = common.debug
     ..['difficulty'] = d.difficulty.name
-    ..['game_pad_config'] = keys.game_pad_config.mapping;
+    ..['game_pad_config'] = keys.game_pad_config.name;
 }

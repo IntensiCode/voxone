@@ -1,8 +1,8 @@
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -71,7 +71,7 @@ Enter: Right Soft Key
 ''';
 
 class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
-  final bool _configure_game_pad = !kReleaseMode;
+  final bool _configure_game_pad = true;
 
   final _keys = Keys();
 
@@ -82,7 +82,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
 
     fontSelect(tiny_font, scale: 2);
     textXY('Game Pad / Controller', game_center.x, 20, scale: 2, anchor: Anchor.topCenter);
-    textXY('Keyboard', game_center.x, game_center.y - 28, scale: 2, anchor: Anchor.topCenter);
+    textXY('Keyboard', game_center.x, game_center.y - 28 + 50, scale: 2, anchor: Anchor.topCenter);
 
     _update_game_pad_info();
     add(FlowText(
@@ -90,7 +90,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
       font: mini_font,
       font_scale: 1.25,
       size: Vector2(game_width / 4, game_height / 2 - 96),
-      position: Vector2(16, game_center.y),
+      position: Vector2(16, game_center.y + 50),
       anchor: Anchor.topLeft,
       background: atlas.sprite('button_plain.png'),
     ));
@@ -99,7 +99,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
       font: mini_font,
       font_scale: 1.25,
       size: Vector2(game_width / 2 - 80, game_height / 2 - 96),
-      position: Vector2(game_center.x, game_center.y),
+      position: Vector2(game_center.x, game_center.y + 50),
       anchor: Anchor.topCenter,
       background: atlas.sprite('button_plain.png'),
     ));
@@ -108,7 +108,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
       font: mini_font,
       font_scale: 1.25,
       size: Vector2(game_width / 4, game_height / 2 - 96),
-      position: Vector2(game_width - 16, game_center.y),
+      position: Vector2(game_width - 16, game_center.y + 50),
       anchor: Anchor.topRight,
       background: atlas.sprite('button_plain.png'),
     ));
@@ -116,15 +116,22 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
     softkeys('Back', null, (_) => popScreen());
 
     if (_configure_game_pad) {
-      textXY('< Game Pad Config >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
-      _game_pad_config = textXY(game_pad_config.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+      fontSelect(mini_font, scale: 1);
+      textXY('< Game Pad Config >', game_center.x, 240 - 32, anchor: Anchor.bottomCenter, scale: 1);
+      _game_pad_config = textXY(
+        configuration.game_pad_config.name,
+        game_center.x,
+        240 - 16,
+        anchor: Anchor.bottomCenter,
+        scale: 1,
+      );
     }
   }
 
   void _update_game_pad_info() {
     _game_pad_info?.removeFromParent();
 
-    final which = game_pad_config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
+    final which = configuration.game_pad_config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
     add(_game_pad_info = FlowText(
       text: which,
       font: mini_font,
@@ -164,8 +171,8 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
 
   void _change_game_pad_config(int add) {
     final values = GamePadConfig.values;
-    final index = (values.indexOf(game_pad_config) + add + values.length) % values.length;
-    game_pad_config = values[index];
+    final index = (values.indexOf(configuration.game_pad_config) + add + values.length) % values.length;
+    configuration.game_pad_config = values[index];
     _game_pad_config.change_text_in_place(values[index].name);
 
     _update_game_pad_info();

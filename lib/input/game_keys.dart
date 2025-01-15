@@ -22,8 +22,8 @@ enum GamePadConfig {
   Alternative({
     GameKey.b_button: GameKey.x_button,
     GameKey.x_button: GameKey.b_button,
-    GameKey.select: GameKey.soft1,
-    GameKey.start: GameKey.soft2,
+    GameKey.select: GameKey.soft2,
+    GameKey.start: GameKey.soft1,
     GameKey.soft1: GameKey.x_button,
     GameKey.soft2: GameKey.y_button,
   }),
