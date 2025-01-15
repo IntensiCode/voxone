@@ -102,9 +102,11 @@ bounds:158,150,128,80
 fonts/font_tiny
 bounds:452,1028,128,64
 melt
-bounds:772,402,100,20
+bounds:922,1510,100,20
 mine
 bounds:158,232,128,128
+mini_rock
+bounds:772,402,100,20
 missile
 bounds:288,344,64,16
 nuke_core
@@ -119,7 +121,5 @@ swirl
 bounds:368,346,144,18
 teleport
 bounds:610,410,160,32
-tinyroid
-bounds:922,1510,100,20
 yin-yang
 bounds:922,1464,90,18

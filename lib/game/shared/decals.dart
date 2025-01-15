@@ -12,12 +12,15 @@ extension HasContextExtensions on HasContext {
 }
 
 enum Decal {
+  dust(1.0),
+  energy_ball(0.5),
   explosion16(1.0),
   explosion32(1.0),
   mini_explosion(1.0),
   nuke_explosion(1.0),
   smoke(1.0),
   teleport(0.3),
+  rock(0.5),
   ;
 
   const Decal(this.anim_time);
@@ -81,10 +84,13 @@ class Decals extends Component {
 
   @override
   onLoad() {
+    _anim[Decal.dust] = sheetI('dust.png', 10, 1);
+    _anim[Decal.energy_ball] = sheetI('energy_balls.png', 6, 3);
     _anim[Decal.explosion16] = sheetI('explosion16.png', 15, 1);
     _anim[Decal.explosion32] = sheetI('explosion32.png', 18, 1);
     _anim[Decal.mini_explosion] = sheetI('explosions.png', 7, 8);
     _anim[Decal.nuke_explosion] = sheetI('explosion.png', 14, 1);
+    _anim[Decal.rock] = sheetI('mini_rock.png', 5, 1);
     _anim[Decal.smoke] = sheetI('smoke.png', 11, 1);
     _anim[Decal.teleport] = sheetI('teleport.png', 5, 1);
   }
