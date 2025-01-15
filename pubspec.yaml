@@ -48,6 +48,7 @@ flutter:
     - assets/audio/music/
     - assets/audio/sound/
     - assets/audio/voice/
+    - assets/entities/
     - assets/fonts/
     - assets/images/
   shaders:

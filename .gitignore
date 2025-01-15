@@ -8,6 +8,8 @@
 .buildlog/
 .history
 .svn/
+bak/
+tmp/
 migrate_working_dir/
 pubspec_overrides.yaml
 maps.tiled-session
