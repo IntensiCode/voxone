@@ -32,6 +32,7 @@ class MusicScore extends AutoDisposeComponent {
   String? _target_score_for(Screen screen) => switch (screen) {
         Screen.title => 'music/voxone_title.ogg',
         Screen.audio => null,
+        Screen.controls => null,
         _ => 'music/voxone_background.ogg',
       };
 
