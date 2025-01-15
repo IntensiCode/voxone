@@ -2,7 +2,6 @@ import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -119,7 +118,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
       fontSelect(mini_font, scale: 1);
       textXY('< Game Pad Config >', game_center.x, 240 - 32, anchor: Anchor.bottomCenter, scale: 1);
       _game_pad_config = textXY(
-        configuration.game_pad_config.name,
+        game_pad_config.name,
         game_center.x,
         240 - 16,
         anchor: Anchor.bottomCenter,
@@ -131,7 +130,7 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
   void _update_game_pad_info() {
     _game_pad_info?.removeFromParent();
 
-    final which = configuration.game_pad_config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
+    final which = game_pad_config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
     add(_game_pad_info = FlowText(
       text: which,
       font: mini_font,
@@ -171,8 +170,8 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
 
   void _change_game_pad_config(int add) {
     final values = GamePadConfig.values;
-    final index = (values.indexOf(configuration.game_pad_config) + add + values.length) % values.length;
-    configuration.game_pad_config = values[index];
+    final index = (values.indexOf(game_pad_config) + add + values.length) % values.length;
+    game_pad_config = values[index];
     _game_pad_config.change_text_in_place(values[index].name);
 
     _update_game_pad_info();

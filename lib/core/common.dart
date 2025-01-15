@@ -6,8 +6,18 @@ import 'package:flutter/material.dart';
 typedef Check = bool Function();
 typedef Hook = void Function();
 
-bool debug = kDebugMode;
-bool dev = kDebugMode;
+Function(bool)? on_debug_change;
+
+bool get dev => _debug;
+
+bool _debug = kDebugMode;
+
+bool get debug => _debug;
+
+set debug(bool value) {
+  _debug = value;
+  on_debug_change?.call(value);
+}
 
 const tps = 60;
 

@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/text.dart';
-import 'package:flutter/foundation.dart';
 
 import '../core/common.dart';
 
@@ -37,7 +36,7 @@ class RenderTps<T extends TextRenderer> extends TextComponent with HasVisibility
   final fpsComponent = FpsComponent();
 
   @override
-  bool get isVisible => debug || dev || !kReleaseMode;
+  bool get isVisible => debug;
 
   @override
   void update(double dt) => text = '${fpsComponent.fps.toStringAsFixed(0)} TPS';
@@ -53,7 +52,7 @@ class RenderFps<T extends TextRenderer> extends TextComponent with HasVisibility
   }) : super(priority: double.maxFinite.toInt());
 
   @override
-  bool get isVisible => debug || dev || !kReleaseMode;
+  bool get isVisible => debug;
 
   @override
   void update(double dt) {}

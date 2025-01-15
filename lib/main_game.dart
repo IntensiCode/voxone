@@ -34,7 +34,7 @@ class MainGame extends FlameGame<MainController>
     camera = CameraComponent.withFixedResolution(
       width: game_width,
       height: game_height,
-      hudComponents: [_ticks(), _frames()],
+      hudComponents: [if (!kReleaseMode) _ticks(), if (!kReleaseMode) _frames()],
     );
     camera.viewfinder.anchor = Anchor.topLeft;
     camera.viewport.add(hud);

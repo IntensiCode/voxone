@@ -28,13 +28,13 @@ class MainController extends World
 
   @override
   onLoad() async {
-    configuration.load();
+    await configuration.load();
     autoDispose("ShowScreen", messaging.listen<ShowScreen>((it) => showScreen(it.screen)));
   }
 
   @override
   void onMount() {
-    if (dev && !kIsWeb) {
+    if (!kReleaseMode) {
       showScreen(Screen.stage1);
     } else {
       add(WebPlayScreen());
@@ -55,10 +55,7 @@ class MainController extends World
       onKey('2', () => showScreen(Screen.stage2));
       onKey('3', () => showScreen(Screen.stage3));
 
-      onKeys(['<A-d>', '='], () {
-        configuration.debug = !configuration.debug;
-        logInfo('debug = ${configuration.debug}');
-      });
+      onKeys(['<A-d>', '='], () => debug = !debug);
     } else {
       disposeWhereTag((it) => it.startsWith('onKey-'));
     }

@@ -34,9 +34,14 @@ enum GamePadConfig {
   const GamePadConfig(this.mapping);
 }
 
-GamePadConfig get game_pad_config => GamePadConfig.values.firstWhere((it) => it.mapping == HasGameKeys.gamepad_mapping);
+Function(GamePadConfig)? on_game_pad_config_change;
 
-set game_pad_config(GamePadConfig value) => HasGameKeys.gamepad_mapping = value.mapping;
+GamePadConfig get game_pad_config => GamePadConfig.values.firstWhere((it) => it == HasGameKeys._gamepad_mapping);
+
+set game_pad_config(GamePadConfig value) {
+  HasGameKeys._gamepad_mapping = value;
+  on_game_pad_config_change?.call(value);
+}
 
 mixin HasGameKeys on KeyboardHandler {
   late final keyboard = HardwareKeyboard.instance;
@@ -69,7 +74,7 @@ mixin HasGameKeys on KeyboardHandler {
     GameKey.soft2: softKeys2,
   };
 
-  static var gamepad_mapping = GamePadConfig.Default.mapping;
+  static var _gamepad_mapping = GamePadConfig.Default;
 
   late void Function(GameKey) onPressed = (it) => held[it] = true;
   late void Function(GameKey) onReleased = (it) => held[it] = false;

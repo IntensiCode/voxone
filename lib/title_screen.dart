@@ -6,7 +6,6 @@ import 'package:flame/components.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
@@ -67,7 +66,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     }
 
     textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
-    _difficulty = textXY(configuration.difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
@@ -115,7 +114,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       anchor: Anchor.topLeft,
       size: Vector2(320, 224),
     ));
-    _cheats.isVisible = dev;
+    _cheats.isVisible = debug;
   }
 
   late FlowText _cheats;
@@ -154,10 +153,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
 
   void _change_difficulty(int add) {
     final values = Difficulty.values;
-    final index = (values.indexOf(configuration.difficulty) + add + values.length) % values.length;
-    configuration.difficulty = values[index];
+    final index = (values.indexOf(difficulty) + add + values.length) % values.length;
+    difficulty = values[index];
     _difficulty?.removeFromParent();
-    _difficulty = textXY(configuration.difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty?.fadeInDeep();
     sendMessage(UpdateDifficulty());
   }
@@ -168,10 +167,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       _cheat = _cheat.substring(1);
     }
     if (_cheat == 'tfdj') {
-      dev = !dev;
-      logInfo('cheat mode $dev');
+      debug = !debug;
+      logInfo('cheat mode $debug');
       _cheat = '';
-      _cheats.isVisible = dev;
+      _cheats.isVisible = debug;
       sendMessage(ToggleCheatMode());
     }
   }

@@ -75,7 +75,7 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     }
   }
 
-  void _mapped(GameKey it, void Function(GameKey) f) => f(HasGameKeys.gamepad_mapping[it] ?? it);
+  void _mapped(GameKey it, void Function(GameKey) f) => f(game_pad_config.mapping[it] ?? it);
 
   @override
   void update(double dt) {
