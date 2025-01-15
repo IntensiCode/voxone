@@ -20,12 +20,12 @@ set video(VideoMode value) {
     case VideoMode.balanced:
       StackedSprite.update_interval = 0.1;
       StackedSprite.max_renders_per_frame = 12;
-      StackedSprite.rot_steps = 24;
+      StackedSprite.rot_steps = 36;
       break;
     case VideoMode.quality:
       StackedSprite.update_interval = 0.05;
       StackedSprite.max_renders_per_frame = 24;
-      StackedSprite.rot_steps = 30;
+      StackedSprite.rot_steps = 36 * 2;
       break;
   }
   logInfo('update_interval=${StackedSprite.update_interval}');

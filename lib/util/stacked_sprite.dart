@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:canister/canister.dart';
@@ -138,13 +139,14 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
 
   bool force_render = false;
 
-  static int rot_steps = 24;
+  static int rot_steps = 9;
 
   @override
   void render(Canvas canvas) {
-    final rx = (rot_x * rot_steps).round() / rot_steps;
-    final ry = (rot_y * rot_steps).round() / rot_steps;
-    final rz = (rot_z * rot_steps).round() / rot_steps;
+    final rs = 2 * pi / rot_steps;
+    final rx = force_render ? rot_x : (rot_x / rs).round() * rs;
+    final ry = force_render ? rot_y : (rot_y / rs).round() * rs;
+    final rz = force_render ? rot_z : (rot_z / rs).round() * rs;
     final key = (_sprite, rx, ry, rz);
     final cached = stacked_cache[key];
     if (cache && cached != null) {
