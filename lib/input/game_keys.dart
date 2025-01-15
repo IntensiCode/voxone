@@ -34,6 +34,10 @@ enum GamePadConfig {
   const GamePadConfig(this.mapping);
 }
 
+GamePadConfig get game_pad_config => GamePadConfig.values.firstWhere((it) => it.mapping == HasGameKeys.gamepad_mapping);
+
+set game_pad_config(GamePadConfig value) => HasGameKeys.gamepad_mapping = value.mapping;
+
 mixin HasGameKeys on KeyboardHandler {
   late final keyboard = HardwareKeyboard.instance;
 

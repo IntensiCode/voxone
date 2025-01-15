@@ -5,7 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/visual.dart';
+import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
@@ -28,7 +28,7 @@ class MainController extends World
 
   @override
   onLoad() async {
-    visual.load();
+    configuration.load();
     autoDispose("ShowScreen", messaging.listen<ShowScreen>((it) => showScreen(it.screen)));
   }
 
@@ -39,9 +39,7 @@ class MainController extends World
     } else {
       add(WebPlayScreen());
     }
-
     onMessage<ToggleCheatMode>((_) => _toggle_cheat_mode());
-
     _toggle_cheat_mode();
   }
 
@@ -58,8 +56,8 @@ class MainController extends World
       onKey('3', () => showScreen(Screen.stage3));
 
       onKeys(['<A-d>', '='], () {
-        visual.debug = !visual.debug;
-        logInfo('debug = ${visual.debug}');
+        configuration.debug = !configuration.debug;
+        logInfo('debug = ${configuration.debug}');
       });
     } else {
       disposeWhereTag((it) => it.startsWith('onKey-'));

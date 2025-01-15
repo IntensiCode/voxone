@@ -5,7 +5,6 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/game_phase.dart';
-import 'package:voxone/game/shared/game_state.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
@@ -28,8 +27,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   final stage_keys = Keys();
   final stage_cache = StageCache();
-
-  final state = GameState.instance;
 
   GamePhase _phase = GamePhase.show_stage;
 

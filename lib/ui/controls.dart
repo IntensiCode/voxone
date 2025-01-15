@@ -10,7 +10,6 @@ import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
 const _game_pad = '''
@@ -118,13 +117,14 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
 
     if (_configure_game_pad) {
       textXY('< Game Pad Config >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
-      _game_pad_config = textXY(_config.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+      _game_pad_config = textXY(game_pad_config.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
     }
   }
 
   void _update_game_pad_info() {
     _game_pad_info?.removeFromParent();
-    final which = _config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
+
+    final which = game_pad_config == GamePadConfig.Default ? _game_pad : _game_pad_alt;
     add(_game_pad_info = FlowText(
       text: which,
       font: mini_font,
@@ -139,8 +139,6 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
   FlowText? _game_pad_info;
 
   late BitmapText _game_pad_config;
-
-  GamePadConfig get _config => GamePadConfig.values.firstWhere((it) => it.mapping == HasGameKeys.gamepad_mapping);
 
   @override
   void onMount() {
@@ -166,8 +164,8 @@ class Controls extends GameScriptComponent with HasAutoDisposeShortcuts {
 
   void _change_game_pad_config(int add) {
     final values = GamePadConfig.values;
-    final index = (values.indexOf(_config) + add + values.length) % values.length;
-    HasGameKeys.gamepad_mapping = values[index].mapping;
+    final index = (values.indexOf(game_pad_config) + add + values.length) % values.length;
+    game_pad_config = values[index];
     _game_pad_config.change_text_in_place(values[index].name);
 
     _update_game_pad_info();
