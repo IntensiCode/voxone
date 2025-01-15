@@ -73,15 +73,19 @@ class ZaxxonPlayer extends PositionComponent
     if (invincible || is_dead_or_dying() || !susceptible) return;
 
     final was = integrity;
-    integrity -= damage / 50 / _integrity_boost;
+    final amount = damage / 50 / _integrity_boost;
+    integrity -= amount;
     if (integrity < 0) integrity = 0;
     if (integrity == 0 && was > 0.5) {
       integrity = 0.15;
       _hint = _SoundHint.danger;
+      keys.rumble(200);
     } else if (integrity == 0) {
       on_destroyed();
+      keys.rumble(500);
     } else {
       _update_sound_hint();
+      if (amount >= 0.1) keys.rumble();
     }
   }
 

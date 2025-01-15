@@ -80,4 +80,6 @@ mixin HasGamePads {
   }
 
   void tick_game_pads() {}
+
+  void rumble([int duration = 100]) {}
 }

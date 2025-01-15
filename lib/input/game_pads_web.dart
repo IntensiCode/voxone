@@ -1,5 +1,7 @@
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/util/auto_dispose.dart';
@@ -98,4 +100,23 @@ mixin HasGamePads {
   }
 
   Disposable observe_gamepads() => Disposable.disposed;
+
+  void rumble([int duration = 100]) {
+    final it = window.navigator.getGamepads().toDart;
+    if (it.isEmpty) return;
+    final gp = it[0];
+    if (gp == null) return;
+    final va = gp.getProperty('vibrationActuator'.toJS);
+    if (va != null) _rumble_va(va, duration);
+  }
+
+  void _rumble_va(JSAny va, int duration) {
+    final obj = JSObject.fromInteropObject(va);
+    final data = JSObject();
+    data.setProperty('duration'.toJS, duration.toJS);
+    data.setProperty('startDelay'.toJS, 0.toJS);
+    data.setProperty('strongMagnitude'.toJS, 1.toJS);
+    data.setProperty('weakMagnitude'.toJS, 1.toJS);
+    obj.callMethod('playEffect'.toJS, 'dual-rumble'.toJS, data);
+  }
 }
