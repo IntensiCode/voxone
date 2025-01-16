@@ -5,14 +5,14 @@ import 'package:voxone/core/atlas.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/enemies/homing_bomb.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/random.dart';
 
 class HomingLauncher extends Component with HasContext {
   HomingLauncher(this.source);
 
-  final Marauder source;
+  final Enemy source;
 
   final _base_time = switch (difficulty) {
     Difficulty.easy => 3.0,
@@ -33,10 +33,10 @@ class HomingLauncher extends Component with HasContext {
 
   @override
   void update(double dt) {
-    if (source.state == MarauderState.exploding) removeFromParent();
-    if (source.state == MarauderState.defeated) removeFromParent();
-    if (source.state == MarauderState.left) removeFromParent();
-    if (source.state != MarauderState.active) return;
+    if (source.state == EnemyState.exploding) removeFromParent();
+    if (source.state == EnemyState.defeated) removeFromParent();
+    if (source.state == EnemyState.left) removeFromParent();
+    if (source.state != EnemyState.active) return;
 
     if (_cool_down > 0) {
       _cool_down -= dt;

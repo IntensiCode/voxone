@@ -10,13 +10,13 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/homing_launcher.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
-class MarauderCaptain extends MarauderEntity
+class MarauderCaptain extends EnemyEntity
     with
         HasTraits,
         _CreateMarauderCaptainEntity,
@@ -49,7 +49,7 @@ class MarauderCaptain extends MarauderEntity
   }
 }
 
-mixin _CreateMarauderCaptainEntity on MarauderEntity {
+mixin _CreateMarauderCaptainEntity on EnemyEntity {
   bool get homing;
 
   @override
@@ -78,7 +78,7 @@ mixin _CreateMarauderCaptainEntity on MarauderEntity {
 }
 
 mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
-  bool get _last_remaining => stage.children.whereType<Marauder>().singleOrNull == this;
+  bool get _last_remaining => stage.children.whereType<Enemy>().singleOrNull == this;
 
   bool get _shield_low => shield.energy < 0.25;
 

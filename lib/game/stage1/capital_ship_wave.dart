@@ -3,13 +3,13 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/enemies/capital_ship.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/util/game_script.dart';
 
 class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 1;
 
-  final _wave = List<Marauder>.empty(growable: true);
+  final _wave = List<Enemy>.empty(growable: true);
 
   @override
   bool get kill_bonus => false;

@@ -5,11 +5,11 @@ import 'package:flame/components.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/util/extensions.dart';
 
-mixin CreateRangerEntity on MarauderEntity {
+mixin CreateRangerEntity on EnemyEntity {
   @override
   createEntity() async {
     can_sweep = true;

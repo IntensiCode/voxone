@@ -19,7 +19,7 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/homing_launcher.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/game/enemies/satellite_marauder.dart';
@@ -30,7 +30,7 @@ const _scale_factor = 2.0;
 
 Vector2 _v(double x, double y) => Vector2(x * _scale_factor, y * _scale_factor);
 
-class CapitalShip extends MarauderEntity
+class CapitalShip extends EnemyEntity
     with
         HasTraits,
         _CreateCapitalShipEntity,
@@ -72,7 +72,7 @@ class CapitalShip extends MarauderEntity
   }
 }
 
-mixin _CreateCapitalShipEntity on MarauderEntity {
+mixin _CreateCapitalShipEntity on EnemyEntity {
   late CircleHitbox center_mass;
 
   @override
@@ -126,7 +126,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
   }
 }
 
-mixin _VibrateOnIncoming on MarauderEntity {
+mixin _VibrateOnIncoming on EnemyEntity {
   Vector2? _cam_base;
 
   bool _vibrating = false;
@@ -136,7 +136,7 @@ mixin _VibrateOnIncoming on MarauderEntity {
     incoming_time += dev ? dt : dt / 9;
     if (incoming_time >= 1) {
       incoming_time = 1;
-      state = MarauderState.active;
+      state = EnemyState.active;
     }
     if (!_vibrating && !dev) {
       _vibrating = true;
@@ -169,7 +169,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     final center_hit = (intersections ?? _nop).any(center_mass.containsPoint);
-    if (state == MarauderState.active && center_hit && _generator_hit_points > 0) {
+    if (state == EnemyState.active && center_hit && _generator_hit_points > 0) {
       _generator_hit_points = max(0, _generator_hit_points - damage);
       if (_generator_hit_points <= 0) {
         sendMessage(ShowInfoText(text: 'Shield Generator Destroyed', title: 'Critical Hit'));
@@ -184,7 +184,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
   }
 }
 
-mixin _FloatOnActive on MarauderEntity {
+mixin _FloatOnActive on EnemyEntity {
   @override
   void on_active(double dt) {
     active_time += dt * 3;
@@ -194,7 +194,7 @@ mixin _FloatOnActive on MarauderEntity {
   }
 }
 
-mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
+mixin _MaintainSatellitesOnActive on EnemyEntity, HasTraits {
   static const _satellite_count = 6;
 
   int _waves = 10;
@@ -208,13 +208,13 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
     if (player.is_dead_or_dying()) return;
 
     _satellites.forEach((it) {
-      if (it.state == MarauderState.left || it.state == MarauderState.defeated) {
+      if (it.state == EnemyState.left || it.state == EnemyState.defeated) {
         it.removeFromParent();
       }
     });
 
     if (_satellites.isNotEmpty && _satellites.every((it) => it.isRemoved)) {
-      if (_satellites.every((it) => it.state == MarauderState.defeated)) {
+      if (_satellites.every((it) => it.state == EnemyState.defeated)) {
         if (_satellites.none((it) => it.self_destruct)) {
           _satellites.random(rng).spawn_bonus();
         }
@@ -253,7 +253,7 @@ mixin _MaintainSatellitesOnActive on MarauderEntity, HasTraits {
   }
 }
 
-mixin _MultipleExplosionsOnExploding on MarauderEntity {
+mixin _MultipleExplosionsOnExploding on EnemyEntity {
   double _add_explosion_time = 0;
   int _sound_trigger = 5;
 
@@ -266,7 +266,7 @@ mixin _MultipleExplosionsOnExploding on MarauderEntity {
     leaving_time += dt / 1.5;
     if (leaving_time >= 2) {
       leaving_time = 2;
-      state = MarauderState.defeated;
+      state = EnemyState.defeated;
     }
 
     _tmp.setFrom(position);
@@ -295,7 +295,7 @@ mixin _MultipleExplosionsOnExploding on MarauderEntity {
   }
 }
 
-mixin _ReleaseMinesOnActive on MarauderEntity {
+mixin _ReleaseMinesOnActive on EnemyEntity {
   double _mine_spawn_time = 0;
 
   @override

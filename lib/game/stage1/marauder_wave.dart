@@ -5,7 +5,7 @@ import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/sweeping_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
@@ -17,7 +17,7 @@ class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
     Difficulty.hard => 10,
   };
 
-  final _wave = List<Marauder>.empty(growable: true);
+  final _wave = List<Enemy>.empty(growable: true);
 
   @override
   bool get kill_bonus => killed.length == enemies_in_wave;

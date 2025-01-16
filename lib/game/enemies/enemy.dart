@@ -8,36 +8,36 @@ import 'package:flutter/material.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/enemies/marauder_gun.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/enemies/marauder_gun.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 bool can_sweep = true;
 
-mixin Marauder implements Hostile, Target {
-  bool get defeated => state == MarauderState.defeated || state == MarauderState.left;
+mixin Enemy implements Hostile, Target {
+  bool get defeated => state == EnemyState.defeated || state == EnemyState.left;
 
-  bool get dead_or_gone => defeated || state == MarauderState.exploding || state == MarauderState.left;
+  bool get dead_or_gone => defeated || state == EnemyState.exploding || state == EnemyState.left;
 
-  MarauderState get state;
+  EnemyState get state;
 
   NotifyingVector2 get position;
 }
 
-enum MarauderState {
+enum EnemyState {
   incoming,
   active,
   sweeping,
@@ -50,15 +50,15 @@ enum MarauderState {
   bool get is_inactive => [defeated, exploding, leaving, left].contains(this);
 }
 
-abstract class MarauderEntity extends PositionComponent with HasContext, Marauder, EnemyHitPoints {
-  MarauderEntity(this.wave);
+abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, EnemyHitPoints {
+  EnemyEntity(this.wave);
 
   final EnemyWave wave;
 
   late final StackedEntity entity;
 
   @override
-  MarauderState state = MarauderState.incoming;
+  EnemyState state = EnemyState.incoming;
 
   final target_position = Vector2.zero();
 
@@ -66,10 +66,10 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
   @override
   bool get susceptible => switch (state) {
-        MarauderState.left => false,
-        MarauderState.exploding => false,
-        MarauderState.defeated => false,
-        MarauderState.incoming => incoming_time > volatile_incoming_time,
+        EnemyState.left => false,
+        EnemyState.exploding => false,
+        EnemyState.defeated => false,
+        EnemyState.incoming => incoming_time > volatile_incoming_time,
         _ => true,
       };
 
@@ -87,8 +87,8 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
 
   @override
   void on_destroyed({Vector2? direction}) {
-    if (state == MarauderState.exploding) return;
-    state = MarauderState.exploding;
+    if (state == EnemyState.exploding) return;
+    state = EnemyState.exploding;
 
     wave.killed.add(this);
 
@@ -142,33 +142,33 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
     _live_position.setFrom(position);
     super.update(dt);
     switch (state) {
-      case MarauderState.incoming:
+      case EnemyState.incoming:
         on_incoming(dt);
 
-      case MarauderState.active:
+      case EnemyState.active:
         on_active(dt);
         if (player.is_dead_or_dying()) {
-          if (state == MarauderState.active) state = MarauderState.leaving;
-          if (state == MarauderState.sweeping) state = MarauderState.leaving;
+          if (state == EnemyState.active) state = EnemyState.leaving;
+          if (state == EnemyState.sweeping) state = EnemyState.leaving;
         }
 
-      case MarauderState.sweeping:
+      case EnemyState.sweeping:
         on_sweeping(dt);
 
-      case MarauderState.leaving:
+      case EnemyState.leaving:
         on_leaving(dt);
 
-      case MarauderState.left:
+      case EnemyState.left:
         removeFromParent();
 
-      case MarauderState.exploding:
+      case EnemyState.exploding:
         if (_explode_delay > 0) {
           _on_explode_delay(dt);
         } else {
           on_exploding(dt * _explode_scale);
         }
 
-      case MarauderState.defeated:
+      case EnemyState.defeated:
         removeFromParent();
     }
     raw_dir.setFrom(position);
@@ -197,7 +197,7 @@ abstract class MarauderEntity extends PositionComponent with HasContext, Maraude
   void on_exploding(double dt);
 }
 
-mixin CreateMarauderEntity on MarauderEntity {
+mixin CreateMarauderEntity on EnemyEntity {
   @override
   createEntity() async {
     reset_hit_points_to(dev ? 3 : 25);
@@ -220,13 +220,13 @@ mixin CreateMarauderEntity on MarauderEntity {
   }
 }
 
-mixin SweepInOnIncoming on MarauderEntity {
+mixin SweepInOnIncoming on EnemyEntity {
   @override
   void on_incoming(double dt) {
     incoming_time += dt * 2 / 3;
     if (incoming_time >= 1) {
       incoming_time = 1;
-      state = MarauderState.active;
+      state = EnemyState.active;
     }
     scale.setAll((1 - incoming_time) * 0.5 + 0.2);
     priority = (scale.x * 1000).toInt();
@@ -238,7 +238,7 @@ mixin SweepInOnIncoming on MarauderEntity {
   }
 }
 
-mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
+mixin AddShieldAfterOnIncoming on EnemyEntity, HasTraits {
   late DeflectorShield shield;
   late EnemyHealthBar indicator;
 
@@ -287,7 +287,7 @@ mixin AddShieldAfterOnIncoming on MarauderEntity, HasTraits {
   }
 }
 
-mixin FloatOnActive on MarauderEntity {
+mixin FloatOnActive on EnemyEntity {
   @override
   void on_active(double dt) {
     scale.setAll(sin(active_time / 3) * 0.025 + 0.2);
@@ -300,29 +300,29 @@ mixin FloatOnActive on MarauderEntity {
     position.x += sin(active_time / 1.2345) * 10;
     position.y += sin(active_time) * 10;
 
-    if (state != MarauderState.active) {
+    if (state != EnemyState.active) {
       return;
     } else if (active_time > active_time_limit) {
-      state = MarauderState.leaving;
+      state = EnemyState.leaving;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
       sweep_time = 0;
       sweep_dist = 300 - target_position.x;
-      state = MarauderState.sweeping;
+      state = EnemyState.sweeping;
     }
   }
 }
 
-mixin NopOnSweeping on MarauderEntity {
+mixin NopOnSweeping on EnemyEntity {
   @override
   void on_sweeping(double dt) {
     on_active(dt); // to keep position and scale in sync after sweep
     can_sweep = true;
-    state = MarauderState.active;
+    state = EnemyState.active;
   }
 }
 
-mixin PlantMineOnSweeping on MarauderEntity {
+mixin PlantMineOnSweeping on EnemyEntity {
   @override
   void on_sweeping(double dt) {
     on_active(dt); // to keep position and scale in sync after sweep
@@ -334,7 +334,7 @@ mixin PlantMineOnSweeping on MarauderEntity {
       can_sweep = true;
       mine_planted = false;
       sweep_time = 0;
-      state = MarauderState.active;
+      state = EnemyState.active;
       entity.sprite.cache = true;
       return;
     }
@@ -359,14 +359,14 @@ mixin PlantMineOnSweeping on MarauderEntity {
   }
 }
 
-mixin NopOnLeaving on MarauderEntity {
+mixin NopOnLeaving on EnemyEntity {
   @override
   void on_leaving(double dt) {
-    state = MarauderState.active;
+    state = EnemyState.active;
   }
 }
 
-mixin SweepOutOnLeaving on MarauderEntity {
+mixin SweepOutOnLeaving on EnemyEntity {
   @override
   void on_leaving(double dt) {
     on_active(dt);
@@ -374,7 +374,7 @@ mixin SweepOutOnLeaving on MarauderEntity {
     leaving_time += dt;
     if (leaving_time >= 2) {
       leaving_time = 2;
-      state = MarauderState.left;
+      state = EnemyState.left;
     }
 
     scale.x += leaving_time * 0.5;
@@ -387,13 +387,13 @@ mixin SweepOutOnLeaving on MarauderEntity {
   }
 }
 
-mixin TumbleOnExploding on MarauderEntity {
+mixin TumbleOnExploding on EnemyEntity {
   @override
   void on_exploding(double dt) {
     leaving_time += dt;
     if (leaving_time >= 2) {
       leaving_time = 2;
-      state = MarauderState.defeated;
+      state = EnemyState.defeated;
     }
 
     entity.rot_x += dt;
@@ -406,7 +406,7 @@ mixin TumbleOnExploding on MarauderEntity {
   }
 }
 
-mixin SpawnExtrasOnExploding on MarauderEntity {
+mixin SpawnExtrasOnExploding on EnemyEntity {
   int random_extras_count = 1;
   Set<ExtraId> allowed_random_extras = ExtraId.defaults;
   Set<ExtraId>? required_extras;
@@ -449,12 +449,12 @@ mixin SpawnExtrasOnExploding on MarauderEntity {
   }
 }
 
-mixin ActiveOnIncoming on MarauderEntity {
+mixin ActiveOnIncoming on EnemyEntity {
   @override
-  void on_incoming(double dt) => state = MarauderState.active;
+  void on_incoming(double dt) => state = EnemyState.active;
 }
 
-mixin DelayOnIncoming on MarauderEntity, HasVisibility {
+mixin DelayOnIncoming on EnemyEntity, HasVisibility {
   double incoming_delay = 0;
 
   @override
@@ -462,19 +462,19 @@ mixin DelayOnIncoming on MarauderEntity, HasVisibility {
     if (incoming_delay > 0) incoming_delay -= dt;
     if (incoming_delay <= 0) {
       incoming_time = 1;
-      state = MarauderState.active;
+      state = EnemyState.active;
     }
     isVisible = incoming_delay <= 0;
   }
 }
 
-mixin WarpInOnIncoming on MarauderEntity {
+mixin WarpInOnIncoming on EnemyEntity {
   @override
   void on_incoming(double dt) {
     incoming_time += dt * 2 / 3;
     if (incoming_time >= 1) {
       incoming_time = 1;
-      state = MarauderState.active;
+      state = EnemyState.active;
       entity.sprite.paint.imageFilter = null;
       entity.sprite.paint.colorFilter = null;
     }

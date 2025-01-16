@@ -1,6 +1,6 @@
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 
-class WarpingMarauder extends MarauderEntity
+class WarpingMarauder extends EnemyEntity
     with
         CreateMarauderEntity,
         WarpInOnIncoming,

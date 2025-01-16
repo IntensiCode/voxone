@@ -9,13 +9,13 @@ import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/marauder_pulse_gun.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
-class SatelliteMarauder extends MarauderEntity
+class SatelliteMarauder extends EnemyEntity
     with
         CollisionCallbacks,
         HasVisibility,
@@ -32,7 +32,7 @@ class SatelliteMarauder extends MarauderEntity
   double get volatile_incoming_time => 0.1;
 }
 
-mixin _CreateSatelliteEntity on MarauderEntity, HasVisibility {
+mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
   @override
   createEntity() async {
     reset_hit_points_to(10);
@@ -60,7 +60,7 @@ mixin _CreateSatelliteEntity on MarauderEntity, HasVisibility {
   }
 }
 
-mixin _MoveIntoFormationOnIncoming on MarauderEntity, HasVisibility {
+mixin _MoveIntoFormationOnIncoming on EnemyEntity, HasVisibility {
   final _origin = Vector2.zero();
   double _incoming_delay = 0;
 
@@ -91,7 +91,7 @@ mixin _MoveIntoFormationOnIncoming on MarauderEntity, HasVisibility {
     incoming_time += dt / 4;
     if (incoming_time >= 1) {
       incoming_time = 1;
-      state = MarauderState.active;
+      state = EnemyState.active;
     }
 
     final i = incoming_time;
@@ -116,7 +116,7 @@ mixin _MoveIntoFormationOnIncoming on MarauderEntity, HasVisibility {
   final _last_dir = Vector2.zero();
 }
 
-mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExploding, SpawnExtrasOnExploding {
+mixin _KamikazeOnLeaving on EnemyEntity, CollisionCallbacks, TumbleOnExploding, SpawnExtrasOnExploding {
   CatmullRomSpline? _attack_path;
 
   RectangleHitbox? _hitbox;
@@ -173,7 +173,7 @@ mixin _KamikazeOnLeaving on MarauderEntity, CollisionCallbacks, TumbleOnExplodin
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other.hasTrait<Friendly>() && state == MarauderState.leaving) {
+    if (other.hasTrait<Friendly>() && state == EnemyState.leaving) {
       mines.spawn(position)?.set_direction(_last_dir);
       on_destroyed(direction: _last_dir);
       self_destruct = true;

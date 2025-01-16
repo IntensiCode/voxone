@@ -8,7 +8,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/random.dart';
 
@@ -24,7 +24,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
     if (cool_down != null) this.cool_down = cool_down;
   }
 
-  final Marauder _source;
+  final Enemy _source;
 
   double _cool_down = rng.nextDouble();
   double _active_time = 0;
@@ -45,11 +45,11 @@ class RangerLaser extends Component with HasContext, HasPaint {
 
   @override
   void update(double dt) {
-    if (_source.state == MarauderState.exploding) removeFromParent();
-    if (_source.state == MarauderState.defeated) removeFromParent();
-    if (_source.state == MarauderState.left) removeFromParent();
+    if (_source.state == EnemyState.exploding) removeFromParent();
+    if (_source.state == EnemyState.defeated) removeFromParent();
+    if (_source.state == EnemyState.left) removeFromParent();
 
-    if (_source.state != MarauderState.active) return;
+    if (_source.state != EnemyState.active) return;
 
     if (_active_time > 0) {
       _on_active(dt);
@@ -98,7 +98,7 @@ class RangerLaser extends Component with HasContext, HasPaint {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    if (_source.state != MarauderState.active) return;
+    if (_source.state != EnemyState.active) return;
     if (_active_time <= 0) return;
 
     final double dist;

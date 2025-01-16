@@ -6,10 +6,10 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 
-class CirclingMarauder extends MarauderEntity
+class CirclingMarauder extends EnemyEntity
     with
         CreateMarauderEntity,
         HasVisibility,
@@ -42,7 +42,7 @@ class CirclingMarauder extends MarauderEntity
 
 Offset _o(double x, double y) => Offset(x * game_width, y * game_height);
 
-mixin _MoveAlongPathOnActive on MarauderEntity {
+mixin _MoveAlongPathOnActive on EnemyEntity {
   static CatmullRomSpline? _path;
 
   @override
@@ -71,13 +71,13 @@ mixin _MoveAlongPathOnActive on MarauderEntity {
 
     active_time = (active_time + dt / 10).clamp(0, 1);
     if (active_time >= 1) {
-      state = MarauderState.left;
+      state = EnemyState.left;
       return;
     }
 
     final p = _path?.transform(active_time);
     if (p == null) {
-      state = MarauderState.left;
+      state = EnemyState.left;
       return;
     }
 

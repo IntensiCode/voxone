@@ -5,13 +5,13 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/circling_marauder.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_captain.dart';
 import 'package:voxone/game/enemies/passing_ranger.dart';
 import 'package:voxone/util/game_script.dart';
 
 class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
-  final _wave = List<Marauder>.empty(growable: true);
+  final _wave = List<Enemy>.empty(growable: true);
 
   bool _ready = false;
   bool _done_spawning = false;

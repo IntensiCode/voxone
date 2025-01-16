@@ -5,12 +5,12 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger.dart';
 import 'package:voxone/util/random.dart';
 
-class PassingRanger extends MarauderEntity
+class PassingRanger extends EnemyEntity
     with
         CreateRangerEntity,
         HasVisibility,
@@ -42,7 +42,7 @@ class PassingRanger extends MarauderEntity
 
 Offset _o(double x, double y) => Offset(x * game_width, y * game_height);
 
-mixin _MoveAlongPathOnActive on MarauderEntity {
+mixin _MoveAlongPathOnActive on EnemyEntity {
   static CatmullRomSpline? _path;
 
   @override
@@ -63,13 +63,13 @@ mixin _MoveAlongPathOnActive on MarauderEntity {
 
     active_time = (active_time + dt / 8).clamp(0, 1);
     if (active_time >= 1) {
-      state = MarauderState.left;
+      state = EnemyState.left;
       return;
     }
 
     final p = _path?.transform(active_time);
     if (p == null) {
-      state = MarauderState.left;
+      state = EnemyState.left;
       return;
     }
 
