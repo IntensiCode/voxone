@@ -105,7 +105,7 @@ class ZaxxonPlayer extends PositionComponent
   @override
   void onMount() {
     super.onMount();
-    if (dev) {
+    if (dev || cheat) {
       onKey('<Delete>', () => on_destroyed());
       onKey('<Insert>', () {
         for (final it in stage.children) {

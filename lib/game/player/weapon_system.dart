@@ -123,7 +123,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     final initial = _secondaries.keys.toList().random(rng);
     switch_secondary_to(initial.runtimeType);
 
-    if (dev) {
+    if (dev || cheat) {
       onKey('[', () {
         logInfo('make all weapons available');
         _primaries.forEach((key, value) => _primaries[key] = true);

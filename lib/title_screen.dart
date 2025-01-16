@@ -52,7 +52,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   final _keys = Keys();
 
   BitmapText? _difficulty;
-  BitmapText? _video_mode;
 
   @override
   onLoad() {
@@ -71,7 +70,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
 
-    _video_mode = textXY(video.name, 280, 480 - 76, anchor: Anchor.bottomCenter, scale: 1);
+    textXY(video.name, 280, 480 - 76, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
@@ -91,25 +90,20 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     menu.onPreselected = (id) => _preselected = id;
 
     final cheats = '''
-    Cheat / Dev Mode Active
-    >
-    Jump To Stage :: 1 - 3
-    Audio Menu :: 8
-    Controls :: 9
-    Back To Title :: 0
-    Toggle Hitbox Debug :: =
+    Cheat Mode Active
     >
     All Primary Weapons Available
     >
-    Recharge All Secondary Weapons :: [
-    Boost Player Strength :: ]
-    Repair Player :: {
-    Toggle Indestructible :: }
-    Kill Your Self :: Delete
-    Kill All Enemies :: Insert
-    Remove All Enemies :: Backspace
+    [ :: Recharge All Secondary Weapons
+    ] :: Boost Player Strength
+    { :: Repair Player
+    } :: Toggle Indestructible 
     >
-    Boost can be used multiple times
+    Delete    :: Kill Your Self
+    Insert    :: Kill All Enemies
+    Backspace :: Remove All Enemies
+    >
+    1 - 5 :: Jump to Stage (NYI)
     ''';
     add(_cheats = FlowText(
       text: cheats,
@@ -120,7 +114,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       anchor: Anchor.topLeft,
       size: Vector2(320, 224),
     ));
-    _cheats.isVisible = dev;
+    _cheats.isVisible = cheat;
   }
 
   late FlowText _cheats;
@@ -176,10 +170,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       _cheat = _cheat.substring(1);
     }
     if (_cheat == 'tfdj') {
-      dev = !dev;
-      logInfo('cheat mode $dev');
+      cheat = !cheat;
+      logInfo('cheat mode $cheat');
       _cheat = '';
-      _cheats.isVisible = dev;
+      _cheats.isVisible = cheat;
       sendMessage(ToggleCheatMode());
     }
   }

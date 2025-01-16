@@ -30,7 +30,7 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
   @override
   void onMount() {
     super.onMount();
-    if (dev) {
+    if (dev || cheat) {
       onKey('<Backspace>', () {
         logInfo('skip current wave');
         _active_wave?.defeated = true;

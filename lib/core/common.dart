@@ -19,6 +19,8 @@ set debug(bool value) {
 
 bool dev = kDebugMode;
 
+bool cheat = dev;
+
 const tps = 60;
 
 const double game_width = 800;

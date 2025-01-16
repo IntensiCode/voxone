@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/aural/video_menu.dart';
 import 'package:voxone/core/common.dart';
@@ -35,35 +34,38 @@ class MainController extends World
 
   @override
   void onMount() {
-    if (!kReleaseMode) {
+    if (dev) {
       showScreen(Screen.stage1);
     } else {
       add(WebPlayScreen());
     }
+
     onMessage<ToggleCheatMode>((_) => _toggle_cheat_mode());
     _toggle_cheat_mode();
-  }
 
-  void _toggle_cheat_mode() {
     if (dev) {
-      logInfo('activate cheat keys');
-
-      onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
-      onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
-      onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
-
-      onKey('1', () => showScreen(Screen.stage1));
-      onKey('2', () => showScreen(Screen.stage2));
-      onKey('3', () => showScreen(Screen.stage3));
-    } else {
-      disposeWhereTag((it) => it.startsWith('onKey-'));
-    }
-
-    if (!kReleaseMode) {
       onKeys(['<A-d>', '='], () {
         debug = !debug;
         sendMessage(ShowInfoText(title: 'Cheat', text: 'Hitbox Debug Mode: $debug'));
       });
+
+      onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
+      onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
+      onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
+    }
+  }
+
+  void _toggle_cheat_mode() {
+    if (cheat) {
+      logInfo('activate cheat keys');
+      onKey('1', () => showScreen(Screen.stage1));
+      onKey('2', () => showScreen(Screen.stage2));
+      onKey('3', () => showScreen(Screen.stage3));
+    } else {
+      logInfo('deactivate cheat keys');
+      dispose('onKey-1');
+      dispose('onKey-2');
+      dispose('onKey-3');
     }
   }
 
