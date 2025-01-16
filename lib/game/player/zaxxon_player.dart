@@ -220,7 +220,7 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
 
     addTrait(weapons);
 
-    _entity = await vox('interstellar_runner', shadows, dy: -10, blurred_argb32: [0xffff3200]);
+    _entity = await vox('interstellar_runner.vox', shadows, dy: -10, blurred_argb32: [0xffff3200]);
     _entity.sprite.force_render = true;
 
     _entity.rot_x = -0.95;
