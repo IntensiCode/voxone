@@ -3,10 +3,10 @@ import 'dart:math';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/stage1/enemy_wave.dart';
-import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_captain.dart';
-import 'package:voxone/game/stage1/warping_marauder.dart';
+import 'package:voxone/game/shared/enemy_wave.dart';
+import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/marauder_captain.dart';
+import 'package:voxone/game/enemies/warping_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 

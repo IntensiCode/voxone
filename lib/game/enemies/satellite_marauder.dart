@@ -9,9 +9,9 @@ import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_mines.dart';
-import 'package:voxone/game/stage1/marauder_pulse_gun.dart';
+import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/enemies/marauder_pulse_gun.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 

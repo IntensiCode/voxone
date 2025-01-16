@@ -4,39 +4,39 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_mines.dart';
+import 'package:voxone/game/shared/difficulty.dart';
+import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/enemies/ranger.dart';
+import 'package:voxone/util/random.dart';
 
-class CirclingMarauder extends MarauderEntity
+class PassingRanger extends MarauderEntity
     with
-        CreateMarauderEntity,
+        CreateRangerEntity,
         HasVisibility,
         DelayOnIncoming,
-        HasTraits,
-        AddShieldAfterOnIncoming,
         _MoveAlongPathOnActive,
         NopOnSweeping,
         NopOnLeaving,
         TumbleOnExploding,
         SpawnExtrasOnExploding {
-  CirclingMarauder(super.wave);
+  PassingRanger(super.wave);
 
   @override
-  void createEntity() {
-    super.createEntity();
-    scale.setAll(0.2);
-    reset_hit_points_to(15);
+  void onMount() {
+    super.onMount();
+    laser.damage = 0.25;
+    laser.damage = switch (difficulty) {
+      Difficulty.easy => 0.10,
+      Difficulty.normal => 0.25,
+      Difficulty.hard => 0.4,
+    };
   }
 
   @override
-  void shield_added() {
-    super.shield_added();
-    shield.auto_recharge = 0.01;
-    shield.shield.shield_boost = 0.25;
-    shield.scale.setAll(6);
-    indicator.position.setValues(0, -64);
+  void update(double dt) {
+    super.update(dt);
+    laser.set_laser_direction(target_dir);
   }
 }
 
@@ -48,28 +48,20 @@ mixin _MoveAlongPathOnActive on MarauderEntity {
   @override
   void on_active(double dt) {
     _path ??= CatmullRomSpline([
-      _o(0.9, -0.1),
-      _o(0.5, 0.1),
-      _o(0.35, 0.25),
-      _o(0.3, 0.5),
-      _o(0.35, 0.75),
-      _o(0.5, 0.9),
-      _o(0.65, 0.75),
-      _o(0.7, 0.5),
-      _o(0.65, 0.25),
-      _o(0.5, 0.1),
-      _o(0.35, 0.25),
-      _o(0.3, 0.5),
-      _o(0.35, 0.75),
-      _o(0.5, 0.9),
-      _o(0.65, 0.75),
-      _o(0.7, 0.5),
-      _o(0.65, 0.25),
-      _o(0.5, 0.1),
-      _o(0.3, -0.1),
+      _o(1.1, 0.0),
+      _o(1.0, 0.0),
+      _o(0.9, 0.1),
+      _o(0.8, 0.4),
+      _o(0.7, 0.7),
+      _o(0.6, 0.8),
+      _o(0.5, 0.8),
+      _o(0.4, 0.7),
+      _o(0.3, 0.4),
+      _o(0.4, 0.1),
+      _o(0.5, -0.1),
     ]);
 
-    active_time = (active_time + dt / 10).clamp(0, 1);
+    active_time = (active_time + dt / 8).clamp(0, 1);
     if (active_time >= 1) {
       state = MarauderState.left;
       return;
@@ -115,22 +107,14 @@ mixin _MoveAlongPathOnActive on MarauderEntity {
     final rot_z = _safe_angle(_target_rz, entity.rot_z);
     entity.rot_z = lerpDouble(rot_z, _target_rz, 2 * dt) ?? rot_z;
 
-    _tmp.setFrom(player.position);
-    _tmp.sub(position);
-    _tmp.normalize();
-    _tmp2.setFrom(target_dir);
-    _tmp2.normalize();
-    _tmp.sub(_tmp2);
-
-    final trigger = _tmp.x.abs() < 0.01 && _tmp.y.abs() < 0.01;
-    if (trigger && !mine_planted) {
+    _plant_time ??= 0.5 + rng.nextDoubleLimit(0.2);
+    if (active_time > _plant_time! && !mine_planted) {
       mine_planted = true;
       mines.spawn(position)?.set_direction(target_dir);
     }
   }
 
-  final _tmp = Vector2.zero();
-  final _tmp2 = Vector2.zero();
+  double? _plant_time;
 
   double _safe_angle(double target, double current) {
     final dy = target - current;

@@ -4,8 +4,8 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/stage1/homing_bomb.dart';
-import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/enemies/homing_bomb.dart';
+import 'package:voxone/game/enemies/marauder.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/random.dart';
 

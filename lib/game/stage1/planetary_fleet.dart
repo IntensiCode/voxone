@@ -3,11 +3,11 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/circling_marauder.dart';
-import 'package:voxone/game/stage1/enemy_wave.dart';
-import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_captain.dart';
-import 'package:voxone/game/stage1/passing_ranger.dart';
+import 'package:voxone/game/enemies/circling_marauder.dart';
+import 'package:voxone/game/shared/enemy_wave.dart';
+import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/marauder_captain.dart';
+import 'package:voxone/game/enemies/passing_ranger.dart';
 import 'package:voxone/util/game_script.dart';
 
 class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {

@@ -8,7 +8,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/marauder.dart';
+import 'package:voxone/game/enemies/marauder.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/random.dart';
 

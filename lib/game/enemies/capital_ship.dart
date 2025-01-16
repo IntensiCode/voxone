@@ -18,11 +18,11 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/homing_launcher.dart';
-import 'package:voxone/game/stage1/marauder.dart';
-import 'package:voxone/game/stage1/marauder_mines.dart';
-import 'package:voxone/game/stage1/ranger_laser.dart';
-import 'package:voxone/game/stage1/satellite_marauder.dart';
+import 'package:voxone/game/enemies/homing_launcher.dart';
+import 'package:voxone/game/enemies/marauder.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/enemies/ranger_laser.dart';
+import 'package:voxone/game/enemies/satellite_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
