@@ -22,7 +22,7 @@ Future<StackedEntity> vox(
       final data = GZipCodec().decode(it.toList());
       it = Uint8List.fromList(data);
     }
-    final voxels = read_vox(it);
+    final voxels = read_vox(it, name);
     final image = vox_to_image(voxels, dx: dx, dy: dy, dz: dz, blurred_argb32: blurred_argb32);
     final entity = StackedEntity.sprite(Sprite(image), voxels.height, shadows);
     entity.size.x = voxels.width.toDouble();

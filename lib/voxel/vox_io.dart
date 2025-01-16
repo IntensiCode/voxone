@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/util/pixelate.dart';
 
 class Voxels {
@@ -13,7 +15,7 @@ class Voxels {
   Voxels(this.width, this.height, this.depth, this.voxels, this.palette);
 }
 
-Voxels read_vox(Uint8List riff) {
+Voxels read_vox(Uint8List riff, String name) {
   final header = (String.fromCharCodes(riff.getRange(0, 4)));
   if (header != 'VOX ') throw ArgumentError('Not a VOX file: $header');
 
@@ -23,16 +25,25 @@ Voxels read_vox(Uint8List riff) {
   late List<List<List<int>>> voxels;
   late List<int> palette;
 
+  late Uint8List size;
+  late Uint8List xyzi;
+  late Uint8List rgba;
+
   var offset = 8;
   while (offset != -1) {
     offset = _parse(riff, offset, (id, data) {
+      final bytes = data.buffer.asByteData();
       if (id == 'SIZE') {
-        width = data.buffer.asByteData().getUint32(0, Endian.little) + 10;
-        depth = data.buffer.asByteData().getUint32(4, Endian.little) + 10;
-        height = data.buffer.asByteData().getUint32(8, Endian.little) + 10;
+        size = data;
+
+        width = bytes.getUint32(0, Endian.little) + 10;
+        depth = bytes.getUint32(4, Endian.little) + 10;
+        height = bytes.getUint32(8, Endian.little) + 10;
         voxels = List.generate(height, (y) => List.generate(depth, (z) => List.generate(width, (x) => 0)));
       } else if (id == 'XYZI') {
-        final count = data.buffer.asByteData().getUint32(0, Endian.little);
+        xyzi = data;
+
+        final count = bytes.getUint32(0, Endian.little);
         var offset = 4;
         for (var i = 0; i < count; i++) {
           final x = data[offset++];
@@ -42,6 +53,8 @@ Voxels read_vox(Uint8List riff) {
           voxels[y][z][x] = color;
         }
       } else if (id == 'RGBA') {
+        rgba = data;
+
         final colors = data.length ~/ 4;
         palette = List<int>.generate(colors, (i) {
           final r = data[i * 4 + 0];
@@ -64,7 +77,32 @@ Voxels read_vox(Uint8List riff) {
       }
     });
   }
+
+  if (name.endsWith('.vox')) {
+    final out = File(name.replaceAll('.vox', '.vx')).openSync(mode: FileMode.writeOnly);
+    out.writeStringSync('VOX ');
+    out.writeFromSync(_little_unit32(0));
+    _append(out, 'SIZE', size);
+    _append(out, 'XYZI', xyzi);
+    _append(out, 'RGBA', rgba);
+    out.close();
+  }
+
   return Voxels(width, height, depth, voxels, palette);
+}
+
+void _append(RandomAccessFile out, String id, Uint8List data) {
+  out.writeStringSync(id);
+  out.writeFromSync(_little_unit32(data.lengthInBytes));
+  out.writeFromSync(_little_unit32(0));
+  out.writeFromSync(data);
+}
+
+Uint8List _little_unit32(int value) {
+  final data = Uint8List(4);
+  final bytes = data.buffer.asByteData();
+  bytes.setUint32(0, value, Endian.little);
+  return data;
 }
 
 Image vox_to_image(
@@ -110,6 +148,8 @@ int _parse(
   final id = String.fromCharCodes(riff.getRange(offset, offset + 4));
   final size = riff.buffer.asByteData().getUint32(offset + 4, Endian.little);
   final children = riff.buffer.asByteData().getUint32(offset + 8, Endian.little);
+
+  logInfo('Chunk: $id $size $children');
 
   on_data(id, riff.sublist(offset + 12, offset + 12 + size));
   offset += 12 + size;
