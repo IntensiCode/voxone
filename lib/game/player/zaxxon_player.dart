@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
@@ -34,6 +35,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/voxel/vox_io.dart';
 
 enum _SoundHint {
   danger,
@@ -209,10 +211,23 @@ class ZaxxonPlayer extends PositionComponent
 
 mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, Target {
   late final StackedEntity _entity;
+  late final SpriteSheet _anim;
+  late final DeflectorShield _shield;
 
   late final weapons = added(WeaponSystem(this));
 
-  late final DeflectorShield _shield;
+  double _anim_time = 0;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (is_dead_or_dying()) return;
+
+    _anim_time = (_anim_time + dt * 4) % 1;
+
+    final frame = (_anim_time * 16).floor();
+    _entity.sprite.loaded.then((_) => _entity.sprite.change_sprite(_anim.getSprite(0, frame)));
+  }
 
   @override
   Future onLoad() async {
@@ -220,17 +235,37 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
 
     addTrait(weapons);
 
-    _entity = await vox('interstellar_runner.vx', shadows, dy: -10, blurred_argb32: [0xffff3200]);
+    final voxels = await vox('interstellar_runner.vx');
+
+    _anim = await make_anim(16, (i) async {
+      final size = sin(i / 16 * pi) * 2 + 1;
+      final image = vox_to_image_ext(
+        voxels,
+        on_pixel: (xyz, color, canvas, paint) {
+          if (color == 0xffff3200) {
+            paint.color = Color(0x408080ff);
+            canvas.drawCircle(Offset(xyz.x, xyz.z), size, paint);
+            return true;
+          }
+          return false;
+        },
+      );
+      return image;
+    });
+
+    _entity = await vox_entity('interstellar_runner.vx', shadows, blurred_argb32: [0xffff3200]);
     _entity.sprite.force_render = true;
 
+    _entity.position.y -= 20;
     _entity.rot_x = -0.95;
     _entity.rot_y = 1.8;
     _entity.rot_z = -0.2;
     _entity.scale_x = 1.0;
     _entity.scale_y = 2.0;
     _entity.scale_z = 1.0;
-    scale.setAll(0.3);
     _entity.size.setAll(256);
+
+    scale.setAll(0.3);
     position.setValues(100, 280);
 
     await add(_entity);

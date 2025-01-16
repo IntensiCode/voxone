@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:flame/components.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/util/pixelate.dart';
 
 class Voxels {
@@ -189,4 +191,32 @@ class _VoxExt {
     offset += length;
     return value;
   }
+}
+
+Image vox_to_image_ext(Voxels voxels, {bool Function(Vector3 xyz, int color, Canvas canvas, Paint paint)? on_pixel}) {
+  return pixelate(voxels.width, voxels.height * voxels.depth, (canvas) {
+    final xyz = Vector3.zero();
+    final paint = pixel_paint();
+    for (var y = 0; y < voxels.height; y++) {
+      for (var z = 0; z < voxels.depth; z++) {
+        for (var x = 0; x < voxels.width; x++) {
+          final yy = voxels.height - 1 - y;
+          final zz = voxels.depth - 1 - z;
+          final xx = voxels.width - 1 - x;
+
+          final v = voxels.voxels[yy][zz][xx];
+          if (v == 0) continue;
+
+          final color = voxels.palette[v - 1];
+          paint.color = Color(color);
+
+          xyz.setValues(x + 0, y + 0, z + 0);
+          if (on_pixel?.call(xyz, color, canvas, paint) == true) continue;
+
+          canvas.drawRect(Rect.fromLTWH(xyz.x, xyz.z, 1, 1), paint);
+        }
+      }
+      canvas.translate(0, voxels.depth * 1);
+    }
+  });
 }
