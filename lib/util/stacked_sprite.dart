@@ -219,6 +219,8 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _rect.bottom = height;
     c.drawRect(_rect, _paint);
 
+    if (_dispose_last) _last?.dispose();
+
     final picture = recorder.endRecording();
     _last = picture.toImageSync(width.toInt(), height.toInt());
     picture.dispose();
@@ -229,12 +231,18 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     _dst ??= MutRect(0, 0, width, height);
 
     try {
-      if (cache && highlight_mode == HighlightMode.none) stacked_cache[key] = _last!;
+      if (cache && highlight_mode == HighlightMode.none) {
+        _dispose_last = false;
+        stacked_cache[key] = _last!;
+      } else {
+        _dispose_last = true;
+      }
     } catch (e) {
       if (dev) logError('cache error - ignored: $e');
     }
   }
 
+  bool _dispose_last = false;
   Image? _last;
   Rect? _src;
   MutRect? _dst;
@@ -245,7 +253,11 @@ class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
     paint.colorFilter = _shadow.colorFilter;
     _dst!.right = width / scale.x;
     _dst!.bottom = height / scale.y;
-    canvas.drawImageRect(_last!, _src!, _dst!, paint);
+    try {
+      canvas.drawImageRect(_last!, _src!, _dst!, paint);
+    } catch (e) {
+      if (dev) logError('shadow error - ignored: $e');
+    }
     paint.colorFilter = null;
   }
 }

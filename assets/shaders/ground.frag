@@ -11,8 +11,8 @@ out vec4 fragColor;
 
 const float steps = 10.;
 
-float u_step = 1 / iResolution.x / 0.25;
-float v_step = 1 / iResolution.y / 0.25;
+float u_step = 1 / iResolution.x / 0.75;
+float v_step = 1 / iResolution.y / 0.75;
 
 // Created by Dave_Hoskins in 2013-09-20
 // https://www.shadertoy.com/view/4dlGW2
@@ -81,7 +81,7 @@ void main() {
     uv.y /= iResolution.y;
 
     float c1 = plane(uv);
-    fragColor = vec4(c1 * 0.8, c1 * 0.5, c1 * 0.2, 1);
+    fragColor = vec4(c1 * 0.4, c1 * 0.25, c1 * 0.1, 1);
 
     uv.y += v_step;
     float c2 = plane(uv);

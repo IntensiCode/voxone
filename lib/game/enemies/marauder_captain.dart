@@ -4,15 +4,15 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/enemies/enemy.dart';
+import 'package:voxone/game/enemies/homing_launcher.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/homing_launcher.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
@@ -53,13 +53,15 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
   bool get homing;
 
   @override
-  createEntity() async {
+  void createEntity() {
     reset_hit_points_to(40);
 
     size.setAll(256);
 
     entity = StackedEntity('entities/camo_stellar_jet.png', 16, shadows);
     entity.size.setAll(512);
+
+    entity.sprite.force_render = true;
 
     entity.rot_x = -pi / 8;
     entity.rot_y = -pi / 2 + pi / 8;
@@ -68,12 +70,12 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
     entity.scale_y = 3.5;
     entity.scale_z = 1.2;
 
-    await entity.add(EnemyHealthBar(this));
-    await add(entity);
-    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
-    await add(RangerLaser(this)..damage = 0.3);
+    entity.add(EnemyHealthBar(this));
+    add(entity);
+    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
+    add(RangerLaser(this)..damage = 0.3);
 
-    if (homing) await add(HomingLauncher(this));
+    if (homing) add(HomingLauncher(this));
   }
 }
 

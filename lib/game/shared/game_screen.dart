@@ -3,12 +3,14 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/player/zaxxon_player.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/stage_cache.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/fonts.dart';
@@ -71,7 +73,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
       Difficulty.normal => 1.4,
       Difficulty.hard => 1.6,
     };
-    logInfo('Time scale: ${timeScale.toStringAsFixed(2)}');
   }
 
   void _change_time_scale(double delta) {
@@ -84,6 +85,14 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   @override
   void update(double dt) {
+    if (stage_cache.has('player')) {
+      final player = stage_cache['player'] as ZaxxonPlayer;
+      if (player.is_dead_or_dying()) {
+        _update_time_scale();
+        timeScale *= 0.5;
+      }
+    }
+
     super.update(dt);
     if (stage_keys.any([GameKey.start, GameKey.soft1])) {
       if (!_paused) {

@@ -76,7 +76,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
   late CircleHitbox center_mass;
 
   @override
-  createEntity() async {
+  void createEntity() {
     reset_hit_points_to(1250);
 
     size.setAll(200 * _scale_factor);
@@ -85,6 +85,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
     entity = StackedEntity('entities/dual_striker.png', 16, shadows);
     entity.size.setFrom(size);
     entity.size.scale(1.25);
+    entity.sprite.force_render = true;
 
     entity.rot_x = -pi / 4;
     entity.rot_y = -pi / 2 + pi / 8;
@@ -93,11 +94,11 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
     entity.scale_y = 4.5;
     entity.scale_z = 1.4;
 
-    await entity.add(EnemyHealthBar(this)..scale.setAll(0.25));
+    entity.add(EnemyHealthBar(this)..scale.setAll(0.25));
 
-    await add(entity);
+    add(entity);
 
-    await add(center_mass = CircleHitbox.relative(
+    add(center_mass = CircleHitbox.relative(
       0.5,
       parentSize: size,
       position: _v(0, -10),
@@ -106,7 +107,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
       anchor: Anchor.center,
     )..debug());
 
-    await add(CircleHitbox.relative(
+    add(CircleHitbox.relative(
       0.3,
       parentSize: size,
       position: _v(-80, -20),
@@ -115,7 +116,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
       anchor: Anchor.center,
     )..debug());
 
-    await add(CircleHitbox.relative(
+    add(CircleHitbox.relative(
       0.3,
       parentSize: size,
       position: _v(-30, 50),

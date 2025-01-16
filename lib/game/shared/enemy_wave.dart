@@ -9,4 +9,7 @@ mixin EnemyWave on Component {
   final killed = <EnemyEntity>{};
 
   bool get kill_bonus;
+
+  @override
+  void onLoad() => can_sweep = false;
 }

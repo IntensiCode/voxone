@@ -6,19 +6,19 @@ import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/random.dart';
 
 class RangerLaser extends Component with HasContext, HasPaint {
-  RangerLaser(this._source, {Vector2? offset, int? priority, double? damage, double? cool_down}) {
+  RangerLaser(this._source, {Vector2? offset, double? damage, double? cool_down}) {
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
     paint.color = Color.fromARGB(255, 255, 250, 150);
     paint.maskFilter = MaskFilter.blur(BlurStyle.solid, 4);
-    this.priority = priority ?? -1000;
+    priority = -10;
     if (offset != null) this.offset.setFrom(offset);
     if (damage != null) this.damage = damage;
     if (cool_down != null) this.cool_down = cool_down;

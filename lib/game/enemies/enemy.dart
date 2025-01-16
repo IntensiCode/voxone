@@ -17,6 +17,7 @@ import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -50,7 +51,7 @@ enum EnemyState {
   bool get is_inactive => [defeated, exploding, leaving, left].contains(this);
 }
 
-abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, EnemyHitPoints {
+abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, EnemyHitPoints, FakeThreeDee {
   EnemyEntity(this.wave);
 
   final EnemyWave wave;
@@ -107,7 +108,7 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
   }
 
   @override
-  Future onLoad() async {
+  void onLoad() {
     super.onLoad();
     createEntity();
     position.setFrom(target_position);
@@ -199,7 +200,7 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
 
 mixin CreateMarauderEntity on EnemyEntity {
   @override
-  createEntity() async {
+  void createEntity() {
     reset_hit_points_to(dev ? 3 : 25);
 
     size.setAll(180);
@@ -213,10 +214,10 @@ mixin CreateMarauderEntity on EnemyEntity {
     entity.scale_y = 3.5;
     entity.scale_z = 1.2;
 
-    await entity.add(EnemyHealthBar(this));
-    await add(entity);
-    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
-    await add(MarauderGun(this));
+    entity.add(EnemyHealthBar(this));
+    add(entity);
+    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
+    add(MarauderGun(this));
   }
 }
 
@@ -228,8 +229,10 @@ mixin SweepInOnIncoming on EnemyEntity {
       incoming_time = 1;
       state = EnemyState.active;
     }
+
+    base_scale = 0.2;
+    descale = 1000;
     scale.setAll((1 - incoming_time) * 0.5 + 0.2);
-    priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(incoming_time);
     position.setFrom(target_position);
@@ -291,7 +294,6 @@ mixin FloatOnActive on EnemyEntity {
   @override
   void on_active(double dt) {
     scale.setAll(sin(active_time / 3) * 0.025 + 0.2);
-    priority = (scale.x * 1000).toInt();
     entity.rot_x = -pi / 8 + sin(active_time / 7) * 0.2;
     entity.rot_y = -pi / 2 + pi / 8;
     entity.rot_z = -pi / 8 + sin(active_time) * 0.2;
@@ -349,7 +351,6 @@ mixin PlantMineOnSweeping on EnemyEntity {
     position.x += x;
     scale.x += sin(t * pi) / 10;
     scale.y += sin(t * pi) / 10;
-    priority = (scale.x * 1000).toInt();
 
     double mm = sweep_time < 5 ? 0 : 0.5 + (sweep_time - 5) / 10;
     double m = Curves.easeInOut.transform(mm);
@@ -379,7 +380,6 @@ mixin SweepOutOnLeaving on EnemyEntity {
 
     scale.x += leaving_time * 0.5;
     scale.y += leaving_time * 0.5;
-    priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(leaving_time / 2);
     position.y -= 550 * i;
@@ -480,7 +480,6 @@ mixin WarpInOnIncoming on EnemyEntity {
     }
     scale.setAll(0.2);
     scale.x += 4 - incoming_time * 4;
-    priority = (scale.x * 1000).toInt();
 
     final i = Curves.easeInOut.transform(incoming_time);
     position.setFrom(target_position);

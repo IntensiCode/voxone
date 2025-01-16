@@ -24,6 +24,7 @@ import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -51,7 +52,8 @@ class ZaxxonPlayer extends PositionComponent
         Target,
         _CreateEntityOnLoad,
         _CollectExtras,
-        PlayerStrafe
+        PlayerStrafe,
+        FakeThreeDee
     implements Friendly {
   //
   PlayerState _state = PlayerState.incoming;
@@ -103,6 +105,10 @@ class ZaxxonPlayer extends PositionComponent
   @override
   void onMount() {
     super.onMount();
+
+    linked_entity = _entity;
+    fake_height = 50;
+
     if (dev || cheat) {
       onKey('<Delete>', () => on_destroyed());
       onKey('<Insert>', () {
@@ -171,8 +177,6 @@ class ZaxxonPlayer extends PositionComponent
       state = PlayerState.playing;
       sendMessage(PlayerReady());
     }
-    scale.setAll(0.3);
-    _entity.size.setAll(256);
 
     final i = Curves.easeOut.transform(_state_time);
     position.setValues(-50 + 150 * i, 280 + 50 - 50 * i);
@@ -192,10 +196,13 @@ class ZaxxonPlayer extends PositionComponent
       _entity.rot_x += 0.01;
       _entity.rot_y -= 0.01;
       _entity.rot_z += 0.03;
-      position.x += 40 * dt;
-      position.y += 2 * dt;
+      position.x += 100 * dt;
+      position.y += 50 * dt;
 
-      decals.spawn(Decal.smoke, position, pos_range: 16);
+      if ((_state_time % 0.01) < dt) {
+        decals.spawn(Decal.smoke, position, pos_range: 16);
+      }
+      fake_height = 50 * (1 - _state_time).clamp(0, 1);
     }
   }
 
@@ -231,23 +238,24 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
     _entity.scale_z = 1.0;
     _entity.size.setAll(256);
 
-    scale.setAll(0.3);
+    size.setAll(256);
+    scale.setAll(0.25);
     position.setValues(100, 280);
 
     await add(_entity);
 
-    size.setAll(256 * 0.3);
+    // add(RectangleComponent(size: size, anchor: Anchor.center)..opacity = 0.25);
 
     await add(CircleHitbox(
-      radius: 16,
-      position: Vector2(-10, 2),
+      radius: size.y * 0.2,
+      position: Vector2(-size.x * 0.05, size.y * 0.01),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
     )..debug());
 
     await add(CircleHitbox(
-      radius: 8,
-      position: Vector2(15, -5),
+      radius: size.y * 0.1,
+      position: Vector2(size.x * 0.25, -size.y * 0.06),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
     )..debug());
@@ -257,8 +265,6 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
     _shield.addTrait(Friendly());
     await add(_shield);
     addTrait(_shield);
-
-    priority = 100;
   }
 }
 

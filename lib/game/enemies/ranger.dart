@@ -2,16 +2,16 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:voxone/game/enemies/enemy.dart';
+import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/util/extensions.dart';
 
 mixin CreateRangerEntity on EnemyEntity {
   @override
-  createEntity() async {
+  createEntity() {
     can_sweep = true;
 
     reset_hit_points_to(10);
@@ -28,11 +28,13 @@ mixin CreateRangerEntity on EnemyEntity {
     entity.scale_y = 3.5;
     entity.scale_z = 1.2;
 
-    await entity.add(EnemyHealthBar(this));
-    await add(entity);
-    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
-    await add(laser = RangerLaser(this));
+    entity.add(EnemyHealthBar(this));
+    add(entity);
+    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
+    init_laser(added(laser = RangerLaser(this)));
   }
 
-  late final RangerLaser laser;
+  void init_laser(RangerLaser it) {}
+
+  RangerLaser? laser;
 }

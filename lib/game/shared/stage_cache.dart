@@ -13,6 +13,8 @@ class StageCache extends Component implements Disposable {
   final _cache = <String, Object>{};
   final _disposables = <Disposable>{};
 
+  bool has(String key) => _cache.containsKey(key);
+
   operator [](String key) => _cache[key];
 
   operator []=(String key, Object value) => _cache[key] = value;

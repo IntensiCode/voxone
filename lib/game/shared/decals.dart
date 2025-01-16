@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
@@ -13,25 +14,30 @@ extension HasContextExtensions on HasContext {
 
 enum Decal {
   dust(1.0),
-  energy_ball(0.5),
+  energy_ball(0.5, 0),
   explosion16(1.0),
   explosion32(1.0),
-  mini_explosion(1.0),
-  nuke_explosion(1.0),
+  mini_explosion(1.0, 20),
+  nuke_explosion(1.0, 0),
   smoke(1.0),
-  teleport(0.3),
-  rock(0.5),
+  teleport(0.3, 0),
+  rock(0.5, 0),
   ;
 
-  const Decal(this.anim_time);
+  const Decal(this.anim_time, [this.random_range = 8]);
 
   final double anim_time;
+  final double random_range;
 }
 
-class DecalObj {
+class DecalObj extends PositionComponent with HasPaint, FakeThreeDee {
+  DecalObj(this.animation, this.decal) : this.velocity = Vector2.zero();
+
+  final SpriteSheet animation;
+  final Decal decal;
+  final Vector2 velocity;
+
   int row = 0;
-  final position = Vector2.zero();
-  final velocity = Vector2(0, 0);
   double time = 0;
 
   void randomize_position({double range = 20}) {
@@ -43,13 +49,31 @@ class DecalObj {
     velocity.x += rng.nextDoublePM(range);
     velocity.y += rng.nextDoublePM(range);
   }
+
+  @override
+  void render(Canvas canvas) {
+    final size = switch (decal) {
+      Decal.dust => _dust_size,
+      Decal.mini_explosion => _mini_explosion_size,
+      Decal.smoke => _smoke_size,
+      _ => _default_decal_size,
+    };
+    final it = this;
+    final column = (it.time * (animation.columns - 1) / decal.anim_time).toInt();
+    final f = animation.getSprite(it.row, column);
+    f.render(canvas, anchor: Anchor.center, size: size);
+  }
+
+  final _default_decal_size = Vector2.all(32);
+  final _dust_size = Vector2.all(6);
+  final _mini_explosion_size = Vector2.all(16);
+  final _smoke_size = Vector2.all(6);
 }
 
 class Decals extends Component {
   Decals() {
-    priority = 10000;
     for (final it in Decal.values) {
-      _ready[it] = List.generate(10, (_) => DecalObj());
+      _ready[it] = List.empty(growable: true);
       _active[it] = List.empty(growable: true);
     }
   }
@@ -58,12 +82,19 @@ class Decals extends Component {
   final _active = <Decal, List<DecalObj>>{};
   final _anim = <Decal, SpriteSheet>{};
 
+  DecalObj spawn3d(Decal decal, PositionComponent origin, {double? pos_range, double? vel_range}) {
+    if (origin is! FakeThreeDee) throw ArgumentError('origin must be FakeThreeDee');
+    final it = spawn(decal, origin.position, pos_range: pos_range, vel_range: vel_range);
+    it.fake_height = origin.fake_height;
+    return it;
+  }
+
   DecalObj spawn(Decal decal, Vector2 start, {double? pos_range, double? vel_range}) {
     late final DecalObj result;
 
     final instances = _active[decal] ??= List.empty(growable: true);
     final pool = _ready[decal]!;
-    if (pool.isEmpty) pool.add(DecalObj());
+    if (pool.isEmpty) pool.add(DecalObj(_anim[decal]!, decal));
     instances.add(result = pool.removeAt(0));
 
     result.position.setFrom(start);
@@ -75,10 +106,11 @@ class Decals extends Component {
       result.randomize_velocity(range: vel_range ?? 20);
       result.row = rng.nextInt(8);
     }
-    if (decal == Decal.smoke) {
+    if (decal == Decal.dust || decal == Decal.smoke) {
       result.randomize_position(range: pos_range ?? 8);
       result.randomize_velocity(range: vel_range ?? 8);
     }
+    add(result);
     return result;
   }
 
@@ -114,34 +146,8 @@ class Decals extends Component {
     final done = decals.where((it) => it.time >= decal.anim_time).toList();
     for (final it in done) {
       _ready[decal]!.add(it);
+      it.removeFromParent();
     }
     decals.removeAll(done);
   }
-
-  @override
-  void render(Canvas canvas) {
-    for (final it in Decal.values) {
-      _render(it, canvas, _anim[it]!);
-    }
-  }
-
-  void _render(Decal decal, Canvas canvas, SpriteSheet animation) {
-    final decals = _active[decal];
-    if (decals == null) return;
-
-    final size = switch (decal) {
-      Decal.mini_explosion => _mini_explosion_size,
-      Decal.smoke => _smoke_size,
-      _ => _default_decal_size,
-    };
-    for (final it in decals) {
-      final column = (it.time * (animation.columns - 1) / decal.anim_time).toInt();
-      final f = animation.getSprite(it.row, column);
-      f.render(canvas, position: it.position, anchor: Anchor.center, size: size);
-    }
-  }
-
-  final _default_decal_size = Vector2.all(32);
-  final _mini_explosion_size = Vector2.all(16);
-  final _smoke_size = Vector2.all(6);
 }

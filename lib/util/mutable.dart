@@ -8,6 +8,11 @@ import 'package:flame/components.dart';
 class MutableOffset extends Offset {
   MutableOffset(super.dx, super.dy);
 
+  void setFrom(Vector2 other) {
+    dx = other.x;
+    dy = other.y;
+  }
+
   @override
   double dx = 0;
 

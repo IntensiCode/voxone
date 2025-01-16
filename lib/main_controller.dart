@@ -9,7 +9,7 @@ import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
-import 'package:voxone/game/stage2.dart';
+import 'package:voxone/game/stage2/stage2.dart';
 import 'package:voxone/game/stage3.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/title_screen.dart';
@@ -35,7 +35,7 @@ class MainController extends World
   @override
   void onMount() {
     if (dev) {
-      showScreen(Screen.stage1);
+      showScreen(Screen.stage2);
     } else {
       add(WebPlayScreen());
     }

@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
@@ -20,7 +21,7 @@ class StackedEntity extends PositionComponent {
 
   final Shadows _shadows;
   late final StackedSprite sprite;
-  late final _Shadow _shadow;
+  _Shadow? _shadow;
 
   set scale_x(double value) => sprite.scale_x = value;
 
@@ -40,25 +41,36 @@ class StackedEntity extends PositionComponent {
 
   set rot_z(double value) => sprite.rot_z = value;
 
+  set fake_height(double? height) => _shadow?.fake_height = height;
+
+  double? get fake_height => _shadow?.fake_height;
+
   @override
   onLoad() {
     _shadow = _Shadow(this);
-    _shadows.add(_shadow);
+    _shadows.add(_shadow!);
   }
 }
 
-class _Shadow extends Component with HasVisibility {
-  _Shadow(this._entity);
+class _Shadow extends Component with HasPaint, HasVisibility {
+  _Shadow(this._entity) {
+    paint.color = black.withAlpha(128);
+  }
 
   final StackedEntity _entity;
+
+  double? fake_height;
 
   @override
   void render(Canvas canvas) {
     if (_entity.parent is! PositionComponent) return;
+    if (fake_height == null) return;
 
     final pp = (_entity.parent as PositionComponent);
     canvas.save();
     canvas.translate(pp.x, pp.y);
+    canvas.translate(fake_height! / 4, fake_height!);
+    canvas.translate(-pp.scaledSize.x / 2, -pp.scaledSize.y / 2);
     canvas.scaleVector(pp.scale);
     _entity.sprite.renderShadow(canvas);
     canvas.restore();

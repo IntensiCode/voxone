@@ -76,7 +76,6 @@ mixin _MoveIntoFormationOnIncoming on EnemyEntity, HasVisibility {
       origin.toOffsetXY(-100, -50 * dy.sign - dy.toDouble() * 20),
       target_position.toOffset(),
     ]);
-    priority = 100;
   }
 
   @override
@@ -110,7 +109,7 @@ mixin _MoveIntoFormationOnIncoming on EnemyEntity, HasVisibility {
     }
     if (i > 0.9) entity.rot_y = -1 - (1 - i) * 10;
 
-    priority = i < 0.1 ? -500 : 0;
+    fake_height = i < 0.3 ? -50 : 50;
   }
 
   final _last_dir = Vector2.zero();

@@ -99,8 +99,8 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     { :: Repair Player
     } :: Toggle Indestructible 
     >
-    Delete    :: Kill Your Self
-    Insert    :: Kill All Enemies
+    Delete :: Destroy Player
+    Insert :: Destroy All Enemies
     Backspace :: Remove All Enemies
     >
     1 - 5 :: Jump to Stage (NYI)
@@ -112,7 +112,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       insets: Vector2(9, 9),
       position: Vector2(game_width - 320 - 16, 16),
       anchor: Anchor.topLeft,
-      size: Vector2(320, 224),
+      size: Vector2(320, 176),
     ));
     _cheats.isVisible = cheat;
   }
