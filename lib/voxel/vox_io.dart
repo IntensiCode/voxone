@@ -13,9 +13,20 @@ class Voxels {
   final List<int> palette;
 
   Voxels(this.width, this.height, this.depth, this.voxels, this.palette);
+
+  Voxels remove_empty_ys_at_start_and_end() {
+    var empty_below = voxels.indexWhere((layer) => layer.any((row) => row.any((v) => v != 0)));
+    if (empty_below == -1) empty_below = 0;
+
+    var empty_above = voxels.lastIndexWhere((layer) => layer.any((row) => row.any((v) => v != 0)));
+    if (empty_above == -1) empty_above = voxels.length - 1;
+
+    final it = voxels.skip(empty_below).take(empty_above - empty_below).toList(growable: false);
+    return Voxels(width, it.length, depth, it, palette);
+  }
 }
 
-Voxels read_vox(Uint8List riff, String name) {
+Voxels read_vox(Uint8List riff, String name, {bool crop = true}) {
   final header = (String.fromCharCodes(riff.getRange(0, 4)));
   if (header != 'VOX ') throw ArgumentError('Not a VOX file: $header');
 
@@ -88,7 +99,8 @@ Voxels read_vox(Uint8List riff, String name) {
     out.close();
   }
 
-  return Voxels(width, height, depth, voxels, palette);
+  final result = Voxels(width, height, depth, voxels, palette);
+  return crop ? result.remove_empty_ys_at_start_and_end() : result;
 }
 
 void _append(RandomAccessFile out, String id, Uint8List data) {
