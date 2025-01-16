@@ -104,10 +104,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    )..debug());
 
     await add(CircleHitbox.relative(
       0.3,
@@ -116,10 +113,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    )..debug());
 
     await add(CircleHitbox.relative(
       0.3,
@@ -128,10 +122,7 @@ mixin _CreateCapitalShipEntity on MarauderEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    )..debug());
   }
 }
 

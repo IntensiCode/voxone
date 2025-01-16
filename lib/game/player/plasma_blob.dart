@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -27,9 +26,7 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
   PlasmaBlob(this._emit_plasma_ring) {
     anchor = Anchor.center;
     size.setAll(16);
-    add(CircleHitbox(radius: 8, anchor: Anchor.center, position: size / 2)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 8, anchor: Anchor.center, position: size / 2)..debug());
 
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;

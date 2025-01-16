@@ -4,7 +4,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -17,9 +16,7 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, Recyclable, Dire
     size.setAll(16);
     _sprites = atlas.sheetI('melt.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 8)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 8)..debug());
   }
 
   late final SpriteSheet _sprites;

@@ -4,7 +4,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/decals.dart';
@@ -19,9 +18,7 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
     size.setAll(30);
     _sprites = atlas.sheetI('missile.png', 4, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 15)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 15)..debug());
     angle = pi / 2 - pi / 16;
     priority = 100;
   }

@@ -18,9 +18,7 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   PlasmaShot() {
     size.setAll(4);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 4, anchor: Anchor.center)..debug());
   }
 
   double _start_time = 1;

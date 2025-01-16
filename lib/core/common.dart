@@ -8,8 +8,6 @@ typedef Hook = void Function();
 
 Function(bool)? on_debug_change;
 
-bool get dev => _debug;
-
 bool _debug = kDebugMode;
 
 bool get debug => _debug;
@@ -18,6 +16,8 @@ set debug(bool value) {
   _debug = value;
   on_debug_change?.call(value);
 }
+
+bool dev = kDebugMode;
 
 const tps = 60;
 

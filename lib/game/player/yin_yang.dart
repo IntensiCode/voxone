@@ -6,7 +6,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -21,11 +20,7 @@ class YinYang extends SpriteComponent with CollisionCallbacks, Recyclable, Direc
     size.setAll(32);
     _sprites = atlas.sheetI('yin-yang.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)
-      ..x = size.x / 2
-      ..y = size.y / 2
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 4, position: size / 2, anchor: Anchor.center)..debug());
   }
 
   final Component _stage;

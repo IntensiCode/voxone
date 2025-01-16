@@ -277,20 +277,14 @@ mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, T
       position: Vector2(-10, 2),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    )..debug());
 
     await add(CircleHitbox(
       radius: 8,
       position: Vector2(15, -5),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
-    )
-      ..paint.color = red
-      ..opacity = 0.2
-      ..renderShape = debug);
+    )..debug());
 
     _shield = DeflectorShield(this);
     _shield.scale.setAll(4);

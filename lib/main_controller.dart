@@ -55,7 +55,6 @@ class MainController extends World
       onKey('1', () => showScreen(Screen.stage1));
       onKey('2', () => showScreen(Screen.stage2));
       onKey('3', () => showScreen(Screen.stage3));
-
     } else {
       disposeWhereTag((it) => it.startsWith('onKey-'));
     }
@@ -63,7 +62,7 @@ class MainController extends World
     if (!kReleaseMode) {
       onKeys(['<A-d>', '='], () {
         debug = !debug;
-        sendMessage(ShowInfoText(title: 'Cheat', text: 'Debug mode: $debug'));
+        sendMessage(ShowInfoText(title: 'Cheat', text: 'Hitbox Debug Mode: $debug'));
       });
     }
   }

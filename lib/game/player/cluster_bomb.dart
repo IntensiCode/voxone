@@ -2,7 +2,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -16,9 +15,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
     size.setAll(20);
     _sprites = atlas.sheetI('cluster_bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 10)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 10)..debug());
   }
 
   late final Function(Vector2) _emit_bombs;

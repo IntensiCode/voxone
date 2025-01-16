@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -16,9 +15,7 @@ class PlasmaRing extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   PlasmaRing() {
     size.setAll(4);
-    add(_hitbox = CircleHitbox(radius: 16, anchor: Anchor.center)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(_hitbox = CircleHitbox(radius: 16, anchor: Anchor.center)..debug());
 
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 8;

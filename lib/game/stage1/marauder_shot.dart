@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -20,9 +19,7 @@ class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext
 
   MarauderShot() {
     size.setAll(4);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 4, anchor: Anchor.center)..debug());
     reset_hit_points_to(1);
     mini_explosions_on_hit = false;
   }

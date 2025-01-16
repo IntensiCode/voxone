@@ -97,7 +97,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     Audio Menu :: 8
     Controls :: 9
     Back To Title :: 0
-    Toggle Debug :: =
+    Toggle Hitbox Debug :: =
     >
     All Primary Weapons Available
     >
@@ -120,7 +120,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       anchor: Anchor.topLeft,
       size: Vector2(320, 224),
     ));
-    _cheats.isVisible = debug;
+    _cheats.isVisible = dev;
   }
 
   late FlowText _cheats;
@@ -176,10 +176,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       _cheat = _cheat.substring(1);
     }
     if (_cheat == 'tfdj') {
-      debug = !debug;
-      logInfo('cheat mode $debug');
+      dev = !dev;
+      logInfo('cheat mode $dev');
       _cheat = '';
-      _cheats.isVisible = debug;
+      _cheats.isVisible = dev;
       sendMessage(ToggleCheatMode());
     }
   }

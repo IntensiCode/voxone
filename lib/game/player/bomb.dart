@@ -15,9 +15,7 @@ class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, Directio
     size.setAll(10);
     _sprites = atlas.sheetI('bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 5)
-      ..renderShape = debug
-      ..paint.opacity = 0.2);
+    add(CircleHitbox(radius: 5)..debug());
   }
 
   late final SpriteSheet _sprites;
