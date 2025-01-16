@@ -56,9 +56,15 @@ class MainController extends World
       onKey('2', () => showScreen(Screen.stage2));
       onKey('3', () => showScreen(Screen.stage3));
 
-      onKeys(['<A-d>', '='], () => debug = !debug);
     } else {
       disposeWhereTag((it) => it.startsWith('onKey-'));
+    }
+
+    if (!kReleaseMode) {
+      onKeys(['<A-d>', '='], () {
+        debug = !debug;
+        sendMessage(ShowInfoText(title: 'Cheat', text: 'Debug mode: $debug'));
+      });
     }
   }
 
