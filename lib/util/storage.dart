@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/util/game_data.dart';
 
 final _prefs = SharedPreferences.getInstance();
@@ -28,10 +29,12 @@ Future load(String name, HasGameData it) async {
 Future save_data(String name, GameData data) async {
   try {
     final preferences = await _prefs;
-    preferences.setString(name.key, jsonEncode(data));
+    final json = jsonEncode(data);
+    if (dev) logInfo(json);
+    preferences.setString(name.key, json);
     logVerbose('saved $name data');
   } catch (it, trace) {
-    logError('Failed to store $name: $it', trace);
+    logError('Failed to store $data in $name: $it', trace);
   }
 }
 

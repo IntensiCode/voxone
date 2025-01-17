@@ -5,6 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
+final _snoop_hooks = <void Function(String)>[];
+
+Disposable snoop_key_input(void Function(String) hook) {
+  _snoop_hooks.add(hook);
+  return Disposable.wrap(() => _snoop_hooks.remove(hook));
+}
+
 mixin HasAutoDisposeShortcuts on Component, AutoDispose {
   bool get is_active => isMounted && !isRemoving;
 
@@ -45,8 +52,6 @@ mixin Shortcuts<T extends World> on HasKeyboardHandlerComponents<T> {
     return Disposable.wrap(() => handlers.remove(handler));
   }
 
-  Function(String) snoop = (it) {};
-
   @override
   KeyEventResult onKeyEvent(
     KeyEvent event,
@@ -57,8 +62,9 @@ mixin Shortcuts<T extends World> on HasKeyboardHandlerComponents<T> {
     }
     if (event is KeyDownEvent && event.character?.isEmpty == false) {
       final pattern = _make_full_shortcut(event);
-      snoop(pattern);
+      _snoop_hooks.forEach((it) => it(pattern));
 
+      // TODO no clone
       bool handled = false;
       final cloned = [...handlers]; // clone to avoid concurrent modification from add/remove handlers
       for (final it in cloned) {
@@ -74,7 +80,7 @@ mixin Shortcuts<T extends World> on HasKeyboardHandlerComponents<T> {
       }
     } else if (event is KeyDownEvent) {
       final pattern = _make_shortcut(event);
-      snoop(pattern);
+      _snoop_hooks.forEach((it) => it(pattern));
 
       bool handled = false;
       final cloned = [...handlers]; // clone to avoid concurrent modification from add/remove handlers

@@ -50,6 +50,12 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     onMessage<UpdateDifficulty>((_) => _update_time_scale());
     _update_time_scale();
 
+    if (cheat) {
+      logInfo('activate cheat keys');
+      onKey('1', () => showScreen(Screen.stage1));
+      onKey('2', () => showScreen(Screen.stage2));
+      onKey('3', () => showScreen(Screen.stage3));
+    }
     if (dev) {
       onKey('-', () => _change_time_scale(-0.25));
       onKey('+', () => _change_time_scale(0.25));
@@ -57,7 +63,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
       onKey('<C-j>', () => logInfo('cache size: ${stacked_cache.size}'));
     }
 
-    stage_keys.game_pad_mapping = true;
+    enable_mapping = true;
 
     apply_video_mode();
   }
@@ -65,7 +71,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   @override
   void onRemove() {
     super.onRemove();
-    stage_keys.game_pad_mapping = false;
+    enable_mapping = false;
   }
 
   void _update_time_scale() {
@@ -162,10 +168,8 @@ class _PauseOverlay extends GameScriptComponent with HasContext {
     super.update(dt);
     if (keys.check_and_consume(GameKey.a_button)) _resume();
     if (keys.check_and_consume(GameKey.b_button)) _resume();
-    if (game_pad_config == GamePadConfig.Default) {
-      if (keys.check_and_consume(GameKey.select)) _back_to_title();
-      if (keys.check_and_consume(GameKey.start)) _resume();
-    }
+    if (keys.check_and_consume(GameKey.select)) _back_to_title();
+    if (keys.check_and_consume(GameKey.start)) _resume();
     if (keys.check_and_consume(GameKey.soft1)) _resume();
     if (keys.check_and_consume(GameKey.soft2)) _back_to_title();
   }

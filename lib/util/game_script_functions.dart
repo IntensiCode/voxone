@@ -4,10 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_button.dart';
 import 'package:voxone/util/bitmap_font.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/debug.dart';
@@ -19,24 +16,6 @@ import 'package:voxone/util/functions.dart';
 // should be replaced by what you need for your game.
 
 mixin GameScriptFunctions on Component, AutoDispose {
-  BitmapButton buttonIXY(
-    String text,
-    double x,
-    double y,
-    Anchor anchor, {
-    Sprite? bg,
-    required Function() onTap,
-  }) =>
-      added(BitmapButton(
-        bg_nine_patch: bg ?? atlas.sprite('button_plain.png'),
-        text: text,
-        font: menu_font,
-        font_scale: 0.5,
-        position: Vector2(x, y),
-        anchor: anchor,
-        onTap: (_) => onTap(),
-      ));
-
   void clearByType(List types) {
     final what = types.isEmpty ? children : children.where((it) => types.contains(it.runtimeType));
     removeAll(what);
@@ -118,38 +97,6 @@ mixin GameScriptFunctions on Component, AutoDispose {
         position: position,
         anchor: anchor,
       ));
-
-  BitmapButton menuButtonXY(
-    String text,
-    double x,
-    double y, [
-    Anchor? anchor,
-    String? bgNinePatch,
-    Function(BitmapButton)? onTap,
-  ]) {
-    return menuButton(text: text, pos: Vector2(x, y), anchor: anchor, bgNinePatch: bgNinePatch, onTap: onTap);
-  }
-
-  BitmapButton menuButton({
-    required String text,
-    Vector2? pos,
-    Anchor? anchor,
-    String? bgNinePatch,
-    void Function(BitmapButton)? onTap,
-  }) {
-    final button = atlas.sprite(bgNinePatch ?? 'button_plain.png');
-    final it = BitmapButton(
-      bg_nine_patch: button,
-      text: text,
-      font: menu_font,
-      font_scale: 0.25,
-      position: pos,
-      anchor: anchor,
-      onTap: onTap ?? (_) => {},
-    );
-    add(it);
-    return it;
-  }
 
   void scaleTo(Component it, double scale, double duration, Curve? curve) {
     it.add(

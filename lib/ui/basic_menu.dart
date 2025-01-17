@@ -8,8 +8,6 @@ import 'package:voxone/util/bitmap_font.dart';
 import 'basic_menu_button.dart';
 
 class BasicMenu<T> extends PositionComponent with AutoDispose {
-  static final _select_keys = [GameKey.a_button, GameKey.b_button, GameKey.soft2];
-
   final Keys keys;
   final SpriteSheet button;
   final BitmapFont font;
@@ -47,7 +45,7 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
     super.update(dt);
     if (keys.check_and_consume(GameKey.up)) preselectPrevious();
     if (keys.check_and_consume(GameKey.down)) preselectNext();
-    if (keys.any(_select_keys)) select();
+    if (keys.any(typical_select_keys)) select();
   }
 
   @override

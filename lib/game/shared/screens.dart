@@ -4,6 +4,7 @@ enum Screen {
   audio,
   video,
   controls,
+  select_game_pad,
   stage1,
   stage2,
   stage3,

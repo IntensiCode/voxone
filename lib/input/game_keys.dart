@@ -1,50 +1,49 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:supercharged/supercharged.dart';
 import 'package:voxone/util/extensions.dart';
 
-enum GameKey {
-  left,
-  right,
-  up,
-  down,
-  a_button,
-  b_button,
-  x_button,
-  y_button,
-  start,
-  select,
-  soft1,
-  soft2,
-}
+bool invert_y_axis = true;
+bool prefer_x_over_y = true;
 
-enum GamePadConfig {
-  Default({}),
-  Alternative({
-    GameKey.b_button: GameKey.x_button,
-    GameKey.x_button: GameKey.b_button,
-    GameKey.select: GameKey.soft2,
-    GameKey.start: GameKey.soft1,
-    GameKey.soft1: GameKey.x_button,
-    GameKey.soft2: GameKey.y_button,
-  }),
+final typical_select_keys = [GameKey.a_button, GameKey.b_button, GameKey.soft2];
+
+enum GameKey {
+  left('Left'),
+  right('Right'),
+  up('Up'),
+  down('Down'),
+  a_button('A'),
+  b_button('B'),
+  x_button('X'),
+  y_button('Y'),
+  start('Start'),
+  select('Select'),
+  soft1('Soft1'),
+  soft2('Soft2'),
+  x_axis('X Axis'),
+  y_axis('Y Axis'),
+  l_throttle('L Throttle'),
+  r_throttle('R Throttle'),
   ;
 
-  final Map<GameKey, GameKey> mapping;
+  final String label;
 
-  const GamePadConfig(this.mapping);
-}
-
-Function(GamePadConfig)? on_game_pad_config_change;
-
-GamePadConfig get game_pad_config => GamePadConfig.values.firstWhere((it) => it == HasGameKeys._gamepad_mapping);
-
-set game_pad_config(GamePadConfig value) {
-  HasGameKeys._gamepad_mapping = value;
-  on_game_pad_config_change?.call(value);
+  const GameKey(this.label);
 }
 
 mixin HasGameKeys on KeyboardHandler {
   late final keyboard = HardwareKeyboard.instance;
+
+  /// Limit keyboard mappings to not interfere with text input and game pad configuration.
+  /// This will reduce navigation to arrow keys only.
+  /// And the buttons will not be mapped to keyboard input anymore.
+  static bool configuration_mode = false;
+
+  static final arrowLeft = ['Arrow Left'];
+  static final arrowRight = ['Arrow Right'];
+  static final arrowDown = ['Arrow Down'];
+  static final arrowUp = ['Arrow Up'];
 
   static final leftKeys = ['Arrow Left', 'A', 'H'];
   static final rightKeys = ['Arrow Right', 'D', 'L'];
@@ -59,7 +58,7 @@ mixin HasGameKeys on KeyboardHandler {
   static final softKeys1 = ['Escape'];
   static final softKeys2 = ['Enter'];
 
-  static final mapping = {
+  static final _mapping = {
     GameKey.left: leftKeys,
     GameKey.right: rightKeys,
     GameKey.up: upKeys,
@@ -74,7 +73,17 @@ mixin HasGameKeys on KeyboardHandler {
     GameKey.soft2: softKeys2,
   };
 
-  static var _gamepad_mapping = GamePadConfig.Default;
+  static final _config_mapping = {
+    'Arrow Left': GameKey.left,
+    'Arrow Right': GameKey.right,
+    'Arrow Down': GameKey.down,
+    'Arrow Up': GameKey.up,
+    // 'Escape': GameKey.soft1,
+    // 'Enter': GameKey.a_button,
+  };
+
+  static final _direct_mapping =
+      _mapping.entries.expand((it) => it.value.map((label) => MapEntry(label, it.key))).toMap();
 
   late void Function(GameKey) onPressed = (it) => held[it] = true;
   late void Function(GameKey) onReleased = (it) => held[it] = false;
@@ -120,29 +129,27 @@ mixin HasGameKeys on KeyboardHandler {
   List<String> _labels(LogicalKeyboardKey key) =>
       [key.keyLabel, ...key.synonyms.map((it) => it.keyLabel)].mapList((it) => it == ' ' ? 'Space' : it).toList();
 
+  final _labels_cache = <LogicalKeyboardKey, List<String>>{};
+
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (event is KeyRepeatEvent) {
       return true; // super.onKeyEvent(event, keysPressed);
     }
-    if (event case KeyDownEvent it) {
-      final labels = _labels(it.logicalKey);
-      for (final entry in mapping.entries) {
-        final key = entry.key;
-        final keys = entry.value;
-        if (keys.any((it) => labels.contains(it))) {
-          onPressed(key);
-        }
+    if (event is KeyDownEvent) {
+      final mapping = configuration_mode ? _config_mapping : _direct_mapping;
+      final labels = _labels_cache[event.logicalKey] ??= _labels(event.logicalKey);
+      for (final it in labels) {
+        final gk = mapping[it];
+        if (gk != null) onPressed(gk);
       }
     }
-    if (event case KeyUpEvent it) {
-      final labels = _labels(it.logicalKey);
-      for (final entry in mapping.entries) {
-        final key = entry.key;
-        final keys = entry.value;
-        if (keys.any((it) => labels.contains(it))) {
-          onReleased(key);
-        }
+    if (event is KeyUpEvent) {
+      final mapping = configuration_mode ? _config_mapping : _direct_mapping;
+      final labels = _labels_cache[event.logicalKey] ??= _labels(event.logicalKey);
+      for (final it in labels) {
+        final gk = mapping[it];
+        if (gk != null) onReleased(gk);
       }
     }
     return super.onKeyEvent(event, keysPressed);

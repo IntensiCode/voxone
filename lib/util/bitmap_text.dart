@@ -50,6 +50,8 @@ class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapsho
     position.y -= y;
   }
 
+  set text(String text) => change_text_in_place(text);
+
   void change_text_in_place(String text) {
     _text = text;
     _update_position(text);

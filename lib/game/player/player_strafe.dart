@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/input/game_keys.dart';
 
 mixin PlayerStrafe on HasContext {
   static const _strafe_accel = 10.0;
@@ -13,13 +14,15 @@ mixin PlayerStrafe on HasContext {
   void update_strafe(double dt) {
     double max_strafe_speed = (_max_strafe - _strafe.abs()) / 5;
 
-    if (keys.left && _strafe > -_max_strafe) {
+    final up = prefer_x_over_y ? keys.left : keys.up;
+    final down = prefer_x_over_y ? keys.right : keys.down;
+    if (up && _strafe > -_max_strafe) {
       if (_strafe_speed > 0) _strafe_speed /= 1.5;
       _strafe_speed -= _strafe_accel * dt;
       if (_strafe < -_max_strafe / 2) {
         _strafe_speed = min(_strafe_speed.abs(), max_strafe_speed) * _strafe_speed.sign;
       }
-    } else if (keys.right && _strafe < _max_strafe) {
+    } else if (down && _strafe < _max_strafe) {
       if (_strafe_speed < 0) _strafe_speed /= 1.5;
       _strafe_speed += _strafe_accel * dt;
       if (_strafe > _max_strafe / 2) {

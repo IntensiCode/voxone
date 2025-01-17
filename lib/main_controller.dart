@@ -3,6 +3,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_menu.dart';
+import 'package:voxone/input/select_game_pad.dart';
 import 'package:voxone/aural/video_menu.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/configuration.dart';
@@ -13,17 +14,19 @@ import 'package:voxone/game/stage2/stage2.dart';
 import 'package:voxone/game/stage3.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/title_screen.dart';
-import 'package:voxone/ui/controls.dart';
+import 'package:voxone/input/controls.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/on_message.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World
     with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>
     implements ScreenNavigation {
   //
+  @override
+  bool get is_active => children.singleOrNull?.runtimeType != SelectGamePad;
+
   final _stack = <Screen>[];
 
   @override
@@ -35,13 +38,10 @@ class MainController extends World
   @override
   void onMount() {
     if (dev) {
-      showScreen(Screen.stage2);
+      showScreen(Screen.stage1);
     } else {
       add(WebPlayScreen());
     }
-
-    onMessage<ToggleCheatMode>((_) => _toggle_cheat_mode());
-    _toggle_cheat_mode();
 
     if (dev) {
       onKeys(['<A-d>', '='], () {
@@ -52,20 +52,6 @@ class MainController extends World
       onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
       onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
       onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
-    }
-  }
-
-  void _toggle_cheat_mode() {
-    if (cheat) {
-      logInfo('activate cheat keys');
-      onKey('1', () => showScreen(Screen.stage1));
-      onKey('2', () => showScreen(Screen.stage2));
-      onKey('3', () => showScreen(Screen.stage3));
-    } else {
-      logInfo('deactivate cheat keys');
-      dispose('onKey-1');
-      dispose('onKey-2');
-      dispose('onKey-3');
     }
   }
 
@@ -80,7 +66,6 @@ class MainController extends World
     logInfo('push screen $it with stack=$_stack and children=${children.map((it) => it.runtimeType)}');
     logInfo('triggered: $_triggered');
     if (_stack.lastOrNull == it) throw 'stack already contains $it';
-    // _stack.add(it);
     if (_triggered != null) _stack.add(_triggered!);
     showScreen(it);
   }
@@ -157,8 +142,9 @@ class MainController extends World
   }
 
   Component _makeScreen(Screen it) => switch (it) {
-        Screen.audio => AudioMenu(show_back: true),
+        Screen.audio => AudioMenu(),
         Screen.controls => Controls(),
+        Screen.select_game_pad => SelectGamePad(),
         Screen.stage1 => Stage1(),
         Screen.stage2 => Stage2(),
         Screen.stage3 => Stage3(),

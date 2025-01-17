@@ -3,103 +3,65 @@ import 'dart:js_interop_unsafe';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:voxone/input/game_keys.dart';
+import 'package:voxone/input/game_pads.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:web/web.dart';
 
-enum _GamePadButton {
-  a(GameKey.a_button),
-  b(GameKey.b_button),
-  x(GameKey.x_button),
-  y(GameKey.y_button),
-  left_bumper(GameKey.soft1),
-  right_bumper(GameKey.soft2),
-  left_trigger,
-  right_trigger,
-  select(GameKey.select),
-  start(GameKey.start),
-  left_stick,
-  right_stick,
-  dpad_up(GameKey.up),
-  dpad_down(GameKey.down),
-  dpad_left(GameKey.left),
-  dpad_right(GameKey.right),
-  ;
-
-  final GameKey? key;
-
-  const _GamePadButton([this.key]);
-}
-
-enum _GamePadAxis {
-  left_stick_x,
-  left_stick_y,
-  right_stick_x,
-  right_stick_y,
-}
-
 mixin HasGamePads {
-  late void Function(GameKey) onGamePadPressed;
-  late void Function(GameKey) onGamePadReleased;
+  final detected_game_pads = <String, String>{};
 
-  static final _buttons = _GamePadButton.values.associate((it) => MapEntry(it, false));
-  static final _axes = _GamePadAxis.values.associate((it) => MapEntry(it, 0.0));
+  static final _buttons = <(String, int), bool>{}; // .values.associate((it) => MapEntry(it, false));
+  static final _axes = <(String, int), double>{};
 
   void tick_game_pads() {
     final it = window.navigator.getGamepads().toDart;
     if (it.isEmpty) return;
-    final gp = it[0];
-    if (gp == null) return;
-
-    final buttons = gp.buttons.toDart;
-    for (var i = 0; i < buttons.length; i++) {
-      final button = buttons[i];
-      if (i >= _GamePadButton.values.length) break;
-
-      final gpb = _GamePadButton.values[i];
-      if (_buttons[gpb] == button.pressed) continue;
-      _buttons[gpb] = button.pressed;
-
-      final key = gpb.key;
-      if (key == null) continue;
-
-      if (button.pressed) {
-        onGamePadPressed(key);
-      } else {
-        onGamePadReleased(key);
-      }
+    if (it.count((e) => e != null) != detected_game_pads.length) {
+      logInfo('clear detected game pads');
+      detected_game_pads.clear();
     }
-
-    final axes = gp.axes.toDart;
-    for (final it in _GamePadAxis.values) {
-      final now = axes[it.index].toDartDouble;
-      if (now == _axes[it]) continue;
-      _axes[it] = now;
-
-      if (it == _GamePadAxis.left_stick_x || it == _GamePadAxis.right_stick_x) {
-        if (now < -0.8) {
-          onGamePadPressed(GameKey.left);
-        } else if (now > 0.8) {
-          onGamePadPressed(GameKey.right);
-        } else {
-          onGamePadReleased(GameKey.left);
-          onGamePadReleased(GameKey.right);
-        }
-      }
-      if (it == _GamePadAxis.left_stick_y || it == _GamePadAxis.right_stick_y) {
-        if (now < -0.8) {
-          onGamePadPressed(GameKey.up);
-        } else if (now > 0.8) {
-          onGamePadPressed(GameKey.down);
-        } else {
-          onGamePadReleased(GameKey.up);
-          onGamePadReleased(GameKey.down);
-        }
-      }
+    final was = detected_game_pads.length;
+    for (final gp in it) {
+      if (gp == null) continue;
+      detected_game_pads[gp.id] = gp.id;
+      _tick_game_pad(gp);
+    }
+    if (was != detected_game_pads.length) {
+      logInfo('detected game pads: $detected_game_pads');
     }
   }
 
-  Disposable observe_gamepads() => Disposable.disposed;
+  void _tick_game_pad(Gamepad gp) {
+    final buttons = gp.buttons.toDart;
+    for (var i = 0; i < buttons.length; i++) {
+      final button = buttons[i];
+      if (_buttons[(gp.id, i)] == button.pressed) continue;
+      _buttons[(gp.id, i)] = button.pressed;
+      onSnoop(SnoopType.button, 200 + i, button.value);
+      final gpc = hw_mapping[200 + i];
+      if (gpc != null) onGamePad(gpc, button.value);
+    }
+
+    final axes = gp.axes.toDart;
+    for (final (i, value) in axes.indexed) {
+      final now = value.toDartDouble;
+      if (now == _axes[(gp.id, i)]) continue;
+      _axes[(gp.id, i)] = now;
+      onSnoop(SnoopType.axis, 100 + i, now);
+      final gpc = hw_mapping[100 + i];
+      if (gpc != null) onGamePad(gpc, now);
+    }
+  }
+
+  Disposable observe_gamepads() {
+    final it = window.navigator.getGamepads().toDart;
+    for (final gp in it) {
+      if (gp == null) continue;
+      detected_game_pads[gp.id] = gp.id;
+    }
+    logInfo('detected game pads: $detected_game_pads');
+    return Disposable.disposed;
+  }
 
   void rumble([int duration = 100]) {
     final it = window.navigator.getGamepads().toDart;

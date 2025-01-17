@@ -17,6 +17,7 @@ class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, 
   final double _font_scale;
   final Vector2 _insets;
   final Sprite? background;
+  final bool centered_text;
 
   late final double _line_height;
   final List<BitmapText> _showing = [];
@@ -27,6 +28,7 @@ class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, 
     double font_scale = 1,
     Vector2? insets,
     required Vector2 size,
+    this.centered_text = false,
     super.position,
     super.anchor,
     super.scale,
@@ -68,6 +70,7 @@ class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, 
     final add_pos = Vector2.copy(_insets);
     final lines = _lines.take(_visible_lines).map((line) {
       final it = BitmapText(text: line, font: _font, anchor: Anchor.topLeft, position: add_pos, scale: _font_scale);
+      if (centered_text) it.position.x = (size.x - it.width - _insets.x * 2) / 2;
       add_pos.y += line.isEmpty ? _line_height / 2 : _line_height;
       return it;
     });

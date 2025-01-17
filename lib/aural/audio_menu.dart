@@ -25,10 +25,6 @@ enum AudioMenuEntry {
 }
 
 class AudioMenu extends GameScriptComponent {
-  AudioMenu({required this.show_back});
-
-  final bool show_back;
-
   final _keys = Keys();
 
   late final BasicMenu<AudioMenuEntry> menu;
@@ -62,7 +58,7 @@ class AudioMenu extends GameScriptComponent {
 
     _add_volume_controls(menu);
 
-    if (show_back) softkeys('Back', null, (_) => popScreen());
+    softkeys('Back', null, (_) => popScreen());
 
     menu.preselectEntry(_preselected ?? AudioMenuEntry.master_volume);
   }
@@ -70,7 +66,7 @@ class AudioMenu extends GameScriptComponent {
   @override
   void update(double dt) {
     super.update(dt);
-    if (show_back && _keys.check_and_consume(GameKey.soft1)) popScreen();
+    if (_keys.check_and_consume(GameKey.soft1)) popScreen();
   }
 
   void _add_volume_controls(BasicMenu<AudioMenuEntry> menu) {

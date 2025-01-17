@@ -1,11 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/sprite.dart';
-import 'package:kart/kart.dart';
 import 'package:voxone/core/common.dart' as c;
 
 extension ComponentExtension on Component {
@@ -84,7 +84,7 @@ extension ListExtensions<T> on List<T> {
   List<R> mapList<R>(R Function(T) f) => map(f).toList();
 
   T? nextAfter(T? it) {
-    if (it == null) return firstOrNull();
+    if (it == null) return firstOrNull;
     final index = indexOf(it);
     if (index == -1) return null;
     return this[(index + 1) % length];
@@ -173,4 +173,8 @@ extension ShapeHitboxExtensions on ShapeHitbox {
     opacity = 0.2;
     renderShape = c.debug;
   }
+}
+
+extension MapExtensions on Map {
+  bool deepEquals(Map other) => MapEquality().equals(this, other);
 }

@@ -3,11 +3,13 @@ import 'package:flame/components.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/input/game_keys.dart';
+import 'package:voxone/input/game_pads.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
-import 'game_pads.dart' if (dart.library.html) 'game_pads_web.dart';
+import 'game_pads_lib.dart' if (dart.library.html) 'game_pads_web.dart';
 
 export 'game_keys.dart';
+export 'game_pads.dart';
 
 class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGamePads {
   static int _instances = 0;
@@ -16,8 +18,6 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     logInfo('Keys created');
     _instances++;
     logInfo('Keys instances: $_instances');
-
-    game_pad_mapping = false;
   }
 
   @override
@@ -32,6 +32,8 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     GameKey.b_button,
     GameKey.x_button,
     GameKey.y_button,
+    GameKey.select,
+    GameKey.start,
     GameKey.soft1,
     GameKey.soft2,
   };
@@ -62,20 +64,15 @@ class Keys extends AutoDisposeComponent with KeyboardHandler, HasGameKeys, HasGa
     onPressed = (it) => _update(it, true);
     onReleased = (it) => _update(it, false);
 
+    autoDispose(
+        'snoop_game_pad',
+        snoop_game_pad(
+          on_pressed: (it) => _update(it, true),
+          on_released: (it) => _update(it, false),
+        ));
+
     autoDispose("gamepads", observe_gamepads());
   }
-
-  set game_pad_mapping(bool enabled) {
-    if (enabled) {
-      onGamePadPressed = (it) => _mapped(it, (it) => _update(it, true));
-      onGamePadReleased = (it) => _mapped(it, (it) => _update(it, false));
-    } else {
-      onGamePadPressed = (it) => _update(it, true);
-      onGamePadReleased = (it) => _update(it, false);
-    }
-  }
-
-  void _mapped(GameKey it, void Function(GameKey) f) => f(game_pad_config.mapping[it] ?? it);
 
   @override
   void update(double dt) {

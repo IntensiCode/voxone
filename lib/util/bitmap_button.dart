@@ -4,7 +4,6 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
@@ -22,7 +21,7 @@ BitmapButton button({
   List<String> shortcuts = const [],
   double fontScale = 1,
   Color? tint,
-  required Function(BitmapButton) onTap,
+  required Function() onTap,
 }) =>
     BitmapButton(
       bg_nine_patch: bgNinePatch ?? atlas.sprite('button_plain.png'),
@@ -39,74 +38,75 @@ BitmapButton button({
     );
 
 class BitmapButton extends PositionComponent
-    with AutoDispose, HasPaint, HasVisibility, TapCallbacks, HasAutoDisposeShortcuts {
+    with AutoDispose, HasPaint, HasVisibility, TapCallbacks, HasAutoDisposeShortcuts, Snapshot {
   //
+  String _text;
+
   final NinePatchImage? background;
-  final String text;
   final BitmapFont font;
   final double font_scale;
   final int cornerSize;
-  final Function(BitmapButton) onTap;
+  final Function() onTap;
   final List<String> shortcuts;
-
-  bool snapshot = true;
+  final Vector2? _fixed_size;
+  final Vector2? _ref_position;
 
   BitmapButton({
     Sprite? bg_nine_patch,
-    required this.text,
+    required String text,
     this.cornerSize = 8,
-    Vector2? position,
-    Vector2? size,
+    super.position,
+    super.size,
+    super.anchor,
     BitmapFont? font,
-    Anchor? anchor,
     this.shortcuts = const [],
     this.font_scale = 1,
     Color? tint,
     required this.onTap,
-  })  : font = font ?? tiny_font,
+  })  : _text = text,
+        _ref_position = position,
+        _fixed_size = size,
+        font = font ?? tiny_font,
         background = bg_nine_patch != null ? NinePatchImage(bg_nine_patch, cornerSize: cornerSize) : null {
-    if (position != null) this.position.setFrom(position);
     if (tint != null) this.tint(tint);
-    if (size == null) {
-      this.font.scale = font_scale;
-      this.size = this.font.textSize(text);
-      this.size.x = (this.size.x ~/ cornerSize * cornerSize).toDouble() + cornerSize * 2;
-      this.size.y = (this.size.y ~/ cornerSize * cornerSize).toDouble() + cornerSize * 2;
-    } else {
-      this.size = size;
-    }
-    final a = anchor ?? Anchor.center;
-    final x = a.x * this.size.x;
-    final y = a.y * this.size.y;
-    this.position.x -= x;
-    this.position.y -= y;
+    _update_xy_wh();
+  }
+
+  String get text => _text;
+
+  set text(String text) {
+    _text = text;
+    _update_xy_wh();
+    clearSnapshot();
+  }
+
+  void _update_xy_wh() {
+    if (_ref_position != null) position.setFrom(_ref_position);
+    if (_fixed_size != null) return;
+
+    font.scale = font_scale;
+    size = font.textSize(text);
+    size.x = (size.x ~/ cornerSize * cornerSize).toDouble() + cornerSize * 2;
+    size.y = (size.y ~/ cornerSize * cornerSize).toDouble() + cornerSize * 2;
   }
 
   @override
   void onMount() {
     super.onMount();
-    onKeys(shortcuts, () => onTap(this));
+    onKeys(shortcuts, () => onTap());
   }
 
-  Image? _snapshot;
+  double? _opacity;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_opacity != opacity) clearSnapshot();
+    _opacity = _opacity;
+  }
 
   @override
   render(Canvas canvas) {
-    if (snapshot) {
-      if (_snapshot == null) {
-        final recorder = PictureRecorder();
-        _render(Canvas(recorder), pixel_paint());
-        final picture = recorder.endRecording();
-        _snapshot = picture.toImageSync(size.x.round(), size.y.round());
-        picture.dispose();
-      }
-      canvas.drawImage(_snapshot!, Offset.zero, paint);
-    } else {
-      _render(canvas, paint);
-    }
-  }
-
-  void _render(Canvas canvas, Paint paint) {
     background?.draw(canvas, 0, 0, size.x, size.y, paint);
 
     font.scale = font_scale;
@@ -123,5 +123,5 @@ class BitmapButton extends PositionComponent
   }
 
   @override
-  void onTapUp(TapUpEvent event) => onTap(this);
+  void onTapUp(TapUpEvent event) => onTap();
 }
