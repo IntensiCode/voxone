@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
@@ -58,7 +59,12 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints, damage: power_boost * 0.75);
+          final f = switch (difficulty) {
+            Difficulty.easy => 0.75,
+            Difficulty.normal => 0.70,
+            Difficulty.hard => 0.65,
+          };
+          it.on_hit(intersections: intersectionPoints, damage: power_boost * f);
           recycle();
         }
       });
