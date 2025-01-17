@@ -1,26 +1,26 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/yin_yang.dart';
+import 'package:voxone/game/player/projectiles/swirl.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
-class YinYangGun extends Component with HasContext, PrimaryWeapon {
-  YinYangGun(this._player);
+class SwirlGun extends Component with HasContext, PrimaryWeapon {
+  SwirlGun(this._player);
 
   final Player _player;
 
-  late final _projectiles = ComponentRecycler(() => YinYang(stage));
+  final _projectiles = ComponentRecycler(() => Swirl());
 
   double _cool_down = 0;
 
   @override
-  String get display_name => 'Yin Yang';
+  String get display_name => 'Swirl Gun';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.yin_yang);
+  Sprite get icon => extras.icon_for(ExtraId.phosphor_swirl);
 
   @override
   void update(double dt) {
@@ -30,9 +30,16 @@ class YinYangGun extends Component with HasContext, PrimaryWeapon {
     }
 
     if (keys.a_button) {
-      _cool_down += 1.5;
+      _cool_down += 0.4;
       stage.add(_projectiles.acquire()..reset(_player.position));
-      audio.play(Sound.swirl, volume_factor: 0.5);
+      if (_skip_sound == 0) {
+        audio.play(Sound.swirl, volume_factor: 0.1);
+        _skip_sound = 2;
+      } else {
+        _skip_sound--;
+      }
     }
   }
+
+  int _skip_sound = 0;
 }

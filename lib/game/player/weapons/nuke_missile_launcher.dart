@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/nuke.dart';
-import 'package:voxone/game/player/nuke_missile.dart';
+import 'package:voxone/game/player/projectiles/nuke.dart';
+import 'package:voxone/game/player/projectiles/nuke_missile.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';

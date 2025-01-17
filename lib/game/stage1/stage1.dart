@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/background/ground.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/plasma_blob.dart';
+import 'package:voxone/game/player/projectiles/plasma_blob.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
 import 'package:voxone/game/player/zaxxon_player.dart';
 import 'package:voxone/game/shared/decals.dart';

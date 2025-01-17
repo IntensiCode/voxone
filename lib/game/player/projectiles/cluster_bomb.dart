@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/directional_projectile.dart';
+import 'package:voxone/game/player/projectiles/directional_projectile.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
 import 'package:voxone/util/component_recycler.dart';

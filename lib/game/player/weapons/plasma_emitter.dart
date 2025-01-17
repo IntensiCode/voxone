@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/plasma_blob.dart';
-import 'package:voxone/game/player/plasma_ring.dart';
+import 'package:voxone/game/player/projectiles/plasma_blob.dart';
+import 'package:voxone/game/player/projectiles/plasma_ring.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';

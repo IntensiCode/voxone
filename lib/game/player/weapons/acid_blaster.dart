@@ -1,26 +1,26 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/swirl.dart';
+import 'package:voxone/game/player/projectiles/acid_blast.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
-class SwirlGun extends Component with HasContext, PrimaryWeapon {
-  SwirlGun(this._player);
+class AcidBlaster extends Component with HasContext, PrimaryWeapon {
+  AcidBlaster(this._player);
 
   final Player _player;
 
-  final _projectiles = ComponentRecycler(() => Swirl());
+  final _projectiles = ComponentRecycler(() => AcidBlast());
 
   double _cool_down = 0;
 
   @override
-  String get display_name => 'Swirl Gun';
+  String get display_name => 'Acid Blaster';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.phosphor_swirl);
+  Sprite get icon => extras.icon_for(ExtraId.acid_blast);
 
   @override
   void update(double dt) {
@@ -32,14 +32,7 @@ class SwirlGun extends Component with HasContext, PrimaryWeapon {
     if (keys.a_button) {
       _cool_down += 0.4;
       stage.add(_projectiles.acquire()..reset(_player.position));
-      if (_skip_sound == 0) {
-        audio.play(Sound.swirl, volume_factor: 0.1);
-        _skip_sound = 2;
-      } else {
-        _skip_sound--;
-      }
+      audio.play(Sound.acid_blast, volume_factor: 0.1);
     }
   }
-
-  int _skip_sound = 0;
 }

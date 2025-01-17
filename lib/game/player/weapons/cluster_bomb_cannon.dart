@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/bomb.dart';
-import 'package:voxone/game/player/cluster_bomb.dart';
+import 'package:voxone/game/player/projectiles/bomb.dart';
+import 'package:voxone/game/player/projectiles/cluster_bomb.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';

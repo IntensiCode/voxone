@@ -2,7 +2,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/background/ground.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/player/plasma_blob.dart';
+import 'package:voxone/game/player/projectiles/plasma_blob.dart';
 import 'package:voxone/game/player/zaxxon_hud.dart';
 import 'package:voxone/game/player/zaxxon_player.dart';
 import 'package:voxone/game/shared/decals.dart';
