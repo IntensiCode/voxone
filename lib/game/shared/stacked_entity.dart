@@ -49,6 +49,11 @@ class StackedEntity extends PositionComponent {
   onLoad() {
     _shadow = _Shadow(this);
     _shadows.add(_shadow!);
+    removed.then((_) {
+      final s = _shadow;
+      if (s == null || s.isRemoved || s.isRemoving) return;
+      _shadows.remove(s);
+    });
   }
 }
 

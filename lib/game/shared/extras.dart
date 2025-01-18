@@ -114,8 +114,8 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     super.update(dt);
     _anim_time += dt;
     entity.rot_x = sin(_anim_time * 2 * pi) * pi / 4 + pi / 2;
-    entity.rot_y = sin(_anim_time * 2 * pi * 0.24569) * pi / 8;
-    entity.rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
+    // entity.rot_y = sin(_anim_time * 2 * pi * 0.24569) * pi / 8;
+    // entity.rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
     position.x -= 100 * dt;
     position.y += 100 / 4 * dt;
     if (position.x < -100) recycle();

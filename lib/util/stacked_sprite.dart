@@ -20,11 +20,15 @@ enum HighlightMode {
 typedef CacheKey = (Sprite sprite, double rot_x, double rot_y, double rot_z);
 
 final stacked_cache = CacheBuilder<CacheKey, Image>()
-    .capacity(2048)
+    .capacity(1024 * 2)
     .expireAfterRead(Duration(seconds: 30))
     .expireAfterWrite(Duration(seconds: 30))
-    .removalListener((key, value) => value.dispose())
-    .build();
+    .removalListener((key, value) {
+  value.dispose();
+  cache_remove_count++;
+}).build();
+
+int cache_remove_count = 0;
 
 class StackedSprite extends PositionComponent with HasPaint, HasVisibility {
   StackedSprite(this._asset, this._frames, {this.highlight_mode = HighlightMode.none}) {

@@ -11,6 +11,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/stage_cache.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/fonts.dart';
@@ -56,9 +57,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
     stage_keys.game_pad_mapping = true;
 
-    logInfo('update interval: ${StackedSprite.update_interval}');
-    logInfo('max_renders_per_frame: ${StackedSprite.max_renders_per_frame}');
-    logInfo('rot_steps: ${StackedSprite.rot_steps}');
+    apply_video_mode();
   }
 
   @override
@@ -117,8 +116,17 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   @override
   void renderTree(Canvas canvas) {
+    cache_remove_count = 0;
     StackedSprite.render_count = 0;
     super.renderTree(canvas);
+    if (dev) {
+      if (cache_remove_count > 0) {
+        logInfo('cache remove count: $cache_remove_count');
+      }
+      if (StackedSprite.render_count >= StackedSprite.max_renders_per_frame) {
+        logInfo('stacked sprite render count: ${StackedSprite.render_count}');
+      }
+    }
   }
 }
 

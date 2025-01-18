@@ -7,15 +7,12 @@ enum VideoMode {
   quality,
 }
 
-set video(VideoMode value) {
-  _video = value;
-  on_video_change?.call(value);
-
-  switch (value) {
+void apply_video_mode() {
+  switch (video) {
     case VideoMode.performance:
       StackedSprite.update_interval = 0.2;
       StackedSprite.max_renders_per_frame = 6;
-      StackedSprite.rot_steps = 18;
+      StackedSprite.rot_steps = 32;
       break;
     case VideoMode.balanced:
       StackedSprite.update_interval = 0.1;
@@ -31,6 +28,12 @@ set video(VideoMode value) {
   logInfo('update_interval=${StackedSprite.update_interval}');
   logInfo('max_renders_per_frame=${StackedSprite.max_renders_per_frame}');
   logInfo('rot_steps: ${StackedSprite.rot_steps}');
+}
+
+set video(VideoMode value) {
+  _video = value;
+  on_video_change?.call(value);
+  apply_video_mode();
 }
 
 VideoMode get video => _video;
