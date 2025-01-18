@@ -49,7 +49,7 @@ flutter:
     - assets/audio/sound/
     - assets/audio/voice/
     - assets/entities/
-    - assets/fonts/
+    - assets/data/
     - assets/images/
   shaders:
     - assets/shaders/checkerboard.frag

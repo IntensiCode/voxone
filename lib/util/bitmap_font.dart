@@ -71,7 +71,7 @@ abstract class BitmapFont {
   }
 
   static Future<Uint8List> _loadDst(AssetsCache assets, String filename) async {
-    final hex = await assets.readFile(filename.replaceFirst('.png', '.dst'));
+    final hex = await assets.readFile(filename.replaceFirst('.png', '.dst').replaceFirst('fonts', 'data'));
     final all = hex.split(RegExp(r'[\r\n ]+'));
     all.removeLast();
     final widths = all.map((it) => int.parse('0x$it'.trim()));
