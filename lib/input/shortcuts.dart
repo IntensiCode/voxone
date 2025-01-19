@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
 final _snoop_hooks = <void Function(String)>[];
@@ -64,10 +65,13 @@ mixin Shortcuts<T extends World> on HasKeyboardHandlerComponents<T> {
       final pattern = _make_full_shortcut(event);
       _snoop_hooks.forEach((it) => it(pattern));
 
-      // TODO no clone
       bool handled = false;
-      final cloned = [...handlers]; // clone to avoid concurrent modification from add/remove handlers
-      for (final it in cloned) {
+      for (var i = 0; i < handlers.length; i++) {
+        if (i >= handlers.length) {
+          if (dev) logError('handlers changed during iteration');
+          break;
+        }
+        final it = handlers[i];
         if (it.$1 == pattern && it.$3()) {
           it.$2();
           handled = true;
@@ -83,8 +87,12 @@ mixin Shortcuts<T extends World> on HasKeyboardHandlerComponents<T> {
       _snoop_hooks.forEach((it) => it(pattern));
 
       bool handled = false;
-      final cloned = [...handlers]; // clone to avoid concurrent modification from add/remove handlers
-      for (final it in cloned) {
+      for (var i = 0; i < handlers.length; i++) {
+        if (i >= handlers.length) {
+          if (dev) logError('handlers changed during iteration');
+          break;
+        }
+        final it = handlers[i];
         if (it.$1 == pattern && it.$3()) {
           it.$2();
           handled = true;
