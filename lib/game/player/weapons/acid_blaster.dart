@@ -3,6 +3,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/projectiles/acid_blast.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -31,7 +32,7 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
 
     if (keys.a_button) {
       _cool_down += 0.4;
-      stage.add(_projectiles.acquire()..reset(_player.position));
+      stage.add(_projectiles.acquire()..reset(_player as FakeThreeDee));
       audio.play(Sound.acid_blast, volume_factor: 0.1);
     }
   }

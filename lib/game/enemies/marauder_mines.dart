@@ -7,6 +7,7 @@ import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -33,7 +34,8 @@ class MarauderMines extends Component with HasContext {
   onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1), shadows));
 }
 
-class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
+class MarauderMine extends PositionComponent
+    with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {
   MarauderMine(this.animation, Shadows shadows)
       : entity = StackedEntity.sprite(animation.frames.first.sprite, 8, shadows) {
     entity.scale_x = 1.2;
@@ -52,6 +54,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
   void set_direction(Vector2 direction) => _dir_override.setFrom(direction);
 
   void reset(Vector2 origin, {double drift = 0}) {
+    fake_height = 50;
     position.setFrom(origin);
     hit_time = 0;
     hit_points = 10;
@@ -85,7 +88,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
   void on_destroyed() {
     if (_destroyed) return;
     _destroyed = true;
-    decals.spawn(Decal.nuke_explosion, position);
+    decals.spawn3d(Decal.nuke_explosion, this);
     recycle();
 
     audio.play(Sound.explosion_hollow, volume_factor: 0.25);
@@ -188,7 +191,7 @@ class MarauderMine extends PositionComponent with CollisionCallbacks, HasContext
       position.x -= 10;
       position.y += 10 / 4;
       for (int i = 0; i < 5; i++) {
-        final d = decals.spawn(Decal.mini_explosion, position);
+        final d = decals.spawn3d(Decal.mini_explosion, this);
         d.velocity.setValues(-10.0 * i, 10 / 4 * i);
         d.time = rng.nextDoubleLimit(0.2);
       }

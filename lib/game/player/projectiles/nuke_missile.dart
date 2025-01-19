@@ -5,14 +5,16 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/enemies/marauder_shot.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/marauder_shot.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class NukeMissile extends SpriteComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
   NukeMissile(this.decals, this._emit_nuke) {
     anchor = Anchor.center;
     size.setAll(30);
@@ -24,7 +26,7 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
   }
 
   final Decals decals;
-  late final Function(Vector2) _emit_nuke;
+  late final Function(FakeThreeDee) _emit_nuke;
   late final SpriteSheet _sprites;
 
   double _speed = 100;
@@ -34,9 +36,9 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
   @override
   double get base_speed => _speed;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _speed = 100;
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x -= 25;
     y += 25 / 4;
   }
@@ -50,7 +52,7 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
     _smoke_time += dt;
     if (_smoke_time > 0.01) {
       _smoke_time = 0;
-      decals.spawn(Decal.smoke, position);
+      decals.spawn3d(Decal.smoke, this);
     }
 
     change_direction(0);
@@ -67,7 +69,7 @@ class NukeMissile extends SpriteComponent with CollisionCallbacks, Recyclable, D
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(damage: 15, intersections: intersectionPoints);
-          _emit_nuke(position);
+          _emit_nuke(this);
           recycle();
         }
       });

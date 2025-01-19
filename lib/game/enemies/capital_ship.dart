@@ -273,13 +273,13 @@ mixin _MultipleExplosionsOnExploding on EnemyEntity {
     _tmp.setFrom(position);
     _tmp.x += rng.nextDoublePM(100);
     _tmp.y += rng.nextDoublePM(100);
-    decals.spawn(Decal.smoke, _tmp);
+    decals.spawn3d(Decal.smoke, this, pos_override: _tmp);
 
     _add_explosion_time += dt;
     if (_add_explosion_time > 0.1) {
       _add_explosion_time -= 0.1;
 
-      final it = decals.spawn(Decal.nuke_explosion, position);
+      final it = decals.spawn3d(Decal.nuke_explosion, this);
       it.position.x += rng.nextDoublePM(100);
       it.position.y += rng.nextDoublePM(100);
 

@@ -6,11 +6,13 @@ import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class Swirl extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class Swirl extends SpriteComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
   Swirl() {
     anchor = Anchor.center;
     size.setAll(24);
@@ -28,8 +30,8 @@ class Swirl extends SpriteComponent with CollisionCallbacks, Recyclable, Directi
 
   double _damage = 1;
 
-  void reset(Vector2 origin) {
-    position.setFrom(origin);
+  void reset(FakeThreeDee origin) {
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
     _damage = 1;

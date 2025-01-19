@@ -5,12 +5,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 
-class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile {
+class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile {
   static const initial_damage = 6.0;
   static const start_size = 16.0;
   static const size_speed = 12.0;
@@ -38,10 +39,10 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Dir
 
   double _damage = initial_damage;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _damage = initial_damage;
     size.setAll(start_size);
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }

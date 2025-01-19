@@ -6,11 +6,13 @@ import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class IonPulse extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class IonPulse extends SpriteComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
   IonPulse() {
     anchor = Anchor.center;
     size.setAll(16);
@@ -25,10 +27,11 @@ class IonPulse extends SpriteComponent with CollisionCallbacks, Recyclable, Dire
   double _size_time = 1;
   late Vector2 _origin;
 
-  void reset(double delay, Vector2 position) {
+  void reset(double delay, FakeThreeDee origin) {
     _delay = delay;
     _size_time = 1;
     _origin = position;
+    init_fake_3d(origin);
   }
 
   @override

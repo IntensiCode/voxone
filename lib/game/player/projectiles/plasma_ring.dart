@@ -5,11 +5,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaRing extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
+class PlasmaRing extends PositionComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {
   static const _color1 = Color(0xFFa0a0ff);
   static const _color2 = Color(0xFF20209f);
 
@@ -29,8 +31,9 @@ class PlasmaRing extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   double _size = 32;
 
-  void reset(Vector2 origin) {
+  void reset(Vector2 origin, double fake_height) {
     _size = 32;
+    this.fake_height = fake_height;
     position.setFrom(origin);
   }
 

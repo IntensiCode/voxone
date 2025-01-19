@@ -6,11 +6,13 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class Nuke extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
+class Nuke extends PositionComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {
   Nuke() {
     size.setAll(250);
     add(CircleHitbox(anchor: Anchor.center, isSolid: true)..debug());
@@ -26,9 +28,9 @@ class Nuke extends PositionComponent with CollisionCallbacks, Recyclable, Direct
   @override
   double get base_speed => 0;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _life_time = 0;
-    position.setFrom(origin);
+    init_fake_3d(origin);
   }
 
   @override

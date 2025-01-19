@@ -70,7 +70,7 @@ class DecalObj extends PositionComponent with HasPaint, FakeThreeDee {
   final _smoke_size = Vector2.all(6);
 }
 
-class Decals extends Component {
+class Decals extends Component with HasContext{
   Decals() {
     for (final it in Decal.values) {
       _ready[it] = List.empty(growable: true);
@@ -82,14 +82,15 @@ class Decals extends Component {
   final _active = <Decal, List<DecalObj>>{};
   final _anim = <Decal, SpriteSheet>{};
 
-  DecalObj spawn3d(Decal decal, PositionComponent origin, {double? pos_range, double? vel_range}) {
-    if (origin is! FakeThreeDee) throw ArgumentError('origin must be FakeThreeDee');
-    final it = spawn(decal, origin.position, pos_range: pos_range, vel_range: vel_range);
-    it.fake_height = origin.fake_height;
+  DecalObj spawn3d(Decal decal, FakeThreeDee origin, {Vector2? pos_override, double? pos_range, double? vel_range}) {
+    final it = _spawn(decal, origin.position, pos_range: pos_range, vel_range: vel_range);
+    it.init_fake_3d(origin);
+    it.fake_height += 25;
+    if (pos_override != null) it.position.setFrom(pos_override);
     return it;
   }
 
-  DecalObj spawn(Decal decal, Vector2 start, {double? pos_range, double? vel_range}) {
+  DecalObj _spawn(Decal decal, Vector2 start, {double? pos_range, double? vel_range}) {
     late final DecalObj result;
 
     final instances = _active[decal] ??= List.empty(growable: true);
@@ -110,7 +111,7 @@ class Decals extends Component {
       result.randomize_position(range: pos_range ?? 8);
       result.randomize_velocity(range: vel_range ?? 8);
     }
-    add(result);
+    stage.add(result);
     return result;
   }
 

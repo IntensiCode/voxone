@@ -7,11 +7,13 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
 import 'package:voxone/game/shared/difficulty.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
+class PlasmaShot extends PositionComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {
   static const _blue1 = Color(0xFFa0a0ff);
   static const _blue2 = Color(0xFF20209f);
 
@@ -29,10 +31,10 @@ class PlasmaShot extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   double speed_buff = 0;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _start_time = 1;
     change_direction(0);
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }

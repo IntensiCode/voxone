@@ -11,6 +11,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -31,7 +32,8 @@ class _Halo extends CircleComponent with HasVisibility {
   }
 }
 
-class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
+class HomingBomb extends PositionComponent
+    with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {
   static late SpriteSheet sheet;
 
   HomingBomb() {
@@ -49,7 +51,8 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     logInfo('timeout: $_timeout');
   }
 
-  void reset() {
+  void reset(FakeThreeDee origin) {
+    init_fake_3d(origin);
     reset_hit_points_to(15);
     _dir.setZero();
     _anim_time = 0;
@@ -100,7 +103,7 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
     _life_time += dt;
     if (_life_time > _timeout) on_destroyed();
 
-    decals.spawn(Decal.smoke, position);
+    decals.spawn3d(Decal.smoke, this);
   }
 
   final _timeout = switch (difficulty) {
@@ -135,8 +138,8 @@ class HomingBomb extends PositionComponent with CollisionCallbacks, HasContext, 
   @override
   void on_destroyed() {
     recycle();
-    decals.spawn(Decal.nuke_explosion, position);
+    decals.spawn3d(Decal.nuke_explosion, this);
     audio.play(Sound.explosion, volume_factor: 0.1);
-    16.forEach((_) => decals.spawn(Decal.smoke, position));
+    16.forEach((_) => decals.spawn3d(Decal.smoke, this));
   }
 }

@@ -5,6 +5,7 @@ import 'package:voxone/game/player/projectiles/nuke_missile.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -30,9 +31,9 @@ class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
 
   @override
   void do_fire() {
-    stage.add(_missiles.acquire()..reset(_player.position));
+    stage.add(_missiles.acquire()..reset(_player as FakeThreeDee));
     audio.play(Sound.acid_blast, volume_factor: 0.5);
   }
 
-  _emit_nuke(Vector2 origin) => stage.add(_nukes.acquire()..reset(origin));
+  _emit_nuke(FakeThreeDee origin) => stage.add(_nukes.acquire()..reset(origin));
 }

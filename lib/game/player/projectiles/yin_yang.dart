@@ -7,14 +7,16 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
+import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
-class YinYang extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class YinYang extends SpriteComponent
+    with CollisionCallbacks, FakeThreeDee, Recyclable, DirectionalProjectile, HasVisibility {
   YinYang(this._stage) {
     anchor = Anchor.center;
     size.setAll(32);
@@ -32,9 +34,9 @@ class YinYang extends SpriteComponent with CollisionCallbacks, Recyclable, Direc
 
   double _anim_time = 0;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     change_direction(0);
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }

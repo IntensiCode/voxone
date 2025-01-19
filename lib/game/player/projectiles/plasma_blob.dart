@@ -4,9 +4,10 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
+import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
@@ -14,7 +15,8 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
 
-class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasPaint {
+class PlasmaBlob extends PositionComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {
   static Future<FragmentShader>? await_shader;
   static FragmentShader? _shader;
 
@@ -35,7 +37,7 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
     _shade.isAntiAlias = false;
   }
 
-  final Function(Vector2) _emit_plasma_ring;
+  final Function(Vector2, double) _emit_plasma_ring;
 
   final _shade = Paint();
 
@@ -44,11 +46,11 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
 
   double _anim_time = rng.nextDoubleLimit(10);
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _anim_time = rng.nextDoubleLimit(10);
     _img?.dispose();
     _img = null;
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }
@@ -94,7 +96,7 @@ class PlasmaBlob extends PositionComponent with CollisionCallbacks, Recyclable, 
         if (it.susceptible) {
           it.on_hit(damage: 5, intersections: intersectionPoints);
           recycle();
-          _emit_plasma_ring(intersectionPoints.first);
+          _emit_plasma_ring(intersectionPoints.first, fake_height);
         }
       });
     }

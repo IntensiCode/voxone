@@ -6,13 +6,15 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
-class MarauderShot extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, EnemyHitPoints, Recyclable {
+class MarauderShot extends PositionComponent
+    with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {
   static const _inner = Color(0xFFa0ffa0);
   static const _outer = Color(0xFF209f20);
   static const _core = Color(0xFFffffff);

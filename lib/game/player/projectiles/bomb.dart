@@ -5,11 +5,13 @@ import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class Bomb extends SpriteComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
   Bomb() {
     anchor = Anchor.center;
     size.setAll(10);
@@ -25,9 +27,9 @@ class Bomb extends SpriteComponent with CollisionCallbacks, Recyclable, Directio
   @override
   double get base_speed => 200;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _life_time = 0;
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }

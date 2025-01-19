@@ -3,13 +3,15 @@ import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
+import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 
-class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, DirectionalProjectile, HasVisibility {
+class ClusterBomb extends SpriteComponent
+    with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
   ClusterBomb(this._emit_bombs) {
     anchor = Anchor.center;
     size.setAll(20);
@@ -18,7 +20,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
     add(CircleHitbox(radius: 10)..debug());
   }
 
-  late final Function(Vector2) _emit_bombs;
+  late final Function(FakeThreeDee) _emit_bombs;
   late final SpriteSheet _sprites;
 
   double _life_time = 0;
@@ -26,9 +28,9 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
   @override
   double get base_speed => 200;
 
-  void reset(Vector2 origin) {
+  void reset(FakeThreeDee origin) {
     _life_time = 0;
-    position.setFrom(origin);
+    init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
   }
@@ -43,7 +45,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
     sprite = _sprites.getSprite(sprite_index, 0);
 
     if (_life_time > 2) {
-      _emit_bombs(position);
+      _emit_bombs(this);
       recycle();
     }
   }
@@ -56,7 +58,7 @@ class ClusterBomb extends SpriteComponent with CollisionCallbacks, Recyclable, D
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(damage: 15, intersections: intersectionPoints);
-          _emit_bombs(position);
+          _emit_bombs(this);
           recycle();
         }
       });

@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
-mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Target {
+mixin EnemyHitPoints on Component, HasContext implements Hostile, FakeThreeDee, Integrity, Target {
   bool mini_explosions_on_hit = true;
 
   double hit_time = 0;
@@ -20,7 +20,7 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
   @override
   bool get susceptible;
 
-  NotifyingVector2 get position;
+  // NotifyingVector2 get position;
 
   set highlight_mode(HighlightMode mode);
 
@@ -39,7 +39,7 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, Integrity, Tar
     remaining = max(0, remaining - damage);
     if (remaining == 0) on_destroyed();
     final p = intersections?.firstOrNull ?? position;
-    if (mini_explosions_on_hit) decals.spawn(Decal.mini_explosion, p);
+    if (mini_explosions_on_hit) decals.spawn3d(Decal.mini_explosion, this, pos_override: p);
     hit_time = (hit_time + 0.05).clamp(0.0, 0.5);
   }
 

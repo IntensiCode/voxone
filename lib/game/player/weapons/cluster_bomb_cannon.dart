@@ -6,6 +6,7 @@ import 'package:voxone/game/player/projectiles/bomb.dart';
 import 'package:voxone/game/player/projectiles/cluster_bomb.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -28,17 +29,18 @@ class ClusterBombCannon extends Component with HasContext, SecondaryWeapon {
 
   @override
   void do_fire() {
-    stage.add(_primary.acquire()..reset(_player.position));
+    stage.add(_primary.acquire()..reset(_player as FakeThreeDee));
     audio.play(Sound.shot, volume_factor: 0.5);
   }
 
-  _emit_bombs(Vector2 origin) {
+  _emit_bombs(FakeThreeDee origin) {
     final count = 24;
     for (var i = 0; i < count; i++) {
       final angle = i * 2 * pi / count;
       final offset = Vector2(cos(angle), sin(angle)) * 5;
       stage.add(_secondary.acquire()
-        ..reset(origin + offset)
+        ..reset(origin)
+        ..position.add(offset)
         ..set_direction(offset));
     }
   }

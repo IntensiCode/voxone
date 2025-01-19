@@ -6,6 +6,7 @@ import 'package:voxone/game/player/projectiles/plasma_shot.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -49,7 +50,7 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
       for (var i = 0; i < count; i++) {
         final d = pi / 48 * (i - (count - 1) / 2);
         stage.add(_projectiles.acquire()
-          ..reset(_player.position)
+          ..reset(_player as FakeThreeDee)
           ..speed_buff = -d.abs() * 250
           ..change_direction(d));
       }

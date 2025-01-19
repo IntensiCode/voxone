@@ -7,6 +7,7 @@ import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/extra_id.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/stacked_entity.dart';
@@ -30,11 +31,15 @@ class Extras extends Component with HasContext {
 
   Sprite icon_for(ExtraId which) => _sheet.getSpriteById(which.sheet_index);
 
-  void spawn(Vector2 position, {required Set<ExtraId> choices, int? index, int? count}) {
+  void spawn3d(FakeThreeDee origin, {required Set<ExtraId> choices, int? index, int? count}) {
+    spawn(origin.position, origin.fake_height, choices: choices, index: index, count: count);
+  }
+
+  void spawn(Vector2 origin, double fake_height, {required Set<ExtraId> choices, int? index, int? count}) {
     final pick = _pick_power_up(choices);
     if (pick == null) return;
 
-    final extra = stage.added(_pool.acquire()..reset(pick, position));
+    final extra = stage.added(_pool.acquire()..reset(pick, origin, fake_height));
     if (index != null && count != null && count > 1) {
       final distance = count * 6;
       final angle = 2 * pi * index / count;
@@ -75,7 +80,7 @@ class Extras extends Component with HasContext {
   }
 }
 
-class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, Recyclable {
+class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, Recyclable , FakeThreeDee{
   _Extra(this.sprites, Shadows shadows) : entity = StackedEntity.sprite(sprites[ExtraId.values.first]!, 16, shadows) {
     // priority = 0;
 
@@ -97,8 +102,9 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
 
   double _anim_time = rng.nextDouble();
 
-  void reset(ExtraId which, Vector2 origin) {
+  void reset(ExtraId which, Vector2 origin, double fake_height) {
     this.which = which;
+    this.fake_height = fake_height;
     position.setFrom(origin);
     _anim_time = rng.nextDouble();
 
@@ -125,7 +131,7 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     other.onTraits<Friendly>((it) {
-      decals.spawn(Decal.teleport, position);
+      decals.spawn3d(Decal.teleport, this);
       player.on_collect_extra(which);
       recycle();
     });

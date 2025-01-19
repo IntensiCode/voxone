@@ -3,6 +3,7 @@ import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/game/player/projectiles/swirl.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -31,7 +32,7 @@ class SwirlGun extends Component with HasContext, PrimaryWeapon {
 
     if (keys.a_button) {
       _cool_down += 0.4;
-      stage.add(_projectiles.acquire()..reset(_player.position));
+      stage.add(_projectiles.acquire()..reset(_player as FakeThreeDee));
       if (_skip_sound == 0) {
         audio.play(Sound.swirl, volume_factor: 0.1);
         _skip_sound = 2;

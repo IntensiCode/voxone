@@ -80,13 +80,7 @@ class ReconWave extends GameScriptComponent with EnemyWave, HasContext {
   double _spawn_time = 0.0;
 
   late final _passes = [
-    // (0, 24, 0.3, () => SwirlingRecon(this)),
-    // (0, 1, 0.3, () => ReconMech(this)),
-    (0, 16, 0.75, () => ReconMech(this)),
-    // (4, 16, 0.3, () => ReconMech(this)),
-    // (5, 8, 0.3, () => PassingRanger(this)),
-    // (15, 8, 0.3, () => CirclingMarauder(this)..x = 1000),
-    // (27, 1, 0.0, () => MarauderCaptain(this)..target_position.setValues(game_center.x + 80, game_center.y - 20)),
-    // (28, 8, 0.3, () => CirclingMarauder(this)..x = 1000),
+    (0, 24, 0.3, () => SwirlingRecon(this)),
+    (4, 16, 0.75, () => ReconMech(this)),
   ];
 }

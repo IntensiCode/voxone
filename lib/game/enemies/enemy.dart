@@ -112,6 +112,7 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
     super.onLoad();
     createEntity();
     position.setFrom(target_position);
+    fake_height = 50;
   }
 
   void createEntity();
@@ -203,6 +204,8 @@ mixin CreateMarauderEntity on EnemyEntity {
   void createEntity() {
     reset_hit_points_to(dev ? 3 : 25);
 
+    fake_height = 50;
+
     size.setAll(180);
 
     entity = StackedEntity('entities/transstellar.png', 14, shadows);
@@ -230,6 +233,7 @@ mixin SweepInOnIncoming on EnemyEntity {
       state = EnemyState.active;
     }
 
+    fake_height = 50 + 150 * (1 - incoming_time);
     base_scale = 0.2;
     descale = 1000;
     scale.setAll((1 - incoming_time) * 0.5 + 0.2);
@@ -441,10 +445,10 @@ mixin SpawnExtrasOnExploding on EnemyEntity {
     final all_count = required.length + random_count;
     var index = 0;
     for (final e in required) {
-      extras.spawn(position, choices: {e}, index: index++, count: all_count);
+      extras.spawn3d(this, choices: {e}, index: index++, count: all_count);
     }
     random_count.forEach((_) {
-      extras.spawn(position, choices: allowed_random_extras, index: index++, count: all_count);
+      extras.spawn3d(this, choices: allowed_random_extras, index: index++, count: all_count);
     });
   }
 }

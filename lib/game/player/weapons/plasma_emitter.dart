@@ -4,6 +4,7 @@ import 'package:voxone/game/player/projectiles/plasma_blob.dart';
 import 'package:voxone/game/player/projectiles/plasma_ring.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -26,9 +27,9 @@ class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
 
   @override
   void do_fire() {
-    stage.add(_blobs.acquire()..reset(_player.position));
+    stage.add(_blobs.acquire()..reset(_player as FakeThreeDee));
     audio.play(Sound.acid_blast, volume_factor: 0.5);
   }
 
-  _emit_plasma_ring(Vector2 origin) => stage.add(_rings.acquire()..reset(origin));
+  _emit_plasma_ring(Vector2 origin, double fake_height) => stage.add(_rings.acquire()..reset(origin, fake_height));
 }
