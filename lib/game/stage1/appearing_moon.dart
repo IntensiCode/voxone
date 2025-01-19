@@ -8,6 +8,10 @@ import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
 class AppearingMoon extends RectangleComponent {
+  AppearingMoon() : super(anchor: Anchor.topLeft) {
+    size.setFrom(game_size);
+  }
+
   late FragmentShader _shader;
 
   double _anim_time = 0;
@@ -16,9 +20,12 @@ class AppearingMoon extends RectangleComponent {
 
   bool finish_zoom = false;
   double _finish_time = 0;
+  bool _fixed = false;
 
-  AppearingMoon() : super(anchor: Anchor.topLeft) {
-    size.setFrom(game_size);
+  void fix_at(double anim_time, double grow_time) {
+    _anim_time = anim_time;
+    _time = grow_time;
+    _fixed = true;
   }
 
   @override
@@ -36,6 +43,8 @@ class AppearingMoon extends RectangleComponent {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (_fixed) return;
 
     _anim_time += dt;
     _time = min(grow_time, _time + dt);

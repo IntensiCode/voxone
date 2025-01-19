@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/input/game_keys.dart';
+import 'package:voxone/input/keys.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
@@ -52,7 +52,7 @@ enum SoftKey {
   right,
 }
 
-class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasGameKeys {
+class SoftKeys extends PositionComponent with AutoDispose {
   static SoftKeys plain({
     String? left,
     String? right,
@@ -130,6 +130,30 @@ class SoftKeys extends PositionComponent with AutoDispose, KeyboardHandler, HasG
         () => on_tap(SoftKey.right),
       )..set_label(right, image_size));
     }
+  }
+
+  Keys? _keys;
+  GameKey? _left;
+  GameKey? _right;
+
+  void withGameKeys(Keys keys, GameKey left, [GameKey? right]) {
+    _keys = keys;
+    _left = left;
+    _right = right;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    final k = _keys;
+    if (k == null) return;
+
+    final l = _left;
+    if (l != null && k.check_and_consume(l)) on_tap(SoftKey.left);
+
+    final r = _right;
+    if (r != null && k.check_and_consume(r)) on_tap(SoftKey.right);
   }
 }
 

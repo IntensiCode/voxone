@@ -3,21 +3,22 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_menu.dart';
-import 'package:voxone/input/select_game_pad.dart';
-import 'package:voxone/video_menu.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/credits.dart';
 import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2/stage2.dart';
 import 'package:voxone/game/stage3.dart';
+import 'package:voxone/input/controls.dart';
+import 'package:voxone/input/select_game_pad.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/title_screen.dart';
-import 'package:voxone/input/controls.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/video_menu.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World
@@ -38,7 +39,7 @@ class MainController extends World
   @override
   void onMount() {
     if (dev) {
-      showScreen(Screen.stage1);
+      showScreen(Screen.title);
     } else {
       add(WebPlayScreen());
     }
@@ -144,6 +145,7 @@ class MainController extends World
   Component _makeScreen(Screen it) => switch (it) {
         Screen.audio => AudioMenu(),
         Screen.controls => Controls(),
+        Screen.credits => Credits(),
         Screen.select_game_pad => SelectGamePad(),
         Screen.stage1 => Stage1(),
         Screen.stage2 => Stage2(),

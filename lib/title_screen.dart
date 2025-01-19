@@ -24,6 +24,7 @@ import 'package:voxone/util/messaging.dart';
 import 'package:voxone/util/stacked_sprite.dart';
 
 enum _TitleButtons {
+  credits,
   audio,
   video,
   controls,
@@ -32,17 +33,15 @@ enum _TitleButtons {
 
 final _credits = [
   'A Psychocell Game',
-  'An IntensiCode Production',
-  'Made with Flame Engine',
+  'An IntensiCode Presentation',
+  'A BerlinFactor Production',
+  '',
   'Powered by Flutter',
+  'Made with Flame Engine',
   '',
   'Music by suno.com',
-  'Voice Samples by elevenlabs.io',
   'Voxel Models by maxparata.itch.io',
   'Star Nest Shader by Pablo Roman Andrioli',
-  '2D Art by itch.io',
-  '',
-  'Code by The.French.DJ   [IntensiCode]',
 ];
 
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
@@ -64,7 +63,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
     for (final (idx, it) in _credits.reversed.indexed) {
-      textXY(it, 784, 464 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
+      textXY(it, 784, 426 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
     }
 
     textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
@@ -80,12 +79,20 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       spacing: 2,
       fixed_position: Vector2(16, game_height - 16),
       fixed_anchor: Anchor.bottomLeft,
-    )
-      ..addEntry(_TitleButtons.audio, 'Audio')
-      ..addEntry(_TitleButtons.video, 'Video')
-      ..addEntry(_TitleButtons.controls, 'Controls')
-      ..addEntry(_TitleButtons.play, 'Play')
-      ..preselectEntry(_preselected ?? _TitleButtons.play));
+    ));
+
+    final c = menu.addEntry(_TitleButtons.credits, 'Full Credits');
+    c.mounted.then((_) {
+      c.x = game_width - 32;
+      c.y += 128;
+      // c.y = game_height - 16;
+      c.anchor = Anchor.bottomRight;
+    });
+    menu.addEntry(_TitleButtons.audio, 'Audio');
+    menu.addEntry(_TitleButtons.video, 'Video');
+    menu.addEntry(_TitleButtons.controls, 'Controls');
+    menu.addEntry(_TitleButtons.play, 'Play');
+    menu.preselectEntry(_preselected ?? _TitleButtons.play);
 
     menu.onPreselected = (id) => _preselected = id;
 
@@ -122,6 +129,9 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   void _selected(_TitleButtons id) {
     _preselected = id;
     switch (id) {
+      case _TitleButtons.credits:
+        showScreen(Screen.credits);
+        break;
       case _TitleButtons.audio:
         pushScreen(Screen.audio);
         break;
