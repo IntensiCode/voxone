@@ -4,7 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/input/select_game_pad.dart';
-import 'package:voxone/aural/video_menu.dart';
+import 'package:voxone/video_menu.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/configuration.dart';
 import 'package:voxone/game/shared/messages.dart';
