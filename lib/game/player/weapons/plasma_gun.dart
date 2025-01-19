@@ -10,8 +10,8 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 
-class TriplePlasmaGun extends Component with HasContext, PrimaryWeapon {
-  TriplePlasmaGun(this._player);
+class PlasmaGun extends Component with HasContext, PrimaryWeapon {
+  PlasmaGun(this._player);
 
   final Player _player;
 

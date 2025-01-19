@@ -16,7 +16,7 @@ import 'package:voxone/game/player/weapons/plasma_emitter.dart';
 import 'package:voxone/game/player/player_strafe.dart';
 import 'package:voxone/game/player/weapons/smart_bomb.dart';
 import 'package:voxone/game/player/weapons/swirl_gun.dart';
-import 'package:voxone/game/player/weapons/triple_plasma_gun.dart';
+import 'package:voxone/game/player/weapons/plasma_gun.dart';
 import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/decals.dart';
@@ -347,7 +347,7 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
         weapons.switch_secondary_to(SmartBomb);
         break;
       case ExtraId.triple_plasma:
-        final upgrade = weapons.switch_primary_to(TriplePlasmaGun);
+        final upgrade = weapons.switch_primary_to(PlasmaGun);
         info('Triple Plasma', title: upgrade ? 'Primary Weapon' : null, hud: true);
         break;
       case ExtraId.yin_yang:

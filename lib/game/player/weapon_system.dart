@@ -12,7 +12,7 @@ import 'package:voxone/game/player/weapons/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/weapons/plasma_emitter.dart';
 import 'package:voxone/game/player/weapons/smart_bomb.dart';
 import 'package:voxone/game/player/weapons/swirl_gun.dart';
-import 'package:voxone/game/player/weapons/triple_plasma_gun.dart';
+import 'package:voxone/game/player/weapons/plasma_gun.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -47,7 +47,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   final _secondaries = <SecondaryWeapon, int>{};
 
   bool switch_primary_to(Type type, {bool force = false}) {
-    if (type == TriplePlasmaGun) tpg.boost_power();
+    if (type == PlasmaGun) tpg.boost_power();
 
     final weapon = _primaries.keys.firstWhere((it) => it.runtimeType == type);
     if (!force && _primaries[weapon] == true) return false;
@@ -99,13 +99,13 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     }
   }
 
-  late TriplePlasmaGun tpg;
+  late PlasmaGun tpg;
 
   @override
   void onMount() {
     super.onMount();
 
-    _primaries[tpg = TriplePlasmaGun(player)] = true;
+    _primaries[tpg = PlasmaGun(player)] = true;
     _primaries[AcidBlaster(player)] = false;
     _primaries[IonPulseGun(player)] = false;
     _primaries[SwirlGun(player)] = false;
