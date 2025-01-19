@@ -15,6 +15,7 @@ import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
+import 'package:voxone/ui/basic_menu_button.dart';
 import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/bitmap_text.dart';
@@ -66,33 +67,33 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       textXY(it, 784, 426 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
     }
 
-    textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
-    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    textXY('< Difficulty >', 280, 480 - 28, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
 
-    textXY(video.name, 280, 480 - 76, anchor: Anchor.bottomCenter, scale: 1);
+    textXY(video.name, 280, 480 - 76 - 10, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
       button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
-      spacing: 2,
+      spacing: 8,
       fixed_position: Vector2(16, game_height - 16),
       fixed_anchor: Anchor.bottomLeft,
     ));
 
     final c = menu.addEntry(_TitleButtons.credits, 'Full Credits');
-    c.mounted.then((_) {
-      c.x = game_width - 32;
-      c.y += 128;
-      // c.y = game_height - 16;
-      c.anchor = Anchor.bottomRight;
-    });
     menu.addEntry(_TitleButtons.audio, 'Audio');
     menu.addEntry(_TitleButtons.video, 'Video');
     menu.addEntry(_TitleButtons.controls, 'Controls');
     menu.addEntry(_TitleButtons.play, 'Play');
     menu.preselectEntry(_preselected ?? _TitleButtons.play);
+    menu.mounted.then((_) {
+      c.x = game_width - 32;
+      c.y += 128 + 24;
+      c.anchor = Anchor.bottomRight;
+      menu.children.whereType<BasicMenuButton>().forEach((it) => it.y += 8);
+    });
 
     menu.onPreselected = (id) => _preselected = id;
 
@@ -172,7 +173,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     final index = (values.indexOf(difficulty) + add + values.length) % values.length;
     difficulty = values[index];
     _difficulty?.removeFromParent();
-    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty?.fadeInDeep();
     sendMessage(UpdateDifficulty());
   }
