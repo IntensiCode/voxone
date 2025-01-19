@@ -30,6 +30,7 @@ mixin DirectionalProjectile on PositionComponent, Recyclable {
     _tmp.setFrom(_direction);
     _tmp.scale(dt);
     position.add(_tmp);
+    priority = position.y.toInt() + 50; // player fake height is fixed for now - KISS for now
 
     if (x > game_width + 100) recycle();
   }
