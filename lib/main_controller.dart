@@ -44,14 +44,14 @@ class MainController extends World
     }
 
     if (dev) {
-      onKeys(['<A-d>', '='], () {
+      onKeys(['<A-d>', '='], (_) {
         debug = !debug;
         sendMessage(ShowInfoText(title: 'Cheat', text: 'Hitbox Debug Mode: $debug'));
       });
 
-      onKeys(['<A-a>', '8'], () => pushScreen(Screen.audio));
-      onKeys(['<A-c>', '9'], () => pushScreen(Screen.controls));
-      onKeys(['<A-t>', '0'], () => showScreen(Screen.title));
+      onKeys(['<A-a>', '8'], (_) => pushScreen(Screen.audio));
+      onKeys(['<A-c>', '9'], (_) => pushScreen(Screen.controls));
+      onKeys(['<A-t>', '0'], (_) => showScreen(Screen.title));
     }
   }
 

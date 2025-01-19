@@ -148,10 +148,13 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     onKey('<', () => _change_difficulty(-1));
     onKey('>', () => _change_difficulty(1));
 
-    onKey('t', () => _check_cheat('t'));
-    onKey('f', () => _check_cheat('f'));
-    onKey('d', () => _check_cheat('d'));
-    onKey('j', () => _check_cheat('j'));
+    onKeys(['t', 'f', 'd', 'j'], (it) {
+      if (it == 't' || it == 'f' || it == 'd' || it == 'j') {
+        if (it == 'd' && !_cheat.endsWith('tf')) _keys.onPressed(GameKey.right);
+        if (it == 'j' && !_cheat.endsWith('tfd')) _keys.onPressed(GameKey.down);
+        _check_cheat(it);
+      }
+    });
   }
 
   void _change_difficulty(int add) {

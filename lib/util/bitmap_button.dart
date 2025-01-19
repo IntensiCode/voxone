@@ -93,7 +93,7 @@ class BitmapButton extends PositionComponent
   @override
   void onMount() {
     super.onMount();
-    onKeys(shortcuts, () => onTap());
+    onKeys(shortcuts, (_) => onTap());
   }
 
   double? _opacity;

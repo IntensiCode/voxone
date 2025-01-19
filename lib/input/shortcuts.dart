@@ -23,8 +23,8 @@ mixin HasAutoDisposeShortcuts on Component, AutoDispose {
     );
   }
 
-  void onKeys(List<String> patterns, void Function() callback) {
-    patterns.forEach((it) => onKey(it, callback));
+  void onKeys(List<String> patterns, void Function(String) callback) {
+    patterns.forEach((it) => onKey(it, () => callback(it)));
   }
 }
 
