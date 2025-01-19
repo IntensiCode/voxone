@@ -32,13 +32,6 @@ enum _TitleButtons {
 }
 
 final _credits = [
-  'A Psychocell Game',
-  'An IntensiCode Presentation',
-  'A BerlinFactor Production',
-  '',
-  'Powered by Flutter',
-  'Made with Flame Engine',
-  '',
   'Music by suno.com',
   'Voxel Models by maxparata.itch.io',
   'Star Nest Shader by Pablo Roman Andrioli',
@@ -63,31 +56,25 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
     for (final (idx, it) in _credits.reversed.indexed) {
-      textXY(it, 784, 426 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
+      textXY(it, 784, 466 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
     }
 
-    textXY('< Difficulty >', 280, 480 - 30, anchor: Anchor.bottomCenter, scale: 1);
-    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    textXY('< Difficulty >', 280, 480 - 28, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
 
-    textXY(video.name, 280, 480 - 76, anchor: Anchor.bottomCenter, scale: 1);
+    textXY(video.name, 280, 480 - 76 - 10, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
       button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
-      spacing: 2,
-      fixed_position: Vector2(16, game_height - 16),
+      spacing: 8,
+      fixed_position: Vector2(16, game_height - 8),
       fixed_anchor: Anchor.bottomLeft,
     ));
 
-    final c = menu.addEntry(_TitleButtons.credits, 'Full Credits');
-    c.mounted.then((_) {
-      c.x = game_width - 32;
-      c.y += 128;
-      // c.y = game_height - 16;
-      c.anchor = Anchor.bottomRight;
-    });
+    final c = menu.addEntry(_TitleButtons.credits, 'Credits');
     menu.addEntry(_TitleButtons.audio, 'Audio');
     menu.addEntry(_TitleButtons.video, 'Video');
     menu.addEntry(_TitleButtons.controls, 'Controls');
@@ -172,7 +159,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     final index = (values.indexOf(difficulty) + add + values.length) % values.length;
     difficulty = values[index];
     _difficulty?.removeFromParent();
-    _difficulty = textXY(difficulty.name, 280, 480 - 18, anchor: Anchor.bottomCenter, scale: 1);
+    _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty?.fadeInDeep();
     sendMessage(UpdateDifficulty());
   }
