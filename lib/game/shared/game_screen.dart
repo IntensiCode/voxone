@@ -47,7 +47,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   void onMount() {
     super.onMount();
 
-    onMessage<UpdateDifficulty>((_) => _update_time_scale());
+    // onMessage<UpdateDifficulty>((_) => _update_time_scale());
     _update_time_scale();
 
     if (cheat) {

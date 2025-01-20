@@ -161,7 +161,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     _difficulty?.removeFromParent();
     _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty?.fadeInDeep();
-    sendMessage(UpdateDifficulty());
+    // sendMessage(UpdateDifficulty());
   }
 
   void _check_cheat(String add) {
