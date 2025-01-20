@@ -66,10 +66,10 @@ mixin HasGamePads {
   void rumble([int duration = 100]) {
     final it = window.navigator.getGamepads().toDart;
     if (it.isEmpty) return;
-    final gp = it[0];
-    if (gp == null) return;
-    final va = gp.getProperty('vibrationActuator'.toJS);
-    if (va != null) _rumble_va(va, duration);
+    for (final gp in it) {
+      final va = gp?.getProperty('vibrationActuator'.toJS);
+      if (va != null) _rumble_va(va, duration);
+    }
   }
 
   void _rumble_va(JSAny va, int duration) {

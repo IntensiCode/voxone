@@ -85,7 +85,6 @@ class ZaxxonPlayer extends PositionComponent
       keys.rumble(200);
     } else if (integrity == 0) {
       on_destroyed();
-      keys.rumble(500);
     } else {
       _update_sound_hint();
       if (amount >= 0.1) keys.rumble();
@@ -100,6 +99,7 @@ class ZaxxonPlayer extends PositionComponent
     audio.play(Sound.explosion);
     add(explosions.spawn(_entity));
     _shield.removeFromParent();
+    keys.rumble(500);
   }
 
   @override
