@@ -200,7 +200,7 @@ class ZaxxonPlayer extends PositionComponent
       position.y += 50 * dt;
 
       if ((_state_time % 0.01) < dt) {
-        decals.spawn3d(Decal.smoke, this, pos_range: 16);
+        decals.spawn3d(Decal.smoke, this, pos_range: 8, vel_range: 32);
       }
       fake_height = 50 * (1 - _state_time).clamp(0, 1);
     }

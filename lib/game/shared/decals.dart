@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
@@ -70,7 +71,7 @@ class DecalObj extends PositionComponent with HasPaint, FakeThreeDee {
   final _smoke_size = Vector2.all(6);
 }
 
-class Decals extends Component with HasContext{
+class Decals extends Component with HasContext {
   Decals() {
     for (final it in Decal.values) {
       _ready[it] = List.empty(growable: true);
@@ -83,10 +84,9 @@ class Decals extends Component with HasContext{
   final _anim = <Decal, SpriteSheet>{};
 
   DecalObj spawn3d(Decal decal, FakeThreeDee origin, {Vector2? pos_override, double? pos_range, double? vel_range}) {
-    final it = _spawn(decal, origin.position, pos_range: pos_range, vel_range: vel_range);
-    it.init_fake_3d(origin);
+    final it = _spawn(decal, pos_override ?? origin.position, pos_range: pos_range, vel_range: vel_range);
+    it.fake_height = origin.fake_height;
     it.fake_height += 25;
-    if (pos_override != null) it.position.setFrom(pos_override);
     return it;
   }
 
