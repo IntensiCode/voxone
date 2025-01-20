@@ -19,12 +19,14 @@ enum Sound {
   explosion,
   explosion_hollow,
   game_over,
+  homing,
   incoming,
   plasma,
   pulse,
   shot,
   swirl,
   teleport,
+  trigger,
   ;
 }
 

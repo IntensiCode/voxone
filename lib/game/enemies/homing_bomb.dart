@@ -57,13 +57,14 @@ class HomingBomb extends PositionComponent
     _dir.setZero();
     _anim_time = 0;
     _life_time = 0;
+    _tick_time = 0;
   }
 
   final _dir = Vector2.zero();
 
   double _anim_time = 0;
-
   double _life_time = 0;
+  double _tick_time = 0;
 
   @override
   bool get susceptible => true;
@@ -77,6 +78,7 @@ class HomingBomb extends PositionComponent
     _dir.setFrom(player.position - position);
     _dir.normalize();
     _dir.rotate(rng.nextBool() ? -pi / 8 : pi / 8);
+    audio.play(Sound.homing, volume_factor: 0.8);
   }
 
   final _tmp = Vector2.zero();
@@ -104,6 +106,13 @@ class HomingBomb extends PositionComponent
     if (_life_time > _timeout) on_destroyed();
 
     decals.spawn3d(Decal.smoke, this);
+
+    _tick_time += dt;
+    if (_tick_time > 0.4) {
+      _tick_time -= 0.4;
+      _tick_time += _life_time / 32;
+      audio.play(Sound.homing, volume_factor: 0.8);
+    }
   }
 
   final _timeout = switch (difficulty) {
@@ -131,6 +140,7 @@ class HomingBomb extends PositionComponent
         };
         it.on_hit(damage: damage * integrity_in_percent);
         on_destroyed();
+        audio.play(Sound.trigger, volume_factor: 0.8);
       });
     }
   }
