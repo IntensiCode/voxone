@@ -26,9 +26,16 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     return _shaders['hex_shield.frag'] ??= await loadShader('hex_shield.frag');
   }
 
-  DeflectorShield(Target target, {String shader_name = 'plasma_shield.frag'}) : _shader_name = shader_name {
-    size.setAll(96);
-    add(CircleHitbox(anchor: Anchor.center, isSolid: true)..debug());
+  DeflectorShield(Target target, {required Vector2 source_size, String shader_name = 'plasma_shield.frag'})
+      : _shader_name = shader_name {
+    size = source_size;
+    anchor = Anchor.center;
+    anchor_to_parent();
+
+    // the shader does not fill the entire area. hence the 0.85:
+    final shader_factor = shader_name == 'plasma_shield.frag' ? 0.875 : 0.95;
+    add(CircleHitbox(radius: size.x / 2 * shader_factor, anchor: Anchor.center, isSolid: true)..anchor_to_parent());
+
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
     priority = -1;
@@ -86,7 +93,6 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   }
 
   final _rect = MutRect(0, 0, 0, 0);
-  Offset? _offset;
 
   @override
   void render(Canvas canvas) {
@@ -100,8 +106,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
       canvas.drawRect(_rect, _paint);
     });
 
-    _offset ??= Offset(-size.x / 2, -size.y / 2);
-    canvas.drawImage(image, _offset!, paint);
+    canvas.drawImage(image, Offset.zero, paint);
     image.dispose();
   }
 

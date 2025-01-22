@@ -7,34 +7,32 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/core/vox.dart';
+import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/player/weapons/acid_blaster.dart';
 import 'package:voxone/game/player/weapons/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/weapons/ion_pulse_gun.dart';
 import 'package:voxone/game/player/weapons/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/weapons/plasma_emitter.dart';
-import 'package:voxone/game/player/player_strafe.dart';
+import 'package:voxone/game/player/weapons/plasma_gun.dart';
 import 'package:voxone/game/player/weapons/smart_bomb.dart';
 import 'package:voxone/game/player/weapons/swirl_gun.dart';
-import 'package:voxone/game/player/weapons/plasma_gun.dart';
-import 'package:voxone/game/player/weapon_system.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/game_phase.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/player_state.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 enum _SoundHint {
   danger,
@@ -42,7 +40,7 @@ enum _SoundHint {
   warning,
 }
 
-class ZaxxonPlayer extends PositionComponent
+class ZaxxonPlayer extends VoxelSprite
     with
         AutoDispose,
         HasAutoDisposeShortcuts,
@@ -52,8 +50,7 @@ class ZaxxonPlayer extends PositionComponent
         Target,
         _CreateEntityOnLoad,
         _CollectExtras,
-        PlayerStrafe,
-        FakeThreeDee
+        PlayerStrafe
     implements Friendly {
   //
   PlayerState _state = PlayerState.incoming;
@@ -97,7 +94,7 @@ class ZaxxonPlayer extends PositionComponent
     _state_time = 0;
     state = PlayerState.exploding;
     audio.play(Sound.explosion);
-    add(explosions.spawn(_entity));
+    add(explosions.spawn(this));
     _shield.removeFromParent();
     keys.rumble(500);
   }
@@ -106,7 +103,6 @@ class ZaxxonPlayer extends PositionComponent
   void onMount() {
     super.onMount();
 
-    linked_entity = _entity;
     fake_height = 50;
 
     if (dev || cheat) {
@@ -159,7 +155,7 @@ class ZaxxonPlayer extends PositionComponent
         break;
 
       case PlayerState.leaving:
-        _entity.rot_z += 0.1;
+        rot_z += 0.1;
         position.add(_leave_speed * dt);
         _leave_speed.add(_leave_speed * dt / 1.1);
         if (position.x > 900) removeFromParent();
@@ -189,13 +185,13 @@ class ZaxxonPlayer extends PositionComponent
       removeFromParent();
       sendMessage(PlayerDestroyed());
     } else if (_state_time > 1) {
-      if (_entity.sprite.isVisible) audio.play(Sound.explosion_hollow);
-      _entity.sprite.isVisible = false;
+      if (isVisible) audio.play(Sound.explosion_hollow);
+      isVisible = false;
     } else {
-      _entity.sprite.opacity = 1 - _state_time;
-      _entity.rot_x += 0.01;
-      _entity.rot_y -= 0.01;
-      _entity.rot_z += 0.03;
+      opacity = 1 - _state_time;
+      rot_x += 0.01;
+      rot_y -= 0.01;
+      rot_z += 0.03;
       position.x += 100 * dt;
       position.y += 50 * dt;
 
@@ -209,61 +205,65 @@ class ZaxxonPlayer extends PositionComponent
   @override
   void set_strafe(double tilt, double move_offset) {
     super.set_strafe(tilt, move_offset);
-    _entity.rot_x = tilt;
+    rot_x = tilt;
     position.setValues(100 + move_offset / 4, 280 + move_offset);
   }
 }
 
-mixin _CreateEntityOnLoad on PositionComponent, HasContext, HasTraits, Player, Target {
-  late final StackedEntity _entity;
+mixin _CreateEntityOnLoad on VoxelSprite, HasContext, HasTraits, Player, Target {
+  static const _size = 80.0;
+
   late final DeflectorShield _shield;
 
   late final weapons = added(WeaponSystem(this));
 
   @override
+  void onRemove() {
+    super.onRemove();
+    dispose_sprite();
+  }
+
+  @override
   Future onLoad() async {
+    set_vox_source('interstellar_runner.vx', blurred_argb32: [0xffff3200]);
+
+    shadows.add(create_linked_shadow());
+
     super.onLoad();
 
     addTrait(weapons);
 
-    _entity = await vox_entity('interstellar_runner.vx', shadows, blurred_argb32: [0xffff3200]);
-    _entity.sprite.force_render = true;
+    force_render = true;
 
-    _entity.position.y -= 20;
-    _entity.rot_x = -0.95;
-    _entity.rot_y = 1.8;
-    _entity.rot_z = -0.2;
-    _entity.scale_x = 1.0;
-    _entity.scale_y = 2.5;
-    _entity.scale_z = 1.0;
-    _entity.size.setAll(256);
+    rot_x = -0.95;
+    rot_y = 1.8;
+    rot_z = -0.2;
+    scale_x = 1.2;
+    scale_y = 2.2;
+    scale_z = 1.2;
 
-    size.setAll(256);
-    scale.setAll(0.25);
+    size.setAll(_size);
     position.setValues(100, 280);
 
-    await add(_entity);
-
-    // add(RectangleComponent(size: size, anchor: Anchor.center)..opacity = 0.25);
-
-    await add(CircleHitbox(
-      radius: size.y * 0.2,
-      position: Vector2(-size.x * 0.05, size.y * 0.01),
+    add(CircleHitbox(
+      radius: _size * 0.2,
+      position: Vector2(-_size * 0.15, _size * 0.02),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
-    )..debug());
+      isSolid: true,
+    )..anchor_to_parent());
 
-    await add(CircleHitbox(
-      radius: size.y * 0.1,
-      position: Vector2(size.x * 0.25, -size.y * 0.06),
+    add(CircleHitbox(
+      radius: _size * 0.075,
+      position: Vector2(_size * 0.175, -_size * 0.05),
       anchor: Anchor.center,
       collisionType: CollisionType.passive,
-    )..debug());
+      isSolid: true,
+    )..anchor_to_parent());
 
-    _shield = DeflectorShield(this);
-    _shield.scale.setAll(4);
+    _shield = DeflectorShield(this, source_size: size * 1.25);
     _shield.addTrait(Friendly());
-    await add(_shield);
+    add(_shield);
     addTrait(_shield);
   }
 }

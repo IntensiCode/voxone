@@ -10,6 +10,7 @@ import 'package:voxone/util/uniforms.dart';
 class AppearingMoon extends RectangleComponent {
   AppearingMoon() : super(anchor: Anchor.topLeft) {
     size.setFrom(game_size);
+    priority = -1000;
   }
 
   late FragmentShader _shader;

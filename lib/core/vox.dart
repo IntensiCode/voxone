@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
@@ -7,8 +6,6 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/voxel/vox_io.dart';
 
@@ -57,36 +54,5 @@ Future<(Voxels, Image)> vox_image(String name, {int dx = 0, int dy = 0, int dz =
     }
     final voxels = read_vox(it, name);
     return (voxels, vox_to_image(voxels, dx: dx, dy: dy, dz: dz, blurred_argb32: blurred_argb32));
-  });
-}
-
-StackedEntity vox_to_entity(String name, Voxels voxels, Shadows shadows, {List<int>? blurred_argb32}) {
-  final image = vox_to_image(voxels, blurred_argb32: blurred_argb32);
-  if (dev && !kIsWeb && !kIsWasm) {
-    image.toByteData(format: ImageByteFormat.png).then((data) {
-      final bytes = Uint8List.view(data!.buffer);
-      File('$name.png').writeAsBytes(bytes);
-    });
-  }
-  final entity = StackedEntity.sprite(Sprite(image), voxels.height, shadows);
-  entity.size.x = voxels.width.toDouble();
-  entity.size.y = voxels.height.toDouble();
-  return entity;
-}
-
-Future<StackedEntity> vox_entity(
-  String name,
-  Shadows shadows, {
-  int dx = 0,
-  int dy = 0,
-  int dz = 0,
-  List<int>? blurred_argb32,
-}) {
-  return game.assets.readBinaryFile('entities/$name').then((it) async {
-    final (voxels, image) = await vox_image(name, dx: dx, dy: dy, dz: dz, blurred_argb32: blurred_argb32);
-    final entity = StackedEntity.sprite(Sprite(image), voxels.height, shadows);
-    entity.size.x = voxels.width.toDouble();
-    entity.size.y = voxels.height.toDouble();
-    return entity;
   });
 }

@@ -5,9 +5,9 @@ import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
-mixin EnemyHitPoints on Component, HasContext implements Hostile, FakeThreeDee, Integrity, Target {
+mixin EnemyHitPoints on FakeThreeDee, HasContext implements Hostile, Integrity, Target {
   bool mini_explosions_on_hit = true;
 
   double hit_time = 0;
@@ -19,8 +19,6 @@ mixin EnemyHitPoints on Component, HasContext implements Hostile, FakeThreeDee, 
 
   @override
   bool get susceptible;
-
-  // NotifyingVector2 get position;
 
   set highlight_mode(HighlightMode mode);
 

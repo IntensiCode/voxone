@@ -28,7 +28,7 @@ class PlasmaBlob extends PositionComponent
   PlasmaBlob(this._emit_plasma_ring) {
     anchor = Anchor.center;
     size.setAll(16);
-    add(CircleHitbox(radius: 8, anchor: Anchor.center, position: size / 2)..debug());
+    add(CircleHitbox(radius: 8, anchor: Anchor.center, position: size / 2, isSolid: true)..debug());
 
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;

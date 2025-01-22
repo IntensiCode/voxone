@@ -19,8 +19,7 @@ import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/on_message.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
   GameScreen() {
@@ -59,8 +58,8 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     if (dev) {
       onKey('-', () => _change_time_scale(-0.25));
       onKey('+', () => _change_time_scale(0.25));
-      onKey('<C-k>', () => stacked_cache.clear());
-      onKey('<C-j>', () => logInfo('cache size: ${stacked_cache.size}'));
+      onKey('<C-k>', () => voxel_cache.clear());
+      onKey('<C-j>', () => logInfo('cache size: ${voxel_cache.size}'));
     }
 
     enable_mapping = true;
@@ -125,14 +124,14 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   @override
   void renderTree(Canvas canvas) {
     cache_remove_count = 0;
-    StackedSprite.render_count = 0;
+    VoxelSprite.render_count = 0;
     super.renderTree(canvas);
     if (dev) {
-      if (cache_remove_count > 0) {
-        logInfo('cache remove count: $cache_remove_count');
+      if (cache_remove_count > 10) {
+        logInfo('voxel sprite cache remove count: $cache_remove_count');
       }
-      if (StackedSprite.render_count >= StackedSprite.max_renders_per_frame) {
-        logInfo('stacked sprite render count: ${StackedSprite.render_count}');
+      if (VoxelSprite.render_count >= VoxelSprite.max_renders_per_frame) {
+        logInfo('voxel sprite render count: ${VoxelSprite.render_count}');
       }
     }
   }
@@ -140,7 +139,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
 class _PauseOverlay extends GameScriptComponent with HasContext {
   _PauseOverlay(this.on_resume) {
-    add(RectangleComponent(size: game_size)..paint.color = const Color(0x80000000));
+    // add(RectangleComponent(size: game_size)..paint.color = const Color(0x80000000));
     add(BitmapText(text: 'PAUSED', position: game_center, font: menu_font, anchor: Anchor.center));
     softkeys('Resume', 'Exit', (it) {
       if (it == SoftKey.left) _resume();

@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/marauder_gun.dart';
@@ -17,14 +18,11 @@ import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 bool can_sweep = true;
 
@@ -51,12 +49,10 @@ enum EnemyState {
   bool get is_inactive => [defeated, exploding, leaving, left].contains(this);
 }
 
-abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, EnemyHitPoints, FakeThreeDee {
+abstract class EnemyEntity extends VoxelSprite with HasContext, Enemy, EnemyHitPoints {
   EnemyEntity(this.wave);
 
   final EnemyWave wave;
-
-  late final StackedEntity entity;
 
   @override
   EnemyState state = EnemyState.incoming;
@@ -73,9 +69,6 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
         EnemyState.incoming => incoming_time > volatile_incoming_time,
         _ => true,
       };
-
-  @override
-  set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
 
   void set_active_collisions() {
     for (final it in children.whereType<ShapeHitbox>()) {
@@ -99,16 +92,13 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
     _explode_delay = 0.01 + rng.nextDoubleLimit(0.25);
     _explode_scale = 1 + rng.nextDoublePM(0.25);
 
-    // entity.add(EnemyExplosion());
-    // audio.play(Sound.explosion, volume_factor: 0.25);
-
     tumble_dir.setFrom(direction ?? raw_dir);
     tumble_dir.normalize();
     tumble_dir.scale(50);
   }
 
   @override
-  void onLoad() {
+  Future onLoad() async {
     super.onLoad();
     createEntity();
     position.setFrom(target_position);
@@ -142,7 +132,9 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
   void update(double dt) {
     _last_explosion_time = min(0.25, _last_explosion_time + dt);
     _live_position.setFrom(position);
+
     super.update(dt);
+
     switch (state) {
       case EnemyState.incoming:
         on_incoming(dt);
@@ -181,7 +173,7 @@ abstract class EnemyEntity extends PositionComponent with HasContext, Enemy, Ene
     _explode_delay = max(0, _explode_delay - dt);
     if (_explode_delay > 0) return;
 
-    add(explosions.spawn(entity));
+    add(explosions.spawn(this));
     if (_last_explosion_time >= 0.25) {
       audio.play(Sound.explosion, volume_factor: 0.25);
     }
@@ -206,20 +198,21 @@ mixin CreateMarauderEntity on EnemyEntity {
 
     fake_height = 50;
 
-    size.setAll(180);
+    anchor = Anchor.center;
 
-    entity = StackedEntity('entities/transstellar.png', 14, shadows);
-    entity.size.setAll(256);
-    entity.rot_x = -pi / 8;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8;
-    entity.scale_x = 1.2;
-    entity.scale_y = 3.5;
-    entity.scale_z = 1.2;
+    set_sprite_source(atlas.sprite('entities/transstellar.png'), 14);
 
-    entity.add(EnemyHealthBar(this));
-    add(entity);
-    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
+    rot_x = -pi / 8;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8;
+    scale_x = 1.2;
+    scale_y = 3.5;
+    scale_z = 1.2;
+
+    size.setAll(64);
+
+    add(EnemyHealthBar(this));
+    add(CircleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center, isSolid: true)..anchor_to_parent());
     add(MarauderGun(this));
   }
 }
@@ -234,9 +227,6 @@ mixin SweepInOnIncoming on EnemyEntity {
     }
 
     fake_height = 50 + 150 * (1 - incoming_time);
-    base_scale = 0.2;
-    descale = 1000;
-    scale.setAll((1 - incoming_time) * 0.5 + 0.2);
 
     final i = Curves.easeInOut.transform(incoming_time);
     position.setFrom(target_position);
@@ -251,19 +241,21 @@ mixin AddShieldAfterOnIncoming on EnemyEntity, HasTraits {
 
   String shield_shader = 'plasma_shield.frag';
 
+  double shield_radius = 64;
+
   @override
   void on_incoming(double dt) {
     super.on_incoming(dt);
 
     if (incoming_time < 1) return;
 
-    shield = DeflectorShield(this, shader_name: shield_shader);
+    shield = DeflectorShield(this, source_size: size * 1.25, shader_name: shield_shader);
     shield.auto_recharge = 0.01;
     shield.addTrait(Hostile());
     add(shield);
     addTrait(shield);
 
-    entity.add(indicator = EnemyHealthBar(shield)..position.setValues(0, -64));
+    add(indicator = EnemyHealthBar(shield));
 
     shield_added();
 
@@ -297,10 +289,10 @@ mixin AddShieldAfterOnIncoming on EnemyEntity, HasTraits {
 mixin FloatOnActive on EnemyEntity {
   @override
   void on_active(double dt) {
-    scale.setAll(sin(active_time / 3) * 0.025 + 0.2);
-    entity.rot_x = -pi / 8 + sin(active_time / 7) * 0.2;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8 + sin(active_time) * 0.2;
+    // scale.setAll(sin(active_time / 3) * 0.025 + 0.2);
+    rot_x = -pi / 8 + sin(active_time / 7) * 0.2;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8 + sin(active_time) * 0.2;
     active_time += dt * 3;
     position.setFrom(target_position);
     position.x += sin(active_time / 1.2345) * 10;
@@ -333,7 +325,7 @@ mixin PlantMineOnSweeping on EnemyEntity {
   void on_sweeping(double dt) {
     on_active(dt); // to keep position and scale in sync after sweep
 
-    entity.sprite.cache = false;
+    cache_render = false;
 
     sweep_time += dt;
     if (sweep_time >= 10) {
@@ -341,7 +333,7 @@ mixin PlantMineOnSweeping on EnemyEntity {
       mine_planted = false;
       sweep_time = 0;
       state = EnemyState.active;
-      entity.sprite.cache = true;
+      cache_render = true;
       return;
     }
 
@@ -353,14 +345,12 @@ mixin PlantMineOnSweeping on EnemyEntity {
     final t = Curves.easeInOutCubic.transform(sweep_time / 10);
     final x = sin(t * pi) * sweep_dist;
     position.x += x;
-    scale.x += sin(t * pi) / 10;
-    scale.y += sin(t * pi) / 10;
 
     double mm = sweep_time < 5 ? 0 : 0.5 + (sweep_time - 5) / 10;
     double m = Curves.easeInOut.transform(mm);
-    entity.rot_x -= sin(m * pi * 8 / 4) * pi / 4;
-    entity.rot_y -= sin(m * pi * 8 / 4) * pi / 1;
-    entity.rot_z += sin(m * pi * 8 / 4) * pi / 2;
+    rot_x -= sin(m * pi * 8 / 4) * pi / 4;
+    rot_y -= sin(m * pi * 8 / 4) * pi / 1;
+    rot_z += sin(m * pi * 8 / 4) * pi / 2;
   }
 }
 
@@ -382,8 +372,8 @@ mixin SweepOutOnLeaving on EnemyEntity {
       state = EnemyState.left;
     }
 
-    scale.x += leaving_time * 0.5;
-    scale.y += leaving_time * 0.5;
+    scale.x += leaving_time * 0.05;
+    scale.y += leaving_time * 0.05;
 
     final i = Curves.easeInOut.transform(leaving_time / 2);
     position.y -= 550 * i;
@@ -400,13 +390,13 @@ mixin TumbleOnExploding on EnemyEntity {
       state = EnemyState.defeated;
     }
 
-    entity.rot_x += dt;
-    entity.rot_y += dt * 2;
-    entity.rot_z += dt * 0.5;
+    rot_x += dt;
+    rot_y += dt * 2;
+    rot_z += dt * 0.5;
     position.x += dt * tumble_dir.x;
     position.y += dt * tumble_dir.y;
 
-    entity.sprite.opacity = 1 - leaving_time / 2;
+    opacity = 1 - leaving_time / 2;
   }
 }
 
@@ -479,20 +469,20 @@ mixin WarpInOnIncoming on EnemyEntity {
     if (incoming_time >= 1) {
       incoming_time = 1;
       state = EnemyState.active;
-      entity.sprite.paint.imageFilter = null;
-      entity.sprite.paint.colorFilter = null;
+      paint.imageFilter = null;
+      paint.colorFilter = null;
     }
-    scale.setAll(0.2);
-    scale.x += 4 - incoming_time * 4;
+    // scale.setAll(0.2);
+    // scale.x += 4 - incoming_time * 4;
 
     final i = Curves.easeInOut.transform(incoming_time);
     position.setFrom(target_position);
     position.x += 550;
     position.x -= 550 * i;
 
-    entity.sprite.opacity = incoming_time;
+    opacity = incoming_time;
 
-    entity.sprite.paint.imageFilter = ImageFilter.blur(sigmaX: 32 * (1 - i), sigmaY: 32 * (1 - i));
-    entity.sprite.paint.colorFilter = ColorFilter.mode(white, BlendMode.modulate);
+    paint.imageFilter = ImageFilter.blur(sigmaX: 32 * (1 - i), sigmaY: 32 * (1 - i));
+    paint.colorFilter = ColorFilter.mode(white, BlendMode.modulate);
   }
 }

@@ -6,17 +6,16 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
-import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 var rotate_mines = true;
 
@@ -27,34 +26,36 @@ extension HasContextExtensions on HasContext {
 class MarauderMines extends Component with HasContext {
   late ComponentRecycler<MarauderMine> _mines;
 
-  MarauderMine? spawn(Vector2 position, {double drift = 0}) =>
-      stage.added(_mines.acquire()..reset(position, drift: drift));
+  MarauderMine? spawn3d(FakeThreeDee origin, {double drift = 0}) =>
+      spawn(origin.position, drift: drift, drop_height: origin.fake_height);
+
+  MarauderMine? spawn(Vector2 position, {double drift = 0, double? drop_height}) =>
+      stage.added(_mines.acquire()..reset(position, drift: drift, drop_height: drop_height));
 
   @override
-  onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1), shadows));
+  onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1)));
 }
 
-class MarauderMine extends PositionComponent
-    with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {
-  MarauderMine(this.animation, Shadows shadows)
-      : entity = StackedEntity.sprite(animation.frames.first.sprite, 8, shadows) {
-    entity.scale_x = 1.2;
-    entity.scale_y = 1.8;
-    entity.scale_z = 1.2;
-    entity.size.setAll(16);
+class MarauderMine extends VoxelSprite with CollisionCallbacks, HasContext, EnemyHitPoints, Recyclable {
+  MarauderMine(this.animation) {
+    set_sprite_source(animation.frames.first.sprite, 8);
 
-    add(entity);
-
+    scale_x = 1.2;
+    scale_y = 1.8;
+    scale_z = 1.2;
     size.setAll(16);
-    add(CircleHitbox(radius: 6, anchor: Anchor.center)..debug());
+
+    add(CircleHitbox(radius: 6, anchor: Anchor.center, isSolid: true)..anchor_to_parent());
   }
 
   final _dir_override = Vector2.zero();
 
   void set_direction(Vector2 direction) => _dir_override.setFrom(direction);
 
-  void reset(Vector2 origin, {double drift = 0}) {
-    fake_height = 50;
+  void reset(Vector2 origin, {double drift = 0, double? drop_height}) {
+    fake_height = drop_height ?? 50;
+    fake_height -= 5; // to appear underneath
+
     position.setFrom(origin);
     hit_time = 0;
     hit_points = 10;
@@ -64,13 +65,20 @@ class MarauderMine extends PositionComponent
     this.drift = drift;
     _dir_override.setZero();
 
-    entity.sprite.reset();
+    reset_sprite_data();
+
+    _rotations.fill(0.0);
+    _rotations[rng.nextInt(3)] = 2.5 + rng.nextDoubleLimit(0.5);
+    if (video == VideoMode.quality) {
+      _rotations[rng.nextInt(3)] = 2.5 + rng.nextDoubleLimit(0.5);
+    }
+
+    rot_x = rot_y = rot_z = 0;
   }
 
-  final SpriteAnimation animation;
-  final StackedEntity entity;
+  final _rotations = List.filled(3, 0.0);
 
-  late ExtraId which;
+  final SpriteAnimation animation;
 
   double drift = 0.0;
 
@@ -82,9 +90,6 @@ class MarauderMine extends PositionComponent
   bool get susceptible => !_destroyed;
 
   @override
-  set highlight_mode(HighlightMode mode) => entity.sprite.highlight_mode = mode;
-
-  @override
   void on_destroyed() {
     if (_destroyed) return;
     _destroyed = true;
@@ -92,6 +97,12 @@ class MarauderMine extends PositionComponent
     recycle();
 
     audio.play(Sound.explosion_hollow, volume_factor: 0.25);
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    shadows.add(create_linked_shadow());
   }
 
   @override
@@ -105,9 +116,9 @@ class MarauderMine extends PositionComponent
     if (_anim_time >= 1) _anim_time -= 1;
 
     if (rotate_mines) {
-      entity.rot_x += dt;
-      entity.rot_y += dt / 2;
-      entity.rot_z += dt * 3;
+      rot_x += _rotations[0] * dt;
+      rot_y += _rotations[1] * dt;
+      rot_z += _rotations[2] * dt;
     }
 
     if (_dir_override.isZero()) {

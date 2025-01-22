@@ -21,7 +21,7 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
     size.setAll(start_size);
     angle = -pi / 16;
 
-    add(_hitbox = CircleHitbox(radius: start_size, anchor: Anchor.center)..debug());
+    add(_hitbox = CircleHitbox(radius: start_size, anchor: Anchor.center, isSolid: true)..debug());
 
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;

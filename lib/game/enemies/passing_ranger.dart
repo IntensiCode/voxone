@@ -4,11 +4,11 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
-import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger.dart';
+import 'package:voxone/game/enemies/ranger_laser.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/util/random.dart';
 
 class PassingRanger extends EnemyEntity
@@ -102,11 +102,11 @@ mixin _MoveAlongPathOnActive on EnemyEntity {
       _target_rz %= 2 * pi;
     }
 
-    final rot_y = _safe_angle(_target_ry, entity.rot_y);
-    entity.rot_y = lerpDouble(rot_y, _target_ry, 10 * dt) ?? rot_y;
+    final ry = _safe_angle(_target_ry, rot_y);
+    rot_y = lerpDouble(ry, _target_ry, 10 * dt) ?? ry;
 
-    final rot_z = _safe_angle(_target_rz, entity.rot_z);
-    entity.rot_z = lerpDouble(rot_z, _target_rz, 2 * dt) ?? rot_z;
+    final rz = _safe_angle(_target_rz, rot_z);
+    rot_z = lerpDouble(rz, _target_rz, 2 * dt) ?? rz;
 
     _plant_time ??= 0.5 + rng.nextDoubleLimit(0.2);
     if (active_time > _plant_time! && !mine_planted) {

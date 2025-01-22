@@ -17,7 +17,7 @@ class Bomb extends SpriteComponent
     size.setAll(10);
     _sprites = atlas.sheetI('bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 5)..debug());
+    add(CircleHitbox(radius: 5, isSolid: true)..debug());
   }
 
   late final SpriteSheet _sprites;

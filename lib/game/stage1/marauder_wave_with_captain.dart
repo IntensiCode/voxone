@@ -1,18 +1,24 @@
 import 'dart:math';
 
 import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_captain.dart';
 import 'package:voxone/game/enemies/warping_marauder.dart';
+import 'package:voxone/game/shared/difficulty.dart';
+import 'package:voxone/game/shared/enemy_wave.dart';
+import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
 class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasContext {
-  static const marauders_in_wave = 7;
-  static const enemies_in_wave = marauders_in_wave + 1;
+  static final marauders_in_wave = switch (difficulty) {
+    Difficulty.easy => 6,
+    Difficulty.normal => 7,
+    Difficulty.hard => 8,
+  };
+
+  static final enemies_in_wave = marauders_in_wave + 1;
 
   final _wave = List<Enemy>.empty(growable: true);
 

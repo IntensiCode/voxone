@@ -17,7 +17,7 @@ class ClusterBomb extends SpriteComponent
     size.setAll(20);
     _sprites = atlas.sheetI('cluster_bomb.png', 1, 16);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 10)..debug());
+    add(CircleHitbox(radius: 10, isSolid: true)..debug());
   }
 
   late final Function(FakeThreeDee) _emit_bombs;

@@ -7,28 +7,25 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
+import 'package:voxone/game/enemies/enemy.dart';
+import 'package:voxone/game/enemies/homing_launcher.dart';
+import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/enemies/ranger_laser.dart';
+import 'package:voxone/game/enemies/satellite_marauder.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/enemies/homing_launcher.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
-import 'package:voxone/game/enemies/satellite_marauder.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
-const _scale_factor = 2.0;
-
-Vector2 _v(double x, double y) => Vector2(x * _scale_factor, y * _scale_factor);
+Vector2 _v(double x, double y) => Vector2(x, y);
 
 class CapitalShip extends EnemyEntity
     with
@@ -53,9 +50,18 @@ class CapitalShip extends EnemyEntity
   void createEntity() {
     super.createEntity();
     add(HomingLauncher(this));
-    add(RangerLaser(this, offset: _v(-108, -6), damage: 0.4, cool_down: 2.8)..priority = 10);
-    add(RangerLaser(this, offset: _v(-50, 72), damage: 0.4, cool_down: 2.8)..priority = 10);
-    add(RangerLaser(this, offset: _v(-10, 4), damage: 0.4)..priority = 10);
+    add(RangerLaser(this, offset: _v(-84, -4), damage: 0.4, cool_down: 2.8)
+      ..priority = 10
+      ..anchor = Anchor.center
+      ..anchor_to_parent());
+    add(RangerLaser(this, offset: _v(-45, 47), damage: 0.4, cool_down: 2.8)
+      ..priority = 10
+      ..anchor = Anchor.center
+      ..anchor_to_parent());
+    add(RangerLaser(this, offset: _v(-10, 4), damage: 0.4)
+      ..priority = 10
+      ..anchor = Anchor.center
+      ..anchor_to_parent());
     random_extras_count = 5;
     required_extras = {ExtraId.smart_bomb, ExtraId.phosphor_swirl, ExtraId.nuke_missile};
   }
@@ -63,11 +69,9 @@ class CapitalShip extends EnemyEntity
   @override
   void shield_added() {
     super.shield_added();
-    shield.size.setFrom(entity.size);
     shield.shield.shield_boost = 3;
     shield.auto_recharge = 0.1;
     shield.max_rotate_time = 360;
-    indicator.scale.setAll(0.25);
     indicator.position.setValues(0, -16);
   }
 }
@@ -79,24 +83,20 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
   void createEntity() {
     reset_hit_points_to(1250);
 
-    size.setAll(200 * _scale_factor);
-    scale.setAll(1 / _scale_factor);
+    set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
 
-    entity = StackedEntity('entities/dual_striker.png', 16, shadows);
-    entity.size.setFrom(size);
-    entity.size.scale(1.25);
-    entity.sprite.force_render = true;
+    size.setAll(200);
 
-    entity.rot_x = -pi / 4;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = pi / 16;
-    entity.scale_x = 1.4;
-    entity.scale_y = 4.5;
-    entity.scale_z = 1.4;
+    force_render = true;
 
-    entity.add(EnemyHealthBar(this)..scale.setAll(0.25));
+    rot_x = -pi / 4;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = pi / 16;
+    scale_x = 1.4;
+    scale_y = 4.5;
+    scale_z = 1.4;
 
-    add(entity);
+    add(EnemyHealthBar(this));
 
     add(center_mass = CircleHitbox.relative(
       0.5,
@@ -105,7 +105,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )..debug());
+    )..anchor_to_parent());
 
     add(CircleHitbox.relative(
       0.3,
@@ -114,7 +114,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )..debug());
+    )..anchor_to_parent());
 
     add(CircleHitbox.relative(
       0.3,
@@ -123,7 +123,7 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
-    )..debug());
+    )..anchor_to_parent());
   }
 }
 
@@ -177,7 +177,7 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
         audio.play_one_shot_sample('voice/shield_generator_destroyed.ogg', volume_factor: 2);
         shield.removeFromParent();
         indicator.removeFromParent();
-        add(explosions.spawn(entity)..scale.setAll(0.2));
+        add(explosions.spawn(this)..scale.setAll(0.5));
       }
     }
 
@@ -292,7 +292,7 @@ mixin _MultipleExplosionsOnExploding on EnemyEntity {
     position.x += dt * tumble_dir.x;
     position.y += dt * tumble_dir.y;
 
-    entity.sprite.opacity = leaving_time < 1 ? 1 - leaving_time / 2 : 0;
+    opacity = leaving_time < 1 ? 1 - leaving_time / 2 : 0;
   }
 }
 

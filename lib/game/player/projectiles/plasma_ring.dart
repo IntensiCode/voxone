@@ -5,6 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -17,7 +18,7 @@ class PlasmaRing extends PositionComponent
 
   PlasmaRing() {
     size.setAll(4);
-    add(_hitbox = CircleHitbox(radius: 16, anchor: Anchor.center)..debug());
+    add(_hitbox = CircleHitbox(radius: 16, anchor: Anchor.center, isSolid: true)..debug());
 
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 8;
@@ -30,9 +31,15 @@ class PlasmaRing extends PositionComponent
   late CircleHitbox _hitbox;
 
   double _size = 32;
+  double _damage = 1;
 
   void reset(Vector2 origin, double fake_height) {
     _size = 32;
+    _damage = switch (difficulty) {
+      Difficulty.easy => 1.0,
+      Difficulty.normal => 0.9,
+      Difficulty.hard => 0.8,
+    };
     this.fake_height = fake_height;
     position.setFrom(origin);
   }
@@ -44,6 +51,7 @@ class PlasmaRing extends PositionComponent
     if (_size > 1000) recycle();
     size.setAll(_size);
     _hitbox.radius = _size;
+    _damage = (_damage - dt * 2.5).clamp(0.01, 1);
   }
 
   @override
@@ -63,7 +71,7 @@ class PlasmaRing extends PositionComponent
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          it.on_hit(intersections: intersectionPoints, damage: _damage);
         }
       });
     }

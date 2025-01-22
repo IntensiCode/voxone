@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/homing_launcher.dart';
@@ -10,8 +11,6 @@ import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
@@ -44,8 +43,8 @@ class MarauderCaptain extends EnemyEntity
   @override
   void shield_added() {
     super.shield_added();
-    shield.scale.setAll(6);
-    indicator.position.setValues(0, -64);
+    // shield.scale.setAll(6);
+    indicator.position.setValues(0, -16);
   }
 }
 
@@ -56,24 +55,25 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
   void createEntity() {
     reset_hit_points_to(40);
 
-    size.setAll(256);
+    set_sprite_source(atlas.sprite('entities/camo_stellar_jet.png'), 16);
+    size.setAll(96);
+    anchor = Anchor.center;
 
-    entity = StackedEntity('entities/camo_stellar_jet.png', 16, shadows);
-    entity.size.setAll(512);
+    force_render = true;
 
-    entity.sprite.force_render = true;
+    rot_x = -pi / 8;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8;
+    scale_x = 1.2;
+    scale_y = 3.5;
+    scale_z = 1.2;
 
-    entity.rot_x = -pi / 8;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8;
-    entity.scale_x = 1.2;
-    entity.scale_y = 3.5;
-    entity.scale_z = 1.2;
-
-    entity.add(EnemyHealthBar(this));
-    add(entity);
-    add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
-    add(RangerLaser(this)..damage = 0.3);
+    add(EnemyHealthBar(this));
+    add(CircleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center, isSolid: true)..anchor_to_parent());
+    add(RangerLaser(this)
+      ..anchor = Anchor.center
+      ..damage = 0.3
+      ..anchor_to_parent());
 
     if (homing) add(HomingLauncher(this));
   }

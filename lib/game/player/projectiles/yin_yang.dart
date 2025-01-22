@@ -22,7 +22,7 @@ class YinYang extends SpriteComponent
     size.setAll(32);
     _sprites = atlas.sheetI('yin-yang.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 4, position: size / 2, anchor: Anchor.center)..debug());
+    add(CircleHitbox(radius: 4, position: size / 2, anchor: Anchor.center, isSolid: true)..debug());
   }
 
   final Component _stage;

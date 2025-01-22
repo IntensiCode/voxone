@@ -20,7 +20,7 @@ class NukeMissile extends SpriteComponent
     size.setAll(30);
     _sprites = atlas.sheetI('missile.png', 4, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 15)..debug());
+    add(CircleHitbox(radius: 15, isSolid: true)..debug());
     angle = pi / 2 - pi / 16;
     priority = 100;
   }

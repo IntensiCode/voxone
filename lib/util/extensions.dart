@@ -179,18 +179,24 @@ extension MapExtensions on Map {
 }
 
 extension PositionComponentExtensions on PositionComponent {
-  /// Apply parent anchor position to this component. Any relative existing position will be preserved.
-  void anchor_to_parent() => relative_to_parent(0, 0);
+  /// Apply parent anchor position to this component.
+  /// Any relative existing position will be preserved if [preserve_current] is true.
+  void anchor_to_parent({bool preserve_current = true}) => relative_to_parent(0, 0, preserve_current: preserve_current);
 
-  /// Apply parent anchor position to this component. Any relative existing position will be preserved.
+  /// Apply parent anchor position to this component.
+  /// Any relative existing position will be preserved if [preserve_current] is true.
   /// [dx] and [dy] will be added to the final position.
-  void relative_to_parent(double dx, double dy) {
+  void relative_to_parent(double dx, double dy, {bool preserve_current = true}) {
     if (!isMounted) {
-      mounted.then((_) => relative_to_parent(dx, dy));
+      mounted.then((_) => relative_to_parent(dx, dy, preserve_current: preserve_current));
       return;
     }
     final ppc = (parent as PositionComponent);
     final size = ppc.size;
-    position.setValues(x += dx + anchor.x * size.x, y += dy + anchor.y * size.y);
+    if (preserve_current) {
+      position.setValues(x += dx + anchor.x * size.x, y += dy + anchor.y * size.y);
+    } else {
+      position.setValues(x = dx + anchor.x * size.x, y = dy + anchor.y * size.y);
+    }
   }
 }

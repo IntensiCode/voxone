@@ -11,7 +11,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 class MarauderShot extends PositionComponent
     with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {
@@ -21,7 +21,7 @@ class MarauderShot extends PositionComponent
 
   MarauderShot() {
     size.setAll(4);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)..debug());
+    add(CircleHitbox(radius: 4, anchor: Anchor.center, isSolid: true)..debug());
     reset_hit_points_to(1);
     mini_explosions_on_hit = false;
   }

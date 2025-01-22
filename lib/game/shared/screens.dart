@@ -1,4 +1,4 @@
-import '../../core/common.dart';
+import 'package:voxone/core/common.dart';
 
 enum Screen {
   audio,

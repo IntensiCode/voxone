@@ -6,16 +6,18 @@ import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 extension HasContextExtensions on HasContext {
   Extras get extras => cache.putIfAbsent('extras', () => Extras());
@@ -80,25 +82,24 @@ class Extras extends Component with HasContext {
   }
 }
 
-class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasPaint, Recyclable , FakeThreeDee{
-  _Extra(this.sprites, Shadows shadows) : entity = StackedEntity.sprite(sprites[ExtraId.values.first]!, 16, shadows) {
-    // priority = 0;
+class _Extra extends VoxelSprite with CollisionCallbacks, HasContext, Recyclable {
+  _Extra(this.sprites, Shadows shadows) {
+    set_sprite_source(sprites[ExtraId.values.first]!, 16);
 
-    entity.scale_x = 1.2;
-    entity.scale_y = 4.2;
-    entity.scale_z = 1.2;
-    entity.size.setAll(32);
-
-    add(entity);
-
+    scale_x = 1.2;
+    scale_y = 4.2;
+    scale_z = 1.2;
     size.setAll(32);
-    add(RectangleHitbox(anchor: Anchor.center)..debug());
+
+    add(CircleHitbox(anchor: Anchor.center, isSolid: true)..anchor_to_parent());
   }
 
   final Map<ExtraId, Sprite> sprites;
-  final StackedEntity entity;
 
   late ExtraId which;
+
+  final _direction = Vector2.zero();
+  bool _captured = false;
 
   double _anim_time = rng.nextDouble();
 
@@ -107,33 +108,55 @@ class _Extra extends PositionComponent with CollisionCallbacks, HasContext, HasP
     this.fake_height = fake_height;
     position.setFrom(origin);
     _anim_time = rng.nextDouble();
+    _direction.setValues(-100, 25);
+    _captured = false;
 
-    entity.sprite.loaded.then((_) {
-      entity.sprite.change_sprite(sprites[which]!);
-    });
+    change_sprite_source(sprites[which]!);
+    reset_sprite_data();
 
-    entity.sprite.reset();
+    fake_height = 50;
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    shadows.add(create_linked_shadow());
   }
 
   @override
   void update(double dt) {
     super.update(dt);
     _anim_time += dt;
-    entity.rot_x = sin(_anim_time * 2 * pi) * pi / 4 + pi / 2;
-    // entity.rot_y = sin(_anim_time * 2 * pi * 0.24569) * pi / 8;
-    // entity.rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
-    position.x -= 100 * dt;
-    position.y += 100 / 4 * dt;
+    rot_x = sin(_anim_time * 2 * pi) * pi / 4 + pi / 2;
+    if (video == VideoMode.quality) {
+      // entity.rot_y = sin(_anim_time * 2 * pi * 0.24569) * pi / 8;
+      rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
+    }
+    position.add(_direction * dt);
     if (position.x < -100) recycle();
+    if (_captured) _direction.scale(1.25);
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    other.onTraits<Friendly>((it) {
+    other.onTraits<Player>((it) {
       decals.spawn3d(Decal.teleport, this);
       player.on_collect_extra(which);
       recycle();
     });
+    other.onTraits<Friendly>((it) {
+      if (other is DeflectorShield) _on_captured();
+    });
+  }
+
+  void _on_captured() {
+    _captured = true;
+
+    final speed = _direction.length;
+    _direction.setFrom(player.position);
+    _direction.sub(position);
+    _direction.normalize();
+    _direction.scale(speed);
   }
 }

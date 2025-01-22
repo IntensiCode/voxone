@@ -5,9 +5,9 @@ import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/shared/traits.dart';
 
 class CirclingMarauder extends EnemyEntity
     with
@@ -26,17 +26,18 @@ class CirclingMarauder extends EnemyEntity
   @override
   void createEntity() {
     super.createEntity();
-    scale.setAll(0.2);
     reset_hit_points_to(15);
   }
+
+  @override
+  double get shield_radius => 48;
 
   @override
   void shield_added() {
     super.shield_added();
     shield.auto_recharge = 0.01;
     shield.shield.shield_boost = 0.25;
-    shield.scale.setAll(6);
-    indicator.position.setValues(0, -64);
+    indicator.position.setValues(0, -16);
   }
 }
 
@@ -109,11 +110,11 @@ mixin _MoveAlongPathOnActive on EnemyEntity {
       _target_rz %= 2 * pi;
     }
 
-    final rot_y = _safe_angle(_target_ry, entity.rot_y);
-    entity.rot_y = lerpDouble(rot_y, _target_ry, 10 * dt) ?? rot_y;
+    final ry = _safe_angle(_target_ry, rot_y);
+    rot_y = lerpDouble(ry, _target_ry, 10 * dt) ?? ry;
 
-    final rot_z = _safe_angle(_target_rz, entity.rot_z);
-    entity.rot_z = lerpDouble(rot_z, _target_rz, 2 * dt) ?? rot_z;
+    final rz = _safe_angle(_target_rz, rot_z);
+    rot_z = lerpDouble(rz, _target_rz, 2 * dt) ?? rz;
 
     _tmp.setFrom(player.position);
     _tmp.sub(position);

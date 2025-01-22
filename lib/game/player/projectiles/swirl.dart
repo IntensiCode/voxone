@@ -18,7 +18,7 @@ class Swirl extends SpriteComponent
     size.setAll(24);
     _sprites = atlas.sheetI('swirl.png', 8, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 8, position: size / 2, anchor: Anchor.center)..debug());
+    add(CircleHitbox(radius: 8, position: size / 2, anchor: Anchor.center, isSolid: true)..debug());
   }
 
   late final SpriteSheet _sprites;

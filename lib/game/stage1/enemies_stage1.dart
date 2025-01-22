@@ -1,11 +1,11 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/stage1/capital_ship_wave.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
 import 'package:voxone/game/stage1/minefield_wave.dart';

@@ -9,7 +9,7 @@ import 'package:voxone/util/mutable.dart';
 class EnemyHealthBar extends PositionComponent {
   EnemyHealthBar(this._source) {
     anchor = Anchor.topCenter;
-    size.setValues(100, 20);
+    size.setValues(25, 5);
   }
 
   final Integrity _source;
@@ -58,6 +58,7 @@ class EnemyHealthBar extends PositionComponent {
       _ => _good,
     };
     _paint.style = PaintingStyle.stroke;
+    canvas.scale(0.25);
     canvas.drawRect(_outline, _paint);
     _paint.style = PaintingStyle.fill;
     _health.right = max(3, min(96, percent));

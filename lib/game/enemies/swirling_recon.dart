@@ -10,7 +10,6 @@ import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/voxel/vox_io.dart';
@@ -50,28 +49,25 @@ mixin _CreateMicroReconEntity on EnemyEntity {
     reset_hit_points_to(10);
 
     anchor = Anchor.center;
-    size.setAll(100);
-    scale.setAll(0.5);
+    size.setAll(40);
 
-    entity = StackedEntity.sprite(Sprite(_image!), _voxels!.height, shadows);
-    entity.size.x = _voxels!.width.toDouble();
-    entity.size.y = _voxels!.height.toDouble();
-    entity.anchor = Anchor.center;
-    entity.position.setFrom(size / 2);
-    entity.size.setAll(125);
-    entity.rot_x = -pi / 8;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8;
-    entity.scale_x = 1.2;
-    entity.scale_y = 3.5;
-    entity.scale_z = 1.2;
+    set_image_source(_image!, _voxels!.height);
 
-    entity.add(EnemyHealthBar(this));
-    add(entity);
+    rot_x = -pi / 8;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8;
+    scale_x = 1.2;
+    scale_y = 3.5;
+    scale_z = 1.2;
 
-    final hitbox = added(CircleHitbox(anchor: Anchor.center, radius: 40, isSolid: true)..debug());
-    hitbox.position.setFrom(size / 2);
-    hitbox.x -= 20;
+    add(EnemyHealthBar(this));
+    added(CircleHitbox(anchor: Anchor.center, isSolid: true)..anchor_to_parent());
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    shadows.add(create_linked_shadow());
   }
 }
 
@@ -104,7 +100,7 @@ mixin _MoveAlongPathOnActive on EnemyEntity {
 
   @override
   void on_active(double dt) {
-    active_time = (active_time + dt / 4).clamp(0, 1);
+    active_time = (active_time + dt / 6).clamp(0, 1);
     if (active_time >= 1) {
       state = EnemyState.left;
       return;
@@ -142,16 +138,16 @@ mixin _MoveAlongPathOnActive on EnemyEntity {
       _target_rz = active_time * 2 * pi * 2 * dir;
     }
 
-    final rot_y = _safe_angle(_target_ry, entity.rot_y);
-    entity.rot_y = lerpDouble(rot_y, _target_ry, 10 * dt) ?? rot_y;
+    final ry = _safe_angle(_target_ry, rot_y);
+    rot_y = lerpDouble(ry, _target_ry, 10 * dt) ?? ry;
 
-    final rot_z = _safe_angle(_target_rz, entity.rot_z);
-    entity.rot_z = lerpDouble(rot_z, _target_rz, 2 * dt) ?? rot_z;
+    final rz = _safe_angle(_target_rz, rot_z);
+    rot_z = lerpDouble(rz, _target_rz, 2 * dt) ?? rz;
 
     _plant_time ??= 0.4 + rng.nextDoubleLimit(0.2);
     if (active_time > _plant_time! && !mine_planted) {
       mine_planted = true;
-      mines.spawn(position)?.set_direction(target_dir);
+      mines.spawn3d(this)?.set_direction(target_dir);
     }
   }
 

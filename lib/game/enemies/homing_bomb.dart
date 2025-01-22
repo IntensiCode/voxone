@@ -17,7 +17,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 class _Halo extends CircleComponent with HasVisibility {
   _Halo() {
@@ -66,11 +66,13 @@ class HomingBomb extends PositionComponent
   double _life_time = 0;
   double _tick_time = 0;
 
+  var _highlight_mode = HighlightMode.none;
+
   @override
   bool get susceptible => true;
 
   @override
-  set highlight_mode(HighlightMode mode) {}
+  set highlight_mode(HighlightMode mode) => _highlight_mode = mode;
 
   @override
   void onMount() {
@@ -124,6 +126,7 @@ class HomingBomb extends PositionComponent
   @override
   void render(Canvas canvas) {
     canvas.drawCircle(Offset.zero, 12, paint);
+    paint.colorFilter = _highlight_mode.colorFilter;
     sheet.getSpriteById(0).render(canvas, anchor: Anchor.center);
   }
 

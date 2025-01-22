@@ -5,6 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/geometry.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/shared/has_context.dart';
@@ -12,7 +13,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/random.dart';
 
-class RangerLaser extends Component with HasContext, HasPaint {
+class RangerLaser extends PositionComponent with HasContext, HasPaint {
   RangerLaser(this._source, {Vector2? offset, double? damage, double? cool_down}) {
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
@@ -88,11 +89,13 @@ class RangerLaser extends Component with HasContext, HasPaint {
 
   RaycastResult<ShapeHitbox>? _update_raycast_result() {
     _tmp.setFrom(_source.position);
-    _tmp.add(offset);
 
     final ray = Ray2(origin: _tmp, direction: _direction);
-    return collisionDetection.raycast(ray, hitboxFilter: (hitbox) => hitbox.isFriendly(), out: _result);
+    final it = collisionDetection.raycast(ray, hitboxFilter: (hitbox) => hitbox.isFriendly(), out: _result);
+    return it;
   }
+
+  final _tmp2 = Vector2.zero();
 
   @override
   void render(Canvas canvas) {
@@ -101,23 +104,24 @@ class RangerLaser extends Component with HasContext, HasPaint {
     if (_source.state != EnemyState.active) return;
     if (_active_time <= 0) return;
 
-    final double dist;
     if (_result.intersectionPoint != null) {
-      dist = _result.intersectionPoint!.distanceTo(_tmp);
+      _tmp2.setFrom(_result.intersectionPoint!);
+      _tmp2.sub(_source.position);
+      final s = (_source as PositionComponent).scale;
+      _tmp2.multiply(Vector2(1 / s.x, 1 / s.y));
+      _to.setFrom(_tmp2);
     } else {
-      dist = 5000.0;
+      return;
     }
 
-    // FIXME does not work properly for CapitalShip - but it looks ok - so keeping it for now
-    final s = (_source as PositionComponent).scale;
-    _to.dx = _direction.x * dist / s.x;
-    _to.dy = _direction.y * dist / s.y;
-    _to.dx += offset.x / s.x;
-    _to.dy += offset.y / s.y;
     _from.dx = offset.x;
     _from.dy = offset.y;
     paint.strokeWidth = damage / 0.2;
+
+    paint.color = yellow.withAlpha(200);
     canvas.drawLine(_from, _to, paint);
+    paint.color = blue.withAlpha(128);
+    canvas.drawCircle(_to, 5, paint);
   }
 
   final _from = MutableOffset(0, 0);

@@ -15,9 +15,9 @@ bool get debug => _debug;
 set debug(bool value) {
   _debug = value;
   on_debug_change?.call(value);
-  game.debugMode = debug;
+  game.debugMode = value;
   for (final it in game.descendants()) {
-    it.debugMode = debug;
+    it.debugMode = value;
   }
 }
 

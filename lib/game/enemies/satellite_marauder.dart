@@ -3,15 +3,14 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/enemy_health_bar.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
-import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/marauder_pulse_gun.dart';
+import 'package:voxone/game/shared/enemy_health_bar.dart';
+import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
 
@@ -41,21 +40,22 @@ mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
     active_time_limit += rng.nextDoubleLimit(5);
 
     isVisible = false;
-    size.setAll(200);
-    scale.setAll(0.2);
+    size.setAll(40);
 
-    entity = StackedEntity('entities/ultraviolet_intruder.png', 19, shadows);
-    entity.size.setAll(160);
-    entity.rot_x = -pi / 8;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8;
-    entity.scale_x = 1.2;
-    entity.scale_y = 3.5;
-    entity.scale_z = 1.2;
+    set_sprite_source(atlas.sprite('entities/ultraviolet_intruder.png'), 19);
+    rot_x = -pi / 8;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8;
+    scale_x = 1.2;
+    scale_y = 3.5;
+    scale_z = 1.2;
 
-    await entity.add(EnemyHealthBar(this));
-    await add(entity);
-    await add(RectangleHitbox(collisionType: CollisionType.passive, anchor: Anchor.center)..debug());
+    await add(EnemyHealthBar(this));
+    await add(CircleHitbox(
+      collisionType: CollisionType.passive,
+      anchor: Anchor.center,
+      isSolid: true,
+    )..anchor_to_parent());
     await add(MarauderPulseGun(this));
   }
 }
@@ -105,9 +105,9 @@ mixin _MoveIntoFormationOnIncoming on EnemyEntity, HasVisibility {
       _last_dir.y -= pb.dy;
       _last_dir.scale(10);
 
-      entity.rot_y = pi / 2 - atan2(_last_dir.y, _last_dir.x);
+      rot_y = pi / 2 - atan2(_last_dir.y, _last_dir.x);
     }
-    if (i > 0.9) entity.rot_y = -1 - (1 - i) * 10;
+    if (i > 0.9) rot_y = -1 - (1 - i) * 10;
 
     fake_height = i < 0.3 ? -50 : 50;
   }
@@ -157,9 +157,9 @@ mixin _KamikazeOnLeaving on EnemyEntity, CollisionCallbacks, TumbleOnExploding, 
       _last_dir.y -= pb.dy;
       _last_dir.scale(10);
 
-      entity.rot_y = pi / 2 - atan2(_last_dir.y, _last_dir.x);
+      rot_y = pi / 2 - atan2(_last_dir.y, _last_dir.x);
     }
-    if (i < 0.1) entity.rot_y = -1 + i * 10;
+    if (i < 0.1) rot_y = -1 + i * 10;
 
     if (leaving_time >= 0.95) {
       leaving_time = 0.95;

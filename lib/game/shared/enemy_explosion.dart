@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/component_recycler.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/uniforms.dart';
 
@@ -40,9 +41,7 @@ class Explosion extends CircleComponent with Recyclable {
 
     radius = origin.size.x / 2;
     anchor = Anchor.center;
-    position.setFrom(origin.position);
-    // position.x += origin.size.x / 2;
-    // position.y += origin.size.y / 2;
+    anchor_to_parent(preserve_current: false);
 
     paint.color = white;
     paint.isAntiAlias = false;
@@ -56,7 +55,6 @@ class Explosion extends CircleComponent with Recyclable {
 
   @override
   void update(double dt) {
-
     _time += dt;
     if (_time >= 1 && _anim_overlay == null) {
       add(_anim_overlay = SpriteAnimationComponent(

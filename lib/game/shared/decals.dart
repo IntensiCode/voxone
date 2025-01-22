@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/extensions.dart';
@@ -87,6 +87,7 @@ class Decals extends Component with HasContext {
     final it = _spawn(decal, pos_override ?? origin.position, pos_range: pos_range, vel_range: vel_range);
     it.fake_height = origin.fake_height;
     it.fake_height += 25;
+    if (dev) it.debugMode = debugMode;
     return it;
   }
 

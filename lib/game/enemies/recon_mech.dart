@@ -8,7 +8,6 @@ import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
@@ -33,9 +32,6 @@ class ReconMech extends EnemyEntity
   }
 
   @override
-  bool get susceptible => (entity.fake_height ?? 0) > 30;
-
-  @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (other is Player && susceptible) {
@@ -56,8 +52,7 @@ mixin _CreateReconMechEntity on EnemyEntity {
     reset_hit_points_to(10);
 
     anchor = Anchor.center;
-    size.setAll(200);
-    scale.setAll(0.2);
+    size.setAll(64);
 
     if (_pick_start_pos.isEmpty) {
       _pick_start_pos.addAll(List.generate(8, (i) => i));
@@ -66,27 +61,27 @@ mixin _CreateReconMechEntity on EnemyEntity {
     target_position.x = 1000;
     target_position.y = start_pos * 50 - 50;
 
-    entity = StackedEntity.sprite(Sprite(_image!), _voxels!.height, shadows);
-    entity.size.x = _voxels!.width.toDouble();
-    entity.size.y = _voxels!.height.toDouble();
-    entity.anchor = Anchor.center;
-    entity.position.setFrom(size / 4);
-    entity.size.setAll(250);
-    entity.rot_x = -pi / 8;
-    entity.rot_y = -pi / 2 + pi / 8;
-    entity.rot_z = -pi / 8;
-    entity.scale_x = 1.2;
-    entity.scale_y = 1.2;
-    entity.scale_z = 1.2;
+    set_image_source(_image!, _voxels!.height);
+    size.x = _voxels!.width.toDouble();
+    size.y = _voxels!.height.toDouble();
+    rot_x = -pi / 8;
+    rot_y = -pi / 2 + pi / 8;
+    rot_z = -pi / 8;
+    scale_x = 1.2;
+    scale_y = 1.2;
+    scale_z = 1.2;
 
-    entity.loaded.then((_) => entity.fake_height = 0);
-
-    entity.add(EnemyHealthBar(this));
-    add(entity);
+    add(EnemyHealthBar(this));
 
     final hitbox = added(CircleHitbox(anchor: Anchor.center, radius: 40, isSolid: true)..debug());
     hitbox.position.setFrom(size / 2);
     hitbox.x -= 20;
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    shadows.add(create_linked_shadow());
   }
 }
 
@@ -122,7 +117,7 @@ mixin _MoveOnActive on EnemyEntity {
         _ => 0.0,
       };
       position.y -= j;
-      entity.fake_height = j;
+      fake_height = j;
 
       target_position.x += 100 * dt;
       target_position.y -= 25 * dt;

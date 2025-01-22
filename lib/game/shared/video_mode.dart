@@ -1,5 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 enum VideoMode {
   performance,
@@ -10,24 +10,28 @@ enum VideoMode {
 void apply_video_mode() {
   switch (video) {
     case VideoMode.performance:
-      StackedSprite.update_interval = 0.2;
-      StackedSprite.max_renders_per_frame = 6;
-      StackedSprite.rot_steps = 32;
+      VoxelSprite.update_interval = 0.2;
+      VoxelSprite.max_renders_per_frame = 6;
+      VoxelSprite.rot_steps = 18;
+      VoxelSprite.pixel_multiplier = 1;
       break;
     case VideoMode.balanced:
-      StackedSprite.update_interval = 0.1;
-      StackedSprite.max_renders_per_frame = 12;
-      StackedSprite.rot_steps = 36;
+      VoxelSprite.update_interval = 0.1;
+      VoxelSprite.max_renders_per_frame = 12;
+      VoxelSprite.rot_steps = 36;
+      VoxelSprite.pixel_multiplier = 2;
       break;
     case VideoMode.quality:
-      StackedSprite.update_interval = 0.05;
-      StackedSprite.max_renders_per_frame = 24;
-      StackedSprite.rot_steps = 36 * 2;
+      VoxelSprite.update_interval = 0.05;
+      VoxelSprite.max_renders_per_frame = 24;
+      VoxelSprite.rot_steps = 36 * 2;
+      VoxelSprite.pixel_multiplier = 4;
       break;
   }
-  logInfo('update_interval=${StackedSprite.update_interval}');
-  logInfo('max_renders_per_frame=${StackedSprite.max_renders_per_frame}');
-  logInfo('rot_steps: ${StackedSprite.rot_steps}');
+  logInfo('update_interval=${VoxelSprite.update_interval}');
+  logInfo('max_renders_per_frame=${VoxelSprite.max_renders_per_frame}');
+  logInfo('rot_steps: ${VoxelSprite.rot_steps}');
+  logInfo('pixel_multiplier: ${VoxelSprite.pixel_multiplier}');
 }
 
 set video(VideoMode value) {

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
@@ -11,7 +10,6 @@ import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/stacked_entity.dart';
 import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -22,7 +20,7 @@ import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/stacked_sprite.dart';
+import 'package:voxone/util/voxel_sprite.dart';
 
 enum _TitleButtons {
   credits,
@@ -49,11 +47,11 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   BitmapText? _difficulty;
 
   @override
-  onLoad() {
+  void onLoad() {
     add(_keys);
     add(space);
     add(_shadows);
-    add(_TitleShip(_shadows));
+    add(_TitleShip());
 
     textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
@@ -81,7 +79,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       fixed_anchor: Anchor.bottomLeft,
     ));
 
-    final c = menu.addEntry(_TitleButtons.credits, 'Credits');
+    menu.addEntry(_TitleButtons.credits, 'Credits');
     menu.addEntry(_TitleButtons.audio, 'Audio');
     menu.addEntry(_TitleButtons.video, 'Video');
     menu.addEntry(_TitleButtons.controls, 'Controls');
@@ -212,12 +210,10 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   }
 }
 
-class _TitleShip extends Component {
-  _TitleShip(this._shadows);
-
-  final Shadows _shadows;
-
-  late final StackedEntity _entity;
+class _TitleShip extends VoxelSprite {
+  _TitleShip() {
+    set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
+  }
 
   double _time = 0;
 
@@ -225,26 +221,24 @@ class _TitleShip extends Component {
   onLoad() async {
     super.onLoad();
 
-    _entity = StackedEntity('entities/dual_striker.png', 16, _shadows);
-    _entity.sprite.force_render = true;
+    force_render = !dev;
 
-    _entity.scale_x = 1.4;
-    _entity.scale_y = 4.5;
-    _entity.scale_z = 1.4;
-    _entity.scale.setAll(1);
-    _entity.size.setAll(256);
-    _entity.position.setValues(400, 350);
-
-    add(_entity);
+    scale_x = 1.4;
+    scale_y = 4.5;
+    scale_z = 1.4;
+    size.setAll(256);
+    position.setValues(400, 350);
   }
 
   @override
   void update(double dt) {
+    super.update(dt);
+
     _time += dt;
     // _entity.scale.setAll(1 + sin(_time / 2) / 4);
-    _entity.rot_x = -0.00;
-    _entity.rot_y = sin(_time) * 1.75;
-    _entity.rot_z = _time;
-    _entity.position.setValues(400 + cos(pi + _time) * 200, 250);
+    // rot_x = -0.00;
+    rot_y = sin(_time) * 1.75;
+    rot_z = _time;
+    position.setValues(400 + cos(pi + _time) * 200, 250);
   }
 }

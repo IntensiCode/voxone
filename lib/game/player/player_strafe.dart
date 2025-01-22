@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/input/game_keys.dart';
 
@@ -12,6 +14,8 @@ mixin PlayerStrafe on HasContext {
   double _strafe = 0;
 
   void update_strafe(double dt) {
+    if (dev && dt.abs() < 0.0125) dt = 0.0125 * dt.sign;
+
     double max_strafe_speed = (_max_strafe - _strafe.abs()) / 5;
 
     final up = prefer_x_over_y ? keys.left : keys.up;

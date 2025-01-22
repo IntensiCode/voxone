@@ -18,7 +18,7 @@ class IonPulse extends SpriteComponent
     size.setAll(16);
     _sprites = atlas.sheetI('melt.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 8)..debug());
+    add(CircleHitbox(radius: 8, isSolid: true)..debug());
   }
 
   late final SpriteSheet _sprites;

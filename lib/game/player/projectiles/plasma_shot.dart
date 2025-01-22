@@ -21,7 +21,7 @@ class PlasmaShot extends PositionComponent
 
   PlasmaShot() {
     size.setAll(4);
-    add(CircleHitbox(radius: 4, anchor: Anchor.center)..debug());
+    add(CircleHitbox(radius: 4, anchor: Anchor.center, isSolid: true)..debug());
   }
 
   double _start_time = 1;
