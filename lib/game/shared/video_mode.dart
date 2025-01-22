@@ -1,4 +1,5 @@
 import 'package:dart_minilog/dart_minilog.dart';
+import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/voxel_sprite.dart';
 
 enum VideoMode {
@@ -36,12 +37,17 @@ void apply_video_mode() {
 
 set video(VideoMode value) {
   _video = value;
-  on_video_change?.call(value);
+  _on_video_change.forEach((it) => it(value));
   apply_video_mode();
 }
 
 VideoMode get video => _video;
 
-Function(VideoMode)? on_video_change;
+Disposable on_video_change(Function(VideoMode) listener) {
+  _on_video_change.add(listener);
+  return Disposable.wrap(() => _on_video_change.remove(listener));
+}
+
+final _on_video_change = <Function(VideoMode p1)>[];
 
 var _video = VideoMode.balanced;

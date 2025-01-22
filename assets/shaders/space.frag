@@ -6,6 +6,7 @@ precision highp float;
 
 uniform vec2 iResolution;
 uniform float iTime;
+uniform float iRescale;
 
 out vec4 fragColor;
 
@@ -34,8 +35,8 @@ void main()
     //get coords and direction
     vec2 uv = fragCoord.xy / iResolution.xy;
     uv.y *= iResolution.y / iResolution.x;
-    uv.x += iTime / 20;
-    uv.y -= iTime / 38;
+    uv.x += iTime / 20.0;
+    uv.y -= iTime / 38.0;
     vec3 dir=vec3(uv*zoom, 2.);
     float time=iTime*speed+.25;
 

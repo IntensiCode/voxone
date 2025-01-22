@@ -18,7 +18,7 @@ class Configuration with HasGameData {
   Configuration._() {
     on_debug_change = (it) => _save_if(_data['debug'] != it);
     on_difficulty_change = (_) => _save_if(_data['difficulty'] != difficulty.name);
-    on_video_change = (_) => _save_if(_data['video'] != video.name);
+    on_video_change((_) => _save_if(_data['video'] != video.name));
   }
 
   void _save_if(bool changed) {

@@ -3,12 +3,17 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
+import 'package:voxone/game/shared/video_mode.dart';
+import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/mutable.dart';
+import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/uniforms.dart';
 
 enum Uniform {
   scr_width,
   scr_height,
   time,
+  rescale,
 }
 
 Space? _space;
@@ -18,9 +23,7 @@ Space get space {
   return _space ??= Space._();
 }
 
-class Space extends Component with HasPaint {
-  final _rect = const Rect.fromLTWH(0, 0, game_width, game_height);
-
+class Space extends Component with AutoDispose, HasPaint {
   static FragmentShader? _shader;
   static Uniforms? _uniforms;
   static Paint? _paint;
@@ -50,6 +53,36 @@ class Space extends Component with HasPaint {
   }
 
   @override
+  void onMount() {
+    super.onMount();
+    autoDispose('on_video_change', on_video_change((_) => _update_space()));
+    _update_space();
+  }
+
+  void _update_space() {
+    _last?.dispose();
+    _last = null;
+
+    _animate = bg_anim;
+
+    final down_sampling = _animate
+        ? switch (video) {
+            VideoMode.performance => 4,
+            VideoMode.balanced => 3,
+            VideoMode.quality => 2,
+          }
+        : 1;
+
+    logInfo('update space: anim=$bg_anim scale=$down_sampling');
+    _src.right = game_width / down_sampling;
+    _src.bottom = game_height / down_sampling;
+
+    _uniforms!.set(Uniform.scr_width, game_width / down_sampling);
+    _uniforms!.set(Uniform.scr_height, game_height / down_sampling);
+    _uniforms!.set(Uniform.rescale, down_sampling.toDouble());
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
     _time += dt;
@@ -59,17 +92,12 @@ class Space extends Component with HasPaint {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-
-    final recorder = PictureRecorder();
-    Canvas(recorder).drawRect(_rect, _paint!);
-
-    final picture = recorder.endRecording();
-    final image = picture.toImageSync(_src.width.toInt(), _src.height.toInt());
+    final image = pixelate(_src.width.toInt(), _src.height.toInt(), (canvas) {
+      canvas.drawRect(_src, _paint!);
+    });
     canvas.drawImageRect(image, _src, _dst, paint);
-    image.dispose();
-    picture.dispose();
   }
 
-  static const _src = Rect.fromLTWH(0, 0, game_width / 2, game_height / 2);
+  static final _src = MutRect(0, 0, game_width / 4, game_height / 4);
   static const _dst = Rect.fromLTWH(0, 0, game_width, game_height);
 }
