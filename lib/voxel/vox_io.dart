@@ -95,7 +95,7 @@ Voxels read_vox(Uint8List riff, String name, {bool crop = true, int pad = 8}) {
     });
   }
 
-  if (name.endsWith('.vox')) {
+  if (dev && !kIsWeb && !kIsWasm && name.endsWith('.vox')) {
     final out = File(name.replaceAll('.vox', '.vx')).openSync(mode: FileMode.writeOnly);
     out.writeStringSync('VOX ');
     out.writeFromSync(_little_unit32(0));
@@ -167,7 +167,7 @@ int _parse(
   final size = riff.buffer.asByteData().getUint32(offset + 4, Endian.little);
   final children = riff.buffer.asByteData().getUint32(offset + 8, Endian.little);
 
-  logInfo('Chunk: $id $size $children');
+  if (dev) logVerbose('Chunk: $id $size $children');
 
   on_data(id, riff.sublist(offset + 12, offset + 12 + size));
   offset += 12 + size;
