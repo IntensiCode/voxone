@@ -6,7 +6,6 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/common.dart' as c;
 
 extension ComponentExtension on Component {
   PositionComponent get ppc => parent! as PositionComponent;
@@ -169,12 +168,29 @@ extension SetExtensions<T> on Set<T> {
 
 extension ShapeHitboxExtensions on ShapeHitbox {
   void debug() {
-    paint.color = c.red;
-    opacity = 0.2;
-    renderShape = c.debug;
+    // paint.color = c.red;
+    // opacity = 0.2;
+    // renderShape = c.debug;
   }
 }
 
 extension MapExtensions on Map {
   bool deepEquals(Map other) => MapEquality().equals(this, other);
+}
+
+extension PositionComponentExtensions on PositionComponent {
+  /// Apply parent anchor position to this component. Any relative existing position will be preserved.
+  void anchor_to_parent() => relative_to_parent(0, 0);
+
+  /// Apply parent anchor position to this component. Any relative existing position will be preserved.
+  /// [dx] and [dy] will be added to the final position.
+  void relative_to_parent(double dx, double dy) {
+    if (!isMounted) {
+      mounted.then((_) => relative_to_parent(dx, dy));
+      return;
+    }
+    final ppc = (parent as PositionComponent);
+    final size = ppc.size;
+    position.setValues(x += dx + anchor.x * size.x, y += dy + anchor.y * size.y);
+  }
 }
