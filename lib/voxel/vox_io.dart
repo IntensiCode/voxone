@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/util/pixelate.dart';
 
@@ -28,9 +28,11 @@ class Voxels {
   }
 }
 
-Voxels read_vox(Uint8List riff, String name, {bool crop = true}) {
+Voxels read_vox(Uint8List riff, String name, {bool crop = true, int pad = 8}) {
   final header = (String.fromCharCodes(riff.getRange(0, 4)));
   if (header != 'VOX ') throw ArgumentError('Not a VOX file: $header');
+
+  if (pad.isOdd || pad < 0) throw 'pad must be even and positive: $pad';
 
   late int width;
   late int height;
@@ -49,19 +51,21 @@ Voxels read_vox(Uint8List riff, String name, {bool crop = true}) {
       if (id == 'SIZE') {
         size = data;
 
-        width = bytes.getUint32(0, Endian.little) + 10;
-        depth = bytes.getUint32(4, Endian.little) + 10;
-        height = bytes.getUint32(8, Endian.little) + 10;
+        width = bytes.getUint32(0, Endian.little) + pad;
+        depth = bytes.getUint32(4, Endian.little) + pad;
+        height = bytes.getUint32(8, Endian.little) + pad;
         voxels = List.generate(height, (y) => List.generate(depth, (z) => List.generate(width, (x) => 0)));
+
+        if (dev) logInfo('Size: ${width - pad} x ${depth - pad} x ${height - pad}');
       } else if (id == 'XYZI') {
         xyzi = data;
 
         final count = bytes.getUint32(0, Endian.little);
         var offset = 4;
         for (var i = 0; i < count; i++) {
-          final x = data[offset++];
-          final z = data[offset++];
-          final y = data[offset++];
+          final x = data[offset++] + pad ~/ 2;
+          final z = data[offset++] + pad ~/ 2;
+          final y = data[offset++] + pad ~/ 2;
           final color = data[offset++];
           voxels[y][z][x] = color;
         }
