@@ -33,17 +33,29 @@ enum Sound {
 final audio = PlatformAudioSystem();
 
 enum AudioMode {
-  music_and_sound,
-  music_only,
-  silent,
-  sound_only,
+  music_and_sound('Music & Sound'),
+  music_only('Music Only'),
+  silent('Silent'),
+  sound_only('Sound Only'),
   ;
+
+  final String label;
+
+  const AudioMode(this.label);
 
   static AudioMode from_name(String name) => AudioMode.values.firstWhere((it) => it.name == name);
 }
 
 abstract class AudioSystem extends Component {
   Future _save() async => await save_data('audio', save_state());
+
+  AudioMode get guess_audio_mode {
+    if (muted) return AudioMode.silent;
+    if (_music > 0 && _sound > 0) return AudioMode.music_and_sound;
+    if (_music > 0) return AudioMode.music_only;
+    if (_sound > 0) return AudioMode.sound_only;
+    return AudioMode.silent;
+  }
 
   set audio_mode(AudioMode mode) {
     logInfo('change audio mode: $mode');

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/background/space.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
@@ -38,11 +39,13 @@ final _credits = [
 ];
 
 class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
-  static _TitleButtons? _preselected;
+  static _TitleButtons? _preselected = _TitleButtons.play;
 
   final _shadows = Shadows()..isVisible = false;
   final _keys = Keys();
 
+  BitmapText? _audio;
+  BitmapText? _video;
   BitmapText? _difficulty;
 
   @override
@@ -59,10 +62,14 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
       textXY(it, 784, 466 - idx * 10, anchor: Anchor.bottomRight, scale: 1);
     }
 
+    textXY('< Audio Mode >', 280, 356, anchor: Anchor.bottomCenter, scale: 1);
+    _audio = textXY(audio.guess_audio_mode.label, 280, 368, anchor: Anchor.bottomCenter, scale: 1);
+
+    textXY('< Video Mode >', 280, 480 - 76 - 16, anchor: Anchor.bottomCenter, scale: 1);
+    _video = textXY(video.name, 280, 480 - 76 - 5, anchor: Anchor.bottomCenter, scale: 1);
+
     textXY('< Difficulty >', 280, 480 - 28, anchor: Anchor.bottomCenter, scale: 1);
     _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
-
-    textXY(video.name, 280, 480 - 76 - 10, anchor: Anchor.bottomCenter, scale: 1);
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
@@ -139,12 +146,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   void onMount() {
     super.onMount();
-
-    onKey('<Left>', () => _change_difficulty(-1));
-    onKey('<Right>', () => _change_difficulty(1));
-    onKey('<', () => _change_difficulty(-1));
-    onKey('>', () => _change_difficulty(1));
-
     onKeys(['t', 'f', 'd', 'j'], (it) {
       if (it == 't' || it == 'f' || it == 'd' || it == 'j') {
         if (it == 'd' && !_cheat.endsWith('tf')) _keys.onPressed(GameKey.right);
@@ -152,16 +153,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
         _check_cheat(it);
       }
     });
-  }
-
-  void _change_difficulty(int add) {
-    final values = Difficulty.values;
-    final index = (values.indexOf(difficulty) + add + values.length) % values.length;
-    difficulty = values[index];
-    _difficulty?.removeFromParent();
-    _difficulty = textXY(difficulty.name, 280, 480 - 16, anchor: Anchor.bottomCenter, scale: 1);
-    _difficulty?.fadeInDeep();
-    // sendMessage(UpdateDifficulty());
   }
 
   void _check_cheat(String add) {
@@ -181,16 +172,43 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   @override
   void update(double dt) {
     super.update(dt);
-    if (_keys.check_and_consume(GameKey.start)) pushScreen(Screen.stage1);
-
-    if (_keys.check_and_consume(GameKey.left)) _change_difficulty(-1);
-    if (_keys.check_and_consume(GameKey.right)) _change_difficulty(1);
+    if (_keys.check_and_consume(GameKey.start)) {
+      pushScreen(Screen.stage1);
+    }
+    if (_keys.check_and_consume(GameKey.left)) {
+      if (_preselected == _TitleButtons.audio) _change_audio_mode(-1);
+      if (_preselected == _TitleButtons.video) _change_video_mode(-1);
+      if (_preselected == _TitleButtons.play) _change_difficulty(-1);
+    }
+    if (_keys.check_and_consume(GameKey.right)) {
+      if (_preselected == _TitleButtons.audio) _change_audio_mode(1);
+      if (_preselected == _TitleButtons.video) _change_video_mode(1);
+      if (_preselected == _TitleButtons.play) _change_difficulty(1);
+    }
   }
 
-  @override
-  void renderTree(Canvas canvas) {
-    StackedSprite.render_count = 0;
-    super.renderTree(canvas);
+  void _change_audio_mode(int add) {
+    final values = AudioMode.values;
+    final index = (values.indexOf(audio.guess_audio_mode) + add) % values.length;
+    audio.audio_mode = values[index];
+    _audio?.text = audio.guess_audio_mode.label;
+    _audio?.fadeInDeep();
+  }
+
+  void _change_video_mode(int add) {
+    final values = VideoMode.values;
+    final index = (values.indexOf(video) + add) % values.length;
+    video = values[index];
+    _video?.text = video.name;
+    _video?.fadeInDeep();
+  }
+
+  void _change_difficulty(int add) {
+    final values = Difficulty.values;
+    final index = (values.indexOf(difficulty) + add + values.length) % values.length;
+    difficulty = values[index];
+    _difficulty?.text = difficulty.name;
+    _difficulty?.fadeInDeep();
   }
 }
 
