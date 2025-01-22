@@ -11,6 +11,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/marauder_gun.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
+import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
@@ -94,7 +95,7 @@ abstract class EnemyEntity extends VoxelSprite with HasContext, Enemy, EnemyHitP
 
     tumble_dir.setFrom(direction ?? raw_dir);
     tumble_dir.normalize();
-    tumble_dir.scale(50);
+    tumble_dir.scale(60);
   }
 
   @override
@@ -169,10 +170,16 @@ abstract class EnemyEntity extends VoxelSprite with HasContext, Enemy, EnemyHitP
     raw_dir.sub(_live_position);
   }
 
+  bool go_down_on_exploding = false;
+
   void _on_explode_delay(double dt) {
     _explode_delay = max(0, _explode_delay - dt);
     if (_explode_delay > 0) return;
 
+    trigger_explosion();
+  }
+
+  void trigger_explosion() {
     add(explosions.spawn(this));
     if (_last_explosion_time >= 0.25) {
       audio.play(Sound.explosion, volume_factor: 0.25);
@@ -396,7 +403,17 @@ mixin TumbleOnExploding on EnemyEntity {
     position.x += dt * tumble_dir.x;
     position.y += dt * tumble_dir.y;
 
-    opacity = 1 - leaving_time / 2;
+    if (go_down_on_exploding) {
+      fake_height = max(0, fake_height - dt * 100);
+      if (leaving_time % 0.1 < dt) decals.spawn3d(Decal.smoke, this);
+      if (fake_height == 0) {
+        trigger_explosion();
+        tumble_dir.setZero();
+        go_down_on_exploding = false;
+      }
+    } else {
+      opacity = 1 - leaving_time / 2;
+    }
   }
 }
 
@@ -410,8 +427,8 @@ mixin SpawnExtrasOnExploding on EnemyEntity {
   @override
   void on_exploding(double dt) {
     super.on_exploding(dt);
-
-    if (leaving_time < 1 || _extras_spawned) return;
+    if (_extras_spawned) return;
+    if (!go_down_on_exploding && leaving_time < 1) return;
 
     if (wave.kill_bonus) {
       wave.killed.clear();

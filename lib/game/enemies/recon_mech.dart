@@ -51,6 +51,8 @@ mixin _CreateReconMechEntity on EnemyEntity {
   void createEntity() {
     reset_hit_points_to(10);
 
+    go_down_on_exploding = true;
+
     anchor = Anchor.center;
     size.setAll(64);
 

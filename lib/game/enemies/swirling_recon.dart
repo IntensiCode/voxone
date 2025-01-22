@@ -27,7 +27,9 @@ class SwirlingRecon extends EnemyEntity
   //
   static int _count = 0;
 
-  SwirlingRecon(super.wave) : _which_path = (_count++).isEven;
+  SwirlingRecon(super.wave) : _which_path = (_count++).isEven {
+    go_down_on_exploding = true;
+  }
 
   final bool _which_path;
 
@@ -75,25 +77,25 @@ Offset _o(double x, double y) => Offset(x * game_width, y * game_height);
 
 mixin _MoveAlongPathOnActive on EnemyEntity {
   static final CatmullRomSpline _path1 = CatmullRomSpline([
-    _o(1.2, 0.10),
+    _o(1.1, 0.10),
     _o(1.0, 0.225),
-    _o(0.8, 0.35),
-    _o(0.6, 0.475),
-    _o(0.4, 0.45),
-    _o(0.2, 0.25),
-    _o(0.0, 0.0),
-    _o(-0.2, -0.25),
+    _o(0.9, 0.35),
+    _o(0.7, 0.475),
+    _o(0.5, 0.45),
+    _o(0.3, 0.25),
+    _o(0.1, 0.0),
+    _o(-0.1, -0.25),
   ]);
 
   static final CatmullRomSpline _path2 = CatmullRomSpline([
-    _o(1.2, 0.70),
+    _o(1.1, 0.70),
     _o(1.0, 0.625),
-    _o(0.8, 0.55),
-    _o(0.6, 0.475),
-    _o(0.4, 0.55),
-    _o(0.2, 0.75),
-    _o(0.0, 1.0),
-    _o(-0.2, 1.25),
+    _o(0.9, 0.55),
+    _o(0.7, 0.475),
+    _o(0.5, 0.55),
+    _o(0.3, 0.75),
+    _o(0.1, 1.0),
+    _o(-0.1, 1.25),
   ]);
 
   CatmullRomSpline get chosen_path;
