@@ -8,6 +8,7 @@ import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
+import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_text.dart';
@@ -33,6 +34,16 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
 
   @override
   onLoad() async {
+    add(FlowText(
+      text: 'If keyboard controls are not working, press <TAB> once to focus the game.',
+      background: atlas.sprite('button_plain.png'),
+      font: mini_font,
+      position: Vector2(game_center.x, game_height - 40),
+      anchor: Anchor.bottomCenter,
+      size: Vector2(200, 40),
+      centered_text: true,
+    ));
+
     add(BasicMenu<AudioMenuEntry>(
       keys: _keys,
       button: atlas.sheetI('button_option.png', 1, 2),
