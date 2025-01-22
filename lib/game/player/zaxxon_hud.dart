@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
@@ -51,6 +52,14 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   void update(double dt) {
     super.update(dt);
 
+    try {
+      _update();
+    } catch (e, s) {
+      logError('Error updating HUD: $e', s);
+    }
+  }
+
+  void _update() {
     final i = _player.integrity_boost;
     if (i != _integrity_boost) {
       _integrity_boost = i;
@@ -100,6 +109,14 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
 
   @override
   void render(Canvas canvas) {
+    try {
+      _render(canvas);
+    } catch (e, s) {
+      logError('Error rendering HUD: $e', s);
+    }
+  }
+
+  void _render(Canvas canvas) {
     _draw_indicator(canvas, _player_shield.energy, 0);
     _draw_indicator(canvas, _player.integrity, 16);
     if (_weapons.secondary_weapon != null) {
