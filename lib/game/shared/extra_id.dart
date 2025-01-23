@@ -64,6 +64,15 @@ enum ExtraId {
     cooldown_boost,
   };
 
+  static final maintenance = {
+    integrity,
+    shield,
+    cooldown,
+    integrity_boost,
+    shield_boost,
+    cooldown_boost,
+  };
+
   static final primaries = {
     triple_plasma,
     acid_blast,

@@ -5,6 +5,7 @@ import 'package:voxone/game/shared/enemy_wave.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/stage1/asteroid_wave.dart';
 import 'package:voxone/game/stage1/capital_ship_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave.dart';
 import 'package:voxone/game/stage1/marauder_wave_with_captain.dart';
@@ -22,6 +23,7 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
     RangerWave(),
     MinefieldWave(),
     PlanetaryFleet(),
+    AsteroidsWave(),
     CapitalShipWave(),
   ];
 
@@ -49,7 +51,7 @@ class EnemiesStage1 extends AutoDisposeComponent with HasAutoDisposeShortcuts, H
     } else if (_active_wave?.defeated == false) {
       final hostiles = stage.children.any((it) => it is Hostile);
       _clear_time = hostiles ? 0 : _clear_time + dt;
-      if (_clear_time > 5) {
+      if (_clear_time > 8) {
         logError('Force clear empty wave');
         _clear_time = 0;
         _active_wave?.defeated = true;

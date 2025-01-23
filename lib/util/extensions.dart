@@ -191,7 +191,7 @@ extension PositionComponentExtensions on PositionComponent {
       mounted.then((_) => relative_to_parent(dx, dy, preserve_current: preserve_current));
       return;
     }
-    final ppc = (parent as PositionComponent);
+
     final size = ppc.size;
     if (preserve_current) {
       position.setValues(x += dx + anchor.x * size.x, y += dy + anchor.y * size.y);

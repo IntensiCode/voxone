@@ -39,11 +39,11 @@ final voxel_cache = CacheBuilder<VoxelCacheKey, Image>()
 
 int cache_remove_count = 0;
 
-class VoxelSprite extends PositionComponent with HasPaint, HasVisibility, FakeThreeDee {
+class VoxelEntity extends PositionComponent with HasPaint, HasVisibility, FakeThreeDee {
   /// Render new image at most every [update_interval] seconds.
   static double update_interval = 0.1;
 
-  /// During one frame, render at most [max_renders_per_frame] new images across **all** [VoxelSprite] instances.
+  /// During one frame, render at most [max_renders_per_frame] new images across **all** [VoxelEntity] instances.
   static int max_renders_per_frame = kDebugMode ? 5 : 8;
 
   /// Render count per frame. Has to be reset from the top level game screen [renderTree] method.
@@ -85,7 +85,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility, FakeTh
   /// Force rendering every frame.
   bool force_render = false;
 
-  VoxelSprite() {
+  VoxelEntity() {
     anchor = Anchor.center;
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
@@ -167,7 +167,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility, FakeTh
     _shader.dispose();
   }
 
-  void render_shadow(Canvas canvas, VoxelSprite source) {
+  void render_shadow(Canvas canvas, VoxelEntity source) {
     try {
       if (isRemoving || isRemoved || !isVisible) return;
       if (_last == null) return; // bail out if no actual image has been rendered, yet
@@ -366,7 +366,7 @@ class VoxelShadow extends Component with HasPaint, HasVisibility {
     paint.color = black.withAlpha(128);
   }
 
-  final VoxelSprite _source;
+  final VoxelEntity _source;
 
   @override
   void render(Canvas canvas) {
