@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:kart/kart.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/player/weapons/acid_blaster.dart';
@@ -10,9 +11,9 @@ import 'package:voxone/game/player/weapons/cluster_bomb_cannon.dart';
 import 'package:voxone/game/player/weapons/ion_pulse_gun.dart';
 import 'package:voxone/game/player/weapons/nuke_missile_launcher.dart';
 import 'package:voxone/game/player/weapons/plasma_emitter.dart';
+import 'package:voxone/game/player/weapons/plasma_gun.dart';
 import 'package:voxone/game/player/weapons/smart_bomb.dart';
 import 'package:voxone/game/player/weapons/swirl_gun.dart';
-import 'package:voxone/game/player/weapons/plasma_gun.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
@@ -120,7 +121,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     primary_weapon = _primaries.keys.first;
     add(primary_weapon);
 
-    final initial = _secondaries.keys.toList().random(rng);
+    final initial = _secondaries.keys.whereNot((it) => it is SmartBomb).toList().random(rng);
     switch_secondary_to(initial.runtimeType);
 
     if (dev || cheat) {

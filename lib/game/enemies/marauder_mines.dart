@@ -58,8 +58,11 @@ class MarauderMine extends VoxelSprite with CollisionCallbacks, HasContext, Enem
 
     position.setFrom(origin);
     hit_time = 0;
-    hit_points = 10;
-    remaining = 10;
+    reset_hit_points_to(switch (difficulty) {
+      Difficulty.easy => 10,
+      Difficulty.normal => 15,
+      Difficulty.hard => 20,
+    });
     _became_visible = false;
     _destroyed = false;
     this.drift = drift;

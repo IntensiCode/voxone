@@ -292,68 +292,74 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
     if (is_dead_or_dying()) return;
 
     switch (which) {
-      case ExtraId.acid_blast:
-        final upgrade = weapons.switch_primary_to(AcidBlaster);
-        info('Acid Blast', title: upgrade ? 'Primary Weapon' : null, hud: true);
-        break;
-      case ExtraId.cluster_bomb:
-        info('Cluster Bomb', title: 'Secondary Weapon', hud: true);
-        weapons.switch_secondary_to(ClusterBombCannon);
-        break;
+      //
+      // utility
+
       case ExtraId.cooldown:
         info('Secondary Cooldown', hud: true);
         weapons.on_secondary_cooldown(0.5);
-        break;
+
       case ExtraId.cooldown_boost:
         info('Cooldown Boost', hud: true);
         weapons.on_cooldown_boost();
-        break;
-      case ExtraId.integrity_boost:
-        info('Integrity Boost', hud: true);
-        _integrity_boost = min(2, _integrity_boost + 0.1);
-        _update_sound_hint();
-        break;
-      case ExtraId.shield_boost:
-        info('Shield Boost', hud: true);
-        onTraits<DeflectorShield>((it) => it.on_shield_boost());
-        break;
+
       case ExtraId.integrity:
         info('Integrity Repair', hud: true);
         integrity = min(1, integrity + 0.25);
         _update_sound_hint();
-        break;
-      case ExtraId.ion_pulse:
-        final upgrade = weapons.switch_primary_to(IonPulseGun);
-        info('Ion Pulse', title: upgrade ? 'Primary Weapon' : null, hud: true);
-        break;
-      case ExtraId.nuke_missile:
-        info('Nuke Missile', title: 'Secondary Weapon', hud: true);
-        weapons.switch_secondary_to(NukeMissileLauncher);
-        break;
-      case ExtraId.phosphor_swirl:
-        final upgrade = weapons.switch_primary_to(SwirlGun);
-        info('Phosphor Swirl', title: upgrade ? 'Primary Weapon' : null, hud: true);
-        break;
-      case ExtraId.plasma_ring:
-        info('Plasma Ring', title: 'Secondary Weapon', hud: true);
-        weapons.switch_secondary_to(PlasmaEmitter);
-        break;
+
+      case ExtraId.integrity_boost:
+        info('Integrity Boost', hud: true);
+        _integrity_boost = min(2, _integrity_boost + 0.1);
+        _update_sound_hint();
+
       case ExtraId.shield:
         info('Shield Repair', hud: true);
         onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
-        break;
-      case ExtraId.smart_bomb:
-        info('Smart Bomb', title: 'Secondary Weapon', hud: true);
-        weapons.switch_secondary_to(SmartBomb);
-        break;
+
+      case ExtraId.shield_boost:
+        info('Shield Boost', hud: true);
+        onTraits<DeflectorShield>((it) => it.on_shield_boost());
+
+      // primary weapons
+
+      case ExtraId.acid_blast:
+        final upgrade = weapons.switch_primary_to(AcidBlaster);
+        info('Acid Blast', title: upgrade ? 'Primary Weapon' : null, hud: true);
+
+      case ExtraId.ion_pulse:
+        final upgrade = weapons.switch_primary_to(IonPulseGun);
+        info('Ion Pulse', title: upgrade ? 'Primary Weapon' : null, hud: true);
+
+      case ExtraId.phosphor_swirl:
+        final upgrade = weapons.switch_primary_to(SwirlGun);
+        info('Phosphor Swirl', title: upgrade ? 'Primary Weapon' : null, hud: true);
+
       case ExtraId.triple_plasma:
         final upgrade = weapons.switch_primary_to(PlasmaGun);
         info('Triple Plasma', title: upgrade ? 'Primary Weapon' : null, hud: true);
-        break;
+
       case ExtraId.yin_yang:
         final upgrade = weapons.switch_primary_to(YinYangGun);
         info('Yin Yang', title: upgrade ? 'Primary Weapon' : null, hud: true);
-        break;
+
+      // secondary weapons
+
+      case ExtraId.cluster_bomb:
+        info('Cluster Bomb', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(ClusterBombCannon);
+
+      case ExtraId.nuke_missile:
+        info('Nuke Missile', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(NukeMissileLauncher);
+
+      case ExtraId.plasma_ring:
+        info('Plasma Ring', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(PlasmaEmitter);
+
+      case ExtraId.smart_bomb:
+        info('Smart Bomb', title: 'Secondary Weapon', hud: true);
+        weapons.switch_secondary_to(SmartBomb);
     }
   }
 

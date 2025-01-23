@@ -9,6 +9,7 @@ import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/homing_launcher.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -37,13 +38,17 @@ class MarauderCaptain extends EnemyEntity
     super.createEntity();
     final secondary = [ExtraId.plasma_ring, ExtraId.cluster_bomb, ExtraId.nuke_missile, ExtraId.smart_bomb].random(rng);
     required_extras = {ExtraId.phosphor_swirl, ExtraId.ion_pulse, secondary, ExtraId.triple_plasma};
-    random_extras_count = 1;
+    random_extras_count = 3;
   }
 
   @override
   void shield_added() {
     super.shield_added();
-    // shield.scale.setAll(6);
+    shield.auto_recharge = switch (difficulty) {
+      Difficulty.easy => 0.20,
+      Difficulty.normal => 0.225,
+      Difficulty.hard => 0.25,
+    };
     indicator.position.setValues(0, -16);
   }
 }
@@ -53,7 +58,11 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
 
   @override
   void createEntity() {
-    reset_hit_points_to(40);
+    reset_hit_points_to(switch (difficulty) {
+      Difficulty.easy => 100,
+      Difficulty.normal => 125,
+      Difficulty.hard => 150,
+    });
 
     set_sprite_source(atlas.sprite('entities/camo_stellar_jet.png'), 16);
     size.setAll(96);

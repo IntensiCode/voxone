@@ -16,6 +16,7 @@ import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/ranger_laser.dart';
 import 'package:voxone/game/enemies/satellite_marauder.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -70,7 +71,11 @@ class CapitalShip extends EnemyEntity
   void shield_added() {
     super.shield_added();
     shield.shield.shield_boost = 3;
-    shield.auto_recharge = 0.1;
+    shield.auto_recharge = switch (difficulty) {
+      Difficulty.easy => 0.225,
+      Difficulty.normal => 0.25,
+      Difficulty.hard => 0.275,
+    };
     shield.max_rotate_time = 360;
     indicator.position.setValues(0, -16);
   }
@@ -81,7 +86,11 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
 
   @override
   void createEntity() {
-    reset_hit_points_to(1250);
+    reset_hit_points_to(switch (difficulty) {
+      Difficulty.easy => 800,
+      Difficulty.normal => 1250,
+      Difficulty.hard => 1500,
+    });
 
     set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
 

@@ -71,7 +71,7 @@ class PlasmaRing extends PositionComponent
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints, damage: _damage);
+          it.on_hit(intersections: intersectionPoints, damage: _damage * 0.5);
         }
       });
     }

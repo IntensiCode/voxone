@@ -201,7 +201,7 @@ abstract class EnemyEntity extends VoxelSprite with HasContext, Enemy, EnemyHitP
 mixin CreateMarauderEntity on EnemyEntity {
   @override
   void createEntity() {
-    reset_hit_points_to(dev ? 3 : 25);
+    reset_hit_points_to(25);
 
     fake_height = 50;
 

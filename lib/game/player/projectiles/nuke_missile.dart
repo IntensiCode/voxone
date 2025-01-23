@@ -8,6 +8,7 @@ import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -68,7 +69,12 @@ class NukeMissile extends SpriteComponent
     if (other is! MarauderShot && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(damage: 15, intersections: intersectionPoints);
+          final d = switch (difficulty) {
+            Difficulty.easy => 60.0,
+            Difficulty.normal => 50.0,
+            Difficulty.hard => 45.0,
+          };
+          it.on_hit(damage: d, intersections: intersectionPoints);
           _emit_nuke(this);
           recycle();
         }
