@@ -2,10 +2,13 @@ import 'package:collection/collection.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:voxone/aural/audio_menu.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/credits.dart';
 import 'package:voxone/game/shared/configuration.dart';
+import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
@@ -15,14 +18,18 @@ import 'package:voxone/input/controls.dart';
 import 'package:voxone/input/select_game_pad.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/title_screen.dart';
+import 'package:voxone/ui/flow_text.dart';
+import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
+import 'package:voxone/util/bitmap_button.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/nine_patch_image.dart';
 import 'package:voxone/video_menu.dart';
 import 'package:voxone/web_play_screen.dart';
 
 class MainController extends World
-    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>
+    with AutoDispose, HasAutoDisposeShortcuts, HasCollisionDetection<Sweep<ShapeHitbox>>, TapCallbacks
     implements ScreenNavigation {
   //
   @override
@@ -32,12 +39,15 @@ class MainController extends World
 
   @override
   onLoad() async {
+    super.onLoad();
     await configuration.load();
     autoDispose("ShowScreen", messaging.listen<ShowScreen>((it) => showScreen(it.screen)));
   }
 
   @override
   void onMount() {
+    super.onMount();
+
     if (dev) {
       showScreen(Screen.title);
     } else {
@@ -153,4 +163,88 @@ class MainController extends World
         Screen.title => TitleScreen(),
         Screen.video => VideoMenu(show_back: true),
       };
+
+  @override
+  void onTapUp(TapUpEvent event) {
+    if (!dev) return;
+
+    game.world.children.whereType<Inspector>().forEach((it) => it.removeFromParent());
+
+    for (final it in descendants(reversed: true).whereType<PositionComponent>()) {
+      if (it is Hitbox) continue;
+      if (it is Inspector) continue;
+      if (it is FlowText && it.parent is Inspector) continue;
+      if (it is NinePatchComponent && it.parent?.parent is Inspector) continue;
+      if (it.containsPoint(event.localPosition)) {
+        final t = !it.debugMode;
+        for (final d in it.descendants(includeSelf: true)) {
+          d.debugMode = t;
+        }
+        if (it is Snapshot) it.clearSnapshot();
+        if (it.debugMode) game.world.add(Inspector(it)..position.setFrom(event.localPosition));
+        return;
+      }
+    }
+  }
+}
+
+class Inspector extends PositionComponent {
+  Inspector(this.target) {
+    add(to_parent = BitmapButton(
+      bg_nine_patch: atlas.sprite('button_plain.png'),
+      text: 'Go to Parent',
+      position: Vector2(0, -32),
+      font: mini_font,
+      font_scale: 1,
+      onTap: () {
+        final tp = target.parent;
+        if (tp != null) target = tp;
+      },
+    )..priority = 10);
+
+    add(info = FlowText(
+      background: atlas.sprite('button_plain.png'),
+      text: target.toString(),
+      font: mini_font,
+      font_scale: 1,
+      size: Vector2(240, 128),
+    ));
+  }
+
+  Component target;
+
+  late BitmapButton to_parent;
+  late FlowText info;
+
+  @override
+  update(double dt) {
+    super.update(dt);
+
+    to_parent.isVisible = target.parent != null;
+
+    final lines = <String>[];
+    lines.add(target.runtimeType.toString());
+    lines.add('\n');
+    lines.add('Parent: ${target.parent?.runtimeType}');
+    if (target case PositionComponent it) {
+      lines.add('Position: ${it.x.round()} x ${it.y.round()}');
+      lines.add('Size: ${it.x.round()} x ${it.y.round()}');
+    }
+    if (target case FakeThreeDee it) {
+      lines.add('Fake Height: ${it.fake_height}');
+    }
+    lines.add('Priority: ${target.priority}');
+
+    final text = lines.join('\n');
+    if (info.text == text) return;
+
+    info.removeFromParent();
+    add(info = FlowText(
+      background: atlas.sprite('button_plain.png'),
+      text: text,
+      font: mini_font,
+      font_scale: 1,
+      size: Vector2(240, 128),
+    ));
+  }
 }

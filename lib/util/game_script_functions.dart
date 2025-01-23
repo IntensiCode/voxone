@@ -108,22 +108,11 @@ mixin GameScriptFunctions on Component, AutoDispose {
   }
 
   BitmapText textXY(String text, double x, double y, {Anchor anchor = Anchor.center, double? scale}) =>
-      this.text(text: text, position: Vector2(x, y), anchor: anchor, scale: scale);
-
-  BitmapText text({
-    required String text,
-    required Vector2 position,
-    Anchor? anchor,
-    double? scale,
-  }) {
-    final it = BitmapText(
-      text: text,
-      position: position,
-      anchor: anchor ?? Anchor.center,
-      font: font,
-      scale: scale ?? fontScale ?? 1,
-    );
-    add(it);
-    return it;
-  }
+      added(BitmapText(
+        text: text,
+        position: Vector2(x, y),
+        anchor: anchor ?? Anchor.center,
+        font: font,
+        scale: scale ?? fontScale ?? 1,
+      ));
 }

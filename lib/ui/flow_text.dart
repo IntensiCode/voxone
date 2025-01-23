@@ -11,6 +11,7 @@ import 'package:voxone/util/nine_patch_image.dart';
 
 class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, HasVisibility {
   //
+  final String text;
   late final List<String> _lines;
   late final int _visible_lines;
   final BitmapFont _font;
@@ -23,7 +24,7 @@ class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, 
   final List<BitmapText> _showing = [];
 
   FlowText({
-    required String text,
+    required this.text,
     required BitmapFont font,
     double font_scale = 1,
     Vector2? insets,
