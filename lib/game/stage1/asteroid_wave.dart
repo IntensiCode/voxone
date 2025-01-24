@@ -287,6 +287,7 @@ class Asteroid extends PositionComponent
       _collide(other);
     } else if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
+        if (recycled) return;
         if (!it.susceptible) return;
         _hit_target(it, intersections: intersectionPoints);
 

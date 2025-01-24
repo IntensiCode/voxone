@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
@@ -64,6 +63,7 @@ class MarauderShot extends PositionComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+    if (recycled) return;
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
@@ -74,8 +74,5 @@ class MarauderShot extends PositionComponent
   }
 
   @override
-  void on_destroyed() {
-    recycle();
-    audio.play(Sound.teleport, volume_factor: 0.1);
-  }
+  void on_destroyed() => recycle();
 }

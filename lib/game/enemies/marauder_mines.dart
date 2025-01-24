@@ -94,6 +94,7 @@ class MarauderMine extends VoxelSprite with CollisionCallbacks, HasContext, Enem
 
   @override
   void on_destroyed() {
+    if (recycled) return;
     if (_destroyed) return;
     _destroyed = true;
     decals.spawn3d(Decal.nuke_explosion, this);
@@ -150,6 +151,8 @@ class MarauderMine extends VoxelSprite with CollisionCallbacks, HasContext, Enem
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+
+    if (recycled) return;
 
     if (other is MarauderMine) {
       //

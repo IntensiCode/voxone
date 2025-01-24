@@ -140,6 +140,7 @@ class _Extra extends VoxelSprite with CollisionCallbacks, HasContext, Recyclable
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+    if (recycled) return;
     other.onTraits<Player>((it) {
       decals.spawn3d(Decal.teleport, this);
       player.on_collect_extra(which);

@@ -37,6 +37,8 @@ class ClusterBomb extends SpriteComponent
 
   @override
   void update(double dt) {
+    if (recycled) return;
+
     super.update(dt);
     _life_time += dt;
 
@@ -53,7 +55,7 @@ class ClusterBomb extends SpriteComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-
+    if (recycled) return;
     if (other is! MarauderShot && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {

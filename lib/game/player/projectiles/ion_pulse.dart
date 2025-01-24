@@ -64,7 +64,8 @@ class IonPulse extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
 
-    if (_size_time != 0) return;
+    if (recycled) return;
+    if (_size_time != 0) return; // TODO WTF!?
 
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {

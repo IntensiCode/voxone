@@ -133,6 +133,7 @@ class HomingBomb extends PositionComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
+    if (recycled) return;
     if (other.hasTrait<Friendly>()) {
       other.onTraits<Target>((it) {
         if (!it.susceptible) return;
@@ -150,6 +151,7 @@ class HomingBomb extends PositionComponent
 
   @override
   void on_destroyed() {
+    if (recycled) return;
     recycle();
     decals.spawn3d(Decal.nuke_explosion, this);
     audio.play(Sound.explosion, volume_factor: 0.1);
