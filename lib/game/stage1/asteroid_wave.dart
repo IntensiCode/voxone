@@ -24,7 +24,7 @@ import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 class AsteroidsWave extends GameScriptComponent with EnemyWave, HasContext {
   static const enemies_in_wave = 64;

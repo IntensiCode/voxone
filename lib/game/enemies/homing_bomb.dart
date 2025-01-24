@@ -17,7 +17,7 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 class _Halo extends CircleComponent with HasVisibility {
   _Halo() {

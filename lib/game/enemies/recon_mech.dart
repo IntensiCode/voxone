@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/vox.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
@@ -11,7 +10,7 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/voxel/vox_io.dart';
+import 'package:voxone/voxel/voxels.dart';
 
 class ReconMech extends EnemyEntity
     with

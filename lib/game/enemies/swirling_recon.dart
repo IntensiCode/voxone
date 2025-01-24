@@ -5,14 +5,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
-import 'package:voxone/core/vox.dart';
+import 'package:voxone/voxel/voxels.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/voxel/vox_io.dart';
 
 class SwirlingRecon extends EnemyEntity
     with

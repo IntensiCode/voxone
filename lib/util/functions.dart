@@ -61,7 +61,7 @@ SpriteAnimation animCR(
   final parts = List.generate(rows, (i) => sheet.createAnimation(row: i, stepTime: stepTime, loop: loop));
   final List<SpriteAnimationFrame> frames;
   if (vertical) {
-     frames = List.generate(columns, (i) => List.generate(rows, (j) => parts[j].frames[i])).flattenedToList;
+    frames = List.generate(columns, (i) => List.generate(rows, (j) => parts[j].frames[i])).flattenedToList;
   } else {
     frames = parts.map((it) => it.frames).flattenedToList;
   }

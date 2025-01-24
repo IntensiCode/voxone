@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/input/game_keys.dart';

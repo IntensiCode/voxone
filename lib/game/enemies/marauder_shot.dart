@@ -10,7 +10,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 class MarauderShot extends PositionComponent
     with CollisionCallbacks, HasContext, HasPaint, FakeThreeDee, EnemyHitPoints, Recyclable {

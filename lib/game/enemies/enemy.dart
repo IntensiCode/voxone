@@ -21,9 +21,9 @@ import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/extras.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/voxel_sprite.dart';
 
 bool can_sweep = true;
 
@@ -50,7 +50,7 @@ enum EnemyState {
   bool get is_inactive => [defeated, exploding, leaving, left].contains(this);
 }
 
-abstract class EnemyEntity extends VoxelSprite with HasContext, Enemy, EnemyHitPoints {
+abstract class EnemyEntity extends VoxelEntity with HasContext, Enemy, EnemyHitPoints {
   EnemyEntity(this.wave);
 
   final EnemyWave wave;

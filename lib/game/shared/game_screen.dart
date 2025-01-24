@@ -19,7 +19,7 @@ import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
   GameScreen() {

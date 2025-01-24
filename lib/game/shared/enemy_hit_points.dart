@@ -5,7 +5,7 @@ import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 mixin EnemyHitPoints on FakeThreeDee, HasContext implements Hostile, Integrity, Target {
   bool mini_explosions_on_hit = true;

@@ -3,9 +3,7 @@ import 'package:voxone/background/space.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/appearing_moon.dart';
-import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/input/keys.dart';
-import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/game_script.dart';
 

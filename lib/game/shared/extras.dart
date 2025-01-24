@@ -13,11 +13,11 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/shared/video_mode.dart';
+import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/voxel_sprite.dart';
 
 extension HasContextExtensions on HasContext {
   Extras get extras => cache.putIfAbsent('extras', () => Extras());
@@ -82,7 +82,7 @@ class Extras extends Component with HasContext {
   }
 }
 
-class _Extra extends VoxelSprite with CollisionCallbacks, HasContext, Recyclable {
+class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable {
   _Extra(this.sprites, Shadows shadows) {
     set_sprite_source(sprites[ExtraId.values.first]!, 16);
 

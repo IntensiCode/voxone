@@ -29,10 +29,10 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/player_state.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
+import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/voxel_sprite.dart';
 
 enum _SoundHint {
   danger,
@@ -40,7 +40,7 @@ enum _SoundHint {
   warning,
 }
 
-class ZaxxonPlayer extends VoxelSprite
+class ZaxxonPlayer extends VoxelEntity
     with
         AutoDispose,
         HasAutoDisposeShortcuts,
@@ -210,7 +210,7 @@ class ZaxxonPlayer extends VoxelSprite
   }
 }
 
-mixin _CreateEntityOnLoad on VoxelSprite, HasContext, HasTraits, Player, Target {
+mixin _CreateEntityOnLoad on VoxelEntity, HasContext, HasTraits, Player, Target {
   static const _size = 80.0;
 
   late final DeflectorShield _shield;

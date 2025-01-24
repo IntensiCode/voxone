@@ -1,6 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/voxel_sprite.dart';
+import 'package:voxone/voxel/voxel_sprite.dart';
 
 enum VideoMode {
   performance,

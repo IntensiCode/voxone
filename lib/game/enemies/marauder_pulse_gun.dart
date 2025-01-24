@@ -1,8 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
+import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/random.dart';
 
@@ -42,7 +42,6 @@ class MarauderPulseGun extends Component with HasContext {
       it.x -= 25;
       it.y += 25 / 4;
       stage.add(it);
-
     } else {
       _cool_down += 1.4 + rng.nextDoubleLimit(0.1);
       _fire_salvo = 5;

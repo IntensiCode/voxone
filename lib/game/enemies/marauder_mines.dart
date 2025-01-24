@@ -11,11 +11,11 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/game/shared/video_mode.dart';
+import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
-import 'package:voxone/util/voxel_sprite.dart';
 
 var rotate_mines = true;
 
@@ -36,7 +36,7 @@ class MarauderMines extends Component with HasContext {
   onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1)));
 }
 
-class MarauderMine extends VoxelSprite with CollisionCallbacks, HasContext, EnemyHitPoints, Recyclable {
+class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, EnemyHitPoints, Recyclable {
   MarauderMine(this.animation) {
     set_sprite_source(animation.frames.first.sprite, 8);
 

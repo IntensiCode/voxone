@@ -11,6 +11,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/video_mode.dart';
+import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/input/shortcuts.dart';
 import 'package:voxone/ui/basic_menu.dart';
@@ -20,7 +21,6 @@ import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/voxel_sprite.dart';
 
 enum _TitleButtons {
   credits,
@@ -210,7 +210,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
   }
 }
 
-class _TitleShip extends VoxelSprite {
+class _TitleShip extends VoxelEntity {
   _TitleShip() {
     set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
   }
