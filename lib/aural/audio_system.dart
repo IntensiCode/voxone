@@ -8,8 +8,8 @@ import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/game_data.dart';
 import 'package:voxone/util/storage.dart';
 
-import 'audio_soloud.dart' if (dart.library.html) 'audio_web.dart';
-// import 'audio_mixed.dart' if (dart.library.html) 'audio_web.dart';
+// import 'audio_soloud.dart' if (dart.library.html) 'audio_web.dart';
+import 'audio_mixed.dart' if (dart.library.html) 'audio_web.dart';
 
 enum Sound {
   acid_blast,

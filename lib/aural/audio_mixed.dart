@@ -9,9 +9,9 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/util/auto_dispose.dart';
 
 class _PlayState {
-  _PlayState(this.sample, {this.loop = false, this.paused = false, required this.volume});
+  _PlayState(this.sample, {this.loop = false, required this.volume}) : this.paused = false;
 
-  final Float32List sample;
+  Float32List sample;
   int sample_pos = 0;
 
   bool loop;
@@ -21,12 +21,13 @@ class _PlayState {
   double volume;
 }
 
-class SoundboardImpl extends AudioSystem {
+class PlatformAudioSystem extends AudioSystem {
   AudioStream? _stream;
   final _samples = <Sound, Float32List>{};
   final _last_time = <Sound, int>{};
   final _one_shot_cache = <String, Future<Float32List>>{};
   final _play_state = <_PlayState>[];
+  final _play_pool = <_PlayState>[];
   _PlayState? _active_music;
 
   @override
@@ -73,7 +74,22 @@ class SoundboardImpl extends AudioSystem {
     if (now < last_played_at + 100) return;
     _last_time[sound] = now;
 
-    _play_state.add(_PlayState(_samples[sound]!, volume: volume_factor * super.sound));
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    _play_state.add(_get_play_state(_samples[sound]!, volume));
+  }
+
+  _PlayState _get_play_state(Float32List sample, volume, {loop = false}) {
+    if (_play_pool.isNotEmpty) {
+      final reused = _play_pool.removeLast();
+      reused.sample = sample;
+      reused.sample_pos = 0;
+      reused.loop = loop;
+      reused.paused = false;
+      reused.on_end = null;
+      reused.volume = volume;
+      return reused;
+    }
+    return _PlayState(sample, volume: volume, loop: loop);
   }
 
   @override
@@ -89,9 +105,10 @@ class SoundboardImpl extends AudioSystem {
   }) async {
     final data = _one_shot_cache[filename] ??= _load_one_shot(filename);
     if (!cache) _one_shot_cache.remove(filename);
-    final playing = _PlayState(await data, volume: volume_factor * sound, loop: loop);
+    final volume = (volume_factor * super.sound * super.master).clamp(0.0, 1.0);
+    final playing = _get_play_state(await data, volume, loop: loop);
     _play_state.add(playing);
-    return Disposable.wrap(() => _play_state.remove(playing));
+    return Disposable.wrap(() => _play_state.remove(playing)); // no recycling because outside can break things?
   }
 
   Future<Float32List> _load_one_shot(String filename) async {
@@ -108,14 +125,20 @@ class SoundboardImpl extends AudioSystem {
 
     final raw_name = '${filename.replaceFirst('.ogg', '').replaceFirst('.mp3', '')}.raw';
     final data = await _make_sample('audio/$raw_name');
-    _active_music = _PlayState(data, loop: loop, volume: music);
+    final volume = (super.music * super.master).clamp(0.0, 1.0);
+    _active_music = _get_play_state(data, volume, loop: loop);
     _active_music!.on_end = on_end;
     _play_state.add(_active_music!);
   }
 
   @override
   void do_stop_active_music() {
-    _play_state.remove(_active_music);
+    final it = _active_music;
+
+    if (it == null) return;
+    _play_state.remove(it);
+    _play_pool.add(it);
+
     _active_music = null;
   }
 
@@ -193,6 +216,10 @@ class SoundboardImpl extends AudioSystem {
 
       _stream!.push(mixed);
 
+      final done = _play_state.where((e) => e.sample_pos == -1);
+      for (final it in done) {
+        _play_pool.add(it);
+      }
       _play_state.removeWhere((e) => e.sample_pos == -1);
     });
   }
