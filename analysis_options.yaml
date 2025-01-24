@@ -10,6 +10,7 @@
 analyzer:
   errors:
     avoid_function_literals_in_foreach_calls: ignore
+    curly_braces_in_flow_control_structures: ignore
     non_constant_identifier_names: ignore
     prefer_function_declarations_over_variables: ignore
     unnecessary_this: ignore
