@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -102,6 +103,13 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
   /// Create stacked sprite image from the given [voxels]. Expensive operation.
   void set_voxels_source(Voxels voxels, {List<int>? blurred_argb32}) {
     final sprite = Sprite(vox_to_image(voxels, blurred_argb32: blurred_argb32));
+
+    if (dev && kDebugMode && !kIsWeb && !kIsWasm) {
+      sprite.image.toByteData(format: ImageByteFormat.png).then((data) {
+        File('${this.runtimeType}-${voxels.height}.png').writeAsBytesSync(Uint8List.view(data!.buffer));
+      });
+    }
+
     set_sprite_source(sprite, voxels.height, disposable_image: true);
   }
 

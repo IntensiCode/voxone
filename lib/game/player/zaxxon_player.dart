@@ -5,6 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/player_strafe.dart';
@@ -225,7 +226,8 @@ mixin _CreateEntityOnLoad on VoxelEntity, HasContext, HasTraits, Player, Target 
 
   @override
   Future onLoad() async {
-    set_vox_source('interstellar_runner.vx', blurred_argb32: [0xffff3200]);
+    // set_vox_source('interstellar_runner.vx', blurred_argb32: [0xffff3200]);
+    set_sprite_source(atlas.sprite('entities/ZaxxonPlayer-15.png'), 15);
 
     shadows.add(create_linked_shadow());
 
