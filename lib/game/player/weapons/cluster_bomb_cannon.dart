@@ -30,10 +30,11 @@ class ClusterBombCannon extends Component with HasContext, SecondaryWeapon {
   @override
   void do_fire() {
     stage.add(_primary.acquire()..reset(_player as FakeThreeDee));
-    audio.play(Sound.shot, volume_factor: 0.5);
+    audio.play(Sound.swirl, volume_factor: 0.25);
   }
 
   _emit_bombs(FakeThreeDee origin) {
+    audio.play(Sound.emit, volume_factor: 0.25);
     final count = 24;
     for (var i = 0; i < count; i++) {
       final angle = i * 2 * pi / count;

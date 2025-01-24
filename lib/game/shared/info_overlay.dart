@@ -113,6 +113,8 @@ class _InfoOverlay extends GameScriptComponent {
       audio.play_one_shot_sample('voice/minefield_ahead.ogg', volume_factor: 2);
     } else if (it.text == 'Planetary Fleet Arriving') {
       audio.play_one_shot_sample('voice/planetary_fleet_arriving.ogg', volume_factor: 2);
+    } else if (it.text == 'Crossing Asteroid Belt') {
+      audio.play_one_shot_sample('voice/crossing_asteroid_belt.ogg', volume_factor: 2);
     } else if (it.text == 'Capital Ship Approaching') {
       audio.play_one_shot_sample('voice/capital_ship_approaching.ogg', volume_factor: 2);
     } else if (it.title == 'Primary Weapon') {

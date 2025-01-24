@@ -13,9 +13,11 @@ import 'audio_mixed.dart' if (dart.library.html) 'audio_web.dart';
 
 enum Sound {
   acid_blast,
+  bomb,
   bonus1,
   bonus2,
   clash,
+  emit,
   explosion,
   explosion_hollow,
   game_over,

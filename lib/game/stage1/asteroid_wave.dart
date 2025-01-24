@@ -34,7 +34,7 @@ class AsteroidsWave extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   void onLoad() {
-    after(delay, () => sendMessage(ShowInfoText(text: 'Asteroids Detected')));
+    after(delay, () => sendMessage(ShowInfoText(text: 'Crossing Asteroid Belt')));
 
     if (!dev) pause_script(info_time);
 

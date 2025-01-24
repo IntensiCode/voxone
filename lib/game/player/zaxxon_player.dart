@@ -139,11 +139,6 @@ class ZaxxonPlayer extends VoxelEntity
   void update(double dt) {
     super.update(dt);
 
-    if (_shield.energy < 0.25 && _hint == _SoundHint.none) {
-      _hint = _SoundHint.warning;
-      _update_sound_hint();
-    }
-
     _update_sound(dt);
 
     switch (state) {
@@ -375,6 +370,8 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
     _update_sound_hint();
 
     if (_hint_time > 0) _hint_time = max(0, _hint_time - dt);
+
+    if (_shield.energy <= 0.33 && _hint == _SoundHint.none) _hint = _SoundHint.warning;
 
     if (_hint != _SoundHint.none && _hint_time <= 0) {
       _hint_time = _hint == _SoundHint.danger ? 1.5 : 2;

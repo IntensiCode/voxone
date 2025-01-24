@@ -1,6 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
+import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
@@ -53,6 +54,7 @@ class Bomb extends SpriteComponent
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
+          audio.play(Sound.bomb, volume_factor: 0.25);
           it.on_hit(damage: 5, intersections: intersectionPoints);
           recycle();
         }
