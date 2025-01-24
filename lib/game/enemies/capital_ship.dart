@@ -169,6 +169,14 @@ mixin _VibrateOnIncoming on EnemyEntity {
     cam_pos.x += sin(incoming_time * 2300.527) * strength;
     cam_pos.y += cos(incoming_time * 930.182) * strength;
   }
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    if (_cam_base != null) {
+      game.camera.viewport.position.setFrom(_cam_base!);
+    }
+  }
 }
 
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
