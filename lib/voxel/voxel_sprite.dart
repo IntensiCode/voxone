@@ -55,6 +55,10 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
   /// Pixel multiplier for pixelation. When changed, the cache has to be cleared.
   static double pixel_multiplier = 1;
 
+  static Future<FragmentShader>? _shared_future;
+  static FragmentShader? _shared_shader;
+  static Uniforms<VoxelUniform>? _shared_uniforms;
+
   late Sprite _sprite;
   late FragmentShader _shader;
   late Uniforms<VoxelUniform> _uniforms;
@@ -154,16 +158,26 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
     _dispose_last = false;
     _last = null;
 
-    _shader.dispose();
+    // _shader.dispose();
   }
 
   Image? get last_rendered => _last;
 
   @override
   Future onLoad() async {
-    logInfo('loading voxel shader');
-    _shader = await loadShader('voxel.frag');
-    _uniforms = Uniforms(_shader, VoxelUniform.values);
+    logInfo('loading voxel sprite $runtimeType');
+    _shared_future ??= loadShader('voxel.frag').then((value) {
+      logInfo('shared shader loaded');
+      _shared_shader = value;
+      _shared_uniforms ??= Uniforms(value, VoxelUniform.values);
+      return value;
+    });
+
+    _shared_shader ??= await _shared_future;
+    _shared_uniforms ??= Uniforms(_shared_shader!, VoxelUniform.values);
+
+    _shader = _shared_shader ?? await loadShader('voxel.frag');
+    _uniforms = _shared_uniforms ?? Uniforms(_shader, VoxelUniform.values);
   }
 
   /// Progress the render update timer.
@@ -255,10 +269,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
     _u_dir.normalize();
     _v_dir.normalize();
 
-    if (_dirty_shader) _update_shader();
-
-    // TODO still required? bug fix \_('')_/
-    if (!_dirty_shader && kIsWeb) _shader.setImageSampler(0, _sprite.image);
+    _update_shader();
 
     _dirty_shader = false;
 
