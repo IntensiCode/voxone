@@ -22,7 +22,7 @@ class YinYang extends SpriteComponent
     size.setAll(32);
     _sprites = atlas.sheetI('yin-yang.png', 5, 1);
     sprite = _sprites.getSprite(0, 0);
-    add(CircleHitbox(radius: 4, position: size / 2, anchor: Anchor.center, isSolid: true)..debug());
+    add(CircleHitbox(radius: 8, position: size / 2, anchor: Anchor.center, isSolid: true)..debug());
   }
 
   final Component _stage;
@@ -34,11 +34,15 @@ class YinYang extends SpriteComponent
 
   double _anim_time = 0;
 
+  double _damage = 2;
+
   void reset(FakeThreeDee origin) {
     change_direction(0);
     init_fake_3d(origin);
+    size.setAll(32);
     x += 25;
     y -= 25 / 4;
+    _damage = 2;
   }
 
   @override
@@ -56,7 +60,8 @@ class YinYang extends SpriteComponent
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          it.on_hit(intersections: intersectionPoints, damage: _damage);
+          _damage = max(0.25, _damage - 1 / 32);
 
           var hostiles = _stage.children
               .whereType<Hostile>()
@@ -77,6 +82,9 @@ class YinYang extends SpriteComponent
           // change direction towards nearest target:
           final direction = nearest.position - position;
           set_direction(direction.normalized());
+
+          size.setAll(size.x - 0.25);
+          if (size.x < 8) recycle();
         }
       });
     }
