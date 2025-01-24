@@ -84,7 +84,6 @@ class ZaxxonPlayer extends VoxelEntity
     } else if (integrity == 0) {
       on_destroyed();
     } else {
-      _update_sound_hint();
       if (amount >= 0.1) sendMessage(Rumble(duration: 0.1));
     }
   }
@@ -127,6 +126,10 @@ class ZaxxonPlayer extends VoxelEntity
       });
       onKey('}', () {
         invincible = !invincible;
+        if (invincible) {
+          integrity = 1;
+          _shield.shield.recharge(1);
+        }
         sendMessage(ShowInfoText(text: 'Invincible: $invincible', title: 'Cheat'));
       });
     }
@@ -135,6 +138,11 @@ class ZaxxonPlayer extends VoxelEntity
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (_shield.energy < 0.25 && _hint == _SoundHint.none) {
+      _hint = _SoundHint.warning;
+      _update_sound_hint();
+    }
 
     _update_sound(dt);
 
@@ -308,12 +316,10 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
       case ExtraId.integrity:
         info('Integrity Repair', hud: true);
         integrity = min(1, integrity + 0.25);
-        _update_sound_hint();
 
       case ExtraId.integrity_boost:
         info('Integrity Boost', hud: true);
         _integrity_boost = min(2, _integrity_boost + 0.1);
-        _update_sound_hint();
 
       case ExtraId.shield:
         info('Shield Repair', hud: true);
@@ -365,27 +371,32 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
     }
   }
 
-  void _update_sound_hint() {
-    if (integrity <= 0.15) {
-      _hint = _SoundHint.danger;
-    } else if (integrity <= 0.35) {
-      _hint = _SoundHint.warning;
-    } else {
-      _hint = _SoundHint.none;
-    }
-  }
-
   void _update_sound(double dt) {
+    _update_sound_hint();
+
     if (_hint_time > 0) _hint_time = max(0, _hint_time - dt);
 
     if (_hint != _SoundHint.none && _hint_time <= 0) {
-      _hint_time = 2;
+      _hint_time = _hint == _SoundHint.danger ? 1.5 : 2;
       final name = switch (_hint) {
         _SoundHint.danger => 'danger',
         _SoundHint.warning => 'warning',
         _SoundHint.none => 'none',
       };
       audio.play_one_shot_sample('voice/$name.ogg', volume_factor: 2);
+    }
+  }
+
+  void _update_sound_hint() {
+    if (integrity <= 0.15) {
+      if (_hint != _SoundHint.danger) _hint_time = 0;
+      _hint = _SoundHint.danger;
+    } else if (integrity <= 0.35 && _shield.energy <= 0.2) {
+      _hint = _SoundHint.danger;
+    } else if (integrity <= 0.35 || _shield.energy <= 0.2) {
+      _hint = _SoundHint.warning;
+    } else {
+      _hint = _SoundHint.none;
     }
   }
 }
