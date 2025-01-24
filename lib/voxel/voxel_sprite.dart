@@ -11,6 +11,8 @@ import 'package:voxone/util/mutable.dart';
 import 'package:voxone/util/pixelate.dart';
 import 'package:voxone/util/random.dart';
 import 'package:voxone/util/uniforms.dart';
+import 'package:voxone/voxel/voxel_image.dart';
+import 'package:voxone/voxel/voxel_io.dart';
 import 'package:voxone/voxel/voxels.dart';
 
 enum HighlightMode {

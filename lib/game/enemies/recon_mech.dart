@@ -10,6 +10,8 @@ import 'package:voxone/game/shared/shadows.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/random.dart';
+import 'package:voxone/voxel/voxel_image.dart';
+import 'package:voxone/voxel/voxel_io.dart';
 import 'package:voxone/voxel/voxels.dart';
 
 class ReconMech extends EnemyEntity
