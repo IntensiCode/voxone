@@ -1,14 +1,17 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/sweeping_marauder.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
+import 'package:voxone/util/random.dart';
 
 class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
   final enemies_in_wave = switch (difficulty) {
@@ -45,5 +48,15 @@ class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
   void update(double dt) {
     super.update(dt);
     defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
+
+    if (killed.length >= enemies_in_wave / 2 && !_spawned_weapon) {
+      logInfo('spawn guaranteed weapon');
+      final it = stage.children.whereType<SweepingMarauder>().where((it) => !it.defeated).firstOrNull;
+      it?.required_extras = {ExtraId.primaries.random(rng)};
+      it?.random_extras_count = 0;
+      _spawned_weapon = true;
+    }
   }
+
+  bool _spawned_weapon = false;
 }

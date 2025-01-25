@@ -1,11 +1,14 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_captain.dart';
+import 'package:voxone/game/enemies/sweeping_marauder.dart';
 import 'package:voxone/game/enemies/warping_marauder.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_wave.dart';
+import 'package:voxone/game/shared/extra_id.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/extensions.dart';
@@ -55,5 +58,15 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
   void update(double dt) {
     super.update(dt);
     defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
+
+    if (killed.length >= enemies_in_wave / 2 && !_spawned_weapon) {
+      logInfo('spawn guaranteed weapon');
+      final it = stage.children.whereType<SweepingMarauder>().where((it) => !it.defeated).firstOrNull;
+      it?.required_extras = {ExtraId.yin_yang};
+      it?.random_extras_count = 0;
+      _spawned_weapon = true;
+    }
   }
+
+  bool _spawned_weapon = false;
 }
