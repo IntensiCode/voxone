@@ -35,24 +35,28 @@ class EnergyShield implements Target {
     _on_hit();
     _energy -= damage / 25 / shield_boost;
     if (_energy < 0) {
-      if (dev) logInfo('shield depleted: $_energy');
-
-      final danger = switch (difficulty) {
-        Difficulty.easy => 2,
-        Difficulty.normal => 5,
-        Difficulty.hard => 10,
-      };
-
-      final remaining = max(0.0, _energy.abs() - 5);
-      _target.on_hit(damage: remaining * danger);
-
-      _energy = max(-5, _energy / 10);
-
-      _rumble();
-      audio.play(Sound.emit, volume_factor: 0.25);
-      audio.play(Sound.plasma, volume_factor: 0.25);
+      _on_depleted();
     } else if (damage >= 1) {
       audio.play(Sound.teleport, volume_factor: 0.25);
     }
+  }
+
+  void _on_depleted() {
+    if (dev) logInfo('shield depleted: $_energy');
+
+    final danger = switch (difficulty) {
+      Difficulty.easy => 2,
+      Difficulty.normal => 5,
+      Difficulty.hard => 10,
+    };
+
+    final remaining = max(0.0, _energy.abs() - 5);
+    _target.on_hit(damage: remaining * danger);
+
+    _energy = max(-5, _energy / 10);
+
+    _rumble();
+    audio.play(Sound.emit, volume_factor: 0.25);
+    audio.play(Sound.plasma, volume_factor: 0.25);
   }
 }
