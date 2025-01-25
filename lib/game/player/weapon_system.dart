@@ -28,7 +28,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
   late Player player;
 
-  late PrimaryWeapon primary_weapon;
+  PrimaryWeapon? primary_weapon;
   SecondaryWeapon? secondary_weapon;
 
   double? get secondary_cooldown {
@@ -55,9 +55,9 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
     _primaries[weapon] = true;
 
-    primary_weapon.removeFromParent();
+    primary_weapon?.removeFromParent();
     primary_weapon = weapon;
-    add(primary_weapon);
+    add(primary_weapon!);
 
     return true;
   }
@@ -119,7 +119,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
 
     player = parent as Player;
     primary_weapon = _primaries.keys.first;
-    add(primary_weapon);
+    add(primary_weapon!);
 
     final initial = _secondaries.keys.whereNot((it) => it is SmartBomb).toList().random(rng);
     switch_secondary_to(initial.runtimeType);

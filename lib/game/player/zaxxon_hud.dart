@@ -81,12 +81,12 @@ class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
       _cooldown.fadeInDeep();
     }
 
-    final primary = _weapons.primary_weapon.display_name;
-    if (_primary?.text != primary) {
+    final primary = _weapons.primary_weapon?.display_name ?? '';
+    if (_weapons.primary_weapon != null && _primary?.text != primary) {
       _primary?.removeFromParent();
       add(_primary = BitmapText(text: primary, position: Vector2(192 + 32, 32))..renderSnapshot = true);
       _primary_weapon ??= added(SpriteComponent()..position = Vector2(192 + 32 - 26, 18));
-      _primary_weapon?.sprite = _weapons.primary_weapon.icon;
+      _primary_weapon?.sprite = _weapons.primary_weapon?.icon;
       _primary?.fadeInDeep();
       _primary_weapon?.fadeInDeep();
     }
