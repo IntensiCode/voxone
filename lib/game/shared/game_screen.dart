@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
@@ -19,6 +20,7 @@ import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/bitmap_text.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/messaging.dart';
+import 'package:voxone/util/on_message.dart';
 import 'package:voxone/voxel/voxel_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
@@ -42,10 +44,15 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   bool _paused = false;
 
+  late Vector2 _cam_base;
+
   @override
   void onMount() {
     super.onMount();
 
+    _cam_base = game.camera.viewport.position.clone();
+
+    onMessage<Rumble>((it) => _rumble(it.duration));
     // onMessage<UpdateDifficulty>((_) => _update_time_scale());
     _update_time_scale();
 
@@ -67,10 +74,21 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     apply_video_mode();
   }
 
+  double _rumble_time = 0;
+
+  void _rumble(double duration) {
+    final shake_time = duration * 2;
+    if (_rumble_time > shake_time * 0.75) return;
+    _rumble_time = shake_time;
+
+    stage_keys.rumble(duration ~/ 0.001);
+  }
+
   @override
   void onRemove() {
     super.onRemove();
     enable_mapping = false;
+    game.camera.viewport.position.setFrom(_cam_base);
   }
 
   void _update_time_scale() {
@@ -100,11 +118,32 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     }
 
     super.update(dt);
+
     if (stage_keys.any([GameKey.start, GameKey.soft1])) {
       if (!_paused) {
         _paused = true;
         add(_pause_overlay);
       }
+    }
+
+    if (_rumble_time > 0) {
+      _on_rumble(dt);
+    } else {
+      game.camera.viewport.position.setFrom(_cam_base);
+    }
+  }
+
+  void _on_rumble(double dt) {
+    _rumble_time -= dt;
+
+    final cam_pos = game.camera.viewport.position;
+    cam_pos.setFrom(_cam_base);
+
+    if (_rumble_time <= 0) {
+      _rumble_time = 0;
+    } else {
+      cam_pos.x += sin(_rumble_time * 913.527) * 4;
+      cam_pos.y += cos(_rumble_time * 715.182) * 4;
     }
   }
 

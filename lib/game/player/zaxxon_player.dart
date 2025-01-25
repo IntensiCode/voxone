@@ -80,12 +80,12 @@ class ZaxxonPlayer extends VoxelEntity
     if (integrity == 0 && was > 0.5) {
       integrity = 0.15;
       _hint = _SoundHint.danger;
-      keys.rumble(200);
+      sendMessage(Rumble(duration: 0.2));
     } else if (integrity == 0) {
       on_destroyed();
     } else {
       _update_sound_hint();
-      if (amount >= 0.1) keys.rumble();
+      if (amount >= 0.1) sendMessage(Rumble(duration: 0.1));
     }
   }
 
@@ -97,7 +97,7 @@ class ZaxxonPlayer extends VoxelEntity
     audio.play(Sound.explosion);
     add(explosions.spawn(this));
     _shield.removeFromParent();
-    keys.rumble(500);
+    sendMessage(Rumble(duration: 0.5));
   }
 
   @override

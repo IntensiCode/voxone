@@ -13,6 +13,12 @@ class PlayerDestroyed with Message {}
 
 class PlayerReady with Message {}
 
+class Rumble with Message {
+  Rumble({this.duration = 1});
+
+  final double duration;
+}
+
 class ShowInfoText with Message {
   ShowInfoText({
     this.title,
