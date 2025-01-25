@@ -35,6 +35,22 @@ void apply_video_mode() {
   logInfo('pixel_multiplier: ${VoxelSprite.pixel_multiplier}');
 }
 
+set bg_anim(bool value) {
+  _bg_anim = value;
+  _on_bg_anim_change.forEach((it) => it(value));
+}
+
+bool get bg_anim => _bg_anim;
+
+Disposable on_bg_anim_change(Function(bool) listener) {
+  _on_bg_anim_change.add(listener);
+  return Disposable.wrap(() => _on_bg_anim_change.remove(listener));
+}
+
+final _on_bg_anim_change = <Function(bool hook)>[];
+
+var _bg_anim = true;
+
 set video(VideoMode value) {
   _video = value;
   _on_video_change.forEach((it) => it(value));
@@ -48,6 +64,6 @@ Disposable on_video_change(Function(VideoMode) listener) {
   return Disposable.wrap(() => _on_video_change.remove(listener));
 }
 
-final _on_video_change = <Function(VideoMode p1)>[];
+final _on_video_change = <Function(VideoMode hook)>[];
 
 var _video = VideoMode.balanced;

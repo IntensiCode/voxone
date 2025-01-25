@@ -29,6 +29,7 @@ class Space extends Component with AutoDispose, HasPaint {
   static Paint? _paint;
 
   static double _time = 0;
+  static bool _animate = true;
 
   Space._();
 
@@ -56,6 +57,7 @@ class Space extends Component with AutoDispose, HasPaint {
   void onMount() {
     super.onMount();
     autoDispose('on_video_change', on_video_change((_) => _update_space()));
+    autoDispose('on_bg_anim_change', on_bg_anim_change((_) => _update_space()));
     _update_space();
   }
 
@@ -80,22 +82,31 @@ class Space extends Component with AutoDispose, HasPaint {
     _uniforms!.set(Uniform.scr_width, game_width / down_sampling);
     _uniforms!.set(Uniform.scr_height, game_height / down_sampling);
     _uniforms!.set(Uniform.rescale, down_sampling.toDouble());
+
+    _animate = bg_anim;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+    if (_last != null && !_animate) return;
     _time += dt;
     _uniforms!.set(Uniform.time, _time / 7);
   }
 
+  Image? _last;
+
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    final image = pixelate(_src.width.toInt(), _src.height.toInt(), (canvas) {
-      canvas.drawRect(_src, _paint!);
-    });
-    canvas.drawImageRect(image, _src, _dst, paint);
+
+    if (_last == null || _animate) {
+      _last?.dispose();
+      _last = pixelate(_src.width.toInt(), _src.height.toInt(), (canvas) {
+        canvas.drawRect(_src, _paint!);
+      });
+    }
+    canvas.drawImageRect(_last!, _src, _dst, paint);
   }
 
   static final _src = MutRect(0, 0, game_width / 4, game_height / 4);

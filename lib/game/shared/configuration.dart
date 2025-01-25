@@ -19,6 +19,7 @@ class Configuration with HasGameData {
     on_debug_change = (it) => _save_if(_data['debug'] != it);
     on_difficulty_change = (_) => _save_if(_data['difficulty'] != difficulty.name);
     on_video_change((_) => _save_if(_data['video'] != video.name));
+    on_bg_anim_change((_) => _save_if(_data['bg_anim'] != bg_anim));
   }
 
   void _save_if(bool changed) {
@@ -49,6 +50,7 @@ class Configuration with HasGameData {
       (it) => it.name == data['video'],
       orElse: () => video,
     );
+    bg_anim = data['bg_anim'] ?? bg_anim;
     prefer_x_over_y = data['prefer_x_over_y'] ?? prefer_x_over_y;
 
     hw_mapping = (data['hw_mapping'] as Map<String, dynamic>? ?? {}).entries.mapNotNull((e) {
@@ -66,5 +68,6 @@ class Configuration with HasGameData {
     ..['difficulty'] = difficulty.name
     ..['prefer_x_over_y'] = prefer_x_over_y
     ..['hw_mapping'] = hw_mapping.map((k, v) => MapEntry(k.toString(), v.name))
+    ..['bg_anim'] = bg_anim
     ..['video'] = video.name;
 }
