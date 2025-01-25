@@ -37,13 +37,19 @@ mixin EnemyHitPoints on FakeThreeDee, HasContext implements Hostile, Integrity, 
     remaining = max(0, remaining - damage);
     if (remaining == 0) on_destroyed();
     final p = intersections?.firstOrNull ?? position;
-    if (mini_explosions_on_hit) decals.spawn3d(Decal.mini_explosion, this, pos_override: p);
+    if (mini_explosions_on_hit && _last_auto_explosion_time <= 0) {
+      decals.spawn3d(Decal.mini_explosion, this, pos_override: p);
+      _last_auto_explosion_time = 0.05;
+    }
     hit_time = (hit_time + 0.05).clamp(0.0, 0.5);
   }
+
+  double _last_auto_explosion_time = 0;
 
   @override
   void update(double dt) {
     super.update(dt);
+    if (_last_auto_explosion_time > 0) _last_auto_explosion_time -= dt;
     if (hit_time > 0) hit_time = max(0, hit_time - dt);
     highlight_mode = hit_time > 0 ? HighlightMode.hit : HighlightMode.none;
   }
