@@ -32,7 +32,7 @@ class EnemyHealthBar extends PositionComponent {
 
   @override
   void update(double dt) {
-    if (_show_time > 0) _show_time -= dt;
+    if (_show_time > 0) _show_time = max(0, _show_time - dt);
   }
 
   double _percent_seen = 100;
@@ -40,11 +40,7 @@ class EnemyHealthBar extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
-    final percent = _source.integrity_in_percent;
-    if (percent <= 0) {
-      removeFromParent();
-      return;
-    }
+    final percent = _source.integrity_in_percent.clamp(0.0, 100.0);
     if (_percent_seen != percent) {
       _show_time = 1;
       _percent_seen = percent;
