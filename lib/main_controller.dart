@@ -7,7 +7,9 @@ import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/credits.dart';
+import 'package:voxone/game/enemies/marauder_captain.dart';
 import 'package:voxone/game/shared/configuration.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
@@ -233,6 +235,14 @@ class Inspector extends PositionComponent {
     if (target case FakeThreeDee it) {
       lines.add('Fake Height: ${it.fake_height}');
     }
+    if (target case DeflectorShield it) {
+      lines.add('Recharge: ${it.auto_recharge}');
+      lines.add('Energy: ${it.energy}');
+      lines.add('Boost: ${it.shield.shield_boost}');
+    }
+    if (target case MarauderCaptain it) {
+      lines.add('Indicator: ${it.indicator}');
+    }
     lines.add('Priority: ${target.priority}');
 
     final text = lines.join('\n');
@@ -244,7 +254,7 @@ class Inspector extends PositionComponent {
       text: text,
       font: mini_font,
       font_scale: 1,
-      size: Vector2(240, 128),
+      size: Vector2(240, 256),
     ));
   }
 }
