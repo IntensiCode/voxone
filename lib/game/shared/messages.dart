@@ -14,9 +14,10 @@ class PlayerDestroyed with Message {}
 class PlayerReady with Message {}
 
 class Rumble with Message {
-  Rumble({this.duration = 1});
+  Rumble({this.duration = 1, this.haptic = true});
 
   final double duration;
+  final bool haptic;
 }
 
 class ShowInfoText with Message {

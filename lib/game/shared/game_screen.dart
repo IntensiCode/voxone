@@ -52,7 +52,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
     _cam_base = game.camera.viewport.position.clone();
 
-    onMessage<Rumble>((it) => _rumble(it.duration));
+    onMessage<Rumble>((it) => _rumble(it));
     // onMessage<UpdateDifficulty>((_) => _update_time_scale());
     _update_time_scale();
 
@@ -76,12 +76,12 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   double _rumble_time = 0;
 
-  void _rumble(double duration) {
-    final shake_time = duration * 2;
+  void _rumble(Rumble it) {
+    final shake_time = it.duration * 2;
     if (_rumble_time > shake_time * 0.75) return;
     _rumble_time = shake_time;
 
-    stage_keys.rumble(duration ~/ 0.001);
+    if (it.haptic) stage_keys.rumble(it.duration ~/ 0.001);
   }
 
   @override
