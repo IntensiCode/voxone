@@ -44,10 +44,15 @@ class MarauderCaptain extends EnemyEntity
   @override
   void shield_added() {
     super.shield_added();
+    shield.shield.shield_boost = switch (difficulty) {
+      Difficulty.easy => 1.0,
+      Difficulty.normal => 1.05,
+      Difficulty.hard => 1.1,
+    };
     shield.auto_recharge = switch (difficulty) {
       Difficulty.easy => 0.20,
       Difficulty.normal => 0.225,
-      Difficulty.hard => 0.25,
+      Difficulty.hard => 0.265,
     };
     indicator.position.setValues(0, -16);
   }

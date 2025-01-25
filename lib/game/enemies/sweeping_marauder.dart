@@ -20,5 +20,10 @@ class SweepingMarauder extends EnemyEntity
       Difficulty.normal => 25,
       Difficulty.hard => 30,
     });
+    active_time_limit = switch (difficulty) {
+      Difficulty.easy => 150,
+      Difficulty.normal => 120,
+      Difficulty.hard => 140,
+    };
   }
 }

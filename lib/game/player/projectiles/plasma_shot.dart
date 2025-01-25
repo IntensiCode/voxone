@@ -65,7 +65,7 @@ class PlasmaShot extends PositionComponent
           final f = switch (difficulty) {
             Difficulty.easy => 0.75,
             Difficulty.normal => 0.55,
-            Difficulty.hard => 0.50,
+            Difficulty.hard => 0.60, // less shots!
           };
           it.on_hit(intersections: intersectionPoints, damage: power_boost * f);
           recycle();

@@ -199,9 +199,9 @@ class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, Enem
       if (!it.susceptible) return;
 
       final damage = switch (difficulty) {
-        Difficulty.easy => 20.0,
-        Difficulty.normal => 25.0,
-        Difficulty.hard => 27.5,
+        Difficulty.easy => 40.0,
+        Difficulty.normal => 60.0,
+        Difficulty.hard => 80.0,
       };
       it.on_hit(damage: damage);
 
