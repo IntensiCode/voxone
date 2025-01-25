@@ -36,9 +36,9 @@ class PlasmaRing extends PositionComponent
   void reset(Vector2 origin, double fake_height) {
     _size = 32;
     _damage = switch (difficulty) {
-      Difficulty.easy => 1.0,
+      Difficulty.easy => 1.2,
       Difficulty.normal => 0.9,
-      Difficulty.hard => 0.8,
+      Difficulty.hard => 1.0,
     };
     this.fake_height = fake_height;
     position.setFrom(origin);
@@ -51,7 +51,7 @@ class PlasmaRing extends PositionComponent
     if (_size > 1000) recycle();
     size.setAll(_size);
     _hitbox.radius = _size;
-    _damage = (_damage - dt * 2.5).clamp(0.01, 1);
+    _damage = (_damage - dt * 2.0).clamp(0.01, 1);
   }
 
   @override
