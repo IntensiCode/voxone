@@ -4,11 +4,11 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
 import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/enemy.dart';
 import 'package:voxone/game/enemies/marauder_mines.dart';
 import 'package:voxone/game/enemies/marauder_pulse_gun.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_health_bar.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
@@ -36,7 +36,7 @@ mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
   createEntity() async {
     reset_hit_points_to(10);
 
-    active_time_limit = dev ? 20 : 45;
+    active_time_limit = 20;
     active_time_limit += rng.nextDoubleLimit(5);
 
     isVisible = false;
@@ -173,6 +173,15 @@ mixin _KamikazeOnLeaving on EnemyEntity, CollisionCallbacks, TumbleOnExploding, 
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (other.hasTrait<Friendly>() && state == EnemyState.leaving) {
+      other.onTraits<Target>((it) {
+        if (!it.susceptible) return;
+        final damage = switch (difficulty) {
+          Difficulty.easy => remaining * 20.0,
+          Difficulty.normal => remaining * 30.0,
+          Difficulty.hard => remaining * 40.0,
+        };
+        it.on_hit(damage: damage, intersections: intersectionPoints);
+      });
       mines.spawn(position)?.set_direction(_last_dir);
       on_destroyed(direction: _last_dir);
       self_destruct = true;
