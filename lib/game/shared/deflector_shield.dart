@@ -62,6 +62,9 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
   double get energy => max(0, shield.energy);
 
   @override
+  bool get show_indicator => shield.show_indicator;
+
+  @override
   double get integrity_in_percent => shield.energy.clamp(0, 1) * 100;
 
   void on_shield_boost() {

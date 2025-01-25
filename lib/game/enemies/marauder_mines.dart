@@ -93,6 +93,9 @@ class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, Enem
   bool get susceptible => !_destroyed;
 
   @override
+  bool get show_indicator => false;
+
+  @override
   void on_destroyed() {
     if (recycled) return;
     if (_destroyed) return;

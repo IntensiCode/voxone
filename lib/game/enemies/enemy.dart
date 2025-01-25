@@ -63,6 +63,17 @@ abstract class EnemyEntity extends VoxelEntity with HasContext, Enemy, EnemyHitP
   double volatile_incoming_time = 0.9;
 
   @override
+  bool get show_indicator => switch (state) {
+        EnemyState.active => true,
+        EnemyState.defeated => false,
+        EnemyState.exploding => false,
+        EnemyState.incoming => false,
+        EnemyState.leaving => false,
+        EnemyState.left => false,
+        EnemyState.sweeping => true,
+      };
+
+  @override
   bool get susceptible => switch (state) {
         EnemyState.left => false,
         EnemyState.exploding => false,

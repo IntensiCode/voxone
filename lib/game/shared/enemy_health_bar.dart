@@ -40,6 +40,8 @@ class EnemyHealthBar extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    if (!_source.show_indicator) return;
+
     final percent = _source.integrity_in_percent.clamp(0.0, 100.0);
     if (_percent_seen != percent) {
       _show_time = 1;

@@ -29,6 +29,9 @@ class MarauderShot extends PositionComponent
   bool get susceptible => true;
 
   @override
+  bool get show_indicator => false;
+
+  @override
   set highlight_mode(HighlightMode mode) {}
 
   double _damage = 2.5;

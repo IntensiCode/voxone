@@ -28,6 +28,9 @@ class EnergyShield implements Target {
   bool get susceptible => _energy > 0.1;
 
   @override
+  bool get show_indicator => _target.show_indicator;
+
+  @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     if (_target case HasVisibility it) {
       if (!it.isVisible) return;

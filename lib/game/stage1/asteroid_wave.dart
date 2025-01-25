@@ -160,6 +160,9 @@ class Asteroid extends PositionComponent
   bool get susceptible => !_destroyed;
 
   @override
+  bool get show_indicator => false;
+
+  @override
   set highlight_mode(HighlightMode mode) => _highlight_mode = mode;
 
   @override

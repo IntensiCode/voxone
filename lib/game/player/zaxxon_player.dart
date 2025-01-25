@@ -70,6 +70,9 @@ class ZaxxonPlayer extends VoxelEntity
   bool get susceptible => stage.phase == GamePhase.playing;
 
   @override
+  bool get show_indicator => false;
+
+  @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
     if (invincible || is_dead_or_dying() || !susceptible) return;
 

@@ -12,6 +12,8 @@ class Friendly {}
 class Hostile {}
 
 abstract interface class Integrity {
+  bool get show_indicator;
+
   double get integrity_in_percent;
 }
 
@@ -62,6 +64,8 @@ mixin SecondaryWeapon on HasContext {
 
 mixin Target {
   bool get susceptible;
+
+  bool get show_indicator;
 
   void on_hit({Set<Vector2>? intersections, double damage = 1});
 }
