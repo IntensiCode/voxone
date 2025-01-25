@@ -5,8 +5,8 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/input/game_keys.dart';
 
 mixin PlayerStrafe on HasContext {
-  static const _strafe_accel = 10.0;
-  static const _max_strafe_speed = 4.0;
+  static const _strafe_accel = 12.5;
+  static const _max_strafe_speed = 6.0;
   static const _max_strafe = 150.0;
 
   double _strafe_speed = 0;
