@@ -81,13 +81,7 @@ enum _Uniform {
   scr_height,
   rot_x,
   rot_y,
-  rnd_x,
-  rnd_y,
   rnd_hash,
-  space_d,
-  space_1,
-  space_2,
-  space_3,
 }
 
 FragmentShader? _shader;
@@ -132,13 +126,7 @@ class Asteroid extends PositionComponent
     _dir_override.x = -100 + rng.nextDoubleLimit(50);
     _dir_override.y = 20 + rng.nextDoublePM(10);
 
-    _rnd_noise.x = 128 + 64 + rng.nextDoublePM(64);
-    _rnd_noise.y = 128 + 64 + rng.nextDoublePM(64);
     _rnd_hash = rng.nextDoubleLimit(256) + 600;
-    _space_d = rng.nextDoublePM(0.03) + 0.0625; // 0.0625
-    _space_1 = 1 - rng.nextDoubleLimit(0.1); // 1
-    _space_2 = 0.5 - rng.nextDoublePM(0.1); // 0.5
-    _space_3 = 0.25 - rng.nextDoublePM(0.1); // 0.25
     _rot_x = 0.2 + rng.nextDoublePM(1);
     if (rng.nextBool()) _rot_x = -_rot_x;
     _rot_y = 0.2 + rng.nextDoubleLimit(1);
@@ -159,12 +147,7 @@ class Asteroid extends PositionComponent
 
   late int _skip_frames;
   late int _down_sample;
-  final _rnd_noise = Vector2.zero();
   late double _rnd_hash;
-  late double _space_d;
-  late double _space_1;
-  late double _space_2;
-  late double _space_3;
   late double _rot_x;
   late double _rot_y;
 
@@ -394,13 +377,7 @@ class Asteroid extends PositionComponent
       _uniforms?.set(_Uniform.scr_height, _src.bottom);
       _uniforms?.set(_Uniform.rot_x, _anim_time * pi * 2 * _rot_x);
       _uniforms?.set(_Uniform.rot_y, _anim_time * pi * 0.2 * _rot_y);
-      _uniforms?.set(_Uniform.rnd_x, _rnd_noise.x);
-      _uniforms?.set(_Uniform.rnd_y, _rnd_noise.y);
       _uniforms?.set(_Uniform.rnd_hash, _rnd_hash);
-      _uniforms?.set(_Uniform.space_d, _space_d);
-      _uniforms?.set(_Uniform.space_1, _space_1);
-      _uniforms?.set(_Uniform.space_2, _space_2);
-      _uniforms?.set(_Uniform.space_3, _space_3);
       it.drawRect(_src, _shader_paint!);
     });
     paint.colorFilter = _highlight_mode.colorFilter;
