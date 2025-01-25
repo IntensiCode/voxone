@@ -8,6 +8,7 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/energy_shield.dart';
 import 'package:voxone/game/shared/has_context.dart';
+import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/mutable.dart';
@@ -40,7 +41,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     paint.filterQuality = FilterQuality.none;
     priority = -1;
 
-    addTrait(EnergyShield(target, () => _deflect_time = 0.3));
+    addTrait(EnergyShield(target, () => _deflect_time = 0.3, () => sendMessage(Rumble(duration: 0.2))));
   }
 
   final String _shader_name;
@@ -58,7 +59,7 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
 
   EnergyShield get shield => _shield ??= singleTrait<EnergyShield>();
 
-  double get energy => shield.energy;
+  double get energy => max(0, shield.energy);
 
   @override
   double get integrity_in_percent => shield.energy.clamp(0, 1) * 100;
