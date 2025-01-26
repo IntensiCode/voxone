@@ -311,6 +311,8 @@ mixin AddShieldAfterOnIncoming on EnemyEntity, HasTraits {
 }
 
 mixin FloatOnActive on EnemyEntity {
+  double float_radius = 10;
+
   @override
   void on_active(double dt) {
     // scale.setAll(sin(active_time / 3) * 0.025 + 0.2);
@@ -319,8 +321,8 @@ mixin FloatOnActive on EnemyEntity {
     rot_z = -pi / 8 + sin(active_time) * 0.2;
     active_time += dt * 3;
     position.setFrom(target_position);
-    position.x += sin(active_time / 1.2345) * 10;
-    position.y += sin(active_time) * 10;
+    position.x += sin(active_time / 1.2345) * float_radius;
+    position.y += sin(active_time) * float_radius;
 
     if (state != EnemyState.active) {
       return;

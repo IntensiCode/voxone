@@ -94,7 +94,7 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
   }
 }
 
-mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
+mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming, FloatOnActive {
   bool get _last_remaining => stage.children.whereType<Enemy>().singleOrNull == this;
 
   bool get _shield_low => shield.energy < 0.25;
@@ -105,7 +105,12 @@ mixin _ReleaseMinesWhenInDanger on AddShieldAfterOnIncoming {
   void on_active(double dt) {
     super.on_active(dt);
     if (player.is_dead_or_dying()) return;
-    if (_last_remaining || _shield_low) _on_release_mine(dt);
+    if (_last_remaining || _shield_low) {
+      _on_release_mine(dt);
+      float_radius = min(50, float_radius + dt);
+    } else {
+      float_radius = max(10, float_radius - dt);
+    }
   }
 
   void _on_release_mine(double dt) {
