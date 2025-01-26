@@ -44,13 +44,9 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
 
   bool _paused = false;
 
-  late Vector2 _cam_base;
-
   @override
   void onMount() {
     super.onMount();
-
-    _cam_base = game.camera.viewport.position.clone();
 
     onMessage<Rumble>((it) => _rumble(it));
     // onMessage<UpdateDifficulty>((_) => _update_time_scale());
@@ -88,7 +84,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   void onRemove() {
     super.onRemove();
     enable_mapping = false;
-    game.camera.viewport.position.setFrom(_cam_base);
   }
 
   void _update_time_scale() {
@@ -129,21 +124,21 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     if (_rumble_time > 0) {
       _on_rumble(dt);
     } else {
-      game.camera.viewport.position.setFrom(_cam_base);
+      _rumble_off.setZero();
     }
   }
 
-  void _on_rumble(double dt) {
-    _rumble_time -= dt;
+  final _rumble_off = Vector2.zero();
 
-    final cam_pos = game.camera.viewport.position;
-    cam_pos.setFrom(_cam_base);
+  void _on_rumble(double dt) {
+    _rumble_time = max(0, _rumble_time - dt);
 
     if (_rumble_time <= 0) {
       _rumble_time = 0;
+      _rumble_off.setZero();
     } else {
-      cam_pos.x += sin(_rumble_time * 913.527) * 4;
-      cam_pos.y += cos(_rumble_time * 715.182) * 4;
+      _rumble_off.x = sin(_rumble_time * 913.527) * 4;
+      _rumble_off.y = cos(_rumble_time * 715.182) * 4;
     }
   }
 
@@ -164,6 +159,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
   void renderTree(Canvas canvas) {
     cache_remove_count = 0;
     VoxelSprite.render_count = 0;
+    canvas.translate(_rumble_off.x, _rumble_off.y);
     super.renderTree(canvas);
     if (dev) {
       if (cache_remove_count > 10) {
