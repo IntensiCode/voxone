@@ -46,7 +46,6 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
 
     add(BasicMenu<AudioMenuEntry>(
       keys: _keys,
-      button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
       spacing: 10,

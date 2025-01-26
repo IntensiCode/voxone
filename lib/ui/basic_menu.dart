@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
-import 'package:flame/sprite.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/ui/basic_menu_entry.dart';
 import 'package:voxone/util/auto_dispose.dart';
@@ -9,7 +10,6 @@ import 'basic_menu_button.dart';
 
 class BasicMenu<T> extends PositionComponent with AutoDispose {
   final Keys keys;
-  final SpriteSheet button;
   final BitmapFont font;
   final Function(T) onSelected;
   final double spacing;
@@ -22,14 +22,13 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
 
   BasicMenu({
     required this.keys,
-    required this.button,
     required this.font,
     required this.onSelected,
     this.spacing = 10,
     this.fixed_position,
     this.fixed_size,
     this.fixed_anchor,
-  }) : super(anchor: Anchor.center);
+  }) : super(anchor: Anchor.center, size: fixed_size);
 
   Vector2? fixed_position;
   Vector2? fixed_size;
@@ -50,37 +49,34 @@ class BasicMenu<T> extends PositionComponent with AutoDispose {
 
   @override
   onMount() {
-    final button_width = button.getSpriteById(0).srcSize.x;
-    final width = size.isZero() ? button_width : size.x;
-
     var offset = 0.0;
     for (final (_, it) in _entries) {
       if (it case BasicMenuButton it) {
-        it.position.x = width / 2;
-        it.position.y = offset;
-        it.anchor = Anchor.topCenter;
-        offset += it.size.y + spacing;
-        if (!it.isMounted) add(it);
+        width = max(width, it.size.x);
+        if (it.auto_position) {
+          it.position.x = width / 2;
+          it.position.y = offset;
+          it.anchor = Anchor.topCenter;
+          offset += it.size.y + spacing;
+          if (!it.isMounted) add(it);
+        }
       }
     }
 
-    if (size.isZero()) {
-      size.x = button_width;
-      size.y = offset;
-    }
+    if (height == 0) height = offset;
 
     if (fixed_position != null) position.setFrom(fixed_position!);
     if (fixed_size != null) size.setFrom(fixed_size!);
     if (fixed_anchor != null) anchor = fixed_anchor!;
   }
 
-  BasicMenuButton addEntry(T id, String text, {Anchor anchor = Anchor.center}) {
+  BasicMenuButton addEntry(T id, String text, {Anchor text_anchor = Anchor.center, Vector2? size}) {
     final it = BasicMenuButton(
       text,
-      size: Vector2(192, 24),
+      size: size ?? Vector2(192, 24),
       font: font,
       onTap: () => _onSelected(id),
-      text_anchor: anchor,
+      text_anchor: text_anchor,
     );
     _entries.add((id, it));
     return it;

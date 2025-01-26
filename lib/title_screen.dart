@@ -71,7 +71,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
 
     final menu = added(BasicMenu<_TitleButtons>(
       keys: _keys,
-      button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
       spacing: 8,

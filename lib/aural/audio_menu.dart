@@ -10,7 +10,6 @@ import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/input/keys.dart';
 import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
@@ -22,6 +21,7 @@ enum AudioMenuEntry {
   master_volume,
   music_volume,
   sound_volume,
+  back,
 }
 
 class AudioMenu extends GameScriptComponent {
@@ -41,7 +41,6 @@ class AudioMenu extends GameScriptComponent {
 
     menu = added(BasicMenu<AudioMenuEntry>(
       keys: _keys,
-      button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
       spacing: 10,
@@ -58,7 +57,10 @@ class AudioMenu extends GameScriptComponent {
 
     _add_volume_controls(menu);
 
-    softkeys('Back', null, (_) => popScreen());
+    add(menu.addEntry(AudioMenuEntry.back, 'Back', size: Vector2(80, 24))
+      ..auto_position = false
+      ..position.setValues(8, game_size.y - 8)
+      ..anchor = Anchor.bottomLeft);
 
     menu.preselectEntry(_preselected ?? AudioMenuEntry.master_volume);
   }
@@ -112,6 +114,8 @@ class AudioMenu extends GameScriptComponent {
         _make_sound();
       case AudioMenuEntry.silent_mode:
         audio.audio_mode = AudioMode.silent;
+      case AudioMenuEntry.back:
+        popScreen();
       case _:
         break;
     }

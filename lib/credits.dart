@@ -4,7 +4,9 @@ import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/appearing_moon.dart';
 import 'package:voxone/input/keys.dart';
-import 'package:voxone/ui/soft_keys.dart';
+import 'package:voxone/ui/basic_menu.dart';
+import 'package:voxone/ui/fonts.dart';
+import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
 final credits = [
@@ -48,6 +50,27 @@ class Credits extends GameScriptComponent {
       textXY(it, game_center.x, start + idx * 10, anchor: Anchor.center, scale: 1);
     }
 
-    softkeys('Back', null, (_) => popScreen()).withGameKeys(_keys, GameKey.soft1);
+    final menu = added(BasicMenu(
+      keys: _keys,
+      font: mini_font,
+      onSelected: (_) => popScreen(),
+      spacing: 10,
+    ));
+
+    menu.position.setValues(game_center.x, 64);
+    menu.anchor = Anchor.topCenter;
+
+    add(menu.addEntry('back', 'Back', size: Vector2(80, 24))
+      ..auto_position = false
+      ..position.setValues(8, game_size.y - 8)
+      ..anchor = Anchor.bottomLeft);
+
+    menu.preselectEntry('back');
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_keys.check_and_consume(GameKey.soft1)) popScreen();
   }
 }

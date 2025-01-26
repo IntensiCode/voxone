@@ -163,7 +163,7 @@ class MainController extends World
         Screen.stage2 => Stage2(),
         Screen.stage3 => Stage3(),
         Screen.title => TitleScreen(),
-        Screen.video => VideoMenu(show_back: true),
+        Screen.video => VideoMenu(),
       };
 
   @override

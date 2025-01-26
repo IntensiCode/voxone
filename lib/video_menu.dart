@@ -9,7 +9,6 @@ import 'package:voxone/ui/basic_menu.dart';
 import 'package:voxone/ui/basic_menu_button.dart';
 import 'package:voxone/ui/flow_text.dart';
 import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/ui/soft_keys.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
@@ -18,6 +17,7 @@ enum _VideoEntry {
   balanced('Balanced'),
   quality('Quality'),
   bg_anim('Background Animation'),
+  back('Back'),
   ;
 
   final String label;
@@ -53,10 +53,6 @@ final _hint = {
 };
 
 class VideoMenu extends GameScriptComponent {
-  VideoMenu({required this.show_back});
-
-  final bool show_back;
-
   final _keys = Keys();
 
   late final BasicMenu<_VideoEntry> _menu;
@@ -83,7 +79,6 @@ class VideoMenu extends GameScriptComponent {
 
     _menu = added(BasicMenu<_VideoEntry>(
       keys: _keys,
-      button: atlas.sheetI('button_option.png', 1, 2),
       font: mini_font,
       onSelected: _selected,
       spacing: 10,
@@ -92,14 +87,17 @@ class VideoMenu extends GameScriptComponent {
       ..addEntry(_VideoEntry.balanced, 'Balanced')
       ..addEntry(_VideoEntry.quality, 'Quality'));
 
-    _anim_button = _menu.addEntry(_VideoEntry.bg_anim, 'Space Animation', anchor: Anchor.centerLeft);
+    _anim_button = _menu.addEntry(_VideoEntry.bg_anim, 'Space Animation', text_anchor: Anchor.centerLeft);
     _anim_button?.checked = bg_anim;
 
     _menu.position.setValues(game_center.x, 64);
     _menu.anchor = Anchor.topCenter;
     _menu.onPreselected = _preselect;
 
-    if (show_back) softkeys('Back', null, (_) => popScreen());
+    add(_menu.addEntry(_VideoEntry.back, 'Back', size: Vector2(80, 24))
+      ..auto_position = false
+      ..position.setValues(8, game_size.y - 8)
+      ..anchor = Anchor.bottomLeft);
 
     _menu.preselectEntry(_preselected ?? _VideoEntry.balanced);
   }
@@ -107,32 +105,32 @@ class VideoMenu extends GameScriptComponent {
   @override
   void update(double dt) {
     super.update(dt);
-    if (show_back && _keys.check_and_consume(GameKey.soft1)) popScreen();
+    if (_keys.check_and_consume(GameKey.soft1)) popScreen();
   }
 
   void _selected(_VideoEntry it) {
     switch (it) {
       case _VideoEntry.performance:
         video = VideoMode.performance;
-        break;
       case _VideoEntry.balanced:
         video = VideoMode.balanced;
-        break;
       case _VideoEntry.quality:
         video = VideoMode.quality;
-        break;
       case _VideoEntry.bg_anim:
         bg_anim = !bg_anim;
         _anim_button?.checked = bg_anim;
         _anim_button?.fadeInDeep();
-        break;
+      case _VideoEntry.back:
+        popScreen();
     }
   }
 
   void _preselect(_VideoEntry? it) {
     _preselected = it;
     _hint_text?.removeFromParent();
-    if (it == null) return;
+    _hint_text = null;
+
+    if (it == null || _hint[it] == null) return;
 
     _hint_text = added(FlowText(
       background: atlas.sprite('button_plain.png'),
