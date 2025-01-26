@@ -21,6 +21,7 @@ import 'package:voxone/game/player/weapons/swirl_gun.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/enemy_explosion.dart';
 import 'package:voxone/game/shared/enemy_hit_points.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -296,6 +297,46 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
   double get cooldown_boost => weapons.cooldown_boost;
 
   @override
+  void onMount() {
+    super.onMount();
+    switch (difficulty) {
+      case Difficulty.easy:
+        secondary_cooldown_boost = 0.5;
+        weapons_cooldown_boost = 0.1;
+        integrity_repair = 0.25;
+        integrity_boost_delta = 0.1;
+        shield_repair = 0.25;
+        shield_boost_delta = 0.05;
+        break;
+
+      case Difficulty.normal:
+        secondary_cooldown_boost = 0.4;
+        weapons_cooldown_boost = 0.08;
+        integrity_repair = 0.2;
+        integrity_boost_delta = 0.08;
+        shield_repair = 0.2;
+        shield_boost_delta = 0.04;
+        break;
+
+      case Difficulty.hard:
+        secondary_cooldown_boost = 0.3;
+        weapons_cooldown_boost = 0.07;
+        integrity_repair = 0.1;
+        integrity_boost_delta = 0.05;
+        shield_repair = 0.15;
+        shield_boost_delta = 0.03;
+        break;
+    }
+  }
+
+  late double secondary_cooldown_boost;
+  late double weapons_cooldown_boost;
+  late double integrity_repair;
+  late double integrity_boost_delta;
+  late double shield_repair;
+  late double shield_boost_delta;
+
+  @override
   void on_collect_extra(ExtraId which) {
     if (is_dead_or_dying()) return;
 
@@ -305,27 +346,27 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
 
       case ExtraId.cooldown:
         info('Secondary Cooldown', hud: true);
-        weapons.on_secondary_cooldown(0.5);
+        weapons.on_secondary_cooldown(secondary_cooldown_boost);
 
       case ExtraId.cooldown_boost:
         info('Cooldown Boost', hud: true);
-        weapons.on_cooldown_boost();
+        weapons.on_cooldown_boost(amount: weapons_cooldown_boost);
 
       case ExtraId.integrity:
         info('Integrity Repair', hud: true);
-        integrity = min(1, integrity + 0.25);
+        integrity = min(1, integrity + integrity_repair);
 
       case ExtraId.integrity_boost:
         info('Integrity Boost', hud: true);
-        _integrity_boost = min(2, _integrity_boost + 0.1);
+        _integrity_boost = min(2, _integrity_boost + integrity_boost_delta);
 
       case ExtraId.shield:
         info('Shield Repair', hud: true);
-        onTraits<DeflectorShield>((it) => it.shield.recharge(0.25));
+        onTraits<DeflectorShield>((it) => it.shield.recharge(shield_repair));
 
       case ExtraId.shield_boost:
         info('Shield Boost', hud: true);
-        onTraits<DeflectorShield>((it) => it.on_shield_boost());
+        onTraits<DeflectorShield>((it) => it.on_shield_boost(amount: shield_boost_delta));
 
       // primary weapons
 

@@ -90,7 +90,7 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
     return reload_count;
   }
 
-  void on_cooldown_boost() => _cooldown_boost = min(2, _cooldown_boost + 0.1);
+  void on_cooldown_boost({double amount = 0.1}) => _cooldown_boost = min(2, _cooldown_boost + amount);
 
   void on_secondary_cooldown(double dt) {
     // cooldown all secondary weapons:
