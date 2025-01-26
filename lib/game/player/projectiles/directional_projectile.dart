@@ -11,6 +11,8 @@ mixin DirectionalProjectile on PositionComponent, FakeThreeDee, Recyclable {
 
   double get base_speed => 500;
 
+  Vector2 get base_direction => _direction;
+
   late final _direction = Vector2(1, 0)
     ..rotate(-pi / 16)
     ..scale(base_speed);

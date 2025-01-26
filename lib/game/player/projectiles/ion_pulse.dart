@@ -1,15 +1,18 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
+import 'package:voxone/util/random.dart';
 
 class IonPulse extends SpriteComponent
     with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {
@@ -30,9 +33,22 @@ class IonPulse extends SpriteComponent
   void reset(double delay, FakeThreeDee origin) {
     _delay = delay;
     _size_time = 1;
-    _origin = position;
+    _origin = origin.position;
+    change_direction(0);
     init_fake_3d(origin);
   }
+
+  @override
+  void onMount() {
+    super.onMount();
+    damage = switch (difficulty) {
+      Difficulty.easy => 1.0,
+      Difficulty.normal => 0.8,
+      Difficulty.hard => 0.6,
+    };
+  }
+
+  late double damage;
 
   @override
   void update(double dt) {
@@ -41,8 +57,7 @@ class IonPulse extends SpriteComponent
       _delay = max(0, _delay - dt);
       if (_delay == 0) {
         position.setFrom(_origin);
-        x += 25;
-        y -= 25 / 4;
+        position.add(base_direction * dt / 4);
       }
       return;
     }
@@ -65,13 +80,14 @@ class IonPulse extends SpriteComponent
     super.onCollision(intersectionPoints, other);
 
     if (recycled) return;
-    if (_size_time != 0) return; // TODO WTF!?
 
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          logInfo('damage: ${damage * _size_time.abs()} time abs: ${_size_time.abs()}');
+          it.on_hit(intersections: intersectionPoints, damage: damage * _size_time.abs());
           _size_time = -1;
+          change_direction(rng.nextDoublePM(pi / 2));
         }
       });
     }
