@@ -50,6 +50,7 @@ class CapitalShip extends EnemyEntity
   @override
   void createEntity() {
     super.createEntity();
+    active_time_limit = 0;
     add(HomingLauncher(this));
     add(RangerLaser(this, offset: _v(-84, -4), damage: 0.4, cool_down: 2.8)
       ..priority = 10

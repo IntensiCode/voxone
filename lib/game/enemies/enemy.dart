@@ -324,7 +324,7 @@ mixin FloatOnActive on EnemyEntity {
 
     if (state != EnemyState.active) {
       return;
-    } else if (active_time > active_time_limit) {
+    } else if (active_time_limit > 0 && active_time > active_time_limit) {
       state = EnemyState.leaving;
     } else if (can_sweep && rng.nextDouble() < 0.2) {
       can_sweep = false;
