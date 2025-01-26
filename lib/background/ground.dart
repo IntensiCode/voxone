@@ -10,6 +10,7 @@ enum Uniform {
   scr_height,
   scr_x,
   scr_y,
+  time,
 }
 
 Ground? _ground;
@@ -34,7 +35,7 @@ class Ground extends Component with HasPaint {
     paint.filterQuality = FilterQuality.none;
     paint.isAntiAlias = false;
 
-    _shader = await loadShader('ground.frag');
+    _shader = await loadShader('ground_alt.frag');
     _uniforms = Uniforms(_shader, Uniform.values);
     _paint = pixel_paint();
   }
@@ -56,6 +57,7 @@ class Ground extends Component with HasPaint {
       _uniforms.set(Uniform.scr_height, _buffer.height);
       _uniforms.set(Uniform.scr_x, _pos.x);
       _uniforms.set(Uniform.scr_y, _pos.y);
+      _uniforms.set(Uniform.time, _time);
       _paint.shader = _shader;
       it.drawRect(_buffer, _paint);
     });
