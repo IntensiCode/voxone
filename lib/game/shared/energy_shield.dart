@@ -22,7 +22,13 @@ class EnergyShield implements Target {
 
   double shield_boost = 1.0;
 
-  void on_shield_boost() => shield_boost = min(2, shield_boost + 0.1);
+  final _boost_delta = switch (difficulty) {
+    Difficulty.easy => 0.1,
+    Difficulty.normal => 0.09,
+    Difficulty.hard => 0.07,
+  };
+
+  void on_shield_boost() => shield_boost = min(2, shield_boost + _boost_delta);
 
   @override
   bool get susceptible => _energy > 0.1;
