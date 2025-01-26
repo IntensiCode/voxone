@@ -50,9 +50,9 @@ class MarauderCaptain extends EnemyEntity
       Difficulty.hard => 1.1,
     };
     shield.auto_recharge = switch (difficulty) {
-      Difficulty.easy => 0.20,
-      Difficulty.normal => 0.225,
-      Difficulty.hard => 0.265,
+      Difficulty.easy => 0.10,
+      Difficulty.normal => 0.14,
+      Difficulty.hard => 0.18,
     };
     indicator.position.setValues(0, -16);
   }
@@ -65,8 +65,8 @@ mixin _CreateMarauderCaptainEntity on EnemyEntity {
   void createEntity() {
     reset_hit_points_to(switch (difficulty) {
       Difficulty.easy => 100,
-      Difficulty.normal => 125,
-      Difficulty.hard => 150,
+      Difficulty.normal => 175,
+      Difficulty.hard => 250,
     });
 
     set_sprite_source(atlas.sprite('entities/camo_stellar_jet.png'), 16);
