@@ -161,7 +161,7 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
     VoxelSprite.render_count = 0;
     canvas.translate(_rumble_off.x, _rumble_off.y);
     super.renderTree(canvas);
-    if (dev) {
+    if (dev && !skip_frames) {
       if (cache_remove_count > 10) {
         logInfo('voxel sprite cache remove count: $cache_remove_count');
       }
