@@ -1,3 +1,4 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
@@ -217,6 +218,7 @@ class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, Enem
         Difficulty.normal => 60.0,
         Difficulty.hard => 80.0,
       };
+      if (dev) logInfo('mine hit ${it.runtimeType} for $damage');
       it.on_hit(damage: damage);
 
       position.x -= 10;
