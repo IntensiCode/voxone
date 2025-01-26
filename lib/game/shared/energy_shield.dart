@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/traits.dart';
 
@@ -51,8 +49,6 @@ class EnergyShield implements Target {
   }
 
   void _on_depleted() {
-    if (dev) logInfo('shield depleted: $_energy');
-
     final danger = switch (difficulty) {
       Difficulty.easy => 2,
       Difficulty.normal => 5,
