@@ -157,7 +157,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
   /// Free image resources and the shader. Cannot be (re)used anymore after calling this.
   void dispose_sprite() {
-    logInfo('disposing voxel sprite $this - disposable image? $_disposable_image');
+    if (dev) logInfo('disposing voxel sprite $this - disposable image? $_disposable_image');
 
     if (_disposable_image) _sprite.image.dispose();
     _disposable_image = false;
@@ -173,7 +173,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
   @override
   Future onLoad() async {
-    logInfo('loading voxel sprite $runtimeType');
+    if (dev) logInfo('loading voxel sprite $runtimeType');
     _shared_future ??= loadShader('voxel.frag').then((value) {
       logInfo('shared shader loaded');
       _shared_shader = value;
