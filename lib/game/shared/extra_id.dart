@@ -1,6 +1,6 @@
 enum ExtraId {
-  /// Primary weapon: Plasma gun with spread triple shot
-  triple_plasma(8, probability: 0.1),
+  /// Primary weapon: Plasma gun with spread shot
+  plasma_gun(8, probability: 0.1),
 
   /// Primary weapon: Widening acid blast
   acid_blast(9, probability: 0.1),
@@ -51,7 +51,7 @@ enum ExtraId {
   const ExtraId(this.sheet_index, {this.probability = 0});
 
   static final defaults = {
-    triple_plasma,
+    plasma_gun,
     acid_blast,
     ion_pulse,
     phosphor_swirl,
@@ -74,7 +74,7 @@ enum ExtraId {
   };
 
   static final primaries = {
-    triple_plasma,
+    plasma_gun,
     acid_blast,
     ion_pulse,
     phosphor_swirl,

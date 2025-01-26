@@ -25,10 +25,10 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
   double _cool_down = 0;
 
   @override
-  String get display_name => 'Triple Plasma';
+  String get display_name => 'Plasma Gun';
 
   @override
-  Sprite get icon => extras.icon_for(ExtraId.triple_plasma);
+  Sprite get icon => extras.icon_for(ExtraId.plasma_gun);
 
   void boost_power() => PlasmaShot.power_boost = min(5, PlasmaShot.power_boost + 0.25);
 

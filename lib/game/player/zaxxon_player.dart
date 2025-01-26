@@ -382,9 +382,9 @@ mixin _CollectExtras on Player, _CreateEntityOnLoad {
         final upgrade = weapons.switch_primary_to(SwirlGun);
         info('Phosphor Swirl', title: upgrade ? 'Primary Weapon' : null, hud: true);
 
-      case ExtraId.triple_plasma:
+      case ExtraId.plasma_gun:
         final upgrade = weapons.switch_primary_to(PlasmaGun);
-        info('Triple Plasma', title: upgrade ? 'Primary Weapon' : null, hud: true);
+        info('Plasma Gun', title: upgrade ? 'Primary Weapon' : null, hud: true);
 
       case ExtraId.yin_yang:
         final upgrade = weapons.switch_primary_to(YinYangGun);
