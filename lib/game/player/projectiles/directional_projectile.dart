@@ -6,6 +6,9 @@ import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/util/component_recycler.dart';
 
 mixin DirectionalProjectile on PositionComponent, FakeThreeDee, Recyclable {
+  @override
+  double? get fake_size => 2;
+
   double get base_speed => 500;
 
   late final _direction = Vector2(1, 0)

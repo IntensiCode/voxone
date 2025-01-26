@@ -1,6 +1,9 @@
 import 'package:flame/components.dart';
 
 mixin FakeThreeDee on PositionComponent {
+  /// used for projectiles' shadow circle radius
+  double? fake_size;
+
   double _fake_height = 0;
 
   double get fake_height => _fake_height;
