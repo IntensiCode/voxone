@@ -19,10 +19,12 @@ class PlasmaShot extends PositionComponent
 
   static double power_boost = 1;
 
-  PlasmaShot() {
+  PlasmaShot({this.over_ground = false}) {
     size.setAll(4);
     add(CircleHitbox(radius: 4, anchor: Anchor.center, isSolid: true)..debug());
   }
+
+  final bool over_ground;
 
   double _start_time = 1;
 
@@ -47,9 +49,11 @@ class PlasmaShot extends PositionComponent
 
   @override
   void render(Canvas canvas) {
-    paint.color = _blue2;
-    canvas.drawCircle(Offset.zero, 3.5 + _start_time * 4, paint);
-    paint.color = _blue1;
+    if (!over_ground) {
+      paint.color = _blue2;
+      canvas.drawCircle(Offset.zero, 3.5 + _start_time * 4, paint);
+    }
+    paint.color = over_ground ? black : _blue1;
     canvas.drawCircle(Offset.zero, 3, paint);
     paint.color = white;
     canvas.drawCircle(Offset.zero, 2, paint);

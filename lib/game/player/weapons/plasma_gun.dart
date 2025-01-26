@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/background/ground.dart';
 import 'package:voxone/game/player/projectiles/plasma_shot.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/extra_id.dart';
@@ -16,7 +18,9 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  final _projectiles = ComponentRecycler(() => PlasmaShot());
+  late bool _over_ground;
+
+  late final _projectiles = ComponentRecycler(() => PlasmaShot(over_ground: _over_ground));
 
   double _cool_down = 0;
 
@@ -29,7 +33,10 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
   void boost_power() => PlasmaShot.power_boost = min(5, PlasmaShot.power_boost + 0.25);
 
   @override
-  onLoad() => PlasmaShot.power_boost = 1;
+  onLoad() {
+    _over_ground = stage.children.firstWhereOrNull((it) => it is Ground) != null;
+    PlasmaShot.power_boost = 1;
+  }
 
   @override
   void update(double dt) {
