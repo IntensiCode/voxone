@@ -23,7 +23,10 @@ class Configuration with HasGameData {
     on_skip_frames_change((_) => _save_if(_data['skip_frames'] != bg_anim));
   }
 
+  bool _loading = false;
+
   void _save_if(bool changed) {
+    if (_loading) return;
     if (changed) storage.save('configuration', this);
   }
 
@@ -40,6 +43,17 @@ class Configuration with HasGameData {
 
   @override
   void load_state(Map<String, dynamic> data) {
+    try {
+      _loading = true;
+      _load_state(data);
+    } catch (it, trace) {
+      logError('Failed to load configuration: $it', trace);
+    } finally {
+      _loading = false;
+    }
+  }
+
+  void _load_state(Map<String, dynamic> data) {
     _data = data;
     if (dev) logInfo(data);
     debug = data['debug'] ?? debug;
