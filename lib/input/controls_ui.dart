@@ -29,7 +29,6 @@ mixin ControlsUi on GameScriptComponent {
     required void Function() onTap,
   }) {
     final button = BitmapButton(
-      bg_nine_patch: atlas.sprite('button_plain.png'),
       text: text,
       font: mini_font,
       font_scale: 1.25,

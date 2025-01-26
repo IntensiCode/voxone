@@ -16,9 +16,7 @@ class Controls extends GameScriptComponent with ControlsUi, GamepadControls {
   late BitmapButton _invert_xy;
 
   @override
-  void set_enabled(bool value) {
-    ui_navigation_active = value;
-  }
+  void set_enabled(bool value) => ui_navigation_active = value;
 
   @override
   void onRemove() {
@@ -40,12 +38,12 @@ class Controls extends GameScriptComponent with ControlsUi, GamepadControls {
     add_flow(_weapons, _x_base, _y_base, _col_width * 2 - 80, _col_height, Anchor.topCenter);
     add_flow(_soft_keys, game_width - 16, _y_base, _col_width, _col_height, Anchor.topRight);
 
-    add_button('Back', 0, game_height, anchor: Anchor.bottomLeft, onTap: popScreen);
-    add_flow('Invert Y axis?', 240, 457 - 24, 348, 16, Anchor.topLeft);
-    _invert_y = add_button('Yes', 586, 456 - 24, shortcut: 'y', anchor: Anchor.topLeft, onTap: _toggle_y);
+    add_button('Back', 8, game_height - 8, anchor: Anchor.bottomLeft, onTap: popScreen);
+    add_flow('Invert Y axis?', 240, 457 - 32, 348, 16, Anchor.topLeft);
+    _invert_y = add_button('Yes', 586, 456 - 32, shortcut: 'y', anchor: Anchor.topLeft, onTap: _toggle_y);
     _update_y();
-    add_flow('Movement in horizontal levels?', 240, 457, 348, 16, Anchor.topLeft);
-    _invert_xy = add_button('Left / Right', 586, 456, shortcut: 'x', anchor: Anchor.topLeft, onTap: _toggle_xy);
+    add_flow('Movement in horizontal levels?', 240, 449, 348, 16, Anchor.topLeft);
+    _invert_xy = add_button('Left / Right', 586, 448, shortcut: 'x', anchor: Anchor.topLeft, onTap: _toggle_xy);
     _update_xy();
 
     highlight_down();

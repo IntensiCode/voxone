@@ -5,6 +5,7 @@ import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/input/shortcuts.dart';
+import 'package:voxone/ui/bordered.dart';
 import 'package:voxone/ui/fonts.dart';
 import 'package:voxone/util/auto_dispose.dart';
 import 'package:voxone/util/bitmap_font.dart';
@@ -69,6 +70,7 @@ class BitmapButton extends PositionComponent
         font = font ?? tiny_font,
         background = bg_nine_patch != null ? NinePatchImage(bg_nine_patch, cornerSize: cornerSize) : null {
     if (tint != null) this.tint(tint);
+    if (background == null) add(Bordered());
     _update_xy_wh();
   }
 
