@@ -20,6 +20,7 @@ class Configuration with HasGameData {
     on_difficulty_change = (_) => _save_if(_data['difficulty'] != difficulty.name);
     on_video_change((_) => _save_if(_data['video'] != video.name));
     on_bg_anim_change((_) => _save_if(_data['bg_anim'] != bg_anim));
+    on_skip_frames_change((_) => _save_if(_data['skip_frames'] != bg_anim));
   }
 
   void _save_if(bool changed) {
@@ -51,6 +52,7 @@ class Configuration with HasGameData {
       orElse: () => video,
     );
     bg_anim = data['bg_anim'] ?? bg_anim;
+    skip_frames = data['skip_frames'] ?? skip_frames;
     prefer_x_over_y = data['prefer_x_over_y'] ?? prefer_x_over_y;
 
     hw_mapping = (data['hw_mapping'] as Map<String, dynamic>? ?? {}).entries.mapNotNull((e) {
@@ -68,6 +70,7 @@ class Configuration with HasGameData {
     ..['difficulty'] = difficulty.name
     ..['prefer_x_over_y'] = prefer_x_over_y
     ..['hw_mapping'] = hw_mapping.map((k, v) => MapEntry(k.toString(), v.name))
+    ..['skip_frames'] = skip_frames
     ..['bg_anim'] = bg_anim
     ..['video'] = video.name;
 }

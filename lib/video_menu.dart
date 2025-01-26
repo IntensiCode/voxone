@@ -16,6 +16,7 @@ enum _VideoEntry {
   performance('Performance'),
   balanced('Balanced'),
   quality('Quality'),
+  skip_frames('Skip Frames'),
   bg_anim('Background Animation'),
   back('Back'),
   ;
@@ -44,6 +45,13 @@ final _hint = {
       - Skips a few enemy animation frames
       - Full background resolution
       ''',
+  _VideoEntry.skip_frames: '''
+      Skip enemy animation frames:
+      \n\n
+      - Improves rendering performance
+      - Enemy animations will be less smooth
+      - Overrides performance mode
+      ''',
   _VideoEntry.bg_anim: '''
       Enable background animation:
       \n\n
@@ -57,6 +65,7 @@ class VideoMenu extends GameScriptComponent {
 
   late final BasicMenu<_VideoEntry> _menu;
 
+  BasicMenuButton? _skip_button;
   BasicMenuButton? _anim_button;
 
   FlowText? _hint_text;
@@ -87,6 +96,8 @@ class VideoMenu extends GameScriptComponent {
       ..addEntry(_VideoEntry.balanced, 'Balanced')
       ..addEntry(_VideoEntry.quality, 'Quality'));
 
+    _skip_button = _menu.addEntry(_VideoEntry.skip_frames, 'Skip Frames', text_anchor: Anchor.centerLeft);
+    _skip_button?.checked = skip_frames;
     _anim_button = _menu.addEntry(_VideoEntry.bg_anim, 'Space Animation', text_anchor: Anchor.centerLeft);
     _anim_button?.checked = bg_anim;
 
@@ -109,19 +120,35 @@ class VideoMenu extends GameScriptComponent {
   }
 
   void _selected(_VideoEntry it) {
+    final sf = skip_frames;
+    final ba = bg_anim;
     switch (it) {
       case _VideoEntry.performance:
         video = VideoMode.performance;
+        skip_frames = true;
+        bg_anim = false;
       case _VideoEntry.balanced:
         video = VideoMode.balanced;
+        skip_frames = true;
+        bg_anim = true;
       case _VideoEntry.quality:
         video = VideoMode.quality;
+        skip_frames = false;
+        bg_anim = true;
+      case _VideoEntry.skip_frames:
+        skip_frames = !skip_frames;
       case _VideoEntry.bg_anim:
         bg_anim = !bg_anim;
-        _anim_button?.checked = bg_anim;
-        _anim_button?.fadeInDeep();
       case _VideoEntry.back:
         popScreen();
+    }
+    if (sf != skip_frames) {
+      _skip_button?.checked = skip_frames;
+      _skip_button?.fadeInDeep();
+    }
+    if (ba != bg_anim) {
+      _anim_button?.checked = bg_anim;
+      _anim_button?.fadeInDeep();
     }
   }
 

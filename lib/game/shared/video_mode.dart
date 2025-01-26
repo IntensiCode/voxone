@@ -35,6 +35,22 @@ void apply_video_mode() {
   logInfo('pixel_multiplier: ${VoxelSprite.pixel_multiplier}');
 }
 
+set skip_frames(bool value) {
+  _skip_frames = value;
+  _on_skip_frames_change.forEach((it) => it(value));
+}
+
+bool get skip_frames => _skip_frames;
+
+Disposable on_skip_frames_change(Function(bool) hook) {
+  _on_skip_frames_change.add(hook);
+  return Disposable.wrap(() => _on_skip_frames_change.remove(hook));
+}
+
+final _on_skip_frames_change = <Function(bool)>[];
+
+var _skip_frames = true;
+
 set bg_anim(bool value) {
   _bg_anim = value;
   _on_bg_anim_change.forEach((it) => it(value));

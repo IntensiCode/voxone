@@ -5,9 +5,16 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
+import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/voxel/voxel_sprite.dart';
 
 class VoxelEntity extends VoxelSprite with FakeThreeDee {
+  @override
+  onMount() {
+    super.onMount();
+    if (!skip_frames) force_render = true;
+  }
+
   VoxelShadow create_linked_shadow() {
     final it = VoxelShadow(this);
     removed.then((_) {
