@@ -2,6 +2,7 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:voxone/aural/audio_system.dart';
+import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
@@ -15,7 +16,6 @@ import 'package:voxone/game/shared/video_mode.dart';
 import 'package:voxone/game/shared/voxel_entity.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/functions.dart';
 import 'package:voxone/util/random.dart';
 
 var rotate_mines = true;
@@ -34,7 +34,7 @@ class MarauderMines extends Component with HasContext {
       stage.added(_mines.acquire()..reset(position, drift: drift, drop_height: drop_height));
 
   @override
-  onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1)));
+  onLoad() => _mines = ComponentRecycler(() => MarauderMine(atlas.sprite('mine.png')));
 
   @override
   void onRemove() {
@@ -49,8 +49,8 @@ class MarauderMines extends Component with HasContext {
 }
 
 class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, EnemyHitPoints, Recyclable {
-  MarauderMine(this.animation) {
-    set_sprite_source(animation.frames.first.sprite, 8);
+  MarauderMine(Sprite vox) {
+    set_sprite_source(vox, 8);
 
     scale_x = 1.2;
     scale_y = 1.8;
@@ -92,8 +92,6 @@ class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, Enem
   }
 
   final _rotations = List.filled(3, 0.0);
-
-  final SpriteAnimation animation;
 
   double drift = 0.0;
 
