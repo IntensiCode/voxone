@@ -12,11 +12,11 @@ class ComponentRecycler<T extends Recyclable> {
 
   final T Function() _create;
 
-  final _pool = <T>[];
+  final items = <T>[];
 
   T acquire() {
-    if (_pool.isNotEmpty) {
-      return _pool.removeLast()..recycled = false;
+    if (items.isNotEmpty) {
+      return items.removeLast()..recycled = false;
     } else {
       final it = _create();
       it.recycle = () => recycle(it);
@@ -32,7 +32,7 @@ class ComponentRecycler<T extends Recyclable> {
     // }
 
     if (component.isMounted) component.removeFromParent();
-    if (!component.recycled && !_pool.contains(component)) _pool.add(component);
+    if (!component.recycled && !items.contains(component)) items.add(component);
     component.recycled = true;
   }
 }

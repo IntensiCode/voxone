@@ -33,7 +33,7 @@ class YinYangGun extends Component with HasContext, PrimaryWeapon {
     if (keys.a_button) {
       _cool_down += 1.5;
       stage.add(_projectiles.acquire()..reset(_player as FakeThreeDee));
-      audio.play(Sound.swirl, volume_factor: 0.5);
+      audio.play(Sound.shot, volume_factor: 0.25);
     }
   }
 }

@@ -92,6 +92,12 @@ abstract class EnemyEntity extends VoxelEntity with HasContext, Enemy, EnemyHitP
   double _explode_scale = 1;
 
   @override
+  void onRemove() {
+    super.onRemove();
+    dispose_sprite();
+  }
+
+  @override
   void on_destroyed({Vector2? direction}) {
     if (state == EnemyState.exploding) return;
     state = EnemyState.exploding;

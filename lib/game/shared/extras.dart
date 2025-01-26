@@ -71,6 +71,17 @@ class Extras extends Component with HasContext {
   }
 
   @override
+  void onRemove() {
+    super.onRemove();
+    stage.children.whereType<_Extra>().forEach((it) {
+      it.recycle();
+      it.dispose_sprite();
+    });
+    _pool.items.forEach((it) => it.dispose_sprite());
+    _pool.items.clear();
+  }
+
+  @override
   onLoad() {
     _sheet = sheetI('extras.png', 8, 4);
 

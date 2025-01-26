@@ -34,6 +34,17 @@ class MarauderMines extends Component with HasContext {
 
   @override
   onLoad() => _mines = ComponentRecycler(() => MarauderMine(animCR('mine.png', 8, 1)));
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    stage.children.whereType<MarauderMine>().forEach((it) {
+      it.recycle();
+      it.dispose_sprite();
+    });
+    _mines.items.forEach((it) => it.dispose_sprite());
+    _mines.items.clear();
+  }
 }
 
 class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, EnemyHitPoints, Recyclable {
