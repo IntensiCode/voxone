@@ -6,6 +6,7 @@ import 'package:flutter/animation.dart';
 import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -31,7 +32,15 @@ class Nuke extends PositionComponent
   void reset(FakeThreeDee origin) {
     _life_time = 0;
     init_fake_3d(origin);
+
+    _damage = switch (difficulty) {
+      Difficulty.easy => 15,
+      Difficulty.normal => 10,
+      Difficulty.hard => 8,
+    };
   }
+
+  late double _damage;
 
   @override
   void update(double dt) {
@@ -59,7 +68,7 @@ class Nuke extends PositionComponent
     if (_life_time < 0.2 && other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          it.on_hit(intersections: intersectionPoints);
+          it.on_hit(intersections: intersectionPoints, damage: _damage);
         }
       });
     }
