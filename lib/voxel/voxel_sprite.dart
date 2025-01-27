@@ -61,14 +61,13 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
   static Uniforms<VoxelUniform>? _shared_uniforms;
 
   late Sprite _sprite;
-  late FragmentShader _shader;
-  late Uniforms<VoxelUniform> _uniforms;
+  FragmentShader? _shader;
+  Uniforms<VoxelUniform>? _uniforms;
   late int _frames;
 
   final _shader_paint = pixel_paint();
 
   bool _disposable_image = false;
-  bool _dirty_shader = true;
   bool _render = true;
 
   double _update_time = 0;
@@ -131,8 +130,6 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
     _sprite = sprite;
     _frames = frames;
 
-    _dirty_shader = true;
-
     reset_sprite_data(reset_mode: false);
   }
 
@@ -185,7 +182,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
     _shared_uniforms ??= Uniforms(_shared_shader!, VoxelUniform.values);
 
     _shader = _shared_shader ?? await loadShader('voxel.frag');
-    _uniforms = _shared_uniforms ?? Uniforms(_shader, VoxelUniform.values);
+    _uniforms = _shared_uniforms ?? Uniforms(_shader!, VoxelUniform.values);
   }
 
   /// Progress the render update timer.
@@ -205,6 +202,9 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
   @override
   void render(Canvas canvas) {
+    final uniforms = _uniforms;
+    if (uniforms == null) return;
+
     final rs = 2 * pi / rot_steps;
     final rx = force_render ? rot_x : (rot_x / rs).round() * rs;
     final ry = force_render ? rot_y : (rot_y / rs).round() * rs;
@@ -279,9 +279,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
     _update_shader();
 
-    _dirty_shader = false;
-
-    _uniforms
+    uniforms
       ..set(VoxelUniform.shadow, 0)
       ..set(VoxelUniform.scr_width, width * pixel_multiplier)
       ..set(VoxelUniform.scr_height, height * pixel_multiplier)
@@ -341,7 +339,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
   void _update_shader() {
     _uniforms
-      ..set(VoxelUniform.scr_x, 0)
+      ?..set(VoxelUniform.scr_x, 0)
       ..set(VoxelUniform.scr_y, 0)
       ..set(VoxelUniform.tex_width, _sprite.image.width.toDouble())
       ..set(VoxelUniform.tex_height, _sprite.image.height.toDouble())
@@ -351,7 +349,7 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
       ..set(VoxelUniform.frame_height, _sprite.srcSize.y / _frames)
       ..set(VoxelUniform.frames, _frames.toDouble());
 
-    _shader.setImageSampler(0, _sprite.image);
+    _shader?.setImageSampler(0, _sprite.image);
 
     _shader_paint.shader = _shader;
   }
