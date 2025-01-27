@@ -42,9 +42,9 @@ class IonPulse extends SpriteComponent
   void onMount() {
     super.onMount();
     damage = switch (difficulty) {
-      Difficulty.easy => 1.0,
-      Difficulty.normal => 0.8,
-      Difficulty.hard => 0.6,
+      Difficulty.easy => 0.4,
+      Difficulty.normal => 0.3,
+      Difficulty.hard => 0.2,
     };
   }
 
