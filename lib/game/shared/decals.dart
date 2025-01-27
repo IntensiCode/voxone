@@ -126,7 +126,7 @@ class Decals extends Component with HasContext {
     _anim[Decal.nuke_explosion] = sheetI('explosion.png', 14, 1);
     _anim[Decal.rock] = sheetI('mini_rock.png', 5, 1);
     _anim[Decal.smoke] = sheetI('smoke.png', 11, 1);
-    _anim[Decal.teleport] = sheetI('teleport.png', 5, 1);
+    _anim[Decal.teleport] = sheetI('teleport.png', 10, 1);
   }
 
   @override
