@@ -51,7 +51,7 @@ class MainController extends World
     super.onMount();
 
     if (dev) {
-      showScreen(Screen.title);
+      showScreen(Screen.stage1);
     } else {
       add(WebPlayScreen());
     }
