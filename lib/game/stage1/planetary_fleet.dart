@@ -18,8 +18,8 @@ class PlanetaryFleet extends GameScriptComponent with EnemyWave, HasContext {
 
   @override
   bool get kill_bonus {
-    if (killed.whereType<PassingRanger>().length == 16) return true;
-    if (killed.whereType<CirclingMarauder>().length == 16) return true;
+    if (killed_of_type<PassingRanger>().length == 16) return true;
+    if (killed_of_type<CirclingMarauder>().length == 16) return true;
     return false;
   }
 

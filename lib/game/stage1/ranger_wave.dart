@@ -15,7 +15,7 @@ class RangerWave extends GameScriptComponent with EnemyWave, HasContext {
   final _wave = List<Enemy>.empty(growable: true);
 
   @override
-  bool get kill_bonus => killed.length == enemies_in_wave;
+  bool get kill_bonus => kill_count == enemies_in_wave;
 
   @override
   void onLoad() {

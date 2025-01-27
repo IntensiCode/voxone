@@ -26,7 +26,7 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
   final _wave = List<Enemy>.empty(growable: true);
 
   @override
-  bool get kill_bonus => killed.whereType<WarpingMarauder>().length == marauders_in_wave;
+  bool get kill_bonus => killed_of_type<WarpingMarauder>().length == marauders_in_wave;
 
   @override
   void onLoad() {
@@ -59,7 +59,7 @@ class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasCon
     super.update(dt);
     defeated = _wave.length >= enemies_in_wave && _wave.every((it) => it.defeated);
 
-    if (killed.length >= enemies_in_wave / 2 && !_spawned_weapon) {
+    if (kill_count >= enemies_in_wave / 2 && !_spawned_weapon) {
       logInfo('spawn guaranteed weapon');
       final it = stage.children.whereType<SweepingMarauder>().where((it) => !it.defeated).firstOrNull;
       it?.required_extras = {ExtraId.yin_yang};

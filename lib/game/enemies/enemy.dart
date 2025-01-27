@@ -102,7 +102,7 @@ abstract class EnemyEntity extends VoxelEntity with HasContext, Enemy, EnemyHitP
     if (state == EnemyState.exploding) return;
     state = EnemyState.exploding;
 
-    wave.killed.add(this);
+    wave.got_killed(this);
 
     if (sweep_time > 0) can_sweep = true;
 
@@ -450,7 +450,7 @@ mixin SpawnExtrasOnExploding on EnemyEntity {
     if (!go_down_on_exploding && leaving_time < 1) return;
 
     if (wave.kill_bonus) {
-      wave.killed.clear();
+      wave.on_kill_bonus_spawned();
       spawn_bonus();
     } else {
       spawn_default();
