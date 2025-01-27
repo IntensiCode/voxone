@@ -22,6 +22,8 @@ mixin Player {
 
   NotifyingVector2 get position;
 
+  double get fake_height;
+
   double get integrity;
 
   double get integrity_boost;

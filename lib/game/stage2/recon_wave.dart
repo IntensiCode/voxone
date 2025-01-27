@@ -9,7 +9,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/game_script.dart';
 
-class ReconWave extends GameScriptComponent with EnemyWave, HasContext {
+class ReconWave extends GameScriptComponent with HasContext, EnemyWave {
   final _wave = List<Enemy>.empty(growable: true);
 
   bool _ready = false;

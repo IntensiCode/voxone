@@ -14,7 +14,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
-class MarauderWaveWithCaptain extends GameScriptComponent with EnemyWave, HasContext {
+class MarauderWaveWithCaptain extends GameScriptComponent with HasContext, EnemyWave {
   static final marauders_in_wave = switch (difficulty) {
     Difficulty.easy => 6,
     Difficulty.normal => 7,

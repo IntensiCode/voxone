@@ -13,7 +13,7 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/random.dart';
 
-class MarauderWave extends GameScriptComponent with EnemyWave, HasContext {
+class MarauderWave extends GameScriptComponent with HasContext, EnemyWave {
   final enemies_in_wave = switch (difficulty) {
     Difficulty.easy => 8,
     Difficulty.normal => 9,

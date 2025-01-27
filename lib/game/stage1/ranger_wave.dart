@@ -9,7 +9,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 
-class RangerWave extends GameScriptComponent with EnemyWave, HasContext {
+class RangerWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 24;
 
   final _wave = List<Enemy>.empty(growable: true);

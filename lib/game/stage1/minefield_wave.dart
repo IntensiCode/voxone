@@ -11,7 +11,7 @@ import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/random.dart';
 
-class MinefieldWave extends GameScriptComponent with EnemyWave, HasContext {
+class MinefieldWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 128;
 
   @override

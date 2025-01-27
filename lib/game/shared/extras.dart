@@ -127,7 +127,13 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
     reset_sprite_data();
 
     fake_height = 50;
+
+    _delay = 0.01 + rng.nextDoubleLimit(0.3);
+
+    scale.setAll(0);
   }
+
+  double _delay = 0;
 
   @override
   void onMount() {
@@ -154,6 +160,19 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
       _tmp.scale(60 * dt);
       _direction.add(_tmp);
     }
+
+    if (_delay > 0) {
+      _delay = max(0, _delay - dt);
+      if (_delay <= 0) decals.spawn3d(Decal.teleport, this);
+      return;
+    }
+
+    if (scale.x < 1) {
+      scale.x += dt * 2;
+      scale.y = scale.x;
+      if (scale.x >= 1) scale.setAll(1);
+      return;
+    }
   }
 
   final _tmp = v2z();
@@ -163,7 +182,6 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
     super.onCollision(intersectionPoints, other);
     if (recycled) return;
     other.onTraits<Player>((it) {
-      decals.spawn3d(Decal.teleport, this);
       player.on_collect_extra(which);
       recycle();
     });

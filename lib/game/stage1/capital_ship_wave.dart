@@ -6,7 +6,7 @@ import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/util/game_script.dart';
 
-class CapitalShipWave extends GameScriptComponent with EnemyWave, HasContext {
+class CapitalShipWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 1;
 
   final _wave = List<Enemy>.empty(growable: true);
