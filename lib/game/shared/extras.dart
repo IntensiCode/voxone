@@ -153,7 +153,8 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
     position.add(_direction * dt);
     if (position.x < -32) recycle();
     if (_captured) _direction.scale(1.25);
-    if (position.x > 0 && position.x < player.position.x + 100) {
+
+    if (!player.is_dead_or_dying() && position.x > 0 && position.x < player.position.x + 100) {
       _tmp.setFrom(player.position);
       _tmp.sub(position);
       _tmp.normalize();
@@ -181,7 +182,9 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
     if (recycled) return;
+    if (player.is_dead_or_dying()) return;
     other.onTraits<Player>((it) {
+      if (it.is_dead_or_dying()) return;
       player.on_collect_extra(which);
       recycle();
     });
