@@ -151,7 +151,10 @@ class ZaxxonPlayer extends VoxelEntity
         break;
 
       case PlayerState.playing:
-        if (stage.phase == GamePhase.transition) state = PlayerState.leaving;
+        if (stage.phase == GamePhase.transition) {
+          _state_time = max(0, _state_time - dt);
+          if (_state_time <= 0) state = PlayerState.leaving;
+        }
         update_strafe(dt);
         break;
 
