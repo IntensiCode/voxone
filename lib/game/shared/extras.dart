@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/shared/decals.dart';
 import 'package:voxone/game/shared/deflector_shield.dart';
@@ -144,9 +145,18 @@ class _Extra extends VoxelEntity with CollisionCallbacks, HasContext, Recyclable
       rot_z = sin(_anim_time * 2 * pi * 0.74569) * pi / 8;
     }
     position.add(_direction * dt);
-    if (position.x < -100) recycle();
+    if (position.x < -32) recycle();
     if (_captured) _direction.scale(1.25);
+    if (position.x > 0 && position.x < player.position.x + 100) {
+      _tmp.setFrom(player.position);
+      _tmp.sub(position);
+      _tmp.normalize();
+      _tmp.scale(60 * dt);
+      _direction.add(_tmp);
+    }
   }
+
+  final _tmp = v2z();
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {

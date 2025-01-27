@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 typedef Check = bool Function();
 typedef Hook = void Function();
 
+Vector2 v2([double x = 0, double y = 0]) => Vector2(x, y);
+Vector2 v2z() => Vector2.zero();
+
 Function(bool)? on_debug_change;
 
 bool _debug = kDebugMode;
