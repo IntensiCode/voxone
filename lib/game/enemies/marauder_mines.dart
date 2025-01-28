@@ -216,7 +216,6 @@ class MarauderMine extends VoxelEntity with CollisionCallbacks, HasContext, Enem
         Difficulty.normal => 60.0,
         Difficulty.hard => 80.0,
       };
-      if (dev) logInfo('mine hit ${it.runtimeType} for $damage');
       it.on_hit(damage: damage);
 
       position.x -= 10;

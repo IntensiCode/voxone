@@ -71,7 +71,6 @@ class YinYang extends SpriteComponent
               .toSet();
 
           if (hostiles.isEmpty) {
-            logInfo('no other hostiles');
             set_direction(randomNormalizedVector2());
             return;
           }

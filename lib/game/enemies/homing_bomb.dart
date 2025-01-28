@@ -47,8 +47,6 @@ class HomingBomb extends PositionComponent
     paint.maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
-
-    logInfo('timeout: $_timeout');
   }
 
   void reset(FakeThreeDee origin) {

@@ -28,8 +28,6 @@ class HomingLauncher extends Component with HasContext {
   @override
   onLoad() {
     HomingBomb.sheet = atlas.sheetI('nuke_core.png', 8, 1);
-
-    logInfo('base time: $_base_time');
   }
 
   @override
