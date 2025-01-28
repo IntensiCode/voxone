@@ -34,10 +34,23 @@ class SatelliteMarauder extends EnemyEntity
 mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
   @override
   createEntity() async {
-    reset_hit_points_to(10);
+    reset_hit_points_to(switch (difficulty) {
+      Difficulty.easy => 10,
+      Difficulty.normal => 11,
+      Difficulty.hard => 12,
+    });
 
-    active_time_limit = 20;
-    active_time_limit += rng.nextDoubleLimit(5);
+    switch (difficulty) {
+      case Difficulty.easy:
+        active_time_limit = 20;
+        active_time_limit += rng.nextDoubleLimit(5);
+      case Difficulty.normal:
+        active_time_limit = 18;
+        active_time_limit += rng.nextDoubleLimit(4);
+      case Difficulty.hard:
+        active_time_limit = 16;
+        active_time_limit += rng.nextDoubleLimit(3);
+    }
 
     isVisible = false;
     size.setAll(40);

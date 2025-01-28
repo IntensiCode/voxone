@@ -52,11 +52,11 @@ class CapitalShip extends EnemyEntity
     super.createEntity();
     active_time_limit = 0;
     add(HomingLauncher(this));
-    add(RangerLaser(this, offset: _v(-84, -4), damage: 0.4, cool_down: 2.8)
+    add(RangerLaser(this, offset: _v(-144, -4), damage: 0.4, cool_down: 2.8)
       ..priority = 10
       ..anchor = Anchor.center
       ..anchor_to_parent());
-    add(RangerLaser(this, offset: _v(-45, 47), damage: 0.4, cool_down: 2.8)
+    add(RangerLaser(this, offset: _v(-80, 82), damage: 0.4, cool_down: 2.8)
       ..priority = 10
       ..anchor = Anchor.center
       ..anchor_to_parent());
@@ -75,10 +75,9 @@ class CapitalShip extends EnemyEntity
     shield.auto_recharge = switch (difficulty) {
       Difficulty.easy => 0.225,
       Difficulty.normal => 0.25,
-      Difficulty.hard => 0.275,
+      Difficulty.hard => 0.3,
     };
     shield.max_rotate_time = 360;
-    indicator.position.setValues(0, -16);
   }
 }
 
@@ -90,12 +89,12 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
     reset_hit_points_to(switch (difficulty) {
       Difficulty.easy => 800,
       Difficulty.normal => 1250,
-      Difficulty.hard => 1500,
+      Difficulty.hard => 2500,
     });
 
     set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
 
-    size.setAll(200);
+    size.setAll(350);
 
     force_render = true;
 
@@ -106,10 +105,10 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
     scale_y = 4.5;
     scale_z = 1.4;
 
-    add(EnemyHealthBar(this));
+    add(EnemyHealthBar(this)..position.y += 32);
 
     add(center_mass = CircleHitbox.relative(
-      0.5,
+      0.3,
       parentSize: size,
       position: _v(0, -10),
       isSolid: true,
@@ -118,18 +117,18 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
     )..anchor_to_parent());
 
     add(CircleHitbox.relative(
-      0.3,
+      0.25,
       parentSize: size,
-      position: _v(-80, -20),
+      position: _v(-100, -30),
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
     )..anchor_to_parent());
 
     add(CircleHitbox.relative(
-      0.3,
+      0.25,
       parentSize: size,
-      position: _v(-30, 50),
+      position: _v(-30, 60),
       isSolid: true,
       collisionType: CollisionType.passive,
       anchor: Anchor.center,
@@ -214,6 +213,7 @@ mixin _FloatOnActive on EnemyEntity {
     position.setFrom(target_position);
     position.x += sin(active_time / 1.2345) * 10;
     position.y += sin(active_time) * 10;
+    fake_height = 25;
   }
 }
 

@@ -23,7 +23,7 @@ class CapitalShipWave extends GameScriptComponent with HasContext, EnemyWave {
     after(1.0, () {
       final it = CapitalShip(this);
       it.target_position.x = 600;
-      it.target_position.y = 160;
+      it.target_position.y = 200;
       _wave.add(it);
       stage.add(it);
     });
