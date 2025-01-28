@@ -41,7 +41,15 @@ class DeflectorShield extends PositionComponent with HasContext, HasPaint, HasTr
     paint.filterQuality = FilterQuality.none;
     priority = -1;
 
-    addTrait(EnergyShield(target, () => _deflect_time = 0.3, () => sendMessage(Rumble(duration: 0.2, haptic: false))));
+    addTrait(EnergyShield(target, () => _deflect_time = 0.3, () {
+      // NPE in web sometimes!?
+      try {
+        if (isMounted) sendMessage(Rumble(duration: 0.2, haptic: false));
+      }
+      catch (e, st) {
+        if (dev) logError('rumble failed - ignored: $e', st);
+      }
+    }));
   }
 
   final String _shader_name;
