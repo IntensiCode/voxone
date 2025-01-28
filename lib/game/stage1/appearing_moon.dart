@@ -47,7 +47,7 @@ class AppearingMoon extends RectangleComponent {
 
     if (_fixed) return;
 
-    _anim_time += dt;
+    _anim_time += dt / 6;
     _time = min(grow_time, _time + dt);
 
     if (finish_zoom) {
