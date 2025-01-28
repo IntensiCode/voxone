@@ -300,9 +300,14 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
 
     last_src_rect.right = width * pixel_multiplier;
     last_src_rect.bottom = height * pixel_multiplier;
-    _last = pixelate(last_src_rect.right.toInt(), last_src_rect.bottom.toInt(), (canvas) {
-      canvas.drawRect(last_src_rect, _shader_paint);
-    });
+    try {
+      _last = pixelate(last_src_rect.right.toInt(), last_src_rect.bottom.toInt(), (canvas) {
+        canvas.drawRect(last_src_rect, _shader_paint);
+      });
+    } catch (e) {
+      if (dev) logError('render error - ignored: $e');
+      return;
+    }
     paint.colorFilter = highlight_mode.colorFilter;
     canvas.drawImageRect(_last!, last_src_rect, last_dst_rect, paint);
 
