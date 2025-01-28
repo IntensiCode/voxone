@@ -183,7 +183,11 @@ mixin _VibrateOnIncoming on EnemyEntity {
 mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAfterOnIncoming {
   final _nop = <Vector2>{};
 
-  double _generator_hit_points = 150;
+  late double _generator_hit_points = switch (difficulty) {
+    Difficulty.easy => 200,
+    Difficulty.normal => 450,
+    Difficulty.hard => 600,
+  };
 
   @override
   void on_hit({Set<Vector2>? intersections, double damage = 1}) {
