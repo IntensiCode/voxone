@@ -34,7 +34,7 @@ class Stage2 extends GameScreen with HasContext {
     await add(extras);
     await add(mines);
     await add(shadows);
-    await add(info_overlay = InfoOverlay());
+    await add(info_overlay = InfoOverlay(() => timeScale));
 
     await PlasmaBlob.preload();
     await DeflectorShield.preload();

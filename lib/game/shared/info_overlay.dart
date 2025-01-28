@@ -11,12 +11,14 @@ import 'package:voxone/util/game_script.dart';
 import 'package:voxone/util/on_message.dart';
 
 class InfoOverlay extends GameScriptComponent {
-  InfoOverlay() {
+  InfoOverlay(this._time_scale) {
     add(_info = _InfoOverlay(quick: dev));
     add(_hud = _InfoOverlay(pos_y: 480 - 32, quick: true));
     add(_cheat = _InfoOverlay(pos_y: 480 - 16, quick: true));
     priority = 9000;
   }
+
+  final double Function() _time_scale;
 
   late _InfoOverlay _info;
   late _InfoOverlay _hud;
@@ -33,6 +35,11 @@ class InfoOverlay extends GameScriptComponent {
         target.pipe.add(it);
       }
     });
+  }
+
+  @override
+  void updateTree(double dt) {
+    super.updateTree(dt / _time_scale());
   }
 }
 
