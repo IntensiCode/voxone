@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -14,21 +15,22 @@ extension HasContextExtensions on HasContext {
 }
 
 enum Decal {
-  dust(1.0),
-  energy_ball(0.5, 0),
-  explosion16(1.0),
-  explosion32(1.0),
-  mini_explosion(1.0, 20),
-  nuke_explosion(1.0, 0),
-  smoke(1.0),
-  teleport(0.3, 0),
-  rock(0.5, 0),
+  dust(anim_time: 1.0),
+  energy_ball(anim_time: 0.5, random_range: 0),
+  explosion16(anim_time: 1.0),
+  explosion32(anim_time: 1.0),
+  mini_explosion(anim_time: 1.0, random_range: 20),
+  nuke_explosion(anim_time: 1.0, random_range: 0),
+  smoke(anim_time: 1.0, rotate_speed: 1),
+  teleport(anim_time: 0.3, random_range: 0),
+  rock(anim_time: 0.5, random_range: 0),
   ;
 
-  const Decal(this.anim_time, [this.random_range = 8]);
+  const Decal({required this.anim_time, this.random_range = 8, this.rotate_speed});
 
   final double anim_time;
   final double random_range;
+  final double? rotate_speed;
 }
 
 class DecalObj extends PositionComponent with HasPaint, FakeThreeDee {
@@ -102,6 +104,7 @@ class Decals extends Component with HasContext {
     result.position.setFrom(start);
     result.velocity.setZero();
     result.time = 0;
+    result.angle = 0;
 
     if (decal == Decal.mini_explosion) {
       result.randomize_position(range: pos_range ?? 20);
@@ -144,6 +147,7 @@ class Decals extends Component with HasContext {
       it.position.x += it.velocity.x * dt;
       it.position.y -= it.velocity.y * dt;
       it.time += dt;
+      if (decal.rotate_speed != null) it.angle += pi * 2 / decal.rotate_speed! * dt;
     }
     final done = decals.where((it) => it.time >= decal.anim_time).toList();
     for (final it in done) {
