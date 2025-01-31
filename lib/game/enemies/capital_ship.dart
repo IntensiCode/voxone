@@ -74,7 +74,7 @@ class CapitalShip extends EnemyEntity
     shield.shield.shield_boost = 3;
     shield.auto_recharge = switch (difficulty) {
       Difficulty.easy => 0.225,
-      Difficulty.normal => 0.25,
+      Difficulty.normal => 0.3,
       Difficulty.hard => 0.3,
     };
     shield.max_rotate_time = 360;
@@ -87,9 +87,9 @@ mixin _CreateCapitalShipEntity on EnemyEntity {
   @override
   void createEntity() {
     reset_hit_points_to(switch (difficulty) {
-      Difficulty.easy => 800,
-      Difficulty.normal => 1250,
-      Difficulty.hard => 2500,
+      Difficulty.easy => 1250,
+      Difficulty.normal => 2500,
+      Difficulty.hard => 5000,
     });
 
     set_sprite_source(atlas.sprite('entities/dual_striker.png'), 16);
@@ -183,9 +183,9 @@ mixin _LoseShieldWhenGeneratorDestroyed on _CreateCapitalShipEntity, AddShieldAf
   final _nop = <Vector2>{};
 
   late double _generator_hit_points = switch (difficulty) {
-    Difficulty.easy => 200,
-    Difficulty.normal => 450,
-    Difficulty.hard => 600,
+    Difficulty.easy => 500,
+    Difficulty.normal => 1000,
+    Difficulty.hard => 2000,
   };
 
   @override

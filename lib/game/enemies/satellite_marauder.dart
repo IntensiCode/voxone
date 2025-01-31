@@ -36,8 +36,8 @@ mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
   createEntity() async {
     reset_hit_points_to(switch (difficulty) {
       Difficulty.easy => 10,
-      Difficulty.normal => 11,
-      Difficulty.hard => 12,
+      Difficulty.normal => 15,
+      Difficulty.hard => 15,
     });
 
     switch (difficulty) {
@@ -45,7 +45,7 @@ mixin _CreateSatelliteEntity on EnemyEntity, HasVisibility {
         active_time_limit = 20;
         active_time_limit += rng.nextDoubleLimit(5);
       case Difficulty.normal:
-        active_time_limit = 18;
+        active_time_limit = 17;
         active_time_limit += rng.nextDoubleLimit(4);
       case Difficulty.hard:
         active_time_limit = 16;
