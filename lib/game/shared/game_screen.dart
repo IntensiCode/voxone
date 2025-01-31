@@ -56,7 +56,6 @@ abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcu
       logInfo('activate cheat keys');
       onKey('1', () => showScreen(Screen.stage1));
       onKey('2', () => showScreen(Screen.stage2));
-      onKey('3', () => showScreen(Screen.stage3));
     }
     if (dev) {
       onKey('-', () => _change_time_scale(-0.25));

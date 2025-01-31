@@ -100,8 +100,6 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     Delete :: Destroy Player
     Insert :: Destroy All Enemies
     Backspace :: Remove All Enemies
-    >
-    1 - 5 :: Jump to Stage (NYI)
     ''';
     add(_cheats = FlowText(
       text: cheats,
