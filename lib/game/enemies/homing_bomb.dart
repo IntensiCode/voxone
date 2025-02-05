@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -156,6 +155,8 @@ class HomingBomb extends PositionComponent
     recycle();
     decals.spawn3d(Decal.nuke_explosion, this);
     audio.play(Sound.explosion, volume_factor: 0.1);
-    16.forEach((_) => decals.spawn3d(Decal.smoke, this));
+    for (var i = 0; i < 16; i++) {
+      decals.spawn3d(Decal.smoke, this);
+    }
   }
 }

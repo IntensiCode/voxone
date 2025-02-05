@@ -7,7 +7,6 @@ import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
 
 class IonPulseGun extends Component with HasContext, PrimaryWeapon {
   IonPulseGun(this._player);
@@ -34,9 +33,9 @@ class IonPulseGun extends Component with HasContext, PrimaryWeapon {
     if (keys.a_button) {
       _cool_down += 0.8;
 
-      5.forEach((i) {
+      for (var i = 0; i < 5; i++) {
         stage.add(_projectiles.acquire()..reset((i + 1) * 0.05, _player as FakeThreeDee));
-      });
+      }
 
       audio.play(Sound.pulse, volume_factor: 0.5);
     }

@@ -473,9 +473,9 @@ mixin SpawnExtrasOnExploding on EnemyEntity {
     for (final e in required) {
       extras.spawn3d(this, choices: {e}, index: index++, count: all_count);
     }
-    random_count.forEach((_) {
+    for (var i = 0; i < random_count; i++) {
       extras.spawn3d(this, choices: allowed_random_extras, index: index++, count: all_count);
-    });
+    }
   }
 }
 

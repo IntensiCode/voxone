@@ -105,11 +105,11 @@ mixin _MoveOnActive on EnemyEntity {
       _jump_time = 2;
       _down_time = 2;
       final count = 8;
-      count.forEach((i) {
+      for (var i = 0; i < count; i++) {
         final dx = sin(i * pi * 2 / count) * 10;
         final dy = cos(i * pi * 2 / count) * 10;
         decals.spawn3d(Decal.dust, this).velocity.setValues(-100 + dx, -25 + dy);
-      });
+      }
     }
 
     if (_jump_time > 0) {
@@ -129,11 +129,11 @@ mixin _MoveOnActive on EnemyEntity {
 
       if (_jump_time <= 0) {
         final count = 16;
-        count.forEach((i) {
+        for (var i = 0; i < count; i++) {
           final dx = sin(i * pi * 2 / count) * 10;
           final dy = cos(i * pi * 2 / count) * 10;
           decals.spawn3d(Decal.dust, this).velocity.setValues(-100 + dx, -25 + dy);
-        });
+        }
       }
     } else if (_down_time > 0) {
       _down_time -= dt;

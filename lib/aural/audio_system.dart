@@ -253,7 +253,9 @@ abstract class AudioSystem extends Component {
     _fade_music(dt);
 
     if (_triggered.isEmpty) return;
-    _triggered.forEach(play);
+    for (final it in _triggered) {
+      play(it);
+    }
     _triggered.clear();
   }
 

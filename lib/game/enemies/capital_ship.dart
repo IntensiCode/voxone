@@ -230,11 +230,11 @@ mixin _MaintainSatellitesOnActive on EnemyEntity, HasTraits {
 
     if (player.is_dead_or_dying()) return;
 
-    _satellites.forEach((it) {
+    for (final it in _satellites) {
       if (it.state == EnemyState.left || it.state == EnemyState.defeated) {
         it.removeFromParent();
       }
-    });
+    }
 
     if (_satellites.isNotEmpty && _satellites.every((it) => it.isRemoved)) {
       if (_satellites.every((it) => it.state == EnemyState.defeated)) {
@@ -248,7 +248,7 @@ mixin _MaintainSatellitesOnActive on EnemyEntity, HasTraits {
     if (_satellites.isNotEmpty || _waves <= 0) return;
 
     final target = Vector2.zero();
-    _satellite_count.forEach((index) {
+    for (var index = 0; index < _satellite_count; index++) {
       final angle = pi / 4 - pi / 2 * index / _satellite_count;
       target.setValues(-200 * cos(angle) - index * 10, 30 + 130 * sin(angle));
       target.add(position);
@@ -259,7 +259,7 @@ mixin _MaintainSatellitesOnActive on EnemyEntity, HasTraits {
 
       _satellites.add(satellite);
       stage.add(satellite);
-    });
+    }
 
     _waves--;
   }

@@ -7,7 +7,9 @@ Future<FragmentShader> loadShader(String name) async {
 
 class Uniforms<T> {
   Uniforms(this.shader, Iterable<T> all) {
-    all.forEach(define);
+    for (final it in all) {
+      define(it);
+    }
   }
 
   final FragmentShader shader;

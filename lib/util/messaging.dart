@@ -28,7 +28,9 @@ mixin Messaging on Component {
     if (all == null || all.isEmpty) {
       if (dev) logWarn('no listener for ${message.runtimeType} in $listeners');
     } else {
-      all.forEach((it) => it(message));
+      for (final it in all) {
+        it(message);
+      }
     }
   }
 

@@ -101,9 +101,7 @@ class MainController extends World
     _previous = StackTrace.current;
 
     if (children.length > 1) {
-      3.forEach((_) {
-        logWarn('show $screen with stack=$_stack and more than one children=${children.map((it) => it.runtimeType)}');
-      });
+      logWarn('show $screen with stack=$_stack and more than one children=${children.map((it) => it.runtimeType)}');
     }
 
     void call_again() {
