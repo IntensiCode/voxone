@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
@@ -84,7 +83,6 @@ class IonPulse extends SpriteComponent
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          logInfo('damage: ${damage * _size_time.abs()} time abs: ${_size_time.abs()}');
           it.on_hit(intersections: intersectionPoints, damage: damage * _size_time.abs());
           _size_time = -1;
           change_direction(rng.nextDoublePM(pi / 2));
