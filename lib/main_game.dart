@@ -63,8 +63,8 @@ class MainGame extends FlameGame<MainController>
     await loadFonts(assets);
   }
 
-  @override
-  update(double dt) => _ticker.generateTicksFor(dt, (it) => super.update(it));
+  // @override
+  // update(double dt) => _ticker.generateTicksFor(dt, (it) => super.update(it));
 
   @override
   void onScroll(PointerScrollInfo info) {
