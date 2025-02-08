@@ -13,7 +13,7 @@ class YinYangGun extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  late final _projectiles = ComponentRecycler(() => YinYang(stage));
+  late final _projectiles = ComponentRecycler(() => YinYang(stage))..precreate(32);
 
   double _cool_down = 0;
 

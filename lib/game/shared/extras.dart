@@ -91,6 +91,7 @@ class Extras extends Component with HasContext {
       sprites[it] = atlas.sprite('extras/extra_${it.name}.png');
     }
     _pool = ComponentRecycler<_Extra>(() => _Extra(sprites, shadows));
+    _pool.precreate(128);
   }
 }
 

@@ -14,7 +14,7 @@ extension HasContextExtensions on HasContext {
 }
 
 class Explosions extends Component with HasContext {
-  final _explosions = ComponentRecycler<Explosion>(() => Explosion._());
+  final _explosions = ComponentRecycler<Explosion>(() => Explosion._())..precreate(128);
 
   Explosion spawn(PositionComponent origin) => _explosions.acquire()..reset(origin);
 

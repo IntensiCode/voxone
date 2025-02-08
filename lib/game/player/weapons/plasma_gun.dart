@@ -20,7 +20,7 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
 
   late bool _over_ground;
 
-  late final _projectiles = ComponentRecycler(() => PlasmaShot(over_ground: _over_ground));
+  late final _projectiles = ComponentRecycler(() => PlasmaShot(over_ground: _over_ground))..precreate(128);
 
   double _cool_down = 0;
 

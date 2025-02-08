@@ -14,7 +14,7 @@ class MarauderGun extends Component with HasContext {
 
   double _cool_down = rng.nextDouble();
 
-  final _projectiles = ComponentRecycler(() => MarauderShot());
+  final _projectiles = ComponentRecycler(() => MarauderShot())..precreate(256);
 
   @override
   void update(double dt) {

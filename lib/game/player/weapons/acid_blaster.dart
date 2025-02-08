@@ -13,7 +13,7 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  late final _projectiles = ComponentRecycler(() => AcidBlast(_respawn));
+  late final _projectiles = ComponentRecycler(() => AcidBlast(_respawn))..precreate(64);
 
   double _cool_down = 0;
 

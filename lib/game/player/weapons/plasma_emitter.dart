@@ -16,8 +16,8 @@ class PlasmaEmitter extends Component with HasContext, SecondaryWeapon {
 
   final Player _player;
 
-  late final _blobs = ComponentRecycler(() => PlasmaBlob(_emit_plasma_ring));
-  late final _rings = ComponentRecycler(() => PlasmaRing());
+  late final _blobs = ComponentRecycler(() => PlasmaBlob(_emit_plasma_ring))..precreate(8);
+  late final _rings = ComponentRecycler(() => PlasmaRing())..precreate(8);
 
   @override
   String get display_name => 'Plasma Emitter';

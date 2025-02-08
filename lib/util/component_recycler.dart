@@ -14,11 +14,20 @@ class ComponentRecycler<T extends Recyclable> {
 
   final items = <T>[];
 
+  void precreate(int count) {
+    for (var i = 0; i < count; i++) {
+      final it = _create();
+      it.recycle = () => recycle(it);
+      items.add(it);
+    }
+  }
+
   T acquire() {
     if (items.isNotEmpty) {
       return items.removeLast()..recycled = false;
     } else {
       final it = _create();
+      if (dev) logWarn('pool empty, creating new instance - ${it.runtimeType}');
       it.recycle = () => recycle(it);
       return it;
     }

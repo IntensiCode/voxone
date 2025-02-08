@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/common.dart';
@@ -74,13 +75,6 @@ class DecalObj extends PositionComponent with HasPaint, FakeThreeDee {
 }
 
 class Decals extends Component with HasContext {
-  Decals() {
-    for (final it in Decal.values) {
-      _ready[it] = List.empty(growable: true);
-      _active[it] = List.empty(growable: true);
-    }
-  }
-
   final _ready = <Decal, List<DecalObj>>{};
   final _active = <Decal, List<DecalObj>>{};
   final _anim = <Decal, SpriteSheet>{};
@@ -98,7 +92,10 @@ class Decals extends Component with HasContext {
 
     final instances = _active[decal] ??= List.empty(growable: true);
     final pool = _ready[decal]!;
-    if (pool.isEmpty) pool.add(DecalObj(_anim[decal]!, decal));
+    if (pool.isEmpty) {
+      if (dev) logWarn('decals pool empty for $decal');
+      pool.add(DecalObj(_anim[decal]!, decal));
+    }
     instances.add(result = pool.removeAt(0));
 
     result.position.setFrom(start);
@@ -130,6 +127,28 @@ class Decals extends Component with HasContext {
     _anim[Decal.rock] = sheetI('mini_rock.png', 5, 1);
     _anim[Decal.smoke] = sheetI('smoke.png', 11, 1);
     _anim[Decal.teleport] = sheetI('teleport.png', 10, 1);
+
+    _precreate_all();
+  }
+
+  void _precreate_all() {
+    for (final it in Decal.values) {
+      _ready[it] = List.empty(growable: true);
+      _active[it] = List.empty(growable: true);
+      final count = switch (it) {
+        Decal.dust => 256,
+        Decal.mini_explosion => 256,
+        Decal.smoke => 128,
+        _ => 32,
+      };
+      _precreate(it, count);
+    }
+  }
+
+  void _precreate(Decal decal, int count) {
+    for (var i = 0; i < count; i++) {
+      _ready[decal]!.add(DecalObj(_anim[decal]!, decal));
+    }
   }
 
   @override

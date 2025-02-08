@@ -18,8 +18,8 @@ class ClusterBombCannon extends Component with HasContext, SecondaryWeapon {
 
   final Player _player;
 
-  late final _primary = ComponentRecycler(() => ClusterBomb(_emit_bombs));
-  late final _secondary = ComponentRecycler(() => Bomb());
+  late final _primary = ComponentRecycler(() => ClusterBomb(_emit_bombs))..precreate(8);
+  late final _secondary = ComponentRecycler(() => Bomb())..precreate(128);
 
   @override
   String get display_name => 'Cluster Bomb Cannon';

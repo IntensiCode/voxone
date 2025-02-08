@@ -34,7 +34,7 @@ class MarauderMines extends Component with HasContext {
       stage.added(_mines.acquire()..reset(position, drift: drift, drop_height: drop_height));
 
   @override
-  onLoad() => _mines = ComponentRecycler(() => MarauderMine(atlas.sprite('mine.png')));
+  onLoad() => _mines = ComponentRecycler(() => MarauderMine(atlas.sprite('mine.png')))..precreate(128);
 
   @override
   void onRemove() {

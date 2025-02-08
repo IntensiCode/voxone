@@ -40,7 +40,7 @@ class Asteroids extends Component with HasContext {
       _uniforms = Uniforms(it, _Uniform.values);
       _shader_paint = pixel_paint()..shader = it;
     });
-    _asteroids = ComponentRecycler(() => Asteroid());
+    _asteroids = ComponentRecycler(() => Asteroid())..precreate(128);
   }
 
   @override

@@ -13,7 +13,7 @@ class IonPulseGun extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  final _projectiles = ComponentRecycler(() => IonPulse());
+  final _projectiles = ComponentRecycler(() => IonPulse())..precreate(64);
 
   double _cool_down = 0;
 

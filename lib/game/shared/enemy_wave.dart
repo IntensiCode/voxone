@@ -43,7 +43,6 @@ mixin EnemyWave on Component, HasContext {
       if (_kill_time - it < 0.3) streak++;
     }
     if (streak > 2) {
-      logInfo('streak: $streak');
       _streak = streak;
       _streak_time = _kill_time;
     }
@@ -82,7 +81,7 @@ mixin EnemyWave on Component, HasContext {
     final s = _streak;
     if (s == null) return;
 
-    logInfo('streak ended: $s');
+    if (dev) logInfo('streak ended: $s');
     _streak_spawn = s - 2;
     for (final it in _kill_times.indexed) {
       if (_kill_time - it.$2 < 0.3) continue;

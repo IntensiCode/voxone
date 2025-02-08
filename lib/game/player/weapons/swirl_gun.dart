@@ -13,7 +13,7 @@ class SwirlGun extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  final _projectiles = ComponentRecycler(() => Swirl());
+  final _projectiles = ComponentRecycler(() => Swirl())..precreate(32);
 
   double _cool_down = 0;
 
