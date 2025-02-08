@@ -35,7 +35,7 @@ class PlasmaShot extends PositionComponent
 
   void reset(FakeThreeDee origin) {
     _start_time = 1;
-    change_direction(0);
+    set_direction_angle(0);
     init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;

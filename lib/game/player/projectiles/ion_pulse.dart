@@ -33,7 +33,7 @@ class IonPulse extends SpriteComponent
     _delay = delay;
     _size_time = 1;
     _origin = origin.position;
-    change_direction(0);
+    set_direction_angle(0);
     init_fake_3d(origin);
   }
 
@@ -85,7 +85,7 @@ class IonPulse extends SpriteComponent
         if (it.susceptible) {
           it.on_hit(intersections: intersectionPoints, damage: damage * _size_time.abs());
           _size_time = -1;
-          change_direction(rng.nextDoublePM(pi / 2));
+          set_direction_angle(rng.nextDoublePM(pi / 2));
         }
       });
     }

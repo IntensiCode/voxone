@@ -59,7 +59,7 @@ class PlasmaGun extends Component with HasContext, PrimaryWeapon {
         stage.add(_projectiles.acquire()
           ..reset(_player as FakeThreeDee)
           ..speed_buff = -d.abs() * 250
-          ..change_direction(d));
+          ..set_direction_angle(d));
       }
 
       audio.play(Sound.shot, volume_factor: 0.5);

@@ -37,7 +37,7 @@ class YinYang extends SpriteComponent
   double _damage = 2;
 
   void reset(FakeThreeDee origin) {
-    change_direction(0);
+    set_direction_angle(0);
     init_fake_3d(origin);
     size.setAll(32);
     x += 25;

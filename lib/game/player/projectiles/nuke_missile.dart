@@ -56,7 +56,7 @@ class NukeMissile extends SpriteComponent
       decals.spawn3d(Decal.smoke, this);
     }
 
-    change_direction(0);
+    set_direction_angle(0);
 
     final sprite_index = (_anim_time * (_sprites.columns - 1)).toInt();
     sprite = _sprites.getSprite(0, sprite_index);

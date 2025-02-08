@@ -18,8 +18,12 @@ mixin DirectionalProjectile on PositionComponent, FakeThreeDee, Recyclable {
     ..scale(base_speed);
 
   void change_direction(double relative_angle) {
-    _direction.setValues(1, 0);
     _direction.rotate(-pi / 16 + relative_angle);
+  }
+
+  void set_direction_angle(double angle) {
+    _direction.setValues(1, 0);
+    _direction.rotate(-pi / 16 + angle);
     _direction.scale(base_speed);
   }
 
