@@ -11,13 +11,14 @@ import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
 import 'package:voxone/util/extensions.dart';
 import 'package:voxone/util/functions.dart';
+import 'package:voxone/util/random.dart';
 
 class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile {
-  static const initial_damage = 7.0;
+  static const initial_damage = 3.0;
   static const start_size = 16.0;
   static const size_speed = 12.0;
 
-  AcidBlast() {
+  AcidBlast(this._respawn) {
     anchor = Anchor.center;
     size.setAll(start_size);
     angle = -pi / 16;
@@ -30,6 +31,8 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
     scale.y = 0.6;
   }
 
+  late final Function(AcidBlast) _respawn;
+
   late CircleHitbox _hitbox;
   late SpriteAnimation _anim;
 
@@ -41,6 +44,8 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
   double _damage = initial_damage;
 
   void reset(FakeThreeDee origin) {
+    set_direction_angle(0);
+    angle = base_direction.screenAngle() - pi  / 2;
     _damage = initial_damage +
         switch (difficulty) {
           Difficulty.easy => 2,
@@ -51,6 +56,14 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
     init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
+  }
+
+  void reset_respawn(AcidBlast blast) {
+    _damage = blast._damage;
+    size.setFrom(blast.size);
+    init_fake_3d(blast);
+    change_direction(rng.nextDoublePM(pi));
+    angle = base_direction.screenAngle() - pi  / 2;
   }
 
   @override
@@ -81,10 +94,13 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
     if (other.hasTrait<Hostile>()) {
       other.onTraits<Target>((it) {
         if (it.susceptible) {
-          _damage /= 2;
           it.on_hit(damage: _damage, intersections: intersectionPoints);
-          if (_damage < 1) recycle();
+          _damage /= 2;
           size.scale(0.5);
+          if (_damage < 1)
+            recycle();
+          else
+            _respawn(this);
         }
       });
     }

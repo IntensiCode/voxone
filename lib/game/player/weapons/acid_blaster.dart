@@ -13,7 +13,7 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
 
   final Player _player;
 
-  final _projectiles = ComponentRecycler(() => AcidBlast());
+  late final _projectiles = ComponentRecycler(() => AcidBlast(_respawn));
 
   double _cool_down = 0;
 
@@ -35,5 +35,11 @@ class AcidBlaster extends Component with HasContext, PrimaryWeapon {
       stage.add(_projectiles.acquire()..reset(_player as FakeThreeDee));
       audio.play(Sound.acid_blast, volume_factor: 0.1);
     }
+  }
+
+  void _respawn(AcidBlast blast) {
+    stage.add(_projectiles.acquire()..reset_respawn(blast));
+    stage.add(_projectiles.acquire()..reset_respawn(blast));
+    stage.add(_projectiles.acquire()..reset_respawn(blast));
   }
 }
