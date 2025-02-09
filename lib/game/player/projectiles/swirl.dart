@@ -6,6 +6,7 @@ import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
+import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/util/component_recycler.dart';
@@ -34,7 +35,11 @@ class Swirl extends SpriteComponent
     init_fake_3d(origin);
     x += 25;
     y -= 25 / 4;
-    _damage = 1;
+    _damage = switch (difficulty) {
+      Difficulty.easy => 2,
+      Difficulty.normal => 1.5,
+      Difficulty.hard => 1.25,
+    };
   }
 
   @override
@@ -53,7 +58,7 @@ class Swirl extends SpriteComponent
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           it.on_hit(intersections: intersectionPoints, damage: _damage);
-          _damage = max(0.1, _damage * 0.9);
+          _damage = max(0.1, _damage * 0.95);
         }
       });
     }
