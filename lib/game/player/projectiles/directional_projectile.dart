@@ -37,10 +37,14 @@ mixin DirectionalProjectile on PositionComponent, FakeThreeDee, Recyclable {
 
   @override
   void update(double dt) {
+    super.update(dt);
+
     _tmp.setFrom(_direction);
     _tmp.scale(dt);
     position.add(_tmp);
-    priority = position.y.toInt() + 50; // player fake height is fixed for now - KISS for now
+
+    // TODO how can we get away without priority based on y? too expensive, right?
+    priority = position.y.toInt() + fake_height.toInt();
 
     if (x > game_width + 100) recycle();
   }

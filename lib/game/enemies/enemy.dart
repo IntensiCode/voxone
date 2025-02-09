@@ -148,6 +148,8 @@ abstract class EnemyEntity extends VoxelEntity with HasContext, Enemy, EnemyHitP
 
   @override
   void update(double dt) {
+    super.update(dt);
+
     _last_explosion_time = min(0.25, _last_explosion_time + dt);
     _live_position.setFrom(position);
 

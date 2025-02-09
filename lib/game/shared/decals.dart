@@ -153,6 +153,7 @@ class Decals extends Component with HasContext {
 
   @override
   void update(double dt) {
+    super.update(dt);
     for (final it in Decal.values) {
       _update(it, dt);
     }

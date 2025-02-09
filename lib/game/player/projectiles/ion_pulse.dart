@@ -35,6 +35,7 @@ class IonPulse extends SpriteComponent
     _origin = origin.position;
     set_direction_angle(0);
     init_fake_3d(origin);
+    fake_height -= 5;
   }
 
   @override

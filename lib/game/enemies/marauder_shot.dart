@@ -48,6 +48,7 @@ class MarauderShot extends PositionComponent
 
   @override
   void update(double dt) {
+    super.update(dt);
     x -= 300 * dt;
     y += 300 / 4 * dt;
     if (x < -100) recycle();

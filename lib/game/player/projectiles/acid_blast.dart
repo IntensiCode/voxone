@@ -45,7 +45,7 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
 
   void reset(FakeThreeDee origin) {
     set_direction_angle(0);
-    angle = base_direction.screenAngle() - pi  / 2;
+    angle = base_direction.screenAngle() - pi / 2;
     _damage = initial_damage +
         switch (difficulty) {
           Difficulty.easy => 2,
@@ -63,7 +63,7 @@ class AcidBlast extends SpriteComponent with CollisionCallbacks, Recyclable, Fak
     size.setFrom(blast.size);
     init_fake_3d(blast);
     change_direction(rng.nextDoublePM(pi));
-    angle = base_direction.screenAngle() - pi  / 2;
+    angle = base_direction.screenAngle() - pi / 2;
   }
 
   @override

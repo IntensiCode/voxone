@@ -10,11 +10,19 @@ mixin FakeThreeDee on PositionComponent {
 
   set fake_height(double value) {
     _fake_height = value;
-    priority = fake_height.toInt();
+    priority = y.toInt() + fake_height.toInt();
   }
 
   void init_fake_3d(FakeThreeDee origin) {
     fake_height = origin.fake_height;
     position.setFrom(origin.position);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    final target = y.toInt() + fake_height.toInt();
+    if ((priority - target).abs() > 1) priority = target;
   }
 }

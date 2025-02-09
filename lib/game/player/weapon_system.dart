@@ -63,11 +63,17 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   }
 
   void switch_secondary_to(Type type, {bool reload = true}) {
+    logInfo('switch secondary to $type');
     final reload_count = _reload_count(type);
 
     final weapon = _secondaries.keys.firstWhere((it) => it.runtimeType == type);
     _secondaries[weapon] = (_secondaries[weapon] ?? 0) + (reload ? reload_count : 0);
-    if (reload) logInfo('reloaded to ${_secondaries[weapon]}');
+    if (reload) logInfo('reloaded $type to ${_secondaries[weapon]}');
+
+    if (secondary_weapon == weapon) {
+      if (dev) logInfo('same secondary');
+      return;
+    }
 
     secondary_weapon?.removeFromParent();
     secondary_weapon = weapon;
