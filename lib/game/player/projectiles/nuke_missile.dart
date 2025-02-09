@@ -1,13 +1,16 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 import 'package:voxone/core/atlas.dart';
+import 'package:voxone/core/common.dart';
 import 'package:voxone/core/traits.dart';
 import 'package:voxone/game/enemies/marauder_shot.dart';
 import 'package:voxone/game/player/projectiles/directional_projectile.dart';
 import 'package:voxone/game/shared/decals.dart';
+import 'package:voxone/game/shared/deflector_shield.dart';
 import 'package:voxone/game/shared/difficulty.dart';
 import 'package:voxone/game/shared/fake_three_dee.dart';
 import 'package:voxone/game/shared/traits.dart';
@@ -67,6 +70,12 @@ class NukeMissile extends SpriteComponent
     super.onCollision(intersectionPoints, other);
     if (recycled) return;
     if (other is! MarauderShot && other.hasTrait<Hostile>()) {
+      if (other is DeflectorShield) {
+        if (other.energy < 0.2) {
+          if (dev) logInfo("Penetrating shield");
+          return;
+        }
+      }
       other.onTraits<Target>((it) {
         if (it.susceptible) {
           final d = switch (difficulty) {
