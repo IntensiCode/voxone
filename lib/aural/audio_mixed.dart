@@ -208,7 +208,7 @@ class PlatformAudioSystem extends AudioSystem {
       }
 
       if (compress != null) {
-        logInfo('need compression: $compress');
+        // if (dev) logInfo('need compression: $compress');
         for (int i = 0; i < mixed.length; i++) {
           mixed[i] /= compress;
         }
