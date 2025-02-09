@@ -17,6 +17,7 @@ import 'package:voxone/game/player/weapons/swirl_gun.dart';
 import 'package:voxone/game/player/weapons/yin_yang_gun.dart';
 import 'package:voxone/game/shared/has_context.dart';
 import 'package:voxone/game/shared/messages.dart';
+import 'package:voxone/game/shared/player_state.dart';
 import 'package:voxone/game/shared/traits.dart';
 import 'package:voxone/input/game_keys.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -156,6 +157,15 @@ class WeaponSystem extends Component with AutoDispose, HasAutoDisposeShortcuts, 
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (player.state == PlayerState.leaving) {
+      primary_weapon?.removeFromParent();
+      primary_weapon = null;
+      secondary_weapon?.removeFromParent();
+      secondary_weapon = null;
+      return;
+    }
+
     if (keys.check_and_consume(GameKey.x_button)) _switch_primary();
     if (keys.check_and_consume(GameKey.y_button)) _switch_secondary();
 
