@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:voxone/aural/audio_menu.dart';
 import 'package:voxone/aural/audio_system.dart';
 import 'package:voxone/background/space.dart';
@@ -35,14 +36,25 @@ class WebPlayScreen extends AutoDisposeComponent with HasAutoDisposeShortcuts {
   @override
   onLoad() async {
     add(FlowText(
-      text: 'If keyboard controls are not working, press <TAB> once to focus the game.',
+      text: 'Hint:\n\nIf keyboard controls are not working, press <TAB> once to focus the game.',
       background: atlas.sprite('button_plain.png'),
       font: mini_font,
-      position: Vector2(game_center.x, game_height - 40),
-      anchor: Anchor.bottomCenter,
-      size: Vector2(200, 40),
+      position: Vector2(64, game_center.y - 8),
+      anchor: Anchor.topLeft,
+      size: Vector2(200, 64),
       centered_text: true,
     ));
+    if (kIsWeb) {
+      add(FlowText(
+        text: 'Hint:\n\nPress F11 to toggle fullscreen mode.',
+        background: atlas.sprite('button_plain.png'),
+        font: mini_font,
+        position: Vector2(64, game_center.y + 72),
+        anchor: Anchor.topLeft,
+        size: Vector2(200, 64),
+        centered_text: true,
+      ));
+    }
 
     add(BasicMenu<AudioMenuEntry>(
       keys: _keys,
