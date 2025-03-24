@@ -105,9 +105,9 @@ extension ListExtensions<T> on List<T> {
 
 extension FragmentShaderExtensions on FragmentShader {
   setVec4(int index, Color color) {
-    final r = color.r / 255 * color.a;
-    final g = color.g / 255 * color.a;
-    final b = color.b / 255 * color.a;
+    final r = color.r * color.a;
+    final g = color.g * color.a;
+    final b = color.b * color.a;
     setFloat(index + 0, r);
     setFloat(index + 1, g);
     setFloat(index + 2, b);

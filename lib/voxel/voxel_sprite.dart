@@ -80,6 +80,10 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
   double rot_y = 0;
   double rot_z = 0;
 
+  double shift_x = 0;
+  double shift_y = 0;
+  double shift_z = 0;
+
   var highlight_mode = HighlightMode.none;
 
   /// Cache the rendered images.
@@ -292,7 +296,10 @@ class VoxelSprite extends PositionComponent with HasPaint, HasVisibility {
       ..set(VoxelUniform.u_z, _u_dir.z)
       ..set(VoxelUniform.v_x, _v_dir.x)
       ..set(VoxelUniform.v_y, _v_dir.y)
-      ..set(VoxelUniform.v_z, _v_dir.z);
+      ..set(VoxelUniform.v_z, _v_dir.z)
+      ..set(VoxelUniform.shift_x, shift_x)
+      ..set(VoxelUniform.shift_y, shift_y)
+      ..set(VoxelUniform.shift_z, shift_z);
 
     // TODO can we reuse this safely somehow?
     // for HighlightMode != none, the previous image has to be disposed:
@@ -382,5 +389,8 @@ enum VoxelUniform {
   v_x,
   v_y,
   v_z,
+  shift_x,
+  shift_y,
+  shift_z,
   shadow,
 }

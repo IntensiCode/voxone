@@ -15,7 +15,7 @@ import 'package:voxone/game/shared/messages.dart';
 import 'package:voxone/game/shared/screens.dart';
 import 'package:voxone/game/stage1/stage1.dart';
 import 'package:voxone/game/stage2/stage2.dart';
-import 'package:voxone/game/stage3.dart';
+import 'package:voxone/game/stage3/stage3.dart';
 import 'package:voxone/input/controls.dart';
 import 'package:voxone/input/select_game_pad.dart';
 import 'package:voxone/input/shortcuts.dart';
@@ -51,7 +51,7 @@ class MainController extends World
     super.onMount();
 
     if (dev) {
-      showScreen(Screen.stage1);
+      showScreen(Screen.stage3);
     } else {
       add(WebPlayScreen());
     }

@@ -13,6 +13,7 @@ class Checkerboard extends PositionComponent with HasPaint, AutoDispose {
   @override
   void onLoad() async {
     _shader = await loadShader('checkerboard.frag');
+
     _shader.setVec4(0, const Color(0xFF806030));
     _shader.setVec4(4, const Color(0xFFc0a050));
     _shader.setFloat(8, _rect.width);
@@ -29,15 +30,13 @@ class Checkerboard extends PositionComponent with HasPaint, AutoDispose {
 
   @override
   render(Canvas canvas) {
-    _time -= 10;
+    _time -= 2;
     super.render(canvas);
-    _shader.setFloat(12, sin(_time / 1024) * 256);
+    // _shader.setFloat(12, sin(_time / 1024) * 256);
     _shader.setFloat(13, 128);
     _shader.setFloat(14, _time);
-    canvas.scale(1, 2);
-    canvas.translate(0, -game_height / 2);
     canvas.drawRect(_rect, paint);
   }
 
-  static const _rect = Rect.fromLTWH(0, game_height / 2, game_width, game_height / 2);
+  static const _rect = Rect.fromLTWH(0, 0, game_width, game_height);
 }

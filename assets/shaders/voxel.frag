@@ -16,6 +16,7 @@ uniform vec3 iScale;
 uniform vec3 iRayDir;
 uniform vec3 iUDir;
 uniform vec3 iVDir;
+uniform vec3 iShift;
 uniform float iShadow;
 
 out vec4 fragColor;
@@ -87,7 +88,7 @@ void main() {
     vec2 uvd = vec2(uv);
     uvd.x += u_step;
     uvd.y += v_step;
-    pos *= steps / 2;
+    pos *= steps / 3;
     for (int i = 0; i < steps; i++) {
         vec4 c = tex3D(pos, uv);
         if (c.x > 0 || c.y > 0 || c.z > 0) {
@@ -97,7 +98,7 @@ void main() {
                 if (s.a == 0) {
                     fragColor.xyz *= 0.8;
                 }
-                return;
+                if (c.a == 1.0) return;
             }
             if (iShadow == 1) {
                 fragColor.x = 0;
@@ -115,6 +116,9 @@ void main() {
             }
         }
         pos -= dir;
+        pos.x += iShift.x;
+        pos.y += iShift.y;
+        pos.z += iShift.z;
     }
 
     fragColor = oob;
