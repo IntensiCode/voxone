@@ -42,6 +42,9 @@ void main() {
 
 	// Return the result from the ray marching
 	fragColor = marchRay(startPos, localLightDirection);
+
+	fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	return fragColor;
 }
 
 // --- Helper: Calculate normalized screen UV (-0.5 to 0.5) ---

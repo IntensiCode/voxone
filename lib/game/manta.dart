@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:vector_math/vector_math_64.dart' hide Colors;
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -8,35 +10,22 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/util/uniforms.dart';
 
-// Copied from voxel_sprite.dart for self-containment
-enum VoxelUniform {
-  scr_x,
-  scr_y,
-  scr_width,
-  scr_height,
-  tex_width,
-  tex_height,
-  frame_x,
-  frame_y,
-  frame_width,
-  frame_height,
+// Uniforms matching shaders/voxel3d.frag - FLATTENED
+// Total floats: 16 (mat4) + 3 (vec3) + 2 (vec2) + 1 (float) + 1 (float) = 23
+enum Voxel3dUniform {
+  // uVoxelModelMatrixInverse (mat4)
+  mat0, mat1, mat2, mat3, // Row 1
+  mat4, mat5, mat6, mat7, // Row 2
+  mat8, mat9, mat10, mat11, // Row 3
+  mat12, mat13, mat14, mat15, // Row 4
+  // uLightDirection (vec3)
+  lightX, lightY, lightZ,
+  // uFrameSize (vec2)
+  frameX, frameY,
+  // uFrames (float)
   frames,
-  scale_x,
-  scale_y,
-  scale_z,
-  ray_x,
-  ray_y,
-  ray_z,
-  u_x,
-  u_y,
-  u_z,
-  v_x,
-  v_y,
-  v_z,
-  shift_x,
-  shift_y,
-  shift_z,
-  shadow,
+  // uRenderMode (int as float)
+  renderMode,
 }
 
 class MantaComponent extends PositionComponent with HasContext, HasPaint {
@@ -44,26 +33,19 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   late Sprite _sprite;
   FragmentShader? _shader;
-  Uniforms<VoxelUniform>? _uniforms;
+  Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
-  // Rotation and scale values
-  double _rot_x = 0.0;
-  double _rot_y = 0.0;
-  double _rot_z = 0.0;
   final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
+  final Vector3 _rotation = Vector3.zero();
+  final Matrix4 _modelMatrix = Matrix4.identity();
+  final Matrix4 _modelMatrixInverse = Matrix4.identity();
+  final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize();
 
-  // Replicated from VoxelSprite for calculations
-  final _x_rot_mat = Matrix3.identity();
-  final _y_rot_mat = Matrix3.identity();
-  final _z_rot_mat = Matrix3.identity();
-  final _rot_mat = Matrix3.identity();
-  final _ray_dir = Vector3.zero();
-  final _u_dir = Vector3.zero();
-  final _v_dir = Vector3.zero();
+  // Store matrix data locally for setting uniforms
+  final Float32List _matrixData = Float32List(16);
 
   MantaComponent() {
-    // Ensure non-blurry rendering
     paint.isAntiAlias = false;
     paint.filterQuality = FilterQuality.none;
   }
@@ -71,19 +53,15 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   @override
   Future<void> onLoad() async {
     logInfo('Loading Manta');
-
     _sprite = atlas.sprite('entities/ZaxxonPlayer-15.png');
     _frames = 15;
-
     try {
-      _shader = await loadShader('shaders/voxel.frag');
-      _uniforms = Uniforms(_shader!, VoxelUniform.values);
+      _shader = await loadShader('shaders/voxel3d.frag');
+      _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
-      print('Error loading voxel shader: $e');
-      // Handle error appropriately, maybe remove the component
+      logError('Error loading voxel3d shader: $e');
     }
-
-    size.setAll(128); // Match render size from Go example
+    size.setAll(128);
     position = game.size / 2;
     anchor = Anchor.center;
   }
@@ -92,79 +70,57 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   void update(double dt) {
     super.update(dt);
     _time += dt;
+    _rotation.x = _time * 0.6;
+    _rotation.y = _time * 0.5;
+    _rotation.z = _time * 0.4;
+    final scaleMatrix = Matrix4.identity()..scale(_scale);
+    final rotX = Matrix4.rotationX(_rotation.x);
+    final rotY = Matrix4.rotationY(_rotation.y);
+    final rotZ = Matrix4.rotationZ(_rotation.z);
+    final rotationMatrix = rotZ * rotY * rotX;
+    _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
+    _modelMatrixInverse.copyInverse(_modelMatrix);
 
-    // Apply rotations based on time, similar to Go example
-    _rot_x = _time * 0.6;
-    _rot_y = _time * 0.5;
-    _rot_z = _time * 0.4;
+    // Update Float32List for setting uniforms
+    _modelMatrixInverse.copyIntoArray(_matrixData);
   }
 
   @override
   void render(Canvas canvas) {
+    // Draw a red rectangle
+    paint.color = const Color(0x8000FF00);
+    canvas.drawRect(size.toRect(), paint);
+
     final uniforms = _uniforms;
     final shader = _shader;
-    if (uniforms == null || shader == null) return; // Shader failed to load
+    if (uniforms == null || shader == null) {
+      logError('Uniforms or shader is null');
+      return;
+    }
 
-    // --- Calculate rotation matrix and direction vectors (from VoxelSprite) ---
-    _x_rot_mat.setRotationX(_rot_x);
-    _y_rot_mat.setRotationY(_rot_y);
-    _z_rot_mat.setRotationZ(_rot_z);
+    final frameSizeVec = Vector2(_sprite.srcSize.x, _sprite.srcSize.y / _frames);
 
-    _rot_mat.setIdentity();
-    _rot_mat.multiply(_x_rot_mat);
-    _rot_mat.multiply(_y_rot_mat);
-    _rot_mat.multiply(_z_rot_mat);
+    // Set Matrix uniforms (indices 0-15)
+    for (int i = 0; i < 16; i++) {
+      uniforms.set(Voxel3dUniform.values[i], _matrixData[i].toDouble());
+    }
 
-    _ray_dir.x = _rot_mat.entry(2, 0);
-    _ray_dir.y = _rot_mat.entry(2, 1);
-    _ray_dir.z = _rot_mat.entry(2, 2);
-    _u_dir.x = -_rot_mat.entry(0, 0);
-    _u_dir.y = -_rot_mat.entry(0, 1);
-    _u_dir.z = -_rot_mat.entry(0, 2);
-    _v_dir.x = _rot_mat.entry(1, 0);
-    _v_dir.y = _rot_mat.entry(1, 1);
-    _v_dir.z = _rot_mat.entry(1, 2);
+    // Set Vec3 uniforms (indices 16-18)
+    uniforms.set(Voxel3dUniform.lightX, _lightDirection.x);
+    uniforms.set(Voxel3dUniform.lightY, _lightDirection.y);
+    uniforms.set(Voxel3dUniform.lightZ, _lightDirection.z);
 
-    _ray_dir.normalize();
-    _u_dir.normalize();
-    _v_dir.normalize();
-    // --- End rotation calculation ---
+    // Set Vec2 uniforms (indices 19-20)
+    uniforms.set(Voxel3dUniform.frameX, frameSizeVec.x);
+    uniforms.set(Voxel3dUniform.frameY, frameSizeVec.y);
 
-    // --- Set Shader Uniforms ---
-    uniforms
-      ..set(VoxelUniform.scr_x, 0)
-      ..set(VoxelUniform.scr_y, 0)
-      ..set(VoxelUniform.scr_width, size.x)
-      ..set(VoxelUniform.scr_height, size.y)
-      ..set(VoxelUniform.tex_width, _sprite.image.width.toDouble())
-      ..set(VoxelUniform.tex_height, _sprite.image.height.toDouble())
-      ..set(VoxelUniform.frame_x, _sprite.srcPosition.x / _sprite.image.width)
-      ..set(VoxelUniform.frame_y, _sprite.srcPosition.y / _sprite.image.height)
-      ..set(VoxelUniform.frame_width, _sprite.srcSize.x)
-      ..set(VoxelUniform.frame_height, _sprite.srcSize.y / _frames)
-      ..set(VoxelUniform.frames, _frames.toDouble())
-      ..set(VoxelUniform.scale_x, _scale.x)
-      ..set(VoxelUniform.scale_y, _scale.y)
-      ..set(VoxelUniform.scale_z, _scale.z)
-      ..set(VoxelUniform.ray_x, _ray_dir.x)
-      ..set(VoxelUniform.ray_y, _ray_dir.y)
-      ..set(VoxelUniform.ray_z, _ray_dir.z)
-      ..set(VoxelUniform.u_x, _u_dir.x)
-      ..set(VoxelUniform.u_y, _u_dir.y)
-      ..set(VoxelUniform.u_z, _u_dir.z)
-      ..set(VoxelUniform.v_x, _v_dir.x)
-      ..set(VoxelUniform.v_y, _v_dir.y)
-      ..set(VoxelUniform.v_z, _v_dir.z)
-      ..set(VoxelUniform.shift_x, 0.0)
-      ..set(VoxelUniform.shift_y, 0.0)
-      ..set(VoxelUniform.shift_z, 0.0)
-      ..set(VoxelUniform.shadow, 0.0); // No shadow
+    // Set Float uniforms (indices 21-22)
+    uniforms.set(Voxel3dUniform.frames, _frames.toDouble());
+    uniforms.set(Voxel3dUniform.renderMode, 0.0); // Pass int as float
 
     shader.setImageSampler(0, _sprite.image);
     paint.shader = shader;
-    // --- End Uniform Setup ---
 
-    // Draw the component rectangle using the shader paint
     canvas.drawRect(size.toRect(), paint);
   }
 }
