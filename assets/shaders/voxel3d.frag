@@ -4,19 +4,20 @@
 precision highp float;
 
 // Input texture (atlas)
-uniform sampler2D uImageSrc0; 
+uniform sampler2D uImageSrc0;
 
 // Uniforms mapping Kage 'var's
 uniform mat4 uVoxelModelMatrixInverse;
 uniform vec3 uLightDirection;
-uniform vec2 uFrameSize; // Size of one frame/slice in the atlas
+uniform vec2 uFrameSize; // Size of one frame/slice in the atlas (pixels)
 uniform float uFrames;   // Number of frames/slices
-uniform int uRenderMode; // 0=Color, 1=Shadow, 2=Hit Highlight
+uniform float uRenderMode; // USE float INSTEAD OF int FOR IMPELLER
 
 // Uniforms replacing Kage built-ins
 uniform vec2 uDstOrigin; // Corresponds to imageDstOrigin()
 uniform vec2 uDstSize;   // Corresponds to imageDstSize()
-uniform vec2 uSrcOrigin; // Corresponds to imageSrc0Origin()
+uniform vec2 uSrcOrigin; // Top-left corner of sprite in atlas (pixels)
+uniform vec2 uAtlasSize; // Total size of the atlas texture (pixels)
 
 out vec4 fragColor;
 
@@ -43,8 +44,10 @@ void main() {
 	// Return the result from the ray marching
 	fragColor = marchRay(startPos, localLightDirection);
 
-	fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-	return fragColor;
+	// Debug: Output red if alpha is zero (user added)
+	if (fragColor.a == 0.0) {
+  		fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	}
 }
 
 // --- Helper: Calculate normalized screen UV (-0.5 to 0.5) ---
@@ -72,7 +75,8 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) {
 		vec4 baseColor = sampleShadedVolume(pos);
 
 		if (baseColor.a > 0.0) {
-			if (uRenderMode == 0) { // Color Mode
+			// Compare float uniform with float literals
+			if (uRenderMode == 0.0) { // Color Mode
                 vec3 rotatedScaledPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
 				float shadowFactor = calculateShadowFactor(rotatedScaledPos, lightDirection);
 				baseColor.rgb *= shadowFactor; // Apply shadow
@@ -97,10 +101,10 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) {
                     accumulatedColor += baseColor;
 					accumulations++;
 				}
-			} else if (uRenderMode == 1) { // Shadow Mode
+			} else if (uRenderMode == 1.0) { // Shadow Mode
 				fragColor = vec4(0.0, 0.0, 0.0, 0.5); // Simple shadow representation
 				return fragColor;
-			} else if (uRenderMode == 2) { // Hit Highlight Mode
+			} else if (uRenderMode == 2.0) { // Hit Highlight Mode
 				fragColor = vec4(1.0); // Highlight color
 				return fragColor;
 			}
@@ -136,9 +140,8 @@ vec4 volumeMap(vec3 pos) {
 	if (isOutOfBounds(pos)) {
 		return vec4(0.0); // Return transparent black if outside the standard -0.5 to 0.5 cube
 	}
-	vec2 uv = calculateAtlasUV(pos); // Calculate UV in the texture atlas
-	// Kage: imageSrc0At(uv)
-	return texture(uImageSrc0, uv); // Sample the texture
+	vec2 uv = calculateAtlasUV(pos); // Calculate NORMALIZED UV in the texture atlas
+	return texture(uImageSrc0, uv); // Sample the texture using normalized UVs
 }
 
 // --- Helper: Check if position is within the standard -0.5 to 0.5 cube ---
@@ -148,23 +151,23 @@ bool isOutOfBounds(vec3 pos) {
 		   pos.z < -0.5 || pos.z > 0.5;
 }
 
-// --- Helper: Calculate texture UV coordinates from a local position ---
+// --- Helper: Calculate texture UV coordinates from a local position --- // MODIFIED
 vec2 calculateAtlasUV(vec3 pos) {
-	// Kage: uv = imageSrc0Origin()
-	vec2 uv = uSrcOrigin; 
-    // Kage: uv.x += (pos.x + 0.5) * FrameSize.x
-	uv.x += (pos.x + 0.5) * uFrameSize.x;
-    // Kage: uv.y += (pos.z + 0.5) * FrameSize.y
-	uv.y += (pos.z + 0.5) * uFrameSize.y;
-	// Kage: slice = floor((pos.y + 0.5) * Frames)
+	// Calculate pixel coordinates within the specific sprite frame/slice
+	vec2 pixel_uv;
+	pixel_uv.x = (pos.x + 0.5) * uFrameSize.x;
+	pixel_uv.y = (pos.z + 0.5) * uFrameSize.y; // Map Z to Y within a slice
+
     // Calculate the slice index based on the y-coordinate (depth in original model space)
 	float slice = floor((pos.y + 0.5) * uFrames);
-    // Kage: offset = slice * FrameSize.y
-    // Calculate the vertical offset in the atlas for the current slice
-	float offset = slice * uFrameSize.y;
-    // Kage: uv.y += offset
-	uv.y += offset;
-	return uv; // Return the calculated UV coordinates
+
+    // Calculate the pixel offset for the slice and add the sprite origin
+    float pixel_offset_y = slice * uFrameSize.y;
+    pixel_uv.y += pixel_offset_y;
+    pixel_uv += uSrcOrigin; // Add the top-left corner offset of the sprite in the atlas
+
+	// Normalize the pixel coordinates using the passed atlas size uniform
+    return pixel_uv / uAtlasSize;
 }
 
 // --- Helper: Calculate the shadow factor based on light direction ---
@@ -183,7 +186,7 @@ float calculateShadowFactor(vec3 pos, vec3 lightDirection) {
 		if (volumeMap(pos).a > 0.0) { // Check if this position hits a voxel
             if (hitBefore) {
                 // If we've already hit a voxel further along the light ray, this point is fully shadowed
-                return darkness; 
+                return darkness;
             }
             hitBefore = true; // Mark that we've hit a voxel
 		}

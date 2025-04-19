@@ -11,7 +11,7 @@ import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/util/uniforms.dart';
 
 // Uniforms matching shaders/voxel3d.frag - FLATTENED
-// Total floats: 16 (mat4) + 3 (vec3) + 2 (vec2) + 1 (float) + 1 (float) = 23
+// Total floats: 16 (mat4) + 3 (vec3) + 2 (vec2) + 1 (float) + 1 (float) + 2 (vec2) + 2 (vec2) = 27
 enum Voxel3dUniform {
   // uVoxelModelMatrixInverse (mat4)
   mat0, mat1, mat2, mat3, // Row 1
@@ -26,6 +26,10 @@ enum Voxel3dUniform {
   frames,
   // uRenderMode (int as float)
   renderMode,
+  // uSrcOrigin (vec2)
+  srcOriginX, srcOriginY,
+  // uAtlasSize (vec2)
+  atlasSizeX, atlasSizeY,
 }
 
 class MantaComponent extends PositionComponent with HasContext, HasPaint {
@@ -56,11 +60,17 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     _sprite = atlas.sprite('entities/ZaxxonPlayer-15.png');
     _frames = 15;
     try {
-      _shader = await loadShader('shaders/voxel3d.frag');
+      _shader = await loadShader('voxel3d.frag');
       _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
+      // If loading fails, _shader or _uniforms might be null.
     }
+
+    // Assert that shader and uniforms are loaded successfully before proceeding
+    assert(_shader != null, 'Shader failed to load.');
+    assert(_uniforms != null, 'Uniforms failed to initialize.');
+
     size.setAll(128);
     position = game.size / 2;
     anchor = Anchor.center;
@@ -80,8 +90,6 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     final rotationMatrix = rotZ * rotY * rotX;
     _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
     _modelMatrixInverse.copyInverse(_modelMatrix);
-
-    // Update Float32List for setting uniforms
     _modelMatrixInverse.copyIntoArray(_matrixData);
   }
 
@@ -91,14 +99,13 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     paint.color = const Color(0x8000FF00);
     canvas.drawRect(size.toRect(), paint);
 
-    final uniforms = _uniforms;
-    final shader = _shader;
-    if (uniforms == null || shader == null) {
-      logError('Uniforms or shader is null');
-      return;
-    }
+    // Use null-aware operators as assertions are now in onLoad
+    final uniforms = _uniforms!;
+    final shader = _shader!;
 
     final frameSizeVec = Vector2(_sprite.srcSize.x, _sprite.srcSize.y / _frames);
+    final srcOriginVec = _sprite.srcPosition;
+    final atlasSizeVec = Vector2(_sprite.image.width.toDouble(), _sprite.image.height.toDouble());
 
     // Set Matrix uniforms (indices 0-15)
     for (int i = 0; i < 16; i++) {
@@ -117,6 +124,14 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     // Set Float uniforms (indices 21-22)
     uniforms.set(Voxel3dUniform.frames, _frames.toDouble());
     uniforms.set(Voxel3dUniform.renderMode, 0.0); // Pass int as float
+
+    // Set Vec2 uniforms for SrcOrigin (indices 23-24)
+    uniforms.set(Voxel3dUniform.srcOriginX, srcOriginVec.x);
+    uniforms.set(Voxel3dUniform.srcOriginY, srcOriginVec.y);
+
+    // Set Vec2 uniforms for AtlasSize (indices 25-26)
+    uniforms.set(Voxel3dUniform.atlasSizeX, atlasSizeVec.x);
+    uniforms.set(Voxel3dUniform.atlasSizeY, atlasSizeVec.y);
 
     shader.setImageSampler(0, _sprite.image);
     paint.shader = shader;

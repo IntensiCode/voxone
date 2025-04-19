@@ -64,3 +64,4 @@ flutter:
     - assets/shaders/rock.frag
     - assets/shaders/space.frag
     - assets/shaders/voxel.frag
+    - assets/shaders/voxel3d.frag
