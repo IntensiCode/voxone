@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/shadows.dart' as shadows;
-import 'package:voxone/game/shared/video_mode.dart';
-import 'package:voxone/voxel/voxel_sprite.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/shadows.dart' as shadows;
+import 'package:stardash/game/shared/video_mode.dart';
+import 'package:stardash/voxel/voxel_sprite.dart';
 
 class VoxelEntity extends VoxelSprite with FakeThreeDee {
   @override

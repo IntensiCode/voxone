@@ -1,32 +1,32 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/background/ground.dart';
-import 'package:voxone/background/space.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/asteroids.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/player/projectiles/plasma_blob.dart';
-import 'package:voxone/game/player/zaxxon_hud.dart';
-import 'package:voxone/game/player/zaxxon_player.dart';
-import 'package:voxone/game/shared/decals.dart';
-import 'package:voxone/game/shared/deflector_shield.dart';
-import 'package:voxone/game/shared/enemy_explosion.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/game_phase.dart';
-import 'package:voxone/game/shared/game_screen.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/info_overlay.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage1/appearing_moon.dart';
-import 'package:voxone/game/stage1/enemies_stage1.dart';
-import 'package:voxone/input/game_keys.dart';
-import 'package:voxone/util/effects.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/on_message.dart';
+import 'package:stardash/background/ground.dart';
+import 'package:stardash/background/space.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/asteroids.dart';
+import 'package:stardash/game/enemies/marauder_mines.dart';
+import 'package:stardash/game/player/projectiles/plasma_blob.dart';
+import 'package:stardash/game/player/zaxxon_hud.dart';
+import 'package:stardash/game/player/zaxxon_player.dart';
+import 'package:stardash/game/shared/decals.dart';
+import 'package:stardash/game/shared/deflector_shield.dart';
+import 'package:stardash/game/shared/enemy_explosion.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/extras.dart';
+import 'package:stardash/game/shared/game_phase.dart';
+import 'package:stardash/game/shared/game_screen.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/info_overlay.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/game/shared/shadows.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/game/stage1/appearing_moon.dart';
+import 'package:stardash/game/stage1/enemies_stage1.dart';
+import 'package:stardash/input/game_keys.dart';
+import 'package:stardash/util/effects.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/on_message.dart';
 
 class Stage1 extends GameScreen with HasContext {
   late InfoOverlay info_overlay;
@@ -89,7 +89,7 @@ class Stage1 extends GameScreen with HasContext {
       case GamePhase.show_stage:
         sendMessage(ShowInfoText(
           title: 'Stage 1',
-          text: 'Approaching Planet Voxone',
+          text: 'Approaching Planet stardash',
           when_done: () => phase = GamePhase.intro,
         ));
 

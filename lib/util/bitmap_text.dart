@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/util/bitmap_font.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/util/bitmap_font.dart';
 
 class BitmapText extends PositionComponent with HasPaint, HasVisibility, Snapshot {
   final _reference = Vector2.zero();

@@ -3,18 +3,18 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/homing_launcher.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/enemy_health_bar.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/homing_launcher.dart';
+import 'package:stardash/game/enemies/marauder_mines.dart';
+import 'package:stardash/game/enemies/ranger_laser.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/enemy_health_bar.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/random.dart';
 
 class MarauderCaptain extends EnemyEntity
     with

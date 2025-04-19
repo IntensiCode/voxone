@@ -2,25 +2,25 @@ import 'dart:math';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/background/space.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/video_mode.dart';
-import 'package:voxone/game/shared/voxel_entity.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/input/shortcuts.dart';
-import 'package:voxone/ui/basic_menu.dart';
-import 'package:voxone/ui/flow_text.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/background/space.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/game/shared/shadows.dart';
+import 'package:stardash/game/shared/video_mode.dart';
+import 'package:stardash/game/shared/voxel_entity.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/input/shortcuts.dart';
+import 'package:stardash/ui/basic_menu.dart';
+import 'package:stardash/ui/flow_text.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
+import 'package:stardash/util/messaging.dart';
 
 enum _TitleButtons {
   credits,
@@ -53,7 +53,7 @@ class TitleScreen extends GameScriptComponent with HasAutoDisposeShortcuts {
     add(_shadows);
     add(_TitleShip());
 
-    textXY('VOXONE', 16, 12, anchor: Anchor.topLeft, scale: 4);
+    textXY('stardash', 16, 12, anchor: Anchor.topLeft, scale: 4);
     textXY('INSANITY FIGHT 2', 16, 50, anchor: Anchor.topLeft, scale: 1);
 
     for (final (idx, it) in _credits.reversed.indexed) {

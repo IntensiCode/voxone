@@ -1,11 +1,11 @@
 import 'package:flame/components.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/ui/flow_text.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/ui/highlighted.dart';
-import 'package:voxone/util/bitmap_button.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/ui/flow_text.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/ui/highlighted.dart';
+import 'package:stardash/util/bitmap_button.dart';
+import 'package:stardash/util/game_script.dart';
 
 mixin ControlsUi on GameScriptComponent {
   final keys = Keys();

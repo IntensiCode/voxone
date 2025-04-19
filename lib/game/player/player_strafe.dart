@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/input/game_keys.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/input/game_keys.dart';
 
 mixin PlayerStrafe on HasContext {
   static const _strafe_accel = 12.5;

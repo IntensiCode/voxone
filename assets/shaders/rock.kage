@@ -1,0 +1,193 @@
+package title
+
+//kage:unit pixels
+
+var Resolution vec2
+var Pixelate float
+var Mouse vec2
+var Hash float
+
+func hash4(n vec4) vec4 {
+	return fract(sin(n) * (Hash/2 + 400))
+}
+
+func noise3(x vec3) float {
+	p := floor(x)
+	f := fract(x)
+	f = f * f * (3.0 - 2.0*f)
+	n := p.x + dot(p.yz, vec2(157.0, 113.0))
+	nc0 := vec4(0.0, 157.0, 113.0, 270.0)
+	nc1 := vec4(1.0, 158.0, 114.0, 271.0)
+	s1 := mix(hash4(vec4(n)+nc0), hash4(vec4(n)+nc1), vec4(f.x))
+	return mix(mix(s1.x, s1.y, f.y), mix(s1.z, s1.w, f.y), f.z)
+}
+
+func heightMap(rad vec3, d float) float {
+	line := 0.39
+
+	iline := 1.0 / (1.0 - line)
+	a := noise3(rad*1.6) * 0.885
+	na := a
+	if a > line {
+		a = pow((a-line)*iline, 1.8)*(1.0-line) + line
+	}
+	if abs(d-a) < 0.2 {
+		na += noise3(rad*8.0) * 0.1
+		a = na
+		if a > line {
+			a = pow((a-line)*iline, 1.8)*(1.0-line) + line
+		}
+	}
+	if abs(d-a) < 0.02 {
+		na += noise3(rad*32.0) * 0.01
+		a = na
+		if a > line {
+			a = pow((a-line)*iline, 1.8)*(1.0-line) + line
+		}
+	}
+	if abs(d-a) < 0.01 {
+		a += noise3(rad*128.0) * 0.005
+	}
+	return a
+}
+
+func distObj(pos vec3, ray vec3, radius float, minr float) vec3 {
+
+	b := dot(ray, pos)
+	c := dot(pos, pos) - b*b
+
+	sta := radius - minr
+	invm := 1.0 / sta
+	rq := radius * radius
+	dist := ray * 10000.0 // Large initial distance
+
+	if c < rq {
+		r1 := (ray*(abs(b)-sqrt(rq-c)) - pos)
+		maxs := abs(dot(r1, ray)) // *0.5;
+		if c < minr*minr {
+			r2 := (ray*(abs(b)-sqrt(minr*minr-c)) - pos)
+			maxs = maxs - abs(dot(r2, ray))
+		}
+		// else {
+		maxs *= 0.5
+		//}
+		len := 0.0
+		h := 0.0
+
+		// Kage loop syntax might require adjustment if 'iterations' isn't constant enough
+		// For now, try with the variable.
+		// If this fails compilation, `iterations` needs to be a literal like 20.0.
+		for m := 0.0; m < 20.0; m += 1.0 {
+			len = length(r1)
+			d := r1 / len
+			h = sta*heightMap(d, (len-minr)*invm) + minr
+			if abs(h-len) < 0.0001 {
+				break
+			}
+			maxs = abs(maxs)
+			if len < h {
+				maxs = -maxs
+			}
+			r1 += ray * maxs * abs(len-h)
+			maxs *= 0.99
+		}
+		if len < h+0.1 {
+			dist = r1 + pos
+		}
+	}
+	return dist
+}
+
+func noiseSpace(ray vec3, pos vec3, r float, mr mat3, zoom float, subnoise vec3) float {
+	b := dot(ray, pos)
+	c := dot(pos, pos) - b*b
+
+	r1 := vec3(0.0)
+
+	s := 0.0
+	d := 0.0625 * 1.5
+	d2 := zoom / d
+
+	l1 := sqrt(abs(r*r - c)) // Original had abs(r-c), seems like a typo, using r*r based on context
+	r1 = (ray*(b-l1) - pos) * mr
+
+	r1 *= d2
+	s += abs(noise3(vec3(r1+subnoise)) * d)
+	s += abs(noise3(vec3(r1*0.5+subnoise)) * d * 2.0)
+	s += abs(noise3(vec3(r1*0.25+subnoise)) * d * 4.0)
+	return s
+}
+
+func Fragment(position vec4) vec4 {
+
+	origin := imageDstOrigin()
+	size := imageDstSize()
+
+	pp := position.xy
+	pp.x = floor(pp.x/Pixelate) * Pixelate
+	pp.y = floor(pp.y/Pixelate) * Pixelate
+
+	p := vec2(
+		(pp.x-origin.x)/size.x*2.0-1.0,
+		(pp.y-origin.y)/size.y*2.0-1.0,
+	)
+
+	// Constants from #define
+	pradius := 1.3
+	mradius := 0.1
+	line := 0.39
+
+	// Use Mouse uniform for rotation
+	// Clamp mouse input to avoid extreme values if desired, e.g.,
+	// rotate := clamp(Mouse / Resolution, -1.0, 1.0) * 3.14159
+	rotate := Mouse // Direct use for now
+	sins := sin(rotate)
+	coss := cos(rotate)
+	mr := mat3(
+		vec3(coss.x, 0.0, sins.x),
+		vec3(0.0, 1.0, 0.0),
+		vec3(-sins.x, 0.0, coss.x))
+	mr = mat3(
+		vec3(1.0, 0.0, 0.0),
+		vec3(0.0, coss.y, sins.y),
+		vec3(0.0, -sins.y, coss.y)) * mr
+
+	ray := normalize(vec3(p, 2.0))
+	ray1 := normalize(vec3(p+vec2(0.0, 0.01), 2.0))
+	ray2 := normalize(vec3(p+vec2(0.01, 0.0), 2.0))
+	pos := vec3(0.0, 0.0, 3.0)
+
+	light := vec3(-30.0, 0.0, -30.0)
+
+	// Calculate intersections using the distance function
+	n1 := distObj(pos*mr, ray1*mr, pradius, mradius)
+	n2 := distObj(pos*mr, ray2*mr, pradius, mradius)
+	rt := distObj(pos*mr, ray*mr, pradius, mradius)
+
+	// Calculate lighting and shadow
+	lightn := normalize(light*mr - rt)
+	// The original GLSL doesn't use shadowit, so skipping it here.
+	sd := distObj((pos-light)*mr, -lightn, pradius, mradius)
+	shadow := 1.0 - clamp(pow(length(sd+light*mr-rt), 2.0)*200.0, 0.0, 1.0)
+
+	// Calculate normal vector
+	n := normalize(cross(n1-rt, n2-rt))
+
+	if length(rt) > 9999.0 {
+		return vec4(0.0, 0.0, 0.0, 0.0)
+	}
+
+	// Calculate final color based on distance and lighting
+	rtRel := rt - pos*mr // Position relative to the object center
+	fd := (length(rtRel) - mradius) / (pradius - mradius)
+	c := dot(n, lightn) * shadow
+	finalColor := vec3(0.0)
+
+	if fd < line {
+		finalColor = mix(vec3(0.21, 0.19, 0.0), vec3(1.0, 0.99, 1.0), noise3(rt*128.0)*0.9+noise3(rt*8.0)*0.1) * c
+	} else {
+		finalColor = mix(mix(vec3(1.0, 1.0, 0.9), vec3(0.8, 0.79, 0.7), noise3(rt*128.0)*0.9+noise3(rt*8.0)*0.1), vec3(1.0), pow(fd+0.5, 10.0)) * c
+	}
+
+	return vec4(finalColor, 1.0)
+}

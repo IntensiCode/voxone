@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/traits.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/traits.dart';
 
 class EnergyShield implements Target {
   EnergyShield(this._target, this._on_hit, this._rumble);

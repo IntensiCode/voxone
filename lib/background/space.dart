@@ -2,12 +2,12 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/video_mode.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/mutable.dart';
-import 'package:voxone/util/pixelate.dart';
-import 'package:voxone/util/uniforms.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/video_mode.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/mutable.dart';
+import 'package:stardash/util/pixelate.dart';
+import 'package:stardash/util/uniforms.dart';
 
 enum Uniform {
   scr_width,

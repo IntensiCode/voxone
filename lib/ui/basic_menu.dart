@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/ui/basic_menu_entry.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_font.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/ui/basic_menu_entry.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/bitmap_font.dart';
 
 import 'basic_menu_button.dart';
 

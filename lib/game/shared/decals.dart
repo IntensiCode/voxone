@@ -4,12 +4,12 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/functions.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/functions.dart';
+import 'package:stardash/util/random.dart';
 
 extension HasContextExtensions on HasContext {
   Decals get decals => cache.putIfAbsent('decals', () => Decals());

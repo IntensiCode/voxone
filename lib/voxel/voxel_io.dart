@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter/foundation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/voxel/voxels.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/voxel/voxels.dart';
 
 Voxels read_vox(Uint8List riff, String name, {bool crop = true, int pad = 8}) {
   final header = (String.fromCharCodes(riff.getRange(0, 4)));

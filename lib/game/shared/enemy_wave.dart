@@ -1,12 +1,12 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/extras.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/random.dart';
 
 mixin EnemyWave on Component, HasContext {
   double delay = 3;

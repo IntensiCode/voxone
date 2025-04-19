@@ -1,17 +1,17 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/aural/volume_component.dart';
-import 'package:voxone/background/space.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/ui/basic_menu.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/aural/volume_component.dart';
+import 'package:stardash/background/space.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/ui/basic_menu.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
 
 enum AudioMenuEntry {
   music_and_sound,

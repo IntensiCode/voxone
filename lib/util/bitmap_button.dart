@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/input/shortcuts.dart';
-import 'package:voxone/ui/bordered.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/nine_patch_image.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/input/shortcuts.dart';
+import 'package:stardash/ui/bordered.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/bitmap_font.dart';
+import 'package:stardash/util/nine_patch_image.dart';
 
 BitmapButton button({
   Sprite? bgNinePatch,

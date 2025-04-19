@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/game_data.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/game_data.dart';
 
 final _prefs = SharedPreferences.getInstance();
 

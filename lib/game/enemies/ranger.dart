@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
-import 'package:voxone/game/shared/enemy_health_bar.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/ranger_laser.dart';
+import 'package:stardash/game/shared/enemy_health_bar.dart';
+import 'package:stardash/util/extensions.dart';
 
 mixin CreateRangerEntity on EnemyEntity {
   @override

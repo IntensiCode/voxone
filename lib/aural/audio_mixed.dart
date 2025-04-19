@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mp_audio_stream/mp_audio_stream.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 class _PlayState {
   _PlayState(this.sample, {this.loop = false, required this.volume}) : this.paused = false;

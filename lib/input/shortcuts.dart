@@ -3,8 +3,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 final _snoop_hooks = <void Function(String)>[];
 

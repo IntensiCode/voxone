@@ -1,9 +1,9 @@
 import 'package:dart_minilog/dart_minilog.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/on_message.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/on_message.dart';
 
 final music_score = MusicScore();
 
@@ -24,16 +24,16 @@ class MusicScore extends AutoDisposeComponent {
     });
     onMessage<ShowInfoText>((it) {
       if (it.text == 'Capital Ship Approaching') {
-        _target_score = 'music/voxone_ingame_1.ogg';
+        _target_score = 'music/stardash_ingame_1.ogg';
       }
     });
   }
 
   String? _target_score_for(Screen screen) => switch (screen) {
-        Screen.title => 'music/voxone_title.ogg',
-        Screen.stage1 => 'music/voxone_background_1.ogg',
-        Screen.stage2 => 'music/voxone_background_1.ogg',
-        Screen.stage3 => 'music/voxone_background_1.ogg',
+        Screen.title => 'music/stardash_title.ogg',
+        Screen.stage1 => 'music/stardash_background_1.ogg',
+        Screen.stage2 => 'music/stardash_background_1.ogg',
+        Screen.stage3 => 'music/stardash_background_1.ogg',
         _ => null,
       };
 

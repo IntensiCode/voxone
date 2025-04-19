@@ -1,11 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/game_screen.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/stage_cache.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/util/messaging.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/game_screen.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/stage_cache.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/util/messaging.dart';
 
 /// Mixin to provide cross-component-hierarchy access to other, shared components. The [stage] is always required as
 /// the root. The [cache] is used to lookup everything only once. Many components need shared components like for

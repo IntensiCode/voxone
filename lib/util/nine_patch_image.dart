@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mutable.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/mutable.dart';
 
 class NinePatchComponent extends PositionComponent with HasPaint {
   final Sprite image;

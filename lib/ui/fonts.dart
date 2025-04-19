@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flame/cache.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/bitmap_font.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/bitmap_font.dart';
 
 const textColor = Color(0xFFffcc80);
 const successColor = Color(0xFF20ff10);

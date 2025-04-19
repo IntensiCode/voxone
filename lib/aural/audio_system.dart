@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart' hide Timer;
 import 'package:flutter/foundation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/game_data.dart';
-import 'package:voxone/util/storage.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/game_data.dart';
+import 'package:stardash/util/storage.dart';
 
 // import 'audio_soloud.dart' if (dart.library.html) 'audio_web.dart';
 import 'audio_mixed.dart' if (dart.library.html) 'audio_web.dart';

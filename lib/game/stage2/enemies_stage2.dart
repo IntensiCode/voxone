@@ -1,14 +1,14 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/stage2/recon_wave.dart';
-import 'package:voxone/input/shortcuts.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/game/stage2/recon_wave.dart';
+import 'package:stardash/input/shortcuts.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/extensions.dart';
 
 class EnemiesStage2 extends AutoDisposeComponent with HasAutoDisposeShortcuts, HasContext {
   final List<EnemyWave> _waves = [

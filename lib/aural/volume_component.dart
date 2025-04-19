@@ -3,15 +3,15 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/input/shortcuts.dart';
-import 'package:voxone/ui/basic_menu_entry.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/ui/highlighted.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/nine_patch_image.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/input/shortcuts.dart';
+import 'package:stardash/ui/basic_menu_entry.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/ui/highlighted.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/nine_patch_image.dart';
 
 class VolumeComponent extends PositionComponent
     with AutoDispose, HasAutoDisposeShortcuts, HasPaint, DragCallbacks, TapCallbacks, HasVisibility, BasicMenuEntry {

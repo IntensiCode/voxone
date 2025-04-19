@@ -1,8 +1,9 @@
-import 'package:voxone/background/checkerboard.dart';
-import 'package:voxone/game/player/tunnel_player.dart';
-import 'package:voxone/game/shared/game_screen.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/shadows.dart';
+import 'package:stardash/background/checkerboard.dart';
+import 'package:stardash/game/manta.dart';
+import 'package:stardash/game/player/tunnel_player.dart';
+import 'package:stardash/game/shared/game_screen.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/shadows.dart';
 
 class Stage3 extends GameScreen with HasContext {
   @override
@@ -11,5 +12,7 @@ class Stage3 extends GameScreen with HasContext {
     add(shadows);
     add(TunnelPlayer());
     // shadows.isVisible = false;
+
+    add(MantaComponent());
   }
 }

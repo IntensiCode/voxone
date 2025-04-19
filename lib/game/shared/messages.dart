@@ -1,5 +1,5 @@
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/game_phase.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/game_phase.dart';
 
 class EnemiesDefeated with Message {}
 

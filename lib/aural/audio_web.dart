@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 class PlatformAudioSystem extends AudioSystem {
   final _sounds = <Sound, AudioPlayer>{};

@@ -1,14 +1,14 @@
 import 'package:supercharged/supercharged.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/circling_marauder.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_captain.dart';
-import 'package:voxone/game/enemies/passing_ranger.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/circling_marauder.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/marauder_captain.dart';
+import 'package:stardash/game/enemies/passing_ranger.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/game_script.dart';
 
 class PlanetaryFleet extends GameScriptComponent with HasContext, EnemyWave {
   final _wave = List<Enemy>.empty(growable: true);

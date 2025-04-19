@@ -3,9 +3,9 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/pixelate.dart';
-import 'package:voxone/util/uniforms.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/pixelate.dart';
+import 'package:stardash/util/uniforms.dart';
 
 class AppearingMoon extends RectangleComponent {
   AppearingMoon() : super(anchor: Anchor.topLeft) {

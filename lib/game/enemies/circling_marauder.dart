@@ -3,11 +3,11 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/shared/traits.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/marauder_mines.dart';
+import 'package:stardash/game/shared/traits.dart';
 
 class CirclingMarauder extends EnemyEntity
     with

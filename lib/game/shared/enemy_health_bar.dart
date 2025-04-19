@@ -2,9 +2,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/mutable.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/mutable.dart';
 
 class EnemyHealthBar extends PositionComponent {
   EnemyHealthBar(this._source) {

@@ -1,11 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:voxone/ui/basic_menu_entry.dart';
-import 'package:voxone/ui/bordered.dart';
-import 'package:voxone/ui/highlighted.dart';
-import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/ui/basic_menu_entry.dart';
+import 'package:stardash/ui/bordered.dart';
+import 'package:stardash/ui/highlighted.dart';
+import 'package:stardash/util/bitmap_font.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
 
 class BasicMenuButton extends PositionComponent with BasicMenuEntry, HasVisibility, TapCallbacks {
   BasicMenuButton(

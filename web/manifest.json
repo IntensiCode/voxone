@@ -1,6 +1,6 @@
 {
-    "name": "voxone",
-    "short_name": "voxone",
+    "name": "stardash",
+    "short_name": "stardash",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

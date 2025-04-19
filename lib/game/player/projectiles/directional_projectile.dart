@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/util/component_recycler.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/util/component_recycler.dart';
 
 mixin DirectionalProjectile on PositionComponent, FakeThreeDee, Recyclable {
   @override

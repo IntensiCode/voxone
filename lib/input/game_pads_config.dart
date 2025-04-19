@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/input/controls_ui.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/ui/flow_text.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/input/controls_ui.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/ui/flow_text.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
 
 mixin GamepadControls on ControlsUi {
   final _labels = <GamePadControl, BitmapText>{};

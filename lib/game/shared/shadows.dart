@@ -2,11 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/util/mutable.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/player/projectiles/directional_projectile.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/util/mutable.dart';
 
 extension HasContextExtensions on HasContext {
   Shadows get shadows => cache.putIfAbsent('shadows', () => Shadows());

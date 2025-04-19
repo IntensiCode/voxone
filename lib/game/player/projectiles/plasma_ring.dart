@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/player/projectiles/directional_projectile.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/extensions.dart';
 
 class PlasmaRing extends PositionComponent
     with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {

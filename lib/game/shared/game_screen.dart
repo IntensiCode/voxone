@@ -3,25 +3,25 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/player/zaxxon_player.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/game_phase.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/game/shared/stage_cache.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/shared/video_mode.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/input/shortcuts.dart';
-import 'package:voxone/ui/fonts.dart';
-import 'package:voxone/ui/soft_keys.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/messaging.dart';
-import 'package:voxone/util/on_message.dart';
-import 'package:voxone/voxel/voxel_sprite.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/player/zaxxon_player.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/game_phase.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/game/shared/stage_cache.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/game/shared/video_mode.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/input/shortcuts.dart';
+import 'package:stardash/ui/fonts.dart';
+import 'package:stardash/ui/soft_keys.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/game_script.dart';
+import 'package:stardash/util/messaging.dart';
+import 'package:stardash/util/on_message.dart';
+import 'package:stardash/voxel/voxel_sprite.dart';
 
 abstract class GameScreen extends GameScriptComponent with HasAutoDisposeShortcuts, HasTimeScale, HasVisibility {
   GameScreen() {

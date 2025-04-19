@@ -1,5 +1,5 @@
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/shared/difficulty.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/shared/difficulty.dart';
 
 class WarpingMarauder extends EnemyEntity
     with

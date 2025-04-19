@@ -3,15 +3,15 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/player/projectiles/directional_projectile.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/random.dart';
 
 class IonPulse extends SpriteComponent
     with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {

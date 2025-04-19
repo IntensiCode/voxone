@@ -7,14 +7,14 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mutable.dart';
-import 'package:voxone/util/pixelate.dart';
-import 'package:voxone/util/random.dart';
-import 'package:voxone/util/uniforms.dart';
-import 'package:voxone/voxel/voxel_image.dart';
-import 'package:voxone/voxel/voxel_io.dart';
-import 'package:voxone/voxel/voxels.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/mutable.dart';
+import 'package:stardash/util/pixelate.dart';
+import 'package:stardash/util/random.dart';
+import 'package:stardash/util/uniforms.dart';
+import 'package:stardash/voxel/voxel_image.dart';
+import 'package:stardash/voxel/voxel_io.dart';
+import 'package:stardash/voxel/voxels.dart';
 
 enum HighlightMode {
   none(null),

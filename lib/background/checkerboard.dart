@@ -2,10 +2,10 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/uniforms.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/uniforms.dart';
 
 class Checkerboard extends PositionComponent with HasPaint, AutoDispose {
   late FragmentShader _shader;

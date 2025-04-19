@@ -4,12 +4,12 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/debug.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/functions.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/bitmap_font.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/debug.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/functions.dart';
 
 // don't look here. at least not initially. none of this you should reuse. this
 // is a mess. but the mess works for the case of this demo game. all of this

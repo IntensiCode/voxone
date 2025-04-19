@@ -1,5 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 /// Components go in here after being looked up once in the component hierarchy. The cache is 'per stage'. Because
 /// every stage will have a different player, etc, ofc. Be careful to put only components in here with a lifetime

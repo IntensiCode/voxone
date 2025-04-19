@@ -1,11 +1,11 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/player_state.dart';
-import 'package:voxone/input/game_keys.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/player_state.dart';
+import 'package:stardash/input/game_keys.dart';
 
 class Friendly {}
 

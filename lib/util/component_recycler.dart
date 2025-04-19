@@ -1,6 +1,6 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
+import 'package:stardash/core/common.dart';
 
 mixin Recyclable on Component {
   bool recycled = false;

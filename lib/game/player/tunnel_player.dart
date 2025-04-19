@@ -1,17 +1,17 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/game_phase.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/player_state.dart';
-import 'package:voxone/game/shared/shadows.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/game/shared/voxel_entity.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/game_phase.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/player_state.dart';
+import 'package:stardash/game/shared/shadows.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/game/shared/voxel_entity.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 class TunnelPlayer extends VoxelEntity
     with AutoDispose, HasContext, HasTraits, Player, Target, _CreateEntityOnLoad, _TunnelStrafe

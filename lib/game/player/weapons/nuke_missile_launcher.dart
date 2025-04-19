@@ -1,14 +1,14 @@
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/projectiles/nuke.dart';
-import 'package:voxone/game/player/projectiles/nuke_missile.dart';
-import 'package:voxone/game/shared/decals.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/game/player/projectiles/nuke.dart';
+import 'package:stardash/game/player/projectiles/nuke_missile.dart';
+import 'package:stardash/game/shared/decals.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/extras.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
 
 class NukeMissileLauncher extends Component with HasContext, SecondaryWeapon {
   NukeMissileLauncher(this._player, Function(SecondaryWeapon) on_fired) {

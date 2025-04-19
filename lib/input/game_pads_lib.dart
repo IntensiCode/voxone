@@ -1,8 +1,8 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flutter/services.dart';
 import 'package:gamepads/gamepads.dart';
-import 'package:voxone/input/game_pads.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/input/game_pads.dart';
+import 'package:stardash/util/auto_dispose.dart';
 
 mixin HasGamePads {
   final detected_game_pads = <String, String>{};

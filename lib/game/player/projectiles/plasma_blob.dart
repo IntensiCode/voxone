@@ -3,17 +3,17 @@ import 'dart:ui';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/enemies/marauder_shot.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/mutable.dart';
-import 'package:voxone/util/pixelate.dart';
-import 'package:voxone/util/random.dart';
-import 'package:voxone/util/uniforms.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/enemies/marauder_shot.dart';
+import 'package:stardash/game/player/projectiles/directional_projectile.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/mutable.dart';
+import 'package:stardash/util/pixelate.dart';
+import 'package:stardash/util/random.dart';
+import 'package:stardash/util/uniforms.dart';
 
 class PlasmaBlob extends PositionComponent
     with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasPaint {

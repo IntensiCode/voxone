@@ -1,17 +1,17 @@
 import 'dart:math';
 
 import 'package:dart_minilog/dart_minilog.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/sweeping_marauder.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/sweeping_marauder.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
+import 'package:stardash/util/random.dart';
 
 class MarauderWave extends GameScriptComponent with HasContext, EnemyWave {
   final enemies_in_wave = switch (difficulty) {

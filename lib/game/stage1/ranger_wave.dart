@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/warping_ranger.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/warping_ranger.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
 
 class RangerWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 24;

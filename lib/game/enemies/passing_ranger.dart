@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_mines.dart';
-import 'package:voxone/game/enemies/ranger.dart';
-import 'package:voxone/game/enemies/ranger_laser.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/marauder_mines.dart';
+import 'package:stardash/game/enemies/ranger.dart';
+import 'package:stardash/game/enemies/ranger_laser.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/util/random.dart';
 
 class PassingRanger extends EnemyEntity
     with

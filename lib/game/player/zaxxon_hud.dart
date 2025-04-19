@@ -2,15 +2,15 @@ import 'dart:ui';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/player/weapon_system.dart';
-import 'package:voxone/game/shared/energy_shield.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/mutable.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/player/weapon_system.dart';
+import 'package:stardash/game/shared/energy_shield.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/mutable.dart';
 
 class ZaxxonHud extends PositionComponent with HasContext, HasPaint {
   ZaxxonHud(this._player) {

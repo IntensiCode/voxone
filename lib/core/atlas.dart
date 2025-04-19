@@ -5,9 +5,9 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_texturepacker/flame_texturepacker.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/functions.dart' as f;
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/functions.dart' as f;
 
 late Atlas atlas;
 

@@ -1,12 +1,12 @@
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/player/projectiles/swirl.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/game/player/projectiles/swirl.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/extras.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
 
 class SwirlGun extends Component with HasContext, PrimaryWeapon {
   SwirlGun(this._player);

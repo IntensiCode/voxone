@@ -2,14 +2,14 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/extra_id.dart';
-import 'package:voxone/game/shared/extras.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/extra_id.dart';
+import 'package:stardash/game/shared/extras.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/extensions.dart';
 
 class SmartBomb extends Component with HasContext, SecondaryWeapon {
   SmartBomb(Function(SecondaryWeapon) on_fired) {

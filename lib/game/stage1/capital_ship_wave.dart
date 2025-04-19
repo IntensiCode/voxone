@@ -1,10 +1,10 @@
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/capital_ship.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/capital_ship.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/util/game_script.dart';
 
 class CapitalShipWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 1;

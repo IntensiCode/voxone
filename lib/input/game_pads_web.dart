@@ -3,8 +3,8 @@ import 'dart:js_interop_unsafe';
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:voxone/input/game_pads.dart';
-import 'package:voxone/util/auto_dispose.dart';
+import 'package:stardash/input/game_pads.dart';
+import 'package:stardash/util/auto_dispose.dart';
 import 'package:web/web.dart';
 
 mixin HasGamePads {

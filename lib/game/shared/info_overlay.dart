@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/effects.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/on_message.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/effects.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
+import 'package:stardash/util/on_message.dart';
 
 class InfoOverlay extends GameScriptComponent {
   InfoOverlay(this._time_scale) {

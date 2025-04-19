@@ -1,13 +1,13 @@
 import 'package:flame/components.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/enemies/asteroids.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/enemy_wave.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/game/shared/messages.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/enemies/asteroids.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/enemy_wave.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/game/shared/messages.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
+import 'package:stardash/util/random.dart';
 
 class AsteroidsWave extends GameScriptComponent with HasContext, EnemyWave {
   static const enemies_in_wave = 64;

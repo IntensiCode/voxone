@@ -7,9 +7,9 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/util/mutable.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/util/mutable.dart';
 
 extension BitmapFontExtensions on BitmapFont {
   void tint(Color color) {

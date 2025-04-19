@@ -1,7 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/util/extensions.dart';
 
 bool invert_y_axis = true;
 bool prefer_x_over_y = true;

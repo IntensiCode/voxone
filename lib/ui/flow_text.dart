@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/util/auto_dispose.dart';
-import 'package:voxone/util/bitmap_font.dart';
-import 'package:voxone/util/bitmap_text.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script_functions.dart';
-import 'package:voxone/util/nine_patch_image.dart';
+import 'package:stardash/util/auto_dispose.dart';
+import 'package:stardash/util/bitmap_font.dart';
+import 'package:stardash/util/bitmap_text.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script_functions.dart';
+import 'package:stardash/util/nine_patch_image.dart';
 
 class FlowText extends PositionComponent with AutoDispose, GameScriptFunctions, HasVisibility {
   //

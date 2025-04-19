@@ -3,14 +3,14 @@ import 'package:dart_extensions_methods/dart_extension_methods.dart';
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:kart/kart.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/video_mode.dart';
-import 'package:voxone/input/game_keys.dart';
-import 'package:voxone/input/game_pads.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_data.dart';
-import 'package:voxone/util/storage.dart' as storage;
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/video_mode.dart';
+import 'package:stardash/input/game_keys.dart';
+import 'package:stardash/input/game_pads.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_data.dart';
+import 'package:stardash/util/storage.dart' as storage;
 
 final configuration = Configuration._();
 

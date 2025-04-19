@@ -1,10 +1,10 @@
 import 'package:flame/components.dart';
-import 'package:voxone/aural/audio_system.dart';
-import 'package:voxone/game/enemies/enemy.dart';
-import 'package:voxone/game/enemies/marauder_shot.dart';
-import 'package:voxone/game/shared/has_context.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/random.dart';
+import 'package:stardash/aural/audio_system.dart';
+import 'package:stardash/game/enemies/enemy.dart';
+import 'package:stardash/game/enemies/marauder_shot.dart';
+import 'package:stardash/game/shared/has_context.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/random.dart';
 
 class MarauderPulseGun extends Component with HasContext {
   MarauderPulseGun(this.source);

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/animation.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/util/extensions.dart';
 
 ColorEffect HighlightEffect({
   Color color = const Color(0x40ffffff),

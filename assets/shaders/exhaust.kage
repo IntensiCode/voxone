@@ -1,0 +1,121 @@
+package main
+
+//kage:unit pixels
+
+// Color detection
+var TargetColor vec4
+var ColorVariance float
+var Time float
+
+// Exhaust params
+var ExhaustLength float
+var Color0 vec3
+var Color1 vec3
+var Color2 vec3
+var Color3 vec3
+var Color4 vec3
+
+func Fragment(position vec4) vec4 {
+	// Convert from screen to texture coordinates
+	dstOrigin := imageDstOrigin()
+	srcOrigin := imageSrc0Origin()
+	texPos := position.xy - dstOrigin + srcOrigin
+
+	// Check if the current pixel IS the target color
+	currentColor := imageSrc0At(texPos)
+	if isColorMatch(currentColor) {
+		// Render target pixels directly as Color0 (was MiddleColor)
+		return vec4(Color0, 0.8)
+	}
+	// Check if currentColor is not "empty":
+	if currentColor.a > 0.01 {
+		return currentColor
+	}
+
+	// If not the target, check if we're in an exhaust area OF a nearby target
+	distSq := checkExhaustArea(texPos)
+	if distSq >= 0 { // Check against >= 0 as distSq can be 0
+		// Calculate flame effect
+		flameColor := createFlameEffect(texPos, distSq)
+		if flameColor.a > 0.0 {
+			return flameColor
+		}
+	}
+
+	// Sample original texture
+	return currentColor
+}
+
+func checkExhaustArea(pos vec2) float {
+	maxLengthSq := ExhaustLength * ExhaustLength
+	minDistSq := maxLengthSq + 1.0
+
+	const maxRadius = 4 // Max search radius based on max ExhaustLength
+	for dy := 0; dy <= maxRadius; dy++ {
+		floatDy := float(dy)
+		dySq := floatDy * floatDy
+
+		for dx := -maxRadius; dx <= maxRadius; dx++ {
+			floatDx := float(dx)
+			dxSq := floatDx * floatDx
+			distSq := dxSq + dySq
+			if distSq > maxLengthSq {
+				continue
+			}
+
+			checkPos := pos + vec2(floatDx, floatDy)
+			checkColor := imageSrc0At(checkPos)
+
+			if isColorMatch(checkColor) {
+				if distSq < minDistSq {
+					minDistSq = distSq
+				}
+			}
+		}
+	}
+
+	if minDistSq > 0 && minDistSq <= maxLengthSq {
+		return minDistSq
+	}
+
+	return -1
+}
+
+func createFlameEffect(pos vec2, distSq float) vec4 {
+	color := vec3(0.0)
+
+	anim := sin(Time*3*3.1415 + pos.x/3.1415 + pos.y/1.1415)
+	anim = 0.7 + 0.3*anim
+
+	phase := 0.0
+	normDist := sqrt(distSq) / ExhaustLength
+	phase = clamp(normDist*anim, 0.0, 2.0)
+
+	// 5-Color Gradient (4 segments)
+	const segLen = 0.25 // 1.0 / 4 segments
+	if phase < segLen { // 0.0 to 0.25
+		localPhase := phase / segLen
+		color = mix(Color0, Color1, localPhase)
+	} else if phase < segLen*2.0 { // 0.25 to 0.5
+		localPhase := (phase - segLen) / segLen
+		color = mix(Color1, Color2, localPhase)
+	} else if phase < segLen*3.0 { // 0.5 to 0.75
+		localPhase := (phase - segLen*2.0) / segLen
+		color = mix(Color2, Color3, localPhase)
+	} else { // 0.75 to 1.0
+		localPhase := (phase - segLen*3.0) / segLen
+		color = mix(Color3, Color4, localPhase)
+	}
+
+	// Fade out alpha with distance (using original phase before clamping for alpha might be better?)
+	// Let's use the clamped phase for now.
+	// The *anim factor here might make alpha vary wildly. Maybe just 1.0-phase?
+	alpha := clamp(1.0-phase, 0.0, 1.0) // Simpler alpha fade
+
+	return vec4(color, alpha)
+}
+
+func isColorMatch(color vec4) bool {
+	diff := abs(color - TargetColor)
+	return diff.r < ColorVariance && diff.g < ColorVariance && diff.b < ColorVariance
+}

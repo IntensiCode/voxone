@@ -1,15 +1,15 @@
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:voxone/background/space.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/game/shared/configuration.dart';
-import 'package:voxone/game/shared/screens.dart';
-import 'package:voxone/input/controls_ui.dart';
-import 'package:voxone/input/game_pads_config.dart';
-import 'package:voxone/input/keys.dart';
-import 'package:voxone/util/bitmap_button.dart';
-import 'package:voxone/util/extensions.dart';
-import 'package:voxone/util/game_script.dart';
+import 'package:stardash/background/space.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/game/shared/configuration.dart';
+import 'package:stardash/game/shared/screens.dart';
+import 'package:stardash/input/controls_ui.dart';
+import 'package:stardash/input/game_pads_config.dart';
+import 'package:stardash/input/keys.dart';
+import 'package:stardash/util/bitmap_button.dart';
+import 'package:stardash/util/extensions.dart';
+import 'package:stardash/util/game_script.dart';
 
 class Controls extends GameScriptComponent with ControlsUi, GamepadControls {
   late BitmapButton _invert_y;

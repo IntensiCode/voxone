@@ -4,18 +4,18 @@ import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/atlas.dart';
-import 'package:voxone/core/common.dart';
-import 'package:voxone/core/traits.dart';
-import 'package:voxone/game/enemies/marauder_shot.dart';
-import 'package:voxone/game/player/projectiles/directional_projectile.dart';
-import 'package:voxone/game/shared/decals.dart';
-import 'package:voxone/game/shared/deflector_shield.dart';
-import 'package:voxone/game/shared/difficulty.dart';
-import 'package:voxone/game/shared/fake_three_dee.dart';
-import 'package:voxone/game/shared/traits.dart';
-import 'package:voxone/util/component_recycler.dart';
-import 'package:voxone/util/extensions.dart';
+import 'package:stardash/core/atlas.dart';
+import 'package:stardash/core/common.dart';
+import 'package:stardash/core/traits.dart';
+import 'package:stardash/game/enemies/marauder_shot.dart';
+import 'package:stardash/game/player/projectiles/directional_projectile.dart';
+import 'package:stardash/game/shared/decals.dart';
+import 'package:stardash/game/shared/deflector_shield.dart';
+import 'package:stardash/game/shared/difficulty.dart';
+import 'package:stardash/game/shared/fake_three_dee.dart';
+import 'package:stardash/game/shared/traits.dart';
+import 'package:stardash/util/component_recycler.dart';
+import 'package:stardash/util/extensions.dart';
 
 class NukeMissile extends SpriteComponent
     with CollisionCallbacks, Recyclable, FakeThreeDee, DirectionalProjectile, HasVisibility {

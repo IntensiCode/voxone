@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
-import 'package:voxone/core/atlas.dart';
+import 'package:stardash/core/atlas.dart';
 
 RectangleComponent rect(double x, double y, double w, double h, Paint paint) =>
     RectangleComponent(position: Vector2(x, y), size: Vector2(w, h), paint: paint);
