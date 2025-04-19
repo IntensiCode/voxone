@@ -94,13 +94,14 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   Future<void> onLoad() async {
     logInfo('Loading Manta');
     try {
-      _voxelImage = await game.images.load('manta_19.png');
+      _voxelImage = await game.images.load('interstellar_15.png');
+      // _voxelImage = await game.images.load('manta_19.png');
     } catch (e) {
       logError('Error loading voxel image: $e');
       return;
     }
     assert(_voxelImage != null, 'Voxel image failed to load.');
-    _frames = 19;
+    _frames = 15;
     try {
       _shader = await loadShader('voxel3d.frag');
       // Initialize Uniforms with the FULL enum

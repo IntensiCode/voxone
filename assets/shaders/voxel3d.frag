@@ -57,30 +57,64 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-vec4 marchRay(vec3 pos, vec3 lightDirection) { // TODO: lightDirection still unused
-    const int numSteps = 128;
-    const float stepSize = 1.0 / float(numSteps);// Keep increased step size from user change
+// --- Core: March a ray - RESTORED Accumulation/Blending Logic ---
+vec4 marchRay(vec3 pos, vec3 lightDirection) { 
+	vec4 accumulatedColor = vec4(0.0); // Premultiplied alpha
+	int accumulations = 0;
 
-    for (int i = 0; i < numSteps; i++) {
-        // Check for hit on texture AT CURRENT view-space position.
-        // sampleShadedVolume will return texture color, or transparent.
-        vec4 baseColor = sampleShadedVolume(pos);
-        if (baseColor.a > 0.0) { 
+	const int numSteps = 128;
+	const float stepSize = 1.0 / float(numSteps); // Confirmed correct step size
+
+	for (int i = 0; i < numSteps; i++) {
+        // Sample volume (texture or transparent)
+        vec4 baseColor = sampleShadedVolume(pos); 
+        
+        if (baseColor.a > 0.0) {
             // Calculate shadow factor for the current position
-            // Need localPos for shadow calculation
             vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
             float shadowFactor = calculateShadowFactor(localPos, lightDirection);
             baseColor.rgb *= shadowFactor; // Apply shadow
 
-            return baseColor; // Return shaded color
+            // --- Start: Kage Accumulation/Blending Logic ---
+            if (baseColor.a == 1.0) { // Fully opaque voxel hit
+                if (accumulations > 0) {
+                    // Blend current opaque color with accumulated semi-transparent colors behind it
+                    accumulatedColor /= float(accumulations); // Average accumulated colors
+                    float a = (1.0 - accumulatedColor.a) / float(accumulations); // Calculate blend factor based on transparency gap
+                    baseColor.rgb *= a; // Apply blend factor to opaque color
+                    accumulatedColor.rgb *= (1.0 - a); // Apply inverse blend factor to accumulated color
+                    accumulatedColor.a = 1.0; // Result is now opaque
+                    return accumulatedColor + baseColor;
+                } else {
+                    // First hit is opaque, just return its color
+                    return baseColor;
+                }
+            } else {
+                // Accumulate semi-transparent color
+                accumulatedColor += baseColor;
+                accumulations++;
+            }
+            // --- End: Kage Accumulation/Blending Logic ---
         }
 
-        // Step the VIEW-SPACE ray further back along the Z axis
-        pos.z -= stepSize;
-    }
+		// Step the VIEW-SPACE ray further back along the Z axis
+		pos.z -= stepSize;
+        
+        // Restore early Z break
+        if (pos.z < -0.5) {
+			break;
+		}
+	}
 
-    // If the loop finishes without hitting the sphere, texture, OR a boundary
-    return vec4(0);
+	// If the loop finishes 
+    if (accumulations > 0) {
+        // Average accumulated semi-transparent colors
+		accumulatedColor /= float(accumulations);
+        return accumulatedColor;
+	}
+
+    // No voxels hit during march
+	return vec4(0.0);
 }
 
 // --- Core: Sample volume ---
