@@ -120,22 +120,10 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   @override
   void update(double dt) {
-    // Restore matrix update logic
+    // Update time ONLY
     super.update(dt);
     _time += dt;
-    _rotation.x = _time * 0.6;
-    _rotation.y = _time * 0.5;
-    _rotation.z = _time * 0.4;
-    // Use scale = (1,1,1) for this test
-    final scaleMatrix = Matrix4.identity()..scale(_scale);
-    final rotX = Matrix4.rotationX(_rotation.x);
-    final rotY = Matrix4.rotationY(_rotation.y);
-    final rotZ = Matrix4.rotationZ(_rotation.z);
-    final rotationMatrix = rotZ * rotY * rotX;
-    _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
-    // Ensure inverse calculation is active
-    _modelMatrixInverse.copyInverse(_modelMatrix);
-    _modelMatrixInverse.copyIntoArray(_matrixData);
+    // --- Matrix calculation MOVED to _update_uniforms --- 
   }
 
   @override
@@ -146,18 +134,37 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
     if (_shader == null || _uniforms == null) return;
 
-    _update_uniforms(_shader!);
-    _update_uniforms(_shadow!);
-
-    paint.shader = _shader;
-    canvas.drawRect(size.toRect(), paint);
-
+    // Call _update_uniforms BEFORE drawing each shader
+    // _update_uniforms will now calculate the matrix based on current _time
+    _update_uniforms(_shadow!); // Update shadow uniforms (incl. matrix)
     paint.shader = _shadow;
-    canvas.translate(64, 64);
+    // TODO: Adjust shadow position/transform as needed
+    canvas.translate(64, 64); 
     canvas.drawRect(size.toRect(), paint);
+    canvas.translate(-64, -64); // Translate back
+
+    _update_uniforms(_shader!); // Update model uniforms (incl. matrix)
+    paint.shader = _shader;
+    canvas.drawRect(size.toRect(), paint); 
+
+    // Note: Order reversed - draw shadow first, then model
   }
 
   void _update_uniforms(FragmentShader shader) {
+    // --- START: Moved Matrix Calculation ---
+    _rotation.x = _time * 0.6;
+    _rotation.y = _time * 0.5;
+    _rotation.z = _time * 0.4;
+    final scaleMatrix = Matrix4.identity()..scale(_scale);
+    final rotX = Matrix4.rotationX(_rotation.x);
+    final rotY = Matrix4.rotationY(_rotation.y);
+    final rotZ = Matrix4.rotationZ(_rotation.z);
+    final rotationMatrix = rotZ * rotY * rotX;
+    _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
+    _modelMatrixInverse.copyInverse(_modelMatrix);
+    _modelMatrixInverse.copyIntoArray(_matrixData);
+    // --- END: Moved Matrix Calculation ---
+
     final uniforms = _uniforms!;
     uniforms.switch_shader(shader);
 
