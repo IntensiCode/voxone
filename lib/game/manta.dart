@@ -1,52 +1,88 @@
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:vector_math/vector_math_64.dart' hide Colors;
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:stardash/core/atlas.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/util/uniforms.dart';
 
-// Uniforms matching shaders/voxel3d.frag - FLATTENED
-// Total floats: 16 (mat4) + 3 (vec3) + 2 (vec2) + 1 (float) + 1 (float) + 2 (vec2) + 2 (vec2) = 27
+/*
+// Uniforms replacing Kage built-ins
+uniform vec2 uDstOrigin;// Corresponds to imageDstOrigin()
+uniform vec2 uDstSize;// Corresponds to imageDstSize()
+uniform vec2 uSrcOrigin;// Corresponds to imageSrc0Origin()
+uniform vec2 uAtlasSize;// Total size of the atlas texture (pixels)
+
+// Uniforms mapping Kage 'var's
+uniform float uFrames;// Number of frames/slices
+uniform vec2 uFrameSize;// Size of one frame/slice in the atlas
+uniform mat4 uVoxelModelMatrixInverse;
+uniform vec3 uLightDirection;
+
+uniform float uRenderMode;// USE float INSTEAD OF int FOR IMPELLER
+ */
+
+// Restore full uniform enum for voxel3d.frag - FLATTENED
+// Total floats: 16(mat4) + 3(vec3) + 2(vec2) + 1(float) + 1(float) + 2(vec2) + 2(vec2) + 2(vec2) + 2(vec2) = 31
 enum Voxel3dUniform {
-  // uVoxelModelMatrixInverse (mat4)
-  mat0, mat1, mat2, mat3, // Row 1
-  mat4, mat5, mat6, mat7, // Row 2
-  mat8, mat9, mat10, mat11, // Row 3
-  mat12, mat13, mat14, mat15, // Row 4
-  // uLightDirection (vec3)
-  lightX, lightY, lightZ,
-  // uFrameSize (vec2)
-  frameX, frameY,
+  // uDstOrigin (vec2)
+  dstOriginX,
+  dstOriginY,
+  // uDstSize (vec2)
+  dstSizeX,
+  dstSizeY,
+  // uSrcOrigin (vec2)
+  srcOriginX,
+  srcOriginY,
+  // uAtlasSize (vec2)
+  atlasSizeX,
+  atlasSizeY,
   // uFrames (float)
   frames,
+  // uFrameSize (vec2)
+  frameX,
+  frameY,
+  // uVoxelModelMatrixInverse (mat4)
+  mat0,
+  mat1,
+  mat2,
+  mat3,
+  mat4,
+  mat5,
+  mat6,
+  mat7,
+  mat8,
+  mat9,
+  mat10,
+  mat11,
+  mat12,
+  mat13,
+  mat14,
+  mat15,
+  // uLightDirection (vec3)
+  lightX,
+  lightY,
+  lightZ,
   // uRenderMode (int as float)
   renderMode,
-  // uSrcOrigin (vec2)
-  srcOriginX, srcOriginY,
-  // uAtlasSize (vec2)
-  atlasSizeX, atlasSizeY,
 }
 
 class MantaComponent extends PositionComponent with HasContext, HasPaint {
   double _time = 0.0;
 
-  late Sprite _sprite;
+  late Image _voxelImage;
   FragmentShader? _shader;
   Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
+  // Restore original scale and other transformation values
   final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
   final Vector3 _rotation = Vector3.zero();
   final Matrix4 _modelMatrix = Matrix4.identity();
   final Matrix4 _modelMatrixInverse = Matrix4.identity();
   final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize();
-
-  // Store matrix data locally for setting uniforms
   final Float32List _matrixData = Float32List(16);
 
   MantaComponent() {
@@ -57,27 +93,31 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   @override
   Future<void> onLoad() async {
     logInfo('Loading Manta');
-    _sprite = atlas.sprite('entities/ZaxxonPlayer-15.png');
+    try {
+      _voxelImage = await game.images.load('ZaxxonPlayer-15.png');
+    } catch (e) {
+      logError('Error loading voxel image: $e');
+      return;
+    }
+    assert(_voxelImage != null, 'Voxel image failed to load.');
     _frames = 15;
     try {
       _shader = await loadShader('voxel3d.frag');
+      // Initialize Uniforms with the FULL enum
       _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
-      // If loading fails, _shader or _uniforms might be null.
     }
-
-    // Assert that shader and uniforms are loaded successfully before proceeding
     assert(_shader != null, 'Shader failed to load.');
     assert(_uniforms != null, 'Uniforms failed to initialize.');
-
-    size.setAll(128);
-    position = game.size / 2;
-    anchor = Anchor.center;
+    size.setAll(256);
+    // position = game.size / 2;
+    anchor = Anchor.topLeft;
   }
 
   @override
   void update(double dt) {
+    // Restore matrix update logic
     super.update(dt);
     _time += dt;
     _rotation.x = _time * 0.6;
@@ -95,45 +135,43 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   @override
   void render(Canvas canvas) {
-    // Draw a red rectangle
-    paint.color = const Color(0x8000FF00);
-    canvas.drawRect(size.toRect(), paint);
+    // Remove debug paint
+    // paint.color = const Color(0x8000FF00);
+    // canvas.drawRect(size.toRect(), paint);
 
-    // Use null-aware operators as assertions are now in onLoad
+    if (_shader == null || _uniforms == null) return;
+
     final uniforms = _uniforms!;
     final shader = _shader!;
 
-    final frameSizeVec = Vector2(_sprite.srcSize.x, _sprite.srcSize.y / _frames);
-    final srcOriginVec = _sprite.srcPosition;
-    final atlasSizeVec = Vector2(_sprite.image.width.toDouble(), _sprite.image.height.toDouble());
+    final frameSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble() / _frames);
+    final atlasSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
+    final srcOriginVec = Vector2.zero();
+    final dstOriginVec = Vector2.zero();
+    final dstSizeVec = size;
 
-    // Set Matrix uniforms (indices 0-15)
-    for (int i = 0; i < 16; i++) {
-      uniforms.set(Voxel3dUniform.values[i], _matrixData[i].toDouble());
-    }
-
-    // Set Vec3 uniforms (indices 16-18)
+    // Restore setting ALL uniforms
+    // Matrix (0-15)
+    uniforms.set(Voxel3dUniform.dstOriginX, dstOriginVec.x);
+    uniforms.set(Voxel3dUniform.dstOriginY, dstOriginVec.y);
+    uniforms.set(Voxel3dUniform.dstSizeX, dstSizeVec.x);
+    uniforms.set(Voxel3dUniform.dstSizeY, dstSizeVec.y);
+    uniforms.set(Voxel3dUniform.srcOriginX, srcOriginVec.x);
+    uniforms.set(Voxel3dUniform.srcOriginY, srcOriginVec.y);
+    uniforms.set(Voxel3dUniform.atlasSizeX, atlasSizeVec.x);
+    uniforms.set(Voxel3dUniform.atlasSizeY, atlasSizeVec.y);
+    uniforms.set(Voxel3dUniform.frames, _frames.toDouble());
+    uniforms.set(Voxel3dUniform.frameX, frameSizeVec.x);
+    uniforms.set(Voxel3dUniform.frameY, frameSizeVec.y);
     uniforms.set(Voxel3dUniform.lightX, _lightDirection.x);
     uniforms.set(Voxel3dUniform.lightY, _lightDirection.y);
     uniforms.set(Voxel3dUniform.lightZ, _lightDirection.z);
+    for (int i = 0; i < 16; i++) {
+      uniforms.set(Voxel3dUniform.values[Voxel3dUniform.mat0.index + i], _matrixData[i].toDouble());
+    }
+    uniforms.set(Voxel3dUniform.renderMode, 0.0);
 
-    // Set Vec2 uniforms (indices 19-20)
-    uniforms.set(Voxel3dUniform.frameX, frameSizeVec.x);
-    uniforms.set(Voxel3dUniform.frameY, frameSizeVec.y);
-
-    // Set Float uniforms (indices 21-22)
-    uniforms.set(Voxel3dUniform.frames, _frames.toDouble());
-    uniforms.set(Voxel3dUniform.renderMode, 0.0); // Pass int as float
-
-    // Set Vec2 uniforms for SrcOrigin (indices 23-24)
-    uniforms.set(Voxel3dUniform.srcOriginX, srcOriginVec.x);
-    uniforms.set(Voxel3dUniform.srcOriginY, srcOriginVec.y);
-
-    // Set Vec2 uniforms for AtlasSize (indices 25-26)
-    uniforms.set(Voxel3dUniform.atlasSizeX, atlasSizeVec.x);
-    uniforms.set(Voxel3dUniform.atlasSizeY, atlasSizeVec.y);
-
-    shader.setImageSampler(0, _sprite.image);
+    shader.setImageSampler(0, _voxelImage);
     paint.shader = shader;
 
     canvas.drawRect(size.toRect(), paint);

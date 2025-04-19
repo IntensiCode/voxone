@@ -31,9 +31,9 @@ class MusicScore extends AutoDisposeComponent {
 
   String? _target_score_for(Screen screen) => switch (screen) {
         Screen.title => 'music/stardash_title.ogg',
-        Screen.stage1 => 'music/stardash_background_1.ogg',
-        Screen.stage2 => 'music/stardash_background_1.ogg',
-        Screen.stage3 => 'music/stardash_background_1.ogg',
+        // Screen.stage1 => 'music/stardash_background_1.ogg',
+        // Screen.stage2 => 'music/stardash_background_1.ogg',
+        // Screen.stage3 => 'music/stardash_background_1.ogg',
         _ => null,
       };
 
