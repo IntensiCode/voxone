@@ -129,11 +129,12 @@ vec4 sampleShadedVolume(vec3 posUnrotated) {
     // 2. If not in sphere, transform to local space for texture lookup
 	vec3 localPos = (uVoxelModelMatrixInverse * vec4(posUnrotated, 1.0)).xyz;
 
-    // 3. Call volumeMap (which now only does texture lookup)
-    // Skip isOutOfBounds for simplicity during debug
-	// if (isOutOfBounds(localPos)) {
-    //     return vec4(0.0);
-    // }
+    // 3. Check bounds ON TRANSFORMED localPos
+    if (isOutOfBounds(localPos)) {
+        return vec4(0.0);
+    }
+
+    // 4. Call volumeMap (which now only does texture lookup)
 	return volumeMap(localPos);
 }
 
@@ -162,8 +163,8 @@ bool isOutOfBounds(vec3 pos) {
 
 // --- Helper: Calculate texture UV coordinates from a local position - RESTORED ---
 vec2 calculateAtlasUV(vec3 pos) {
-    // Clamp input position to the expected [-0.5, 0.5] range before calculations
-    pos = clamp(pos, -0.5, 0.5);
+    // Clamp REMOVED - Use isOutOfBounds check before calling this instead.
+    // pos = clamp(pos, -0.5, 0.5); // <--- DELETE OR COMMENT OUT THIS LINE
 
     vec2 pixel_uv;
     pixel_uv.x = (pos.x + 0.5) * uFrameSize.x;
