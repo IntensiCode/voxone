@@ -37,11 +37,11 @@ void main() {
     float rnd = random(screenUV) * 0.0025;
     vec3 startPos = vec3(screenUV.x, screenUV.y, 0.5 + rnd);
 
-    // Transform light direction to local space - NOT NEEDED FOR FIXED RAY
-    // vec3 localLightDirection = normalize((uVoxelModelMatrixInverse * vec4(uLightDirection, 0.0)).xyz);
+    // Transform light direction to local space
+    vec3 localLightDirection = normalize((uVoxelModelMatrixInverse * vec4(uLightDirection, 0.0)).xyz);
 
-    // Return the result from the ray marching - Pass only startPos
-    fragColor = marchRay(startPos, uLightDirection);
+    // Return the result from the ray marching
+    fragColor = marchRay(startPos, localLightDirection);
 
     // Flutter needs premultiplied alpha in output:
     fragColor.xyz *= fragColor.a;
@@ -65,7 +65,15 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) { // TODO: lightDirection still unu
         // Check for hit on texture AT CURRENT view-space position.
         // sampleShadedVolume will return texture color, or transparent.
         vec4 baseColor = sampleShadedVolume(pos);
-        if (baseColor.a > 0.0) { return baseColor; }
+        if (baseColor.a > 0.0) { 
+            // Calculate shadow factor for the current position
+            // Need localPos for shadow calculation
+            vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
+            float shadowFactor = calculateShadowFactor(localPos, lightDirection);
+            baseColor.rgb *= shadowFactor; // Apply shadow
+
+            return baseColor; // Return shaded color
+        }
 
         // Step the VIEW-SPACE ray further back along the Z axis
         pos.z -= stepSize;
