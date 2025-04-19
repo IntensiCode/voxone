@@ -77,8 +77,8 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
-  // Set scale to 1.0 for rotation-only debug
-  final Vector3 _scale = Vector3(1.0, 1.0, 1.0);
+  // Restore original scale
+  final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
   final Vector3 _rotation = Vector3.zero();
   final Matrix4 _modelMatrix = Matrix4.identity();
   final Matrix4 _modelMatrixInverse = Matrix4.identity();

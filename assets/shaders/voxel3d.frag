@@ -102,13 +102,13 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
         }
 
         // 2. If sphere/texture NOT hit, check cube boundaries in LOCAL space
-        vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
-        if (localPos.x > 0.5) return CUBE_RIGHT;
-        if (localPos.x < -0.5) return CUBE_LEFT;
-        if (localPos.y > 0.5) return CUBE_TOP;
-        if (localPos.y < -0.5) return CUBE_BOTTOM;
-        if (localPos.z < -0.5) return CUBE_BACK; 
-        if (localPos.z > 0.5) return CUBE_FRONT;
+//        vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
+//        if (localPos.x > 0.5) return CUBE_RIGHT;
+//        if (localPos.x < -0.5) return CUBE_LEFT;
+//        if (localPos.y > 0.5) return CUBE_TOP;
+//        if (localPos.y < -0.5) return CUBE_BOTTOM;
+//        if (localPos.z < -0.5) return CUBE_BACK;
+//        if (localPos.z > 0.5) return CUBE_FRONT;
 
 		// 3. Step the VIEW-SPACE ray further back along the Z axis
 		pos.z -= stepSize;
@@ -162,6 +162,9 @@ bool isOutOfBounds(vec3 pos) {
 
 // --- Helper: Calculate texture UV coordinates from a local position - RESTORED ---
 vec2 calculateAtlasUV(vec3 pos) {
+    // Clamp input position to the expected [-0.5, 0.5] range before calculations
+    pos = clamp(pos, -0.5, 0.5);
+
     vec2 pixel_uv;
     pixel_uv.x = (pos.x + 0.5) * uFrameSize.x;
     pixel_uv.y = (pos.z + 0.5) * uFrameSize.y;
