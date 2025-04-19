@@ -22,29 +22,28 @@ out vec4 fragColor;
 
 vec2 calculateScreenUV(vec2 fragCoord);
 float random(vec2 st);
-vec4 marchRayForShadow(vec3 pos);
+vec4 marchRay(vec3 startPos);
 vec4 sampleShadedVolume(vec3 posUnrotated);
 vec4 volumeMap(vec3 pos);
 bool isOutOfBounds(vec3 pos);
 vec2 calculateAtlasUV(vec3 pos);
-float calculateShadowFactor(vec3 pos, vec3 lightDirection);
 
 void main() {
     vec2 uv = FlutterFragCoord().xy;
     vec2 screenUV = calculateScreenUV(FlutterFragCoord().xy);
 
-    // Start slightly randomized in depth: (Attempted fix for shading noise. Working only badly.)
+    // Start slightly randomized in depth for the LIGHT's view
     float rnd = random(screenUV) * 0.0025;
     vec3 startPos = vec3(screenUV.x, screenUV.y, 0.5 + rnd);
 
-    // Keep light direction calculation for now, though unused by simple shadow
-    vec3 localLightDirection = normalize((uVoxelModelMatrixInverse * vec4(uLightDirection, 0.0)).xyz);
+    // We don't use light direction for marching here
+    // Light direction is implicitly handled by the uVoxelModelMatrixInverse 
+    // (which *should* be the light's view-to-local matrix)
 
-    // Call the new shadow function
-    fragColor = marchRayForShadow(startPos); // Pass only startPos
+    // Call the ray marcher
+    fragColor = marchRay(startPos);
 
-    // Remove premultiply alpha for simple shadow output
-    // fragColor.xyz *= fragColor.a;
+    // No premultiply needed for simple shadow output
 }
 
 // --- Helper: Calculate normalized screen UV (-0.5 to 0.5) ---
@@ -57,36 +56,27 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-// --- Core: Simplified Shadow Marcher ---
-vec4 marchRayForShadow(vec3 pos) {
-    const int numSteps = 128;
-    const float stepSize = 1.0 / float(numSteps); // Using original step size
-    const float floorY = -0.5; // View-space Y level for the 'floor'
+// --- Core: March Ray straight back (in light's view space) for shadow ---
+vec4 marchRay(vec3 pos) {
+    const int numSteps = 128; // Can potentially reduce for shadows
+    const float stepSize = 1.0 / float(numSteps); 
     const vec4 shadowColor = vec4(0.0, 0.0, 0.0, 0.5); // Semi-transparent black
 
     for (int i = 0; i < numSteps; i++) {
-        // 1. Check if view ray hits the floor plane
-        // Note: Since the ray moves only along Z, this check is only useful
-        // if the floor wasn't parallel to the ray. 
-        // For a simple blob, let's skip this and rely on the model hit.
-        // if (pos.y < floorY) { 
-        //     return vec4(0.0); // Hit floor - no shadow here
-        // }
-
-        // 2. Check if view ray hits the model volume
-        // sampleShadedVolume uses the transformation matrix internally
+        // Check if the current position hits the model volume
+        // sampleShadedVolume uses the provided matrix (should be light's view-to-local)
         if (sampleShadedVolume(pos).a > 0.0) {
-            // Hit model -> this pixel contributes to the shadow blob
+            // Hit the model -> output shadow color
             return shadowColor;
         }
 
-        // 3. Step the VIEW-SPACE ray further back along the Z axis
+        // Step the ray further back along Z (in light's view space)
         pos.z -= stepSize;
 
-        // 4. Optional early break if ray goes too far back
-        if (pos.z < -0.5) { // Original break condition
+        // Optional early break
+        if (pos.z < -0.5) { 
              break;
-        }
+         }
     }
 
     // Ray finished without hitting the model
@@ -136,32 +126,10 @@ vec2 calculateAtlasUV(vec3 pos) {
     return pixel_uv / atlasSize;
 }
 
-// --- Helper: Calculate the shadow factor based on light direction  ---
-float calculateShadowFactor(vec3 pos, vec3 lightDirection) {
-    const float stepSize = 1.0 / 64.0;
-    vec3 shadowOffset = lightDirection * stepSize;
-    const int numSteps = 16;
-    const float darknessMin = 0.8;
-    const float darknessStep = (1.0 - darknessMin) / float(numSteps);
-    float darkness = darknessMin;
-    bool hitBefore = false;
-    for (int i = 0; i < numSteps; i++) {
-        pos -= shadowOffset;
-        if (volumeMap(pos).a > 0.0) {
-            if (hitBefore) {
-                return darkness;
-            }
-            hitBefore = true;
-        }
-        darkness += darknessStep;
-    }
-    return 1.0;
-}
-
 // --- UNUSED FUNCTIONS --- 
 /*
 float random(vec2 st) { ... }
-vec4 marchRay(vec3 startPos, vec3 localLightDirection) { ... }
+vec4 marchRayForShadow(vec3 startFloorPos, vec3 lightDir) { ... }
 vec4 sampleShadedVolume(vec3 posUnrotated) { ... }
 vec4 volumeMap(vec3 pos) { ... }
 bool isOutOfBounds(vec3 pos) { ... }
