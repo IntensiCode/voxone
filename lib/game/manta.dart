@@ -58,7 +58,6 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   late Image _voxelImage;
   FragmentShader? _shader;
-  FragmentShader? _shadow;
   Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
@@ -89,8 +88,6 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     try {
       _shader = await loadShader('voxel3d.frag');
       _shader!.setImageSampler(0, _voxelImage);
-      _shadow = await loadShader('shadow3d.frag');
-      _shadow!.setImageSampler(0, _voxelImage);
       _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
@@ -113,15 +110,6 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   void render(Canvas canvas) {
     if (_shader == null || _uniforms == null) return;
 
-    // Update uniforms FOR SHADOW (using Light's View Matrix)
-    _update_uniforms(_shadow!, useLightViewMatrix: true);
-    paint.shader = _shadow;
-    // TODO: Adjust shadow position/transform as needed
-    canvas.translate(64, 64);
-    canvas.drawRect(size.toRect(), paint);
-    canvas.translate(-64, -64); // Translate back
-
-    // Update uniforms FOR MODEL (using Camera's View Matrix)
     _update_uniforms(_shader!, useLightViewMatrix: false);
     paint.shader = _shader;
     canvas.drawRect(size.toRect(), paint);

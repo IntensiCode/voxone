@@ -71,8 +71,12 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) {
 
         if (baseColor.a > 0.0) {
             // --- Add: Hit Highlight Mode Check ---
-            if (uRenderMode == 1.0) {
-                return vec4(1.0);// Return solid white if hit mode is active
+            if (uRenderMode > 0.0) {
+                if (uRenderMode == 1.0) {
+                    return vec4(1.0);// Return solid white if hit mode is active
+                } else {
+                    return vec4(0.0);// Return solid black if shadow mode is active
+                }
             }
             // --- End: Hit Highlight Mode Check ---
 
