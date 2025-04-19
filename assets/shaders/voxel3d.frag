@@ -33,13 +33,13 @@ vec2 calculateAtlasUV(vec3 pos);
 float calculateShadowFactor(vec3 pos, vec3 lightDirection);
 
 // Debug Colors for Cube Faces
-const vec4 CUBE_RIGHT = vec4(1.0, 0.0, 0.0, 1.0); // +X Red
-const vec4 CUBE_LEFT = vec4(0.0, 1.0, 1.0, 1.0); // -X Cyan
-const vec4 CUBE_TOP = vec4(0.0, 1.0, 0.0, 1.0); // +Y Green
-const vec4 CUBE_BOTTOM = vec4(1.0, 0.0, 1.0, 1.0); // -Y Magenta
-const vec4 CUBE_BACK = vec4(1.0, 1.0, 0.0, 1.0); // -Z Yellow
-const vec4 CUBE_FRONT = vec4(1.0, 1.0, 1.0, 1.0); // +Z White 
-const vec4 CUBE_NONE = vec4(0.0, 0.0, 0.0, 1.0); // Black (Should not happen)
+const vec4 CUBE_RIGHT = vec4(1.0, 0.0, 0.0, 0.1); // +X Red
+const vec4 CUBE_LEFT = vec4(0.0, 1.0, 1.0, 0.1); // -X Cyan
+const vec4 CUBE_TOP = vec4(0.0, 1.0, 0.0, 0.1); // +Y Green
+const vec4 CUBE_BOTTOM = vec4(1.0, 0.0, 1.0, 0.1); // -Y Magenta
+const vec4 CUBE_BACK = vec4(1.0, 1.0, 0.0, 0.1); // -Z Yellow
+const vec4 CUBE_FRONT = vec4(1.0, 1.0, 1.0, 0.1); // +Z White
+const vec4 CUBE_NONE = vec4(0.0, 0.0, 0.0, 0.1); // Black (Should not happen)
 
 // Debug Colors for Cube Faces/Final Position
 const vec4 POS_X_NEG = vec4(0.0, 1.0, 1.0, 1.0);// -X Cyan
@@ -65,6 +65,9 @@ void main() {
 
     // Return the result from the ray marching - Pass only startPos
     fragColor = marchRay(startPos, uLightDirection);
+
+    // Flutter needs premultiplied alpha in output:
+    fragColor.xyz *= fragColor.a;
 
     // DEBUG - KEEP!!! - SHOW OUR 0.5 RADIUS FOR UV!
 //    float l = length(screenUV);
@@ -93,7 +96,7 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
         // 1. Check for hit on procedural sphere AT CURRENT view-space position
         vec4 baseColor = sampleShadedVolume(pos); 
         if (baseColor.a > 0.0) {
-            return SPHERE_COLOR; // Return sphere color immediately if hit
+            return baseColor;
         }
 
         // 2. If sphere NOT hit, check cube boundaries in LOCAL space
@@ -102,7 +105,7 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
         if (localPos.x < -0.5) return CUBE_LEFT;
         if (localPos.y > 0.5) return CUBE_TOP;
         if (localPos.y < -0.5) return CUBE_BOTTOM;
-        if (localPos.z < -0.5) return CUBE_BACK; 
+        if (localPos.z < -0.5) return CUBE_BACK;
         if (localPos.z > 0.5) return CUBE_FRONT;
 
 		// 3. Step the VIEW-SPACE ray further back along the Z axis
@@ -129,10 +132,13 @@ vec4 sampleShadedVolume(vec3 posUnrotated) {
 vec4 volumeMap(vec3 pos) {
     // Check if the local position `pos` is inside a sphere of radius 0.2
     if (length(pos) < 0.2) {
-        return SPHERE_COLOR; // Use defined constant
+        // DEBUG: Return color based on local position within sphere
+        // Map approx range [-0.2, 0.2] -> [0.0, 1.0]
+        return vec4(pos * 2.5 + 0.5, 1.0);
+        // return SPHERE_COLOR; // Original dark gray
     }
     // Otherwise, it's empty space (transparent)
-    return vec4(0.0); 
+    return vec4(0.0);
 }
 
 // --- Helper: Check if position is within the standard -0.5 to 0.5 cube - RESTORED ---
