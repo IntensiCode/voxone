@@ -33,13 +33,13 @@ vec2 calculateAtlasUV(vec3 pos);
 float calculateShadowFactor(vec3 pos, vec3 lightDirection);
 
 // Debug Colors for Cube Faces
-const vec4 CUBE_RIGHT = vec4(1.0, 0.0, 0.0, 1.0);// +X Red
-const vec4 CUBE_LEFT = vec4(0.0, 1.0, 1.0, 1.0);// -X Cyan
-const vec4 CUBE_TOP = vec4(0.0, 1.0, 0.0, 1.0);// +Y Green
-const vec4 CUBE_BOTTOM = vec4(1.0, 0.0, 1.0, 1.0);// -Y Magenta
-const vec4 CUBE_BACK = vec4(1.0, 1.0, 0.0, 1.0);// -Z Yellow
-const vec4 CUBE_FRONT = vec4(1.0, 1.0, 1.0, 1.0);// -Z Yellow
-const vec4 CUBE_NONE = vec4(0.0, 0.0, 0.0, 1.0);// Black (Should not happen)
+const vec4 CUBE_RIGHT = vec4(1.0, 0.0, 0.0, 1.0); // +X Red
+const vec4 CUBE_LEFT = vec4(0.0, 1.0, 1.0, 1.0); // -X Cyan
+const vec4 CUBE_TOP = vec4(0.0, 1.0, 0.0, 1.0); // +Y Green
+const vec4 CUBE_BOTTOM = vec4(1.0, 0.0, 1.0, 1.0); // -Y Magenta
+const vec4 CUBE_BACK = vec4(1.0, 1.0, 0.0, 1.0); // -Z Yellow
+const vec4 CUBE_FRONT = vec4(1.0, 1.0, 1.0, 1.0); // +Z White 
+const vec4 CUBE_NONE = vec4(0.0, 0.0, 0.0, 1.0); // Black (Should not happen)
 
 // Debug Colors for Cube Faces/Final Position
 const vec4 POS_X_NEG = vec4(0.0, 1.0, 1.0, 1.0);// -X Cyan
@@ -49,6 +49,9 @@ const vec4 POS_Y_POS = vec4(0.0, 1.0, 0.0, 1.0);// +Y Green
 const vec4 POS_Z_NEG = vec4(1.0, 1.0, 0.0, 1.0);// -Z Yellow
 const vec4 POS_Z_POS = vec4(1.0, 1.0, 1.0, 1.0);// +Z White (Unlikely)
 const vec4 POS_INSIDE = vec4(0.5, 0.5, 0.5, 1.0);// Gray
+
+// Procedural sphere color
+const vec4 SPHERE_COLOR = vec4(0.2, 0.2, 0.2, 1.0); // Dark Gray
 
 // --- Main function - RESTORED ---
 void main() {
@@ -81,38 +84,55 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-// --- Core: March a ray and return COLOR OF FIRST BOUNDARY hit (in local space) ---
+// --- Core: March a ray, check sphere first, then cube boundaries ---
 vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
 	const int numSteps = 128;
-	const float stepSize = 2.0 / float(numSteps);
+	const float stepSize = 2.0 / float(numSteps); // Keep increased step size from user change
 
 	for (int i = 0; i < numSteps; i++) {
-        // Transform CURRENT view-space pos to local space using the inverse matrix
-        // The matrix includes rotation (scale is identity in Dart for this test)
-        vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
+        // 1. Check for hit on procedural sphere AT CURRENT view-space position
+        vec4 baseColor = sampleShadedVolume(pos); 
+        if (baseColor.a > 0.0) {
+            return SPHERE_COLOR; // Return sphere color immediately if hit
+        }
 
-        // Check boundaries in LOCAL (rotated) space
+        // 2. If sphere NOT hit, check cube boundaries in LOCAL space
+        vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
         if (localPos.x > 0.5) return CUBE_RIGHT;
         if (localPos.x < -0.5) return CUBE_LEFT;
         if (localPos.y > 0.5) return CUBE_TOP;
         if (localPos.y < -0.5) return CUBE_BOTTOM;
-        if (localPos.z < -0.5) return CUBE_BACK;
+        if (localPos.z < -0.5) return CUBE_BACK; 
         if (localPos.z > 0.5) return CUBE_FRONT;
 
-		// Step the VIEW-SPACE ray further back along the Z axis
+		// 3. Step the VIEW-SPACE ray further back along the Z axis
 		pos.z -= stepSize;
 	}
 
-	// If the loop finishes somehow without hitting a boundary
+	// If the loop finishes without hitting the sphere OR a boundary
     return CUBE_NONE; // Black
 }
 
-// --- Functions below are bypassed by marchRay returning early ---
+// --- Core: Sample volume - Calls volumeMap ---
 vec4 sampleShadedVolume(vec3 posUnrotated) {
-    return vec4(0.0);
+    // Transform position using the inverse model matrix to get local coordinates
+	vec3 localPos = (uVoxelModelMatrixInverse * vec4(posUnrotated, 1.0)).xyz;
+
+    // Skip isOutOfBounds for the small sphere test for simplicity
+	// if (isOutOfBounds(localPos)) {
+    //     return vec4(0.0); 
+    // }
+	return volumeMap(localPos);
 }
+
+// --- Core: Procedural Sphere Volume ---
 vec4 volumeMap(vec3 pos) {
-    return vec4(0.0);
+    // Check if the local position `pos` is inside a sphere of radius 0.2
+    if (length(pos) < 0.2) {
+        return SPHERE_COLOR; // Use defined constant
+    }
+    // Otherwise, it's empty space (transparent)
+    return vec4(0.0); 
 }
 
 // --- Helper: Check if position is within the standard -0.5 to 0.5 cube - RESTORED ---
