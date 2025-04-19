@@ -8,22 +8,6 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/util/uniforms.dart';
 
-/*
-// Uniforms replacing Kage built-ins
-uniform vec2 uDstOrigin;// Corresponds to imageDstOrigin()
-uniform vec2 uDstSize;// Corresponds to imageDstSize()
-uniform vec2 uSrcOrigin;// Corresponds to imageSrc0Origin()
-uniform vec2 uAtlasSize;// Total size of the atlas texture (pixels)
-
-// Uniforms mapping Kage 'var's
-uniform float uFrames;// Number of frames/slices
-uniform vec2 uFrameSize;// Size of one frame/slice in the atlas
-uniform mat4 uVoxelModelMatrixInverse;
-uniform vec3 uLightDirection;
-
-uniform float uRenderMode;// USE float INSTEAD OF int FOR IMPELLER
- */
-
 // Restore full uniform enum for voxel3d.frag - FLATTENED
 // Total floats: 16(mat4) + 3(vec3) + 2(vec2) + 1(float) + 1(float) + 2(vec2) + 2(vec2) + 2(vec2) + 2(vec2) = 31
 enum Voxel3dUniform {
@@ -123,35 +107,30 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     // Update time ONLY
     super.update(dt);
     _time += dt;
-    // --- Matrix calculation MOVED to _update_uniforms --- 
   }
 
   @override
   void render(Canvas canvas) {
-    // Remove debug paint
-    // paint.color = const Color(0x8000FF00);
-    // canvas.drawRect(size.toRect(), paint);
-
     if (_shader == null || _uniforms == null) return;
 
-    // Call _update_uniforms BEFORE drawing each shader
-    // _update_uniforms will now calculate the matrix based on current _time
-    _update_uniforms(_shadow!); // Update shadow uniforms (incl. matrix)
+    // Update uniforms FOR SHADOW (using Light's View Matrix)
+    _update_uniforms(_shadow!, useLightViewMatrix: true);
     paint.shader = _shadow;
     // TODO: Adjust shadow position/transform as needed
-    canvas.translate(64, 64); 
+    canvas.translate(64, 64);
     canvas.drawRect(size.toRect(), paint);
     canvas.translate(-64, -64); // Translate back
 
-    _update_uniforms(_shader!); // Update model uniforms (incl. matrix)
+    // Update uniforms FOR MODEL (using Camera's View Matrix)
+    _update_uniforms(_shader!, useLightViewMatrix: false);
     paint.shader = _shader;
-    canvas.drawRect(size.toRect(), paint); 
-
-    // Note: Order reversed - draw shadow first, then model
+    canvas.drawRect(size.toRect(), paint);
   }
 
-  void _update_uniforms(FragmentShader shader) {
-    // --- START: Moved Matrix Calculation ---
+  // Add useLightViewMatrix parameter
+  void _update_uniforms(FragmentShader shader, {required bool useLightViewMatrix}) {
+    // --- START: Matrix Calculation (Conditional) ---
+    // 1. Calculate basic model transform (rotation * scale)
     _rotation.x = _time * 0.6;
     _rotation.y = _time * 0.5;
     _rotation.z = _time * 0.4;
@@ -160,22 +139,43 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     final rotY = Matrix4.rotationY(_rotation.y);
     final rotZ = Matrix4.rotationZ(_rotation.z);
     final rotationMatrix = rotZ * rotY * rotX;
-    _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
-    _modelMatrixInverse.copyInverse(_modelMatrix);
+    final modelMatrix = rotationMatrix * scaleMatrix;
+
+    // 2. Determine the final view matrix to use
+    final Matrix4 finalMatrix;
+    if (useLightViewMatrix) {
+      // Calculate Light's View Matrix
+      final lightPos = -_lightDirection.normalized() * 10.0; // Place light source far away
+      final lookAt = Vector3.zero(); // Look at model origin
+      final up = Vector3(0, 1, 0); // World up
+      // Ensure 'up' is not parallel to 'lightPos - lookAt'
+      if ((lightPos - lookAt).normalized().dot(up).abs() > 0.99) {
+        // If light is looking nearly straight up/down, use world forward/right as 'up'
+        up.setValues(1, 0, 0); // Or (0,0,1) depending on preference
+      }
+      final lightViewMatrix = makeViewMatrix(lightPos, lookAt, up);
+      // Combine light view with model transform
+      finalMatrix = lightViewMatrix * modelMatrix;
+    } else {
+      // Use Camera's View (assuming camera view matrix is identity)
+      finalMatrix = modelMatrix;
+    }
+
+    // 3. Calculate the INVERSE of the final matrix for the shader
+    _modelMatrixInverse.copyInverse(finalMatrix);
     _modelMatrixInverse.copyIntoArray(_matrixData);
-    // --- END: Moved Matrix Calculation ---
+    // --- END: Matrix Calculation ---
 
     final uniforms = _uniforms!;
     uniforms.switch_shader(shader);
 
+    // --- Set Uniforms (uses _matrixData calculated above) ---
     final frameSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble() / _frames);
     final atlasSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
     final srcOriginVec = Vector2.zero();
     final dstOriginVec = Vector2.zero();
     final dstSizeVec = size;
 
-    // Restore setting ALL uniforms
-    // Matrix (0-15)
     uniforms.set(Voxel3dUniform.dstOriginX, dstOriginVec.x);
     uniforms.set(Voxel3dUniform.dstOriginY, dstOriginVec.y);
     uniforms.set(Voxel3dUniform.dstSizeX, dstSizeVec.x);
@@ -190,9 +190,10 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     uniforms.set(Voxel3dUniform.lightX, _lightDirection.x);
     uniforms.set(Voxel3dUniform.lightY, _lightDirection.y);
     uniforms.set(Voxel3dUniform.lightZ, _lightDirection.z);
+    // Set the matrix uniform (mat0 - mat15)
     for (int i = 0; i < 16; i++) {
       uniforms.set(Voxel3dUniform.values[Voxel3dUniform.mat0.index + i], _matrixData[i].toDouble());
     }
-    uniforms.set(Voxel3dUniform.renderMode, 0.0);
+    uniforms.set(Voxel3dUniform.renderMode, 0.0); // Assuming mode 0 for shadow render now
   }
 }
