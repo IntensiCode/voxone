@@ -118,35 +118,22 @@ vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
     return CUBE_NONE; // Black
 }
 
-// --- Core: Sample volume - Check sphere in view space FIRST ---
+// --- Core: Sample volume ---
 vec4 sampleShadedVolume(vec3 posUnrotated) {
-    // 1. Check for sphere hit in VIEW SPACE first
-    if (length(posUnrotated) < 0.2) {
-        // Return sphere color based on VIEW SPACE position
-        return vec4(posUnrotated * 2.5 + 0.5, 1.0);
-    }
-
-    // 2. If not in sphere, transform to local space for texture lookup
+    // Transform position using the inverse model matrix to get local coordinates
 	vec3 localPos = (uVoxelModelMatrixInverse * vec4(posUnrotated, 1.0)).xyz;
 
-    // 3. Check bounds ON TRANSFORMED localPos
-    if (isOutOfBounds(localPos)) {
+    // Restore bounds check
+	if (isOutOfBounds(localPos)) {
         return vec4(0.0);
     }
-
-    // 4. Call volumeMap (which now only does texture lookup)
+    // Call volumeMap (which now only does texture lookup)
 	return volumeMap(localPos);
 }
 
 // --- Core: VolumeMap - Texture Lookup ONLY ---
 vec4 volumeMap(vec3 pos) {
-    /* // Sphere check REMOVED from here
-    if (length(pos) < 0.2) {
-        return vec4(pos * 2.5 + 0.5, 1.0);
-    }
-    */
-
-    // Restore texture lookup logic
+    // Restore texture lookup logic ONLY
 	vec2 uv = calculateAtlasUV(pos);
 	vec4 textureColor = texture(uImageSrc0, uv);
 
