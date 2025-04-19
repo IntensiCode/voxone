@@ -149,12 +149,11 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     _update_uniforms(_shader!);
     _update_uniforms(_shadow!);
 
-    paint.shader = _shadow;
-    canvas.translate(128, 128);
+    paint.shader = _shader;
     canvas.drawRect(size.toRect(), paint);
 
-    paint.shader = _shader;
-    canvas.translate(-128, -128);
+    paint.shader = _shadow;
+    canvas.translate(64, 64);
     canvas.drawRect(size.toRect(), paint);
   }
 
