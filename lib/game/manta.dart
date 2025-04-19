@@ -77,8 +77,8 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
   Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
-  // Restore original scale and other transformation values
-  final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
+  // Set scale to 1.0 for rotation-only debug
+  final Vector3 _scale = Vector3(1.0, 1.0, 1.0);
   final Vector3 _rotation = Vector3.zero();
   final Matrix4 _modelMatrix = Matrix4.identity();
   final Matrix4 _modelMatrixInverse = Matrix4.identity();
@@ -123,12 +123,14 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     _rotation.x = _time * 0.6;
     _rotation.y = _time * 0.5;
     _rotation.z = _time * 0.4;
+    // Use scale = (1,1,1) for this test
     final scaleMatrix = Matrix4.identity()..scale(_scale);
     final rotX = Matrix4.rotationX(_rotation.x);
     final rotY = Matrix4.rotationY(_rotation.y);
     final rotZ = Matrix4.rotationZ(_rotation.z);
     final rotationMatrix = rotZ * rotY * rotX;
     _modelMatrix.setFrom(rotationMatrix * scaleMatrix);
+    // Ensure inverse calculation is active
     _modelMatrixInverse.copyInverse(_modelMatrix);
     _modelMatrixInverse.copyIntoArray(_matrixData);
   }

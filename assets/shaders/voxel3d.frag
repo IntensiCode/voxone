@@ -38,6 +38,7 @@ const vec4 CUBE_LEFT = vec4(0.0, 1.0, 1.0, 1.0);// -X Cyan
 const vec4 CUBE_TOP = vec4(0.0, 1.0, 0.0, 1.0);// +Y Green
 const vec4 CUBE_BOTTOM = vec4(1.0, 0.0, 1.0, 1.0);// -Y Magenta
 const vec4 CUBE_BACK = vec4(1.0, 1.0, 0.0, 1.0);// -Z Yellow
+const vec4 CUBE_FRONT = vec4(1.0, 1.0, 1.0, 1.0);// -Z Yellow
 const vec4 CUBE_NONE = vec4(0.0, 0.0, 0.0, 1.0);// Black (Should not happen)
 
 // Debug Colors for Cube Faces/Final Position
@@ -63,11 +64,11 @@ void main() {
     fragColor = marchRay(startPos, uLightDirection);
 
     // DEBUG - KEEP!!! - SHOW OUR 0.5 RADIUS FOR UV!
-    float l = length(screenUV);
-    if (l > 0.5) {
-        fragColor *= 0.5;
-        fragColor.a = 0.2;
-    }
+//    float l = length(screenUV);
+//    if (l > 0.5) {
+//        fragColor *= 0.5;
+//        fragColor.a = 0.2;
+//    }
 }
 
 // --- Helper: Calculate normalized screen UV (-0.5 to 0.5) - RESTORED ---
@@ -80,25 +81,30 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-// --- Core: March a ray and return COLOR OF FIRST BOUNDARY hit ---
-vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection unused
-    const int numSteps = 128;
-    const float stepSize = 1.0 / float(numSteps);
+// --- Core: March a ray and return COLOR OF FIRST BOUNDARY hit (in local space) ---
+vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
+	const int numSteps = 128;
+	const float stepSize = 2.0 / float(numSteps);
 
-    for (int i = 0; i < numSteps; i++) {
-        // Check boundaries for the CURRENT ray position `pos` in VIEW space
-        if (pos.x > 0.5) return CUBE_RIGHT;
-        if (pos.x < -0.5) return CUBE_LEFT;
-        if (pos.y > 0.5) return CUBE_TOP;
-        if (pos.y < -0.5) return CUBE_BOTTOM;
-        if (pos.z < -0.5) return CUBE_BACK;// Yellow
+	for (int i = 0; i < numSteps; i++) {
+        // Transform CURRENT view-space pos to local space using the inverse matrix
+        // The matrix includes rotation (scale is identity in Dart for this test)
+        vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
 
-        // Step the ray further back along the view Z axis AFTER checking
-        pos.z -= stepSize;
-    }
+        // Check boundaries in LOCAL (rotated) space
+        if (localPos.x > 0.5) return CUBE_RIGHT;
+        if (localPos.x < -0.5) return CUBE_LEFT;
+        if (localPos.y > 0.5) return CUBE_TOP;
+        if (localPos.y < -0.5) return CUBE_BOTTOM;
+        if (localPos.z < -0.5) return CUBE_BACK;
+        if (localPos.z > 0.5) return CUBE_FRONT;
 
-    // If the loop finishes somehow without hitting a boundary
-    return CUBE_NONE;// Black
+		// Step the VIEW-SPACE ray further back along the Z axis
+		pos.z -= stepSize;
+	}
+
+	// If the loop finishes somehow without hitting a boundary
+    return CUBE_NONE; // Black
 }
 
 // --- Functions below are bypassed by marchRay returning early ---
