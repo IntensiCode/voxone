@@ -74,6 +74,7 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   late Image _voxelImage;
   FragmentShader? _shader;
+  FragmentShader? _shadow;
   Uniforms<Voxel3dUniform>? _uniforms;
   late int _frames;
 
@@ -100,11 +101,12 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
       logError('Error loading voxel image: $e');
       return;
     }
-    assert(_voxelImage != null, 'Voxel image failed to load.');
     _frames = 15;
     try {
       _shader = await loadShader('voxel3d.frag');
-      // Initialize Uniforms with the FULL enum
+      _shader!.setImageSampler(0, _voxelImage);
+      _shadow = await loadShader('shadow3d.frag');
+      _shadow!.setImageSampler(0, _voxelImage);
       _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
@@ -144,8 +146,21 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
     if (_shader == null || _uniforms == null) return;
 
+    _update_uniforms(_shader!);
+    _update_uniforms(_shadow!);
+
+    paint.shader = _shadow;
+    canvas.translate(128, 128);
+    canvas.drawRect(size.toRect(), paint);
+
+    paint.shader = _shader;
+    canvas.translate(-128, -128);
+    canvas.drawRect(size.toRect(), paint);
+  }
+
+  void _update_uniforms(FragmentShader shader) {
     final uniforms = _uniforms!;
-    final shader = _shader!;
+    uniforms.switch_shader(shader);
 
     final frameSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble() / _frames);
     final atlasSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
@@ -173,10 +188,5 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
       uniforms.set(Voxel3dUniform.values[Voxel3dUniform.mat0.index + i], _matrixData[i].toDouble());
     }
     uniforms.set(Voxel3dUniform.renderMode, 0.0);
-
-    shader.setImageSampler(0, _voxelImage);
-    paint.shader = shader;
-
-    canvas.drawRect(size.toRect(), paint);
   }
 }

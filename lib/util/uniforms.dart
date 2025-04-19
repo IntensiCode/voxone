@@ -10,7 +10,11 @@ class Uniforms<T> {
     }
   }
 
-  final FragmentShader shader;
+  void switch_shader(FragmentShader it) {
+    shader = it;
+  }
+
+  FragmentShader shader;
 
   final _ids = <T, int>{};
 

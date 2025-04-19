@@ -62,6 +62,7 @@ flutter:
     - assets/shaders/plasma_blob.frag
     - assets/shaders/plasma_shield.frag
     - assets/shaders/rock.frag
+    - assets/shaders/shadow3d.frag
     - assets/shaders/space.frag
     - assets/shaders/voxel.frag
     - assets/shaders/voxel3d.frag
