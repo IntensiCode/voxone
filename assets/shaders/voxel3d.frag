@@ -87,58 +87,70 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
-// --- Core: March a ray, check sphere first, then cube boundaries ---
+// --- Core: March a ray, check sphere/texture first, then cube boundaries ---
 vec4 marchRay(vec3 pos, vec3 lightDirection) { // lightDirection still unused
 	const int numSteps = 128;
 	const float stepSize = 2.0 / float(numSteps); // Keep increased step size from user change
 
 	for (int i = 0; i < numSteps; i++) {
-        // 1. Check for hit on procedural sphere AT CURRENT view-space position
+        // 1. Check for hit on procedural sphere OR texture AT CURRENT view-space position
+        // sampleShadedVolume will return sphere color, texture color, or transparent black.
         vec4 baseColor = sampleShadedVolume(pos); 
         if (baseColor.a > 0.0) {
-            return baseColor;
+            // Return sphere color OR texture color immediately if hit
+            return baseColor; 
         }
 
-        // 2. If sphere NOT hit, check cube boundaries in LOCAL space
+        // 2. If sphere/texture NOT hit, check cube boundaries in LOCAL space
         vec3 localPos = (uVoxelModelMatrixInverse * vec4(pos, 1.0)).xyz;
         if (localPos.x > 0.5) return CUBE_RIGHT;
         if (localPos.x < -0.5) return CUBE_LEFT;
         if (localPos.y > 0.5) return CUBE_TOP;
         if (localPos.y < -0.5) return CUBE_BOTTOM;
-        if (localPos.z < -0.5) return CUBE_BACK;
+        if (localPos.z < -0.5) return CUBE_BACK; 
         if (localPos.z > 0.5) return CUBE_FRONT;
 
 		// 3. Step the VIEW-SPACE ray further back along the Z axis
 		pos.z -= stepSize;
 	}
 
-	// If the loop finishes without hitting the sphere OR a boundary
+	// If the loop finishes without hitting the sphere, texture, OR a boundary
     return CUBE_NONE; // Black
 }
 
-// --- Core: Sample volume - Calls volumeMap ---
+// --- Core: Sample volume - Check sphere in view space FIRST ---
 vec4 sampleShadedVolume(vec3 posUnrotated) {
-    // Transform position using the inverse model matrix to get local coordinates
+    // 1. Check for sphere hit in VIEW SPACE first
+    if (length(posUnrotated) < 0.2) {
+        // Return sphere color based on VIEW SPACE position
+        return vec4(posUnrotated * 2.5 + 0.5, 1.0);
+    }
+
+    // 2. If not in sphere, transform to local space for texture lookup
 	vec3 localPos = (uVoxelModelMatrixInverse * vec4(posUnrotated, 1.0)).xyz;
 
-    // Skip isOutOfBounds for the small sphere test for simplicity
+    // 3. Call volumeMap (which now only does texture lookup)
+    // Skip isOutOfBounds for simplicity during debug
 	// if (isOutOfBounds(localPos)) {
-    //     return vec4(0.0); 
+    //     return vec4(0.0);
     // }
 	return volumeMap(localPos);
 }
 
-// --- Core: Procedural Sphere Volume ---
+// --- Core: VolumeMap - Texture Lookup ONLY ---
 vec4 volumeMap(vec3 pos) {
-    // Check if the local position `pos` is inside a sphere of radius 0.2
+    /* // Sphere check REMOVED from here
     if (length(pos) < 0.2) {
-        // DEBUG: Return color based on local position within sphere
-        // Map approx range [-0.2, 0.2] -> [0.0, 1.0]
         return vec4(pos * 2.5 + 0.5, 1.0);
-        // return SPHERE_COLOR; // Original dark gray
     }
-    // Otherwise, it's empty space (transparent)
-    return vec4(0.0);
+    */
+
+    // Restore texture lookup logic
+	vec2 uv = calculateAtlasUV(pos);
+	vec4 textureColor = texture(uImageSrc0, uv);
+
+    // Return texture color (or transparent)
+    return textureColor;
 }
 
 // --- Helper: Check if position is within the standard -0.5 to 0.5 cube - RESTORED ---
