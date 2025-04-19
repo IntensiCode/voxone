@@ -1,9 +1,9 @@
+import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/util/uniforms.dart';
@@ -53,25 +53,71 @@ enum Voxel3dUniform {
   renderMode,
 }
 
+// Uniforms for exhaust.frag
+enum ExhaustUniform {
+  // uResolution (vec2)
+  resolutionX,
+  resolutionY,
+  // Time (float)
+  time,
+  // TargetColor (vec4)
+  targetColorR,
+  targetColorG,
+  targetColorB,
+  targetColorA,
+  // ColorVariance (float)
+  colorVariance,
+  // ExhaustLength (float)
+  exhaustLength,
+  // Color0 (vec3)
+  color0R,
+  color0G,
+  color0B,
+  // Color1 (vec3)
+  color1R,
+  color1G,
+  color1B,
+  // Color2 (vec3)
+  color2R,
+  color2G,
+  color2B,
+  // Color3 (vec3)
+  color3R,
+  color3G,
+  color3B,
+  // Color4 (vec3)
+  color4R,
+  color4G,
+  color4B,
+}
+
 class MantaComponent extends PositionComponent with HasContext, HasPaint {
   double _time = 0.0;
 
-  late Image _voxelImage;
-  FragmentShader? _shader;
-  Uniforms<Voxel3dUniform>? _uniforms;
+  late ui.Image _voxelImage; // Original atlas
+
+  ui.FragmentShader? _shader; // Voxel shader
+  Uniforms<Voxel3dUniform>? _uniforms; // Voxel uniforms
+
+  ui.FragmentShader? _exhaustShader; // Exhaust shader
+  Uniforms<ExhaustUniform>? _exhaustUniforms; // Exhaust uniforms
+  ui.Image? _exhaustOutputImage; // Intermediate render target
+  late final ui.Paint _exhaustPaint = ui.Paint(); // Paint for exhaust pass
+
   late int _frames;
 
   // Restore original scale
   final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
   final Vector3 _rotation = Vector3.zero();
-  final Matrix4 _modelMatrix = Matrix4.identity();
   final Matrix4 _modelMatrixInverse = Matrix4.identity();
   final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize();
   final Float32List _matrixData = Float32List(16);
 
   MantaComponent() {
     paint.isAntiAlias = false;
-    paint.filterQuality = FilterQuality.none;
+    paint.filterQuality = ui.FilterQuality.none;
+    _exhaustPaint.isAntiAlias = false;
+    _exhaustPaint.filterQuality = ui.FilterQuality.none;
   }
 
   @override
@@ -84,16 +130,29 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
       logError('Error loading voxel image: $e');
       return;
     }
-    _frames = 15;
+    _frames = 15; // Match interstellar_15
+
     try {
-      _shader = await loadShader('voxel3d.frag');
-      _shader!.setImageSampler(0, _voxelImage);
+      final program = await ui.FragmentProgram.fromAsset('assets/shaders/voxel3d.frag');
+      _shader = program.fragmentShader();
       _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
     }
-    assert(_shader != null, 'Shader failed to load.');
-    assert(_uniforms != null, 'Uniforms failed to initialize.');
+
+    try {
+      final exhaustProgram = await ui.FragmentProgram.fromAsset('assets/shaders/exhaust.frag');
+      _exhaustShader = exhaustProgram.fragmentShader();
+      _exhaustUniforms = Uniforms(_exhaustShader!, ExhaustUniform.values);
+    } catch (e) {
+      logError('Error loading exhaust shader: $e');
+    }
+
+    assert(_shader != null, 'Voxel Shader failed to load.');
+    assert(_uniforms != null, 'Voxel Uniforms failed to initialize.');
+    assert(_exhaustShader != null, 'Exhaust Shader failed to load.');
+    assert(_exhaustUniforms != null, 'Exhaust Uniforms failed to initialize.');
+
     size.setAll(256);
     // position = game.size / 2;
     anchor = Anchor.topLeft;
@@ -101,22 +160,103 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
 
   @override
   void update(double dt) {
-    // Update time ONLY
     super.update(dt);
     _time += dt;
   }
 
   @override
-  void render(Canvas canvas) {
-    if (_shader == null || _uniforms == null) return;
+  void render(ui.Canvas canvas) {
+    if (_shader == null || _uniforms == null || _exhaustShader == null || _exhaustUniforms == null) return;
 
-    _update_uniforms(_shader!, useLightViewMatrix: false);
-    paint.shader = _shader;
-    canvas.drawRect(size.toRect(), paint);
+    // --- Pass 1: Render Exhaust Effect to Intermediate Image ---
+    _renderExhaustPass();
+
+    // --- Pass 2: Render Voxel Model using Exhaust Output ---
+    if (_exhaustOutputImage != null) {
+      _update_uniforms(_shader!, useLightViewMatrix: false, inputImage: _exhaustOutputImage!);
+      _shader!.setImageSampler(0, _exhaustOutputImage!); // Use the exhaust output image
+      paint.shader = _shader;
+      canvas.drawRect(size.toRect(), paint);
+    } else {
+      // Fallback or initial frame: render directly from original atlas
+      _update_uniforms(_shader!, useLightViewMatrix: false, inputImage: _voxelImage);
+      _shader!.setImageSampler(0, _voxelImage);
+      paint.shader = _shader;
+      canvas.drawRect(size.toRect(), paint);
+    }
   }
 
-  // Add useLightViewMatrix parameter
-  void _update_uniforms(FragmentShader shader, {required bool useLightViewMatrix}) {
+  // --- Exhaust Pass Rendering ---
+  void _renderExhaustPass() {
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+
+    _updateExhaustUniforms(_exhaustShader!);
+    _exhaustShader!.setImageSampler(0, _voxelImage); // Use original atlas as input
+
+    final targetRect = ui.Rect.fromLTWH(
+      0,
+      0,
+      _voxelImage.width.toDouble(),
+      _voxelImage.height.toDouble(),
+    );
+    _exhaustPaint.shader = _exhaustShader;
+    canvas.drawRect(targetRect, _exhaustPaint);
+
+    final picture = recorder.endRecording();
+    // Dispose previous image if it exists
+    _exhaustOutputImage?.dispose();
+    _exhaustOutputImage = picture.toImageSync(_voxelImage.width, _voxelImage.height);
+    picture.dispose();
+  }
+
+  // --- Update Exhaust Shader Uniforms ---
+  void _updateExhaustUniforms(ui.FragmentShader shader) {
+    final uniforms = _exhaustUniforms!;
+    uniforms.switch_shader(shader);
+
+    final imageSize = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
+    final exhaustLength = sin(_time) * 4.0;
+
+    // Set resolution
+    uniforms.set(ExhaustUniform.resolutionX, imageSize.x);
+    uniforms.set(ExhaustUniform.resolutionY, imageSize.y);
+    // Set time
+    uniforms.set(ExhaustUniform.time, _time);
+    // Set target color (Red)
+    uniforms.set(ExhaustUniform.targetColorR, 1.0);
+    uniforms.set(ExhaustUniform.targetColorG, 0.2);
+    uniforms.set(ExhaustUniform.targetColorB, 0.0);
+    uniforms.set(ExhaustUniform.targetColorA, 1.0);
+    // Set variance
+    uniforms.set(ExhaustUniform.colorVariance, 0.1);
+    // Set exhaust length
+    uniforms.set(ExhaustUniform.exhaustLength, 8.0);
+
+    // Set flame colors (Red -> Orange -> Yellow -> Lighter Yellow -> White)
+    uniforms.set(ExhaustUniform.color0R, 1.0);
+    uniforms.set(ExhaustUniform.color0G, 0.0);
+    uniforms.set(ExhaustUniform.color0B, 0.0);
+
+    uniforms.set(ExhaustUniform.color1R, 1.0);
+    uniforms.set(ExhaustUniform.color1G, 1.0);
+    uniforms.set(ExhaustUniform.color1B, 0.0);
+
+    uniforms.set(ExhaustUniform.color2R, 1.0);
+    uniforms.set(ExhaustUniform.color2G, 0.0);
+    uniforms.set(ExhaustUniform.color2B, 0.0);
+
+    uniforms.set(ExhaustUniform.color3R, 0.5);
+    uniforms.set(ExhaustUniform.color3G, 0.0);
+    uniforms.set(ExhaustUniform.color3B, 0.0);
+
+    uniforms.set(ExhaustUniform.color4R, 0.5);
+    uniforms.set(ExhaustUniform.color4G, 0.0);
+    uniforms.set(ExhaustUniform.color4B, 0.0);
+  }
+
+  // Modified to accept inputImage for size calculations
+  void _update_uniforms(ui.FragmentShader shader, {required bool useLightViewMatrix, required ui.Image inputImage}) {
     // --- START: Matrix Calculation (Conditional) ---
     // 1. Calculate basic model transform (rotation * scale)
     _rotation.x = _time * 0.6;
@@ -158,8 +298,8 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
     uniforms.switch_shader(shader);
 
     // --- Set Uniforms (uses _matrixData calculated above) ---
-    final frameSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble() / _frames);
-    final atlasSizeVec = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
+    final frameSizeVec = Vector2(inputImage.width.toDouble(), inputImage.height.toDouble() / _frames);
+    final atlasSizeVec = Vector2(inputImage.width.toDouble(), inputImage.height.toDouble());
     final srcOriginVec = Vector2.zero();
     final dstOriginVec = Vector2.zero();
     final dstSizeVec = size;
@@ -183,5 +323,12 @@ class MantaComponent extends PositionComponent with HasContext, HasPaint {
       uniforms.set(Voxel3dUniform.values[Voxel3dUniform.mat0.index + i], _matrixData[i].toDouble());
     }
     uniforms.set(Voxel3dUniform.renderMode, 0.0); // Assuming mode 0 for shadow render now
+  }
+
+  @override
+  void onRemove() {
+    _exhaustOutputImage?.dispose();
+    // Shaders (_shader, _exhaustShader) are managed by FragmentProgram cache?
+    super.onRemove();
   }
 }

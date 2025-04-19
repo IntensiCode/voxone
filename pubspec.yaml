@@ -49,9 +49,10 @@ flutter:
     - assets/data/
     - assets/images/
   shaders:
+    - assets/shaders/acid_blast.frag
     - assets/shaders/battered_planet.frag
     - assets/shaders/checkerboard.frag
-    - assets/shaders/acid_blast.frag
+    - assets/shaders/exhaust.frag
     - assets/shaders/explosion.frag
     - assets/shaders/fracture.frag
     - assets/shaders/ground.frag
