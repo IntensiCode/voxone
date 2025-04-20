@@ -1,41 +1,31 @@
 import 'package:flame/game.dart'; // Required for Vector2
-import 'package:stardash/core/common.dart';
 
 class Camera3D {
-  Vector3 position = Vector3.zero();
-  Vector3 target = Vector3(0, 0, -1); // Looking down negative Z
-  Vector3 up = Vector3(0, 1, 0); // Standard Y-up
+  final Vector2 screenSize;
 
-  double fieldOfView = 60.0; // Degrees
-  double aspectRatio = game_width / game_height; // Default aspect ratio
-  double nearPlane = 0.1;
-  double farPlane = 1000.0;
+  final double fieldOfView = 60.0; // Degrees
+  final double aspectRatio;
+  final double nearPlane = 0.1;
+  final double farPlane = 1000.0;
 
-  final Matrix4 _viewMatrix = Matrix4.identity();
-  final Matrix4 _projectionMatrix = Matrix4.identity();
-  final Matrix4 _viewProjectionMatrix = Matrix4.identity();
+  final Vector3 position = Vector3.zero();
+  final Vector3 target = Vector3(0, 0, -1); // Looking down negative Z
+  final Vector3 up = Vector3(0, 1, 0); // Standard Y-up
 
-  Matrix4 get viewMatrix => _viewMatrix;
+  final Matrix4 viewMatrix = Matrix4.identity();
+  final Matrix4 projectionMatrix = Matrix4.identity();
+  final Matrix4 viewProjectionMatrix = Matrix4.identity();
 
-  Matrix4 get projectionMatrix => _projectionMatrix;
-
-  Matrix4 get viewProjectionMatrix => _viewProjectionMatrix;
+  // DON'T ALLOCATE OBJECTS! USE REUSABLE OBJECTS!
 
   Camera3D({
-    Vector3? initialPosition,
-    Vector3? initialTarget,
-  }) {
+    required this.screenSize,
+    required Vector3? initialPosition,
+    required Vector3? initialTarget,
+  }) : aspectRatio = screenSize.x / screenSize.y {
     if (initialPosition != null) position.setFrom(initialPosition);
     if (initialTarget != null) target.setFrom(initialTarget);
-    // aspectRatio is now initialized based on common.dart values
     _updateMatrices();
-  }
-
-  void updateAspectRatio(double newAspectRatio) {
-    if ((aspectRatio - newAspectRatio).abs() > 0.001) {
-      aspectRatio = newAspectRatio;
-      _updateMatrices();
-    }
   }
 
   void lookAt(Vector3 newTarget) {
@@ -50,11 +40,11 @@ class Camera3D {
 
   void _updateMatrices() {
     // View Matrix: Transforms world space to camera space
-    setViewMatrix(_viewMatrix, position, target, up);
+    setViewMatrix(viewMatrix, position, target, up);
 
     // Projection Matrix: Transforms camera space to clip space
     setPerspectiveMatrix(
-      _projectionMatrix,
+      projectionMatrix,
       radians(fieldOfView),
       aspectRatio,
       nearPlane,
@@ -62,24 +52,35 @@ class Camera3D {
     );
 
     // Combined matrix (more efficient)
-    _viewProjectionMatrix.setFrom(_projectionMatrix * _viewMatrix);
+    viewProjectionMatrix.setFrom(projectionMatrix * viewMatrix);
   }
+
+  // Reusable input point for projection
+  final Vector4 _point4 = Vector4.zero();
+
+  // Reusable output NDC vector
+  final Vector3 _ndc = Vector3.zero();
 
   // Projects a 3D world point to normalized device coordinates (NDC) [-1, 1]
   // Returns null if the point is behind the camera's near plane (or very close)
   Vector3? projectWorldToNdc(Vector3 worldPoint) {
-    final point4 = Vector4(worldPoint.x, worldPoint.y, worldPoint.z, 1.0);
-    final clipPoint = _viewProjectionMatrix.transform(point4);
+    _point4.setValues(worldPoint.x, worldPoint.y, worldPoint.z, 1.0);
+    final clipPoint = viewProjectionMatrix.transform(_point4);
 
     // Perspective division
     if (clipPoint.w.abs() < 0.0001) {
       return null; // Avoid division by zero/very small numbers
     }
-    final ndc = Vector3(clipPoint.x / clipPoint.w, clipPoint.y / clipPoint.w, clipPoint.z / clipPoint.w);
+
+    _ndc.setValues(
+      clipPoint.x / clipPoint.w,
+      clipPoint.y / clipPoint.w,
+      clipPoint.z / clipPoint.w,
+    );
 
     // Basic clipping check (z is enough for near plane)
     // Note: Full frustum clipping involves checking x and y against w as well.
-    if (ndc.z < -1.0) {
+    if (_ndc.z < -1.0) {
       // Behind near plane in NDC
       return null;
     }
@@ -89,15 +90,19 @@ class Camera3D {
     //    return null;
     // }
 
-    return ndc;
+    return _ndc;
   }
 
+  // Screen coordinates for the projected point as reused object to avoid allocations
+  final Vector2 _result = Vector2.zero();
+
   // Converts NDC [-1, 1] to screen coordinates [0, screenSize]
-  Vector2 ndcToScreen(Vector3 ndc, Vector2 screenSize) {
+  Vector2 ndcToScreen(Vector3 ndc) {
     // Convert NDC Y from math standard (+Y up) to screen standard (+Y down)
     final screenX = (ndc.x + 1.0) * 0.5 * screenSize.x;
     final screenY = (1.0 - ndc.y) * 0.5 * screenSize.y; // Invert Y
-    return Vector2(screenX, screenY);
+    _result.setValues(screenX, screenY);
+    return _result;
   }
 
   // Helper to map Z depth (typically in view space or NDC Z) to Flame priority
