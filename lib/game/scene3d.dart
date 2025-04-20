@@ -2,10 +2,11 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
+import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:stardash/input/game_keys.dart';
 
-class Scene3d extends Component {
+class Scene3d extends Component with HasContext {
   late World3DComponent world;
   double _elapsedTime = 0;
   final double _cameraRotationSpeed = 0.1; // Radians per second (kept slow)
@@ -61,6 +62,9 @@ class Scene3d extends Component {
     world.world.ambientLightLevel = // Access public world instance
         baseAmbient + ambientAmplitude * ambientOscillation;
 
-    // Camera target remains (0,0,0)
+
+    // if (keys.check(GameKey.left)) {
+    //   world.camera.lookAt(Vector3.zero());
+    // }
   }
 }
