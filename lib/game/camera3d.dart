@@ -77,7 +77,7 @@ class Camera3D {
 
     // Strict Z check in clip space (Near/Far planes)
     if (_clipPoint.z.abs() > w) {
-      logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
+      // logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
       return null;
     }
 

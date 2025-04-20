@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
+import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
-import 'package:stardash/input/game_keys.dart';
 
 class Scene3d extends Component with HasContext {
   late World3DComponent world;
@@ -22,12 +22,15 @@ class Scene3d extends Component with HasContext {
     world = World3DComponent();
     await add(world);
 
+    // Add the Player
+    await world.add(Player3D());
+
     // Initial cubes
     await world.add(Cube3D(initialPosition: Vector3.zero()));
     await world.add(Cube3D(initialPosition: Vector3(20, 10, -30)));
 
     // Add 50 more cubes in a larger circle
-    const int numExtraCubes = 50;
+    const int numExtraCubes = 10;
     const double extraCubeRadius = 150.0;
     for (int i = 0; i < numExtraCubes; i++) {
       final angle = (2 * pi / numExtraCubes) * i;
@@ -61,10 +64,5 @@ class Scene3d extends Component with HasContext {
     final double ambientOscillation = sin(_elapsedTime * _ambientPulseSpeed);
     world.world.ambientLightLevel = // Access public world instance
         baseAmbient + ambientAmplitude * ambientOscillation;
-
-
-    // if (keys.check(GameKey.left)) {
-    //   world.camera.lookAt(Vector3.zero());
-    // }
   }
 }

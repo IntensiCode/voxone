@@ -87,11 +87,11 @@ vec4 createFlameEffect(vec2 currentPixelCoord, float distSq) {
     vec3 color = vec3(0.0);
 
     // Animation factor based on time and position
-    float anim = sin(Time * 9.42477 + currentPixelCoord.x * 1.3183 + currentPixelCoord.y * 0.1771);// pi approximations
-    float color_anim = 0.1 + 0.3 * anim;// Vary between 0.7 and 1.0
+    float anim = sin(Time * 9.42477 + currentPixelCoord.x * 1.3183 + currentPixelCoord.y * 0.1771);
+    float color_anim = 0.1 + 0.5 * anim;
 
     float normDist = sqrt(distSq) / ExhaustLength;
-    normDist += normDist * color_anim * 0.5;
+    normDist += normDist * color_anim;
 
     float phase = clamp(normDist, 0.0, 1.0);// Keep phase within 0-1 for color mixing
     if (phase > anim + 0.75) {
