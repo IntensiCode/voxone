@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:stardash/game/has_position_3d.dart';
-import 'package:stardash/game/position3d.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 // Mixin for components that have faces and respond to simple lighting

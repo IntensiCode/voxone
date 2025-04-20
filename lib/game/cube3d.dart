@@ -1,6 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import 'package:flame/components.dart';
@@ -8,8 +6,6 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
-import 'package:stardash/game/position3d_component.dart';
-import 'package:vector_math/vector_math_64.dart';
 
 class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
@@ -90,23 +86,24 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
     for (int i = 0; i < localFaces.length; i++) {
       final faceIndices = localFaces[i];
       final intensity = faceLightIntensities[i];
-    
+
       // Get projected vertices for the triangle
       final v0 = projected[faceIndices[0]];
       final v1 = projected[faceIndices[1]];
       final v2 = projected[faceIndices[2]];
-    
+
       // Simple backface culling: Check winding order
       if ((v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x) < 0) {
-         continue;
+        continue;
       }
-    
+
       // Set paint color based on light intensity
       // TODO lerp allocates! do our own lerp!
       // TODO create a MutableColor in mutable.dart
-      final Color faceColor = Color.lerp(_baseColor, Colors.black, 1.0 - intensity)!;
+      final Color faceColor =
+          Color.lerp(_baseColor, Colors.black, 1.0 - intensity)!;
       _facePaint.color = faceColor;
-    
+
       // Draw the triangle
       path.reset();
       path.moveTo(v0.x, v0.y);

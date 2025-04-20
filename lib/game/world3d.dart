@@ -3,7 +3,6 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
-import 'package:stardash/game/position3d_component.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 class World3d {
@@ -11,7 +10,7 @@ class World3d {
 
   // World properties
   double ambientLightLevel = 0.2;
-  final Vector3 _lightDirection = Vector3(0.5, -0.75, -1.0)..normalize();
+  final Vector3 lightDirection = Vector3(0.5, -0.75, -1.0)..normalize();
 
   final Matrix4 _scaleMatrix = Matrix4.identity();
   final Matrix4 _rotationMatrix = Matrix4.identity();
@@ -58,7 +57,7 @@ class World3d {
   /// To be called after projectChildren.
   void lightChildren(Iterable<HasLightedFaces> children) {
     for (final it in children) {
-      it.calculateLighting(_lightDirection, ambientLightLevel);
+      it.calculateLighting(lightDirection, ambientLightLevel);
     }
   }
 

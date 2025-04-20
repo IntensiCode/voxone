@@ -7,8 +7,9 @@ import 'package:stardash/game/world3d_component.dart';
 class Scene3d extends Component {
   late World3DComponent world;
   double _elapsedTime = 0;
-  final double _rotationSpeed = 0.5; // Radians per second
-  final double _radius = 100.0;
+  final double _cameraRotationSpeed = 0.5; // Radians per second
+  final double _cameraRadius = 100.0;
+  final double _ambientPulseSpeed = 0.3; // Slower pulse for ambient light
 
   @override
   Future<void> onLoad() async {
@@ -17,11 +18,21 @@ class Scene3d extends Component {
     world = World3DComponent();
     await add(world);
 
-    final cube = Cube3D(initialPosition: Vector3.zero());
-    await world.add(cube);
+    // Initial cubes
+    await world.add(Cube3D(initialPosition: Vector3.zero()));
+    await world.add(Cube3D(initialPosition: Vector3(20, 10, -30)));
 
-    final cube2 = Cube3D(initialPosition: Vector3(20, 10, -30));
-    await world.add(cube2);
+    // Add 50 more cubes in a larger circle
+    const int numExtraCubes = 50;
+    const double extraCubeRadius = 150.0;
+    for (int i = 0; i < numExtraCubes; i++) {
+      final angle = (2 * pi / numExtraCubes) * i;
+      final x = cos(angle) * extraCubeRadius;
+      final z = sin(angle) * extraCubeRadius;
+      // Stagger Y position slightly for visual interest
+      final y = (i % 5 - 2) * 15.0;
+      await world.add(Cube3D(initialPosition: Vector3(x, y, z)));
+    }
   }
 
   @override
@@ -30,13 +41,18 @@ class Scene3d extends Component {
 
     _elapsedTime += dt;
 
-    // Calculate new camera position on the XZ plane circle
-    final double camX = cos(_elapsedTime * _rotationSpeed) * _radius;
-    final double camZ = sin(_elapsedTime * _rotationSpeed) * _radius;
-    final newPosition = Vector3(camX, 0, camZ); // Keep Y at 0 for now
+    // Update camera position
+    final double camX = cos(_elapsedTime * _cameraRotationSpeed) * _cameraRadius;
+    final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * _cameraRadius;
+    world.camera.moveTo(Vector3(camX, 0, camZ));
 
-    world.camera.moveTo(newPosition);
+    // Update ambient light level (oscillating between 0.1 and 0.3)
+    final double baseAmbient = 0.2;
+    final double ambientAmplitude = 0.1;
+    final double ambientOscillation = sin(_elapsedTime * _ambientPulseSpeed);
+    world.world.ambientLightLevel = // Access public world instance
+        baseAmbient + ambientAmplitude * ambientOscillation;
 
-    // Camera target remains (0,0,0) as set initially in World3d logic class
+    // Camera target remains (0,0,0)
   }
 }
