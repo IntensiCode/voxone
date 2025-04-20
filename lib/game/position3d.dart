@@ -22,6 +22,8 @@ class Position3D {
   // Projected 2D screen coordinates corresponding to world vertices
   List<Vector2> projectedVertices = [];
 
+  final Vector2 projectedOrigin = Vector2.zero(); // Projected screen coord of origin
+
   Vector3 get center => position + (size / 2);
 
   Position3D({

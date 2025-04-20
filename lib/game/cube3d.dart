@@ -102,7 +102,7 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
       // TODO create a MutableColor in mutable.dart
       final Color faceColor =
           Color.lerp(_baseColor, Colors.black, 1.0 - intensity)!;
-      _facePaint.color = faceColor;
+      _facePaint.color = faceColor.withAlpha(128);
 
       // Draw the triangle
       path.reset();

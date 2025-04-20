@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flutter/foundation.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
@@ -11,12 +10,14 @@ class World3d {
 
   // World properties
   double ambientLightLevel = 0.2;
-  final Vector3 _lightDirection = Vector3(0.5, 0.75, -1.0)..normalize();
+  final Vector3 lightDirection = Vector3(0.5, 0.75, -1.0)..normalize();
 
   final Matrix4 _scaleMatrix = Matrix4.identity();
   final Matrix4 _rotationMatrix = Matrix4.identity();
   final Matrix4 _translationMatrix = Matrix4.identity();
   final Matrix4 _worldModelMatrix = Matrix4.identity();
+
+  final Vector3 _transformedVertex = Vector3.zero();
 
   World3d({Camera3D? camera}) {
     this.camera = camera ??
@@ -58,17 +59,16 @@ class World3d {
   /// To be called after projectChildren.
   void lightChildren(Iterable<HasLightedFaces> children) {
     for (final it in children) {
-      it.calculateLighting(_lightDirection, ambientLightLevel);
+      it.calculateLighting(lightDirection, ambientLightLevel);
     }
   }
-
-  final Vector3 _transformedVertex = Vector3.zero();
 
   void _projectChild(HasPosition3D it) {
     final child = it.position3d;
 
     double totalNdcZ = 0;
     int visibleVertexCount = 0;
+    Vector2 projectedCenter = Vector2.zero(); // Accumulate projected center
 
     final _in = child.localVertices;
     final out = child.projectedVertices;
@@ -83,6 +83,7 @@ class World3d {
       }
 
       final screenPos = camera.ndcToScreen(ndc);
+      projectedCenter.add(screenPos); // Accumulate screen positions
 
       totalNdcZ += ndc.z;
       visibleVertexCount++;
@@ -92,12 +93,13 @@ class World3d {
       out[i].setFrom(screenPos);
     }
 
-    // Priority calculation
+    // Priority and Position calculation
     if (visibleVertexCount == child.localVertices.length) {
+      // Calculate average Z for priority
       final averageNdcZ = totalNdcZ / visibleVertexCount;
       it.priority = Camera3D.depthToPriority(averageNdcZ);
     } else {
-      // (Ab)use -1 as "not visible in world":
+      // Mark as invisible
       it.priority = -1;
     }
   }
