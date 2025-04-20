@@ -8,8 +8,9 @@ class PositionComponent3D extends PositionComponent {
 
   // Vertices defined relative to position3D
   List<Vector3> localVertices = [];
+
   // Projected 2D screen coordinates corresponding to world vertices (position3D + localVertex)
-  List<Vector2?> projectedVertices = [];
+  List<Vector2> projectedVertices = [];
 
   // Add Quaternion orientation3D later if needed as alternative to Euler rotation
 

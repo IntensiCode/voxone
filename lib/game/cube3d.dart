@@ -1,20 +1,22 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:dart_minilog/dart_minilog.dart';
+
 import 'package:flame/components.dart';
 import 'package:stardash/game/position_component_3d.dart'; // Use correct package name
 
 class Cube3D extends PositionComponent3D {
-  // Define its vertices relative to position3D (center)
-  // Cube spans from -10 to +10 on each axis (size 20)
-  // double _time = 0.0; // No longer needed for rotation test
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
   final double _pulseSpeed = pi; // One full pulse cycle every 2 seconds
   final double _minScale = 0.9;
   final double _maxScale = 1.1;
 
+  double _time = 0.0;
+
   Cube3D({required Vector3 initialPosition}) : super(initialPosition) {
+    // Cube spans from -10 to +10 on each axis (size 20)
     const double half = 10.0;
+
+    // Define its vertices relative to position3D (center)
     localVertices = [
       Vector3(-half, -half, -half), // 0: bottom-left-near
       Vector3(half, -half, -half), // 1: bottom-right-near
@@ -41,33 +43,26 @@ class Cube3D extends PositionComponent3D {
 
   @override
   void render(Canvas canvas) {
+    if (priority < 0) return;
+
     // Render wireframe by connecting projected vertices
     for (final edge in _edges) {
-      final Vector2? p1 = projectedVertices[edge[0]];
-      final Vector2? p2 = projectedVertices[edge[1]];
-
-      // Only draw if both points are projected (not null/clipped)
-      if (p1 != null && p2 != null) {
-        canvas.drawLine(p1.toOffset(), p2.toOffset(), _paint);
-      }
+      final p1 = projectedVertices[edge[0]];
+      final p2 = projectedVertices[edge[1]];
+      canvas.drawLine(p1.toOffset(), p2.toOffset(), _paint);
     }
   }
 
   @override
   void update(double dt) {
-    // _time += dt;
+    _time += dt;
 
-    // Simple incremental rotation - avoids using accumulated _time
-    final double rotationAmount = _rotationSpeed * dt;
-    rotation.z += rotationAmount;
-    // Optional: Wrap rotation.z if needed, though often not necessary for matrix functions
-    // rotation.z %= (2 * pi);
+    rotation.z = (_time * _rotationSpeed) % (2 * pi);
 
-    // Keep scale disabled
-    scale3D.setValues(1, 1, 1);
-
-    // Log values before super.update
-    logInfo('Cube3D update: dt=$dt, rotation.z=${rotation.z}, scale=1.0');
+    var delta = (_maxScale - _minScale);
+    var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
+    final scale = _minScale + delta * variance; // Pulse effect
+    scale3D.setValues(scale, scale, scale);
 
     super.update(dt);
   }

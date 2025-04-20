@@ -1,3 +1,4 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/game.dart'; // Required for Vector2
 import 'package:vector_math/vector_math_64.dart';
 
@@ -82,6 +83,7 @@ class Camera3D {
     // Note: Full frustum clipping involves checking x and y against w as well.
     if (_ndc.z < -1.0) {
       // Behind near plane in NDC
+      logDebug('Camera3D: Point is behind near plane: $_ndc');
       return null;
     }
 
@@ -102,6 +104,7 @@ class Camera3D {
     final screenX = (ndc.x + 1.0) * 0.5 * screenSize.x;
     final screenY = (1.0 - ndc.y) * 0.5 * screenSize.y; // Invert Y
     _result.setValues(screenX, screenY);
+    logDebug('Camera3D: NDC to screen: $ndc -> $_result');
     return _result;
   }
 

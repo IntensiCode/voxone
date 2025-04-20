@@ -27,19 +27,14 @@ class World3d {
       _rotationMatrix.setIdentity();
       _translationMatrix.setIdentity();
 
-      // 1. Build Scale Matrix (S)
       _scaleMatrix.scale(child.scale3D);
 
-      // 2. Build Rotation Matrix (R) directly on _rotationMatrix
-      // Apply rotations in Z, Y, X order (same effective order as previous Z*Y*X multiplication)
       _rotationMatrix.rotateZ(child.rotation.z);
       _rotationMatrix.rotateY(child.rotation.y);
       _rotationMatrix.rotateX(child.rotation.x);
 
-      // 3. Build Translation Matrix (T)
       _translationMatrix.translate(child.position3D);
 
-      // 4. Combine into worldModelMatrix (T * R * S)
       _worldModelMatrix.setFrom(_translationMatrix);
       _worldModelMatrix.multiply(_rotationMatrix);
       _worldModelMatrix.multiply(_scaleMatrix);
@@ -48,37 +43,36 @@ class World3d {
     }
   }
 
-  final Vector3 _project = Vector3.zero();
-  
-  void _projectChild(PositionComponent3D child) {
-    // Ensure child.projectedVertices has same size as child.localVertices:
-    while (child.projectedVertices.length < child.localVertices.length) {
-      child.projectedVertices.add(Vector2.zero());
-    }
-    while (child.projectedVertices.length > child.localVertices.length) {
-      child.projectedVertices.removeLast();
-    }
+  final Vector3 _transformedVertex = Vector3.zero();
 
+  void _projectChild(PositionComponent3D child) {
     double totalNdcZ = 0;
     int visibleVertexCount = 0;
 
-    for (final localVertex in child.localVertices) {
-      final worldVertex = _worldModelMatrix.transform3(localVertex);
-      final Vector3? ndc = camera.projectWorldToNdc(worldVertex);
-      Vector2? screenPos;
-      if (ndc != null) {
-        screenPos = camera.ndcToScreen(ndc);
-        totalNdcZ += ndc.z;
-        visibleVertexCount++;
-      }
-      child.projectedVertices.add(screenPos);
+    final _in = child.localVertices;
+    final out = child.projectedVertices;
+    for (int i = 0; i < _in.length; i++) {
+      final localVertex = _in[i];
+      _worldModelMatrix.transformed3(localVertex, _transformedVertex);
+
+      final Vector3? ndc = camera.projectWorldToNdc(_transformedVertex);
+      if (ndc == null) break;
+
+      final screenPos = camera.ndcToScreen(ndc);
+      totalNdcZ += ndc.z;
+      visibleVertexCount++;
+
+      // Allocate enough only once:
+      if (out.length < i + 1) out.add(Vector2.zero());
+      out[i].setFrom(screenPos);
     }
 
     // Priority calculation
-    if (visibleVertexCount > 0) {
+    if (visibleVertexCount == child.localVertices.length) {
       final averageNdcZ = totalNdcZ / visibleVertexCount;
       child.priority = Camera3D.depthToPriority(averageNdcZ);
     } else {
+      // (Ab)use -1 as "not visible in world":
       child.priority = -1;
     }
   }
