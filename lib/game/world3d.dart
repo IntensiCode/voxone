@@ -10,7 +10,7 @@ class World3DComponent extends Component {
 
   World3DComponent({Camera3D? camera}) {
     this.camera = camera ?? Camera3D(
-      initialPosition: Vector3(0, 0, 10),
+      initialPosition: Vector3(100, 0, 0), // Start at (100,0,0) for animation cycle
       initialTarget: Vector3(0, 0, 0),
     );
     _updateCameraAspectRatio(); // Use static size for aspect ratio
@@ -33,43 +33,42 @@ class World3DComponent extends Component {
   @override
   void updateTree(double dt) {
     // logInfo('World3D updateTree start');
-    // First, update self and all children
+    // First, update self and all children (updates their position3D etc.)
     super.updateTree(dt);
     // logInfo('World3D updateTree after super.updateTree');
 
     // --- Projection Step ---
-    // Now that children have updated their 3D positions, project them.
+    // Now that children have updated their 3D positions, project their vertices.
     for (final child in children) {
       if (child is PositionComponent3D) {
-        final Vector3? ndc = camera.projectWorldToNdc(child.position3D);
+        child.projectedVertices.clear();
+        double totalNdcZ = 0;
+        int visibleVertexCount = 0;
 
-        if (ndc != null) {
-          final Vector2 screenPos = camera.ndcToScreen(ndc, _screenSize);
-          final double depth = ndc.z; // NDC Z for depth
-
-          // --- Calculate Scale ---
-          final point4 = Vector4(child.position3D.x, child.position3D.y, child.position3D.z, 1.0);
-          // Transform to view space to get distance (w component after view matrix)
-          final viewPoint = camera.viewMatrix.transform(point4);
-          final viewSpaceDistance = viewPoint.w;
-
-          const double referenceDistance = 50.0; // Distance for scale = 1.0
-          double scaleFactor = (viewSpaceDistance.abs() > 0.01) ? referenceDistance / viewSpaceDistance.abs() : 10.0; // Avoid huge scale if too close
-          scaleFactor = scaleFactor.clamp(0.05, 10.0); // Clamp scale
-
-          // --- Update Child's 2D Properties ---
-          // For now, use a fixed base size scaled. Could use child.size3D later.
-          const double baseSize = 10.0; // Make it smaller
-          child.size.setValues(baseSize * scaleFactor, baseSize * scaleFactor);
-          child.position.setFrom(screenPos);
-          child.priority = Camera3D.depthToPriority(depth);
-
-        } else {
-          // --- Clipped --- Set size to zero and low priority
-          child.position.setValues(-1000,-1000); // Off-screen
-          child.size.setValues(0, 0);
-          child.priority = -1; // Render first/background (effectively hides)
+        for (final localVertex in child.localVertices) {
+          final worldVertex = child.position3D + localVertex;
+          final Vector3? ndc = camera.projectWorldToNdc(worldVertex);
+          Vector2? screenPos = null;
+          if (ndc != null) {
+            screenPos = camera.ndcToScreen(ndc, _screenSize);
+            totalNdcZ += ndc.z;
+            visibleVertexCount++;
+          }
+          child.projectedVertices.add(screenPos); // Add null if clipped
         }
+
+        // --- Update Child's Priority based on average depth ---
+        if (visibleVertexCount > 0) {
+          final averageNdcZ = totalNdcZ / visibleVertexCount;
+          child.priority = Camera3D.depthToPriority(averageNdcZ);
+        } else {
+          // All vertices clipped or child has no vertices
+          child.priority = -1;
+        }
+
+        // --- Remove old 2D property updates ---
+        // child.size, child.position, child.anchor are now determined by how the child renders its projectedVertices
+
       }
     }
     // logInfo('World3D updateTree end');

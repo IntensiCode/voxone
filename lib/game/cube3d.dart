@@ -4,32 +4,52 @@ import 'package:flame/components.dart';
 import 'package:stardash/game/position_component_3d.dart'; // Use correct package name
 
 class Cube3D extends PositionComponent3D {
-  // Define its size in 3D world units (optional for now, needed for scaling)
-  final Vector3 size3D = Vector3(10, 10, 10);
-
+  // Define its vertices relative to position3D (center)
+  // Cube spans from -10 to +10 on each axis (size 20)
   Cube3D({required Vector3 initialPosition}) : super(initialPosition) {
-    anchor = Anchor.center; // Set anchor to center
+    const double half = 10.0;
+    localVertices = [
+      Vector3(-half, -half, -half), // 0: bottom-left-near
+      Vector3(half, -half, -half),  // 1: bottom-right-near
+      Vector3(half, half, -half),   // 2: top-right-near
+      Vector3(-half, half, -half),  // 3: top-left-near
+      Vector3(-half, -half, half),  // 4: bottom-left-far
+      Vector3(half, -half, half),   // 5: bottom-right-far
+      Vector3(half, half, half),    // 6: top-right-far
+      Vector3(-half, half, half),   // 7: top-left-far
+    ];
   }
 
-  static final _paint = Paint()..color = const Color(0xFFFF0000); // Red
+  static final _paint = Paint()
+    ..color = const Color(0xFFFF0000)
+    ..strokeWidth = 1.0
+    ..style = PaintingStyle.stroke;
+
+  // Indices defining the 12 edges of the cube
+  static const List<List<int>> _edges = [
+    [0, 1], [1, 2], [2, 3], [3, 0], // Near face
+    [4, 5], [5, 6], [6, 7], [7, 4], // Far face
+    [0, 4], [1, 5], [2, 6], [3, 7]  // Connecting edges
+  ];
 
   @override
   void render(Canvas canvas) {
-    // super.render(canvas); // Uncomment for Flame's debug box
+    // Render wireframe by connecting projected vertices
+    for (final edge in _edges) {
+      final Vector2? p1 = projectedVertices[edge[0]];
+      final Vector2? p2 = projectedVertices[edge[1]];
 
-    // We draw a simple rectangle using the 2D size calculated by World3D.
-    // The 2D `size` property on PositionComponent is set by World3D's projection.
-    if (size.x > 0 && size.y > 0) {
-      // Avoid drawing if size is zero (clipped)
-      canvas.drawRect(size.toRect(), _paint);
+      // Only draw if both points are projected (not null/clipped)
+      if (p1 != null && p2 != null) {
+        canvas.drawLine(p1.toOffset(), p2.toOffset(), _paint);
+      }
     }
   }
 
-  // Example update logic (moves the cube slowly away)
+  // Remove the old update logic or adapt it to move position3D
   @override
   void update(double dt) {
-    // logInfo('Cube3D update');
-    position3D.z -= 5 * dt; // Move away from camera
-    super.update(dt); // Important to call super
+    // position3D.z -= 5 * dt; // Example: Move the whole cube
+    super.update(dt);
   }
 }
