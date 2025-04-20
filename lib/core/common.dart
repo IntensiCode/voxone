@@ -46,17 +46,8 @@ const debug_height = default_line_height;
 const center_x = game_width / 2;
 const center_y = game_height / 2;
 
-const card_width = 72;
-const card_height = 92;
-const stack_card_offset = 1.0;
-
 const game_left = 10.0;
 const game_top = 10;
-
-final stack_gap = Vector2(5, 20);
-final ace_stacks_offset = Vector2(game_left, 40);
-final play_stacks_offset = Vector2(game_left, 400);
-final board_stack_offset = Vector2(game_left, 160);
 
 late FlameGame game;
 late Images images;
