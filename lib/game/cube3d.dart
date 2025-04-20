@@ -98,6 +98,7 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
     assert(localFaces.length == 12);
     assert(faceLightIntensities.length == 12);
 
+    // \_('')_/
     canvas.translate(size.x / 2, size.y / 2);
     _renderFaces(canvas);
     canvas.translate(-size.x / 2, -size.y / 2);
