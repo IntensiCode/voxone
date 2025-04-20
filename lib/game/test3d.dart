@@ -217,7 +217,7 @@ class Test3D extends PositionComponent
   void _update_uniforms({required ui.Image inputImage}) {
     // --- START: Matrix Calculation ---
     // 1. Get the world transform calculated by World3d system
-    final Matrix4 finalMatrix = position3d.worldTransform;
+    final Matrix4 finalMatrix = position3d.renderTransform;
 
     // 2. Calculate the INVERSE for the shader
     _modelMatrixInverse.copyInverse(finalMatrix);

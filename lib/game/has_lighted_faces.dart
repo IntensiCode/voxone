@@ -37,7 +37,7 @@ mixin HasLightedFaces on HasPosition3D {
     }
 
     // Extract rotation part for normal transformation
-    position3d.worldTransform.copyRotation(_normalMatrix);
+    position3d.renderTransform.copyRotation(_normalMatrix);
 
     for (int i = 0; i < faceNormals.length; i++) {
       final localNormal = faceNormals[i];

@@ -49,39 +49,64 @@ class World3d {
 
     _worldModelMatrix.setIdentity();
 
-    final zPos = _project(child.position, child.projectedOrigin);
-    if (zPos == null) {
-      logInfo('Origin not visible => Child is not visible: $it');
+    // Project origin AND store its NDC depth and Clip W
+    final (originNdcZ, originClipW) = _project(child.position, child.projectedOrigin);
+
+    // A valid clipW is required for scaling, even if NDC Z is null (off-screen)
+    if (originClipW == null || originClipW <= 0) {
+      // logInfo('Invalid clip W => Child is not visible: $it, W: $originClipW');
       return it.markInvisible();
     }
+    child.clipW = originClipW; // Store clip W
 
-    _initChildTransform(child);
+    // Store NDC Z if valid, otherwise keep default (or handle differently?)
+    if (originNdcZ == null) {
+      // Origin is outside NDC frustum, but W is valid.
+      // Still potentially visible via vertices. Set depth based on W?
+      // For now, let's mark invisible if origin isn't NDC-visible.
+      // We might need more sophisticated culling later.
+      // logInfo('Origin not NDC visible => Child is not visible: $it');
+      return it.markInvisible();
+    }
+    child.ndcDepth = originNdcZ; // Store depth
+
+    _initChildTransform(child); // Calculates worldTransform and renderTransform
 
     final _in = child.localVertices;
     final out = child.projectedVertices;
     out.ensureSize(_in.length, () => Vector2.zero());
     for (int i = 0; i < _in.length; i++) {
-      if (_project(_in[i], out[i]) == null) {
+      if (_project(_in[i], out[i]).$1 == null) {
         return it.markInvisible();
       }
     }
 
     it.isVisible = true;
-    it.priority = Camera3D.depthToPriority(zPos);
+    // Use the stored depth for priority calculation
+    it.priority = Camera3D.depthToPriority(child.ndcDepth);
   }
 
   /// Projects a 3D point into 2D screen coordinates.
-  double? _project(Vector3 from, Vector2 to) {
+  /// Returns tuple (NDC Z coordinate?, Clip W coordinate?)
+  (double?, double?) _project(Vector3 from, Vector2 to) {
     // Transform the point to world coordinates
     _worldModelMatrix.transformed3(from, _transformedVertex);
 
-    // Project the transformed point into NDC (Normalized Device Coordinates)
-    final Vector3? ndc = camera.projectWorldToNdc(_transformedVertex);
-    if (ndc == null) return null;
+    // Project the transformed point into NDC & Clip Space
+    final (ndc, clipPoint) = camera.projectWorldToNdc(_transformedVertex);
+
+    // Get clipW if clipPoint is available
+    final double? clipW = clipPoint?.w;
+
+    // If NDC is null, projection failed for screen coords, but clipW might be valid
+    if (ndc == null) {
+      return (null, clipW);
+    }
 
     // Convert NDC to screen coordinates
     to.setFrom(camera.ndcToScreen(ndc));
-    return ndc.z;
+    // Return both NDC Z and Clip W
+    return (ndc.z, clipW);
   }
 
   void _initChildTransform(Position3D child) {
@@ -104,6 +129,43 @@ class World3d {
       ..multiply(_rotationMatrix)
       ..multiply(_scaleMatrix);
 
-    child.worldTransform.setFrom(_worldModelMatrix);
+    final it = child.renderTransform;
+    if (child.needsFullTransform) {
+      // Start with the view matrix
+      Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
+
+      // Extract only rotation (preserving pure rotation, eliminating scale)
+      Matrix3 rotationOnly = Matrix3.identity();
+      viewMatrix.copyRotation(rotationOnly);
+
+      // Ensure pure rotation by normalizing each row/column
+      for (int i = 0; i < 3; i++) {
+        Vector3 row = Vector3(
+            rotationOnly.entry(i, 0),
+            rotationOnly.entry(i, 1),
+            rotationOnly.entry(i, 2)
+        );
+        row.normalize();
+        rotationOnly.setRow(i, row);
+      }
+
+      // Invert the rotation (transpose for orthogonal matrix)
+      rotationOnly.transpose();
+
+      // Build final matrix with only pure rotation
+      Matrix4 pureRotationInverse = Matrix4.identity();
+      pureRotationInverse.setRotation(rotationOnly);
+
+      // Apply to render transform
+      it.setFrom(_worldModelMatrix);
+      it.multiply(pureRotationInverse);
+
+      // logInfo('rot: ${it.getRotation()}');
+    } else {
+      child.renderTransform.setFrom(_worldModelMatrix);
+    }
   }
+
+  final _rotMat = Matrix3.identity();
+  final _tmpMat = Matrix4.identity();
 }

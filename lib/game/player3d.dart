@@ -31,6 +31,11 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   final _renderSize = 256;
 
+  // Reusable identity matrix
+  final Matrix4 _identityMatrix = Matrix4.identity();
+
+  final Vector3 _localLightDirection = Vector3.zero();
+
   Player3D() {
     anchor = Anchor.center;
   }
@@ -87,23 +92,22 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   }
 
   void _initPosition3d() {
-    position3d = Position3D(
-      position: Vector3(0, 0, 0),
-      scale: Vector3(0.7, 0.25, 0.7),
-    );
+    position3d = Position3D(position: Vector3.zero());
+    position3d.needsFullTransform = true;
 
-    // Define local vertices needed for the mixin's size calculation
-    const double half = 10.0; // Based on _base3dSize / 2
-    const double quarter = 5.0; // Based on _base3dSize / 4
+    // Define local vertices matching the shader's unit cube space
+    // This is needed for correct depth calculation and potentially shader internal logic
+    const double half = 20.0;
+    const double height = half / 4.0;
     position3d.localVertices = [
-      Vector3(-half, -quarter, -half),
-      Vector3(half, -quarter, -half),
-      Vector3(half, quarter, -half),
-      Vector3(-half, quarter, -half),
-      Vector3(-half, -quarter, half),
-      Vector3(half, -quarter, half),
-      Vector3(half, quarter, half),
-      Vector3(-half, quarter, half),
+      Vector3(-half, -height, -half),
+      Vector3(half, -height, -half),
+      Vector3(half, height, -half),
+      Vector3(-half, height, -half),
+      Vector3(-half, -height, half),
+      Vector3(half, -height, half),
+      Vector3(half, height, half),
+      Vector3(-half, height, half),
     ];
   }
 
@@ -116,11 +120,17 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // position3d.rotation.x = _time * 0.6;
     // position3d.rotation.y = _time * 0.5;
     // position3d.rotation.z = _time * 0.4;
+    // position3d.rotation.z = pi;
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
+
+    position3d.scale.setValues(1.0, 2.0, 1.0);
+
+    // logInfo('renderTransform: ${position3d.renderTransform}');
   }
 
   late final _paint = pixel_paint();
-  late final _offset = MutableOffset(-_renderSize / 2, -_renderSize / 2);
+  late final _srcRect = Rect.fromLTWH(0, 0, _renderSize * 1.0, _renderSize * 1.0);
+  late final _dstRect = MutRect(0, 0, 0, 0);
 
   @override
   void render(ui.Canvas canvas) {
@@ -129,12 +139,16 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     assert(isVisible);
     assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
 
+    // logInfo('P3D: $position $size');
+
     _renderExhaust();
     _renderVoxelModel();
 
-    _offset.dx = -64;
-    _offset.dy = -64;
-    canvas.drawImage(_shaderBuffer!, _offset, _paint);
+    _dstRect.setSize(size.x, size.y);
+    _dstRect.setSize(_renderSize * 1.0, _renderSize * 1.0);
+    // _dstRect.left = -position.x;
+    // _dstRect.top = -size.y / 4;
+    canvas.drawImageRect(_shaderBuffer!, _srcRect, _dstRect, _paint);
   }
 
   final _shaderRect = MutRect(0, 0, 0, 0);
@@ -165,12 +179,10 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   }
 
   void _updateUniforms(ui.FragmentShader shader) {
-    // Calculate the INVERSE for the shader
-    final Matrix4 finalMatrix = position3d.worldTransform;
-    _modelMatrixInverse.copyInverse(finalMatrix);
-
+    _modelMatrixInverse.setFrom(position3d.renderTransform);
+    // --- Use static light for now ---
     final u = _uniforms;
-    u[Voxel3dUniform.lightDirection] = _lightDirection;
+    u[Voxel3dUniform.lightDirection] = _lightDirection; // Static light
     u[Voxel3dUniform.modelMatrixInverse] = _modelMatrixInverse;
   }
 

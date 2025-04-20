@@ -12,8 +12,17 @@ class Position3D {
   // Local transform relative to parent (if any) or world origin
   final Matrix4 transform = Matrix4.identity();
 
-  // Final transform in world space after parent transforms are applied
-  final Matrix4 worldTransform = Matrix4.identity();
+  // Transform passed to component's rendering (may include camera view)
+  final Matrix4 renderTransform = Matrix4.identity();
+
+  // Flag indicating if renderTransform should include camera view
+  bool needsFullTransform = false;
+
+  // Depth of the projected origin in Normalized Device Coordinates [-1, 1] (calculated by World3d)
+  double ndcDepth = 0.0;
+
+  // W component of the projected origin in Clip Space (calculated by World3d)
+  double clipW = 1.0;
 
   // Vertices defined relative to this position
   List<Vector3> localVertices = [];

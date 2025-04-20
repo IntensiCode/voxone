@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
+import 'package:stardash/game/manta.dart';
 import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
@@ -10,8 +11,8 @@ class Scene3d extends Component with HasContext {
   late World3DComponent world;
   double _elapsedTime = 0;
   final double _cameraRotationSpeed = 0.5; // Radians per second (kept slow)
-  final double _minCameraRadius = 000.0;
-  final double _maxCameraRadius = 500.0;
+  final double _minCameraRadius = 100.0;
+  final double _maxCameraRadius = 100.0;
   final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
   final double _ambientPulseSpeed = 1.0; // Slower pulse for ambient light
 
@@ -24,14 +25,14 @@ class Scene3d extends Component with HasContext {
 
     // Add the Player
     await world.add(Player3D());
-    // await world.add(Test3D());
+    // await world.add(MantaComponent());
 
     // Initial cubes
     // await world.add(Cube3D(initialPosition: Vector3.zero()));
     await world.add(Cube3D(initialPosition: Vector3(20, 10, -30)));
 
     // Add 50 more cubes in a larger circle
-    const int numExtraCubes = 10;
+    const int numExtraCubes = 50;
     const double extraCubeRadius = 150.0;
     for (int i = 0; i < numExtraCubes; i++) {
       final angle = (2 * pi / numExtraCubes) * i;
@@ -57,7 +58,7 @@ class Scene3d extends Component with HasContext {
     // Update camera position using oscillating radius and slow rotation
     final double camX = cos(_elapsedTime * _cameraRotationSpeed) * currentRadius;
     final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * currentRadius;
-    world.camera.moveTo(Vector3(camX, 0, camZ));
+    world.camera.moveTo(Vector3(camX, camZ, camZ));
 
     // Update ambient light level (oscillating between 0.1 and 0.3)
     final double baseAmbient = 0.3;

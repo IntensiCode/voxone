@@ -62,14 +62,15 @@ class Camera3D {
 
   // Projects a 3D world point to normalized device coordinates (NDC) [-1, 1]
   // Returns null if the point is behind the camera's near plane (or very close)
-  Vector3? projectWorldToNdc(Vector3 worldPoint) {
+  // Returns tuple: (NDC Vector3?, Clip Space Vector4?)
+  (Vector3?, Vector4?) projectWorldToNdc(Vector3 worldPoint) {
     _point4.setValues(worldPoint.x, worldPoint.y, worldPoint.z, 1.0);
     viewProjectionMatrix.transformed(_point4, _clipPoint);
 
     // Check W first
     if (_clipPoint.w.abs() < 0.0001) {
       logDebug('Camera3D: Point rejected due to near-zero W: ${_clipPoint.w}');
-      return null;
+      return (null, null); // Return null tuple
     }
 
     // --- Frustum Clipping Check (Clip Space + NDC) ---
@@ -78,7 +79,8 @@ class Camera3D {
     // Strict Z check in clip space (Near/Far planes)
     if (_clipPoint.z.abs() > w) {
       // logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
-      return null;
+      // Still return clipPoint even if Z fails for potential W usage
+      return (null, _clipPoint);
     }
 
     // Perspective division to get NDC
@@ -86,14 +88,15 @@ class Camera3D {
     _ndc.scale(1.0 / w);
 
     // Check final NDC X/Y against tolerance
-    const double xyNdcTolerance = 50.0; // Check final NDC x/y within +/- this range
+    const double xyNdcTolerance = 5.0; // Check final NDC x/y within +/- this range
     if (_ndc.x.abs() > xyNdcTolerance || _ndc.y.abs() > xyNdcTolerance) {
       // logDebug('Camera3D: Point rejected by NDC X/Y tolerance check. NDC: $_ndc');
-      return null; // Point projects too far outside the standard [-1, 1] view
+      // Return clipPoint even if XY fails
+      return (null, _clipPoint); 
     }
     // --- End Frustum Check ---
 
-    return _ndc;
+    return (_ndc, _clipPoint); // Return both NDC and ClipPoint
   }
 
   // Screen coordinates for the projected point as reused object to avoid allocations
