@@ -1,3 +1,5 @@
+import 'dart:math'; // Import for max
+
 import 'package:flame/components.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
@@ -62,9 +64,40 @@ class World3d {
   }
 
   final Vector3 _transformedVertex = Vector3.zero();
+  final Vector3 _objectCenterWorld = Vector3.zero();
+  final Vector3 _objectToCamera = Vector3.zero();
+  final Vector3 _cameraForward = Vector3.zero();
 
   void _projectChild(HasPosition3D it) {
     final child = it.position3d;
+
+    // --- Object-Level Near Plane Culling ---
+    // Get object center in world space
+    _objectCenterWorld.setValues(0, 0, 0);
+    child.worldTransform.transformed3(_objectCenterWorld, _objectCenterWorld);
+
+    // Get camera forward direction (target - position)
+    _cameraForward.setFrom(camera.target);
+    _cameraForward.sub(camera.position);
+    _cameraForward.normalize();
+
+    // Vector from camera position to object center
+    _objectToCamera.setFrom(_objectCenterWorld);
+    _objectToCamera.sub(camera.position);
+
+    // Distance along camera's forward axis (dot product)
+    final double distanceToPlane = _objectToCamera.dot(_cameraForward);
+
+    // Approximate object radius (use largest dimension for safety)
+    final double maxDimension = max(child.size.x, max(child.size.y, child.size.z));
+    final double objectRadius = maxDimension * child.scale.x * 0.5; // Assuming uniform scale for now
+
+    if (distanceToPlane < camera.nearPlane + objectRadius) {
+      // Object is too close or intersecting near plane, cull it entirely
+      it.priority = -1;
+      return; // Skip vertex projection for this object
+    }
+    // --- End Culling ---
 
     double totalNdcZ = 0;
     int visibleVertexCount = 0;

@@ -122,7 +122,7 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
 
     var delta = (_maxScale - _minScale);
     var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
-    final scale = _minScale + delta * variance; // Pulse effect
+    final scale = 1.0; // _minScale + delta * variance; // Pulse effect
     position3d.scale.setValues(scale, scale, scale);
 
     super.update(dt);

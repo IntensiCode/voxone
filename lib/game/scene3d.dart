@@ -3,12 +3,15 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
 import 'package:stardash/game/world3d_component.dart';
+import 'package:vector_math/vector_math_64.dart';
 
 class Scene3d extends Component {
   late World3DComponent world;
   double _elapsedTime = 0;
-  final double _cameraRotationSpeed = 0.5; // Radians per second
-  final double _cameraRadius = 100.0;
+  final double _cameraRotationSpeed = 0.1; // Radians per second (kept slow)
+  final double _minCameraRadius = 50.0;
+  final double _maxCameraRadius = 200.0;
+  final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
   final double _ambientPulseSpeed = 0.3; // Slower pulse for ambient light
 
   @override
@@ -23,7 +26,7 @@ class Scene3d extends Component {
     await world.add(Cube3D(initialPosition: Vector3(20, 10, -30)));
 
     // Add 50 more cubes in a larger circle
-    const int numExtraCubes = 50;
+    const int numExtraCubes = 5;
     const double extraCubeRadius = 150.0;
     for (int i = 0; i < numExtraCubes; i++) {
       final angle = (2 * pi / numExtraCubes) * i;
@@ -41,9 +44,14 @@ class Scene3d extends Component {
 
     _elapsedTime += dt;
 
-    // Update camera position
-    final double camX = cos(_elapsedTime * _cameraRotationSpeed) * _cameraRadius;
-    final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * _cameraRadius;
+    // Calculate oscillating radius
+    final double radiusRange = _maxCameraRadius - _minCameraRadius;
+    final double radiusOscillation = (sin(_elapsedTime * _cameraZoomSpeed) + 1.0) * 0.5; // Range [0, 1]
+    final double currentRadius = _minCameraRadius + radiusRange * radiusOscillation;
+
+    // Update camera position using oscillating radius and slow rotation
+    final double camX = cos(_elapsedTime * _cameraRotationSpeed) * currentRadius;
+    final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * currentRadius;
     world.camera.moveTo(Vector3(camX, 0, camZ));
 
     // Update ambient light level (oscillating between 0.1 and 0.3)
