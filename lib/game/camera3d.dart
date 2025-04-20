@@ -72,26 +72,26 @@ class Camera3D {
       return null;
     }
 
-    // --- Modified Frustum Clipping Check (in Clip Space) ---
+    // --- Frustum Clipping Check (Clip Space + NDC) ---
     final w = _clipPoint.w;
-    const double xyTolerance = 2.0; // Allow x/y to be up to 2*w
 
-    // Z check remains strict (Near/Far planes)
+    // Strict Z check in clip space (Near/Far planes)
     if (_clipPoint.z.abs() > w) {
-      // logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
+      logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
       return null;
     }
-
-    // X/Y check allows some tolerance (Left/Right/Top/Bottom planes)
-    if (_clipPoint.x.abs() > w * xyTolerance || _clipPoint.y.abs() > w * xyTolerance) {
-       // logDebug('Camera3D: Point rejected by relaxed X/Y frustum check. ClipX: ${_clipPoint.x}, ClipY: ${_clipPoint.y}, W: $w');
-       return null; // Point is too far outside the X/Y view
-    }
-    // --- End Frustum Check ---
 
     // Perspective division to get NDC
     _ndc.setFrom4(_clipPoint);
     _ndc.scale(1.0 / w);
+
+    // Check final NDC X/Y against tolerance
+    const double xyNdcTolerance = 5.0; // Check final NDC x/y within +/- this range
+    if (_ndc.x.abs() > xyNdcTolerance || _ndc.y.abs() > xyNdcTolerance) {
+      // logDebug('Camera3D: Point rejected by NDC X/Y tolerance check. NDC: $_ndc');
+      return null; // Point projects too far outside the standard [-1, 1] view
+    }
+    // --- End Frustum Check ---
 
     return _ndc;
   }
@@ -105,7 +105,7 @@ class Camera3D {
     final screenX = (ndc.x + 1.0) * 0.5 * screenSize.x;
     final screenY = (1.0 - ndc.y) * 0.5 * screenSize.y; // Invert Y
     _result.setValues(screenX, screenY);
-    logDebug('Camera3D: NDC to screen: $ndc -> $_result');
+    // logDebug('Camera3D: NDC to screen: $ndc -> $_result');
     return _result;
   }
 

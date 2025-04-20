@@ -84,17 +84,6 @@ class World3d {
 
       final screenPos = camera.ndcToScreen(ndc);
 
-      // --- Assertion for extreme screen coordinates ---
-      // screen center to screenPos distance:
-      if (kDebugMode) {
-        final screenCenter = Vector2(game_width / 2, game_height / 2);
-        final distance = screenCenter.distanceTo(screenPos);
-        const double screenCoordThreshold = 4000.0;
-        assert(distance < screenCoordThreshold,
-            'Excessive screen coordinate detected! Pos: $screenPos, NDC: $ndc, World: $_transformedVertex');
-      }
-      // --- End Assertion ---
-
       totalNdcZ += ndc.z;
       visibleVertexCount++;
 
