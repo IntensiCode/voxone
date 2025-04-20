@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
@@ -27,10 +26,8 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   ui.Image? _shaderBuffer;
 
-  final Vector3 _initialScale = Vector3(0.7, 0.25, 0.7); // Keep for initialization
   final Matrix4 _modelMatrixInverse = Matrix4.identity(); // Needed for shader
   final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize(); // Keep shader light
-  final Float32List _matrixData = Float32List(16); // Keep for uniform update
 
   final _renderSize = 256;
 
@@ -92,7 +89,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   void _initPosition3d() {
     position3d = Position3D(
       position: Vector3(0, 0, 0),
-      scale: _initialScale,
+      scale: Vector3(0.7, 0.25, 0.7),
     );
 
     // Define local vertices needed for the mixin's size calculation
@@ -116,9 +113,9 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     _time += dt;
 
     // Update 3D rotation using position3d
-    position3d.rotation.x = _time * 0.6;
-    position3d.rotation.y = _time * 0.5;
-    position3d.rotation.z = _time * 0.4;
+    // position3d.rotation.x = _time * 0.6;
+    // position3d.rotation.y = _time * 0.5;
+    // position3d.rotation.z = _time * 0.4;
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
   }
 
@@ -155,7 +152,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   void _renderVoxelModel() {
     final img = pixelate(_renderSize, _renderSize, (canvas) {
-      _update_uniforms(_shader);
+      _updateUniforms(_shader);
       _shader.setImageSampler(0, _shaderBuffer!);
       _paint.shader = _shader;
       _shaderRect.setSizeInt(_renderSize, _renderSize);
@@ -167,11 +164,10 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     _shaderBuffer = img;
   }
 
-  void _update_uniforms(ui.FragmentShader shader) {
+  void _updateUniforms(ui.FragmentShader shader) {
     // Calculate the INVERSE for the shader
     final Matrix4 finalMatrix = position3d.worldTransform;
     _modelMatrixInverse.copyInverse(finalMatrix);
-    _modelMatrixInverse.copyIntoArray(_matrixData);
 
     final u = _uniforms;
     u[Voxel3dUniform.lightDirection] = _lightDirection;
