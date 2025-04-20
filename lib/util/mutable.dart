@@ -184,6 +184,23 @@ class MutRect implements Rect {
         top = t,
         right = r,
         bottom = b;
+
+  void setSizeInt(int w, int h) {
+    right = left + w;
+    bottom = top + h;
+  }
+
+  void setSize(double w, double h) {
+    right = left + w;
+    bottom = top + h;
+  }
+
+  void setFromImage(Image image) {
+    left = 0;
+    top = 0;
+    right = image.width.toDouble();
+    bottom = image.height.toDouble();
+  }
 }
 
 class MutablePair<A, B> {

@@ -11,7 +11,8 @@ import 'package:stardash/game/update2d.dart';
 import 'package:stardash/util/uniforms.dart';
 
 // Class definition order fixed: with before implements
-class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
+class Test3D extends PositionComponent
+    with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
   double _time = 0.0;
 
   late ui.Image _voxelImage;
@@ -29,9 +30,11 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
   // Remove local transforms, use position3d instead
   // final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
   // final Vector3 _rotation = Vector3.zero();
-  final Vector3 _initialScale = Vector3(0.7, 0.25, 0.7); // Keep for initialization
+  final Vector3 _initialScale =
+      Vector3(0.7, 0.25, 0.7); // Keep for initialization
   final Matrix4 _modelMatrixInverse = Matrix4.identity(); // Needed for shader
-  final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize(); // Keep shader light
+  final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)
+    ..normalize(); // Keep shader light
   final Float32List _matrixData = Float32List(16); // Keep for uniform update
 
   // Added: Base size for 3D object representation
@@ -79,37 +82,22 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
     // --- End Position3D Init ---
 
     try {
-      final program = await ui.FragmentProgram.fromAsset('assets/shaders/voxel3d.frag');
+      final program =
+          await ui.FragmentProgram.fromAsset('assets/shaders/voxel3d.frag');
       _shader = program.fragmentShader();
       _uniforms = UniformsExt<Voxel3dUniform>(_shader!, {
-        Voxel3dUniform.dstOrigin: Vector2,           // Index 0, 1
-        Voxel3dUniform.dstSize: Vector2,            // Index 2, 3
-        Voxel3dUniform.srcOrigin: Vector2,          // Index 4, 5
-        Voxel3dUniform.atlasSize: Vector2,          // Index 6, 7
-        Voxel3dUniform.frames: double,              // Index 8
-        Voxel3dUniform.frameSize: Vector2,          // Index 9, 10
-        Voxel3dUniform.modelMatrixInverse: Matrix4, // Index 11-26
-        Voxel3dUniform.lightDirection: Vector3,     // Index 27-29
-        Voxel3dUniform.renderMode: double,          // Index 30
+        for (final v in Voxel3dUniform.values) v: v.type,
       });
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
     }
 
     try {
-      final exhaustProgram = await ui.FragmentProgram.fromAsset('assets/shaders/exhaust.frag');
+      final exhaustProgram =
+          await ui.FragmentProgram.fromAsset('assets/shaders/exhaust.frag');
       _exhaustShader = exhaustProgram.fragmentShader();
       _exhaustUniforms = UniformsExt<ExhaustUniform>(_exhaustShader!, {
-        ExhaustUniform.resolution: Vector2,
-        ExhaustUniform.time: double,
-        ExhaustUniform.targetColor: Vector4,
-        ExhaustUniform.colorVariance: double,
-        ExhaustUniform.exhaustLength: double,
-        ExhaustUniform.color0: Vector3,
-        ExhaustUniform.color1: Vector3,
-        ExhaustUniform.color2: Vector3,
-        ExhaustUniform.color3: Vector3,
-        ExhaustUniform.color4: Vector3,
+        for (final v in ExhaustUniform.values) v: v.type,
       });
     } catch (e) {
       logError('Error loading exhaust shader: $e');
@@ -125,7 +113,8 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
 
   @override
   void update(double dt) {
-    super.update(dt); // Let mixins run first (Updates2DFrom3D sets position/size)
+    super.update(
+        dt); // Let mixins run first (Updates2DFrom3D sets position/size)
     _time += dt;
 
     // Update 3D rotation using position3d
@@ -143,7 +132,10 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
       return;
     }
 
-    if (_shader == null || _uniforms == null || _exhaustShader == null || _exhaustUniforms == null) {
+    if (_shader == null ||
+        _uniforms == null ||
+        _exhaustShader == null ||
+        _exhaustUniforms == null) {
       logDebug("Test3D render skipped due to shader initialization failure");
       return;
     }
@@ -157,7 +149,8 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
     // We draw the shader rect covering the component's size (updated by mixin)
     if (_exhaustOutputImage != null) {
       _update_uniforms(inputImage: _exhaustOutputImage!);
-      _shader!.setImageSampler(0, _exhaustOutputImage!); // Use the exhaust output image
+      _shader!.setImageSampler(
+          0, _exhaustOutputImage!); // Use the exhaust output image
       paint.shader = _shader;
       canvas.drawRect(size.toRect(), paint);
     } else {
@@ -190,22 +183,26 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
     final canvas = ui.Canvas(recorder);
     _updateExhaustUniforms();
     _exhaustShader!.setImageSampler(0, _voxelImage);
-    final targetRect = ui.Rect.fromLTWH(0, 0, _voxelImage.width.toDouble(), _voxelImage.height.toDouble());
+    final targetRect = ui.Rect.fromLTWH(
+        0, 0, _voxelImage.width.toDouble(), _voxelImage.height.toDouble());
     _exhaustPaint.shader = _exhaustShader;
     canvas.drawRect(targetRect, _exhaustPaint);
     final picture = recorder.endRecording();
     _exhaustOutputImage?.dispose();
-    _exhaustOutputImage = picture.toImageSync(_voxelImage.width, _voxelImage.height);
+    _exhaustOutputImage =
+        picture.toImageSync(_voxelImage.width, _voxelImage.height);
     picture.dispose();
   }
 
   // Update Exhaust Shader Uniforms - changed to use UniformsExt with compound types
   void _updateExhaustUniforms() {
     final uniforms = _exhaustUniforms!;
-    final imageSize = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
+    final imageSize =
+        Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
     uniforms[ExhaustUniform.resolution] = imageSize;
     uniforms[ExhaustUniform.time] = _time;
-    uniforms[ExhaustUniform.targetColor] = Vector4(1.0, 0.2, 0.0, 1.0); // Red target
+    uniforms[ExhaustUniform.targetColor] =
+        Vector4(1.0, 0.2, 0.0, 1.0); // Red target
     uniforms[ExhaustUniform.colorVariance] = 0.1;
     uniforms[ExhaustUniform.exhaustLength] = 8.0;
     // Flame colors
@@ -230,8 +227,10 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
     final uniforms = _uniforms!;
 
     // --- Set Uniforms (uses _matrixData calculated above) ---
-    final frameSizeVec = Vector2(inputImage.width.toDouble(), inputImage.height.toDouble() / _frames);
-    final atlasSizeVec = Vector2(inputImage.width.toDouble(), inputImage.height.toDouble());
+    final frameSizeVec = Vector2(
+        inputImage.width.toDouble(), inputImage.height.toDouble() / _frames);
+    final atlasSizeVec =
+        Vector2(inputImage.width.toDouble(), inputImage.height.toDouble());
     final srcOriginVec = Vector2.zero();
     final dstOriginVec = Vector2.zero();
     // Use component's size (updated by mixin) for dstSize
@@ -259,29 +258,35 @@ class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpd
 // Remove makeViewMatrix helper - no longer needed here
 // Matrix4 makeViewMatrix(...) { ... }
 
-// Voxel3dUniform enum updated for compound types
+// Voxel3dUniform enum updated for compound types and type storage
 enum Voxel3dUniform {
-  dstOrigin,     // Vector2
-  dstSize,       // Vector2
-  srcOrigin,     // Vector2
-  atlasSize,     // Vector2
-  frames,        // double
-  frameSize,     // Vector2
-  modelMatrixInverse, // Matrix4
-  lightDirection, // Vector3
-  renderMode,    // double
+  dstOrigin(Vector2), // Vector2
+  dstSize(Vector2), // Vector2
+  srcOrigin(Vector2), // Vector2
+  atlasSize(Vector2), // Vector2
+  frames(double), // double
+  frameSize(Vector2), // Vector2
+  modelMatrixInverse(Matrix4), // Matrix4
+  lightDirection(Vector3), // Vector3
+  renderMode(double); // double
+
+  const Voxel3dUniform(this.type);
+  final Type type;
 }
 
-// ExhaustUniform enum updated for compound types
+// ExhaustUniform enum updated for compound types and type storage
 enum ExhaustUniform {
-  resolution,    // Vector2
-  time,          // double
-  targetColor,   // Vector4
-  colorVariance, // double
-  exhaustLength, // double
-  color0,        // Vector3 (RGB)
-  color1,        // Vector3 (RGB)
-  color2,        // Vector3 (RGB)
-  color3,        // Vector3 (RGB)
-  color4,        // Vector3 (RGB)
-} 
+  resolution(Vector2), // Vector2
+  time(double), // double
+  targetColor(Vector4), // Vector4
+  colorVariance(double), // double
+  exhaustLength(double), // double
+  color0(Vector3), // Vector3 (RGB)
+  color1(Vector3), // Vector3 (RGB)
+  color2(Vector3), // Vector3 (RGB)
+  color3(Vector3), // Vector3 (RGB)
+  color4(Vector3); // Vector3 (RGB)
+
+  const ExhaustUniform(this.type);
+  final Type type;
+}
