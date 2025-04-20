@@ -47,8 +47,8 @@ mixin HasUpdate2D on PositionComponent implements HasPosition3D {
     }
 
     // Update 2D size based on the bounding box dimensions
-    // size.x = _maxBounds.x - _minBounds.x;
-    // size.y = _maxBounds.y - _minBounds.y;
+    size.x = _maxBounds.x - _minBounds.x;
+    size.y = _maxBounds.y - _minBounds.y;
 
     // Update 2D position to center the component
     // for (final v in vs) {
