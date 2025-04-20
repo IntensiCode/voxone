@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
 import 'package:stardash/game/world3d_component.dart';
@@ -12,21 +14,20 @@ class Scene3d extends Component {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    world = World3DComponent(); // Camera defaults to (100,0,0) looking at (0,0,0)
+    world = World3DComponent();
     await add(world);
 
-    final cube = Cube3D(initialPosition: Vector3.zero()); // Place at origin
+    final cube = Cube3D(initialPosition: Vector3.zero());
     await world.add(cube);
 
-    // final cube2 = Cube3D(initialPosition: Vector3(20, 10, -30));
-    // await world.add(cube2);
+    final cube2 = Cube3D(initialPosition: Vector3(20, 10, -30));
+    await world.add(cube2);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    // Comment out camera animation for now
-    /*
+
     _elapsedTime += dt;
 
     // Calculate new camera position on the XZ plane circle
@@ -35,6 +36,7 @@ class Scene3d extends Component {
     final newPosition = Vector3(camX, 0, camZ); // Keep Y at 0 for now
 
     world.camera.moveTo(newPosition);
-    */
+
+    // Camera target remains (0,0,0) as set initially in World3d logic class
   }
 }
