@@ -11,58 +11,44 @@ import 'package:stardash/game/update2d.dart';
 import 'package:stardash/util/uniforms.dart';
 
 // Class definition order fixed: with before implements
-class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
+class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext {
   double _time = 0.0;
 
+  late int _frames;
   late ui.Image _voxelImage;
+  ui.Image? _exhaustOutputImage;
 
   ui.FragmentShader? _shader;
-  Uniforms<Voxel3dUniform>? _uniforms;
-
   ui.FragmentShader? _exhaustShader;
+  Uniforms<Voxel3dUniform>? _uniforms;
   Uniforms<ExhaustUniform>? _exhaustUniforms;
-  ui.Image? _exhaustOutputImage;
-  late final ui.Paint _exhaustPaint = ui.Paint();
 
-  late int _frames;
-
-  // Remove local transforms, use position3d instead
-  // final Vector3 _scale = Vector3(0.7, 0.25, 0.7);
-  // final Vector3 _rotation = Vector3.zero();
   final Vector3 _initialScale = Vector3(0.7, 0.25, 0.7); // Keep for initialization
   final Matrix4 _modelMatrixInverse = Matrix4.identity(); // Needed for shader
   final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize(); // Keep shader light
   final Float32List _matrixData = Float32List(16); // Keep for uniform update
 
-  // Added: Base size for 3D object representation
-  final double _base3dSize = 20.0;
-
-  Player3D() {
-    // Renamed constructor
-    paint.isAntiAlias = false;
-    paint.filterQuality = ui.FilterQuality.none;
-    _exhaustPaint.isAntiAlias = false;
-    _exhaustPaint.filterQuality = ui.FilterQuality.none;
-  }
-
   @override
   Future<void> onLoad() async {
-    logInfo('Loading Player3D'); // Updated log
-    logInfo('Loading Player3D'); // Updated log
-    logInfo('Loading Player3D'); // Updated log
-    try {
-      _voxelImage = await game.images.load('interstellar_15.png');
-    } catch (e) {
-      logError('Error loading voxel image: $e');
-      return;
-    }
-    _frames = 15; // Match interstellar_15
+    anchor = Anchor.center;
+    await _initShaders();
+    _initPosition3d();
+  }
 
-    // --- Initialize Position3D ---
+  Future<void> _initShaders() async {
+    _frames = 15;
+    _voxelImage = await game.images.load('interstellar_15.png');
+
+    _shader = await loadShader('voxel3d.frag');
+    _exhaustShader = await loadShader('exhaust.frag');
+    _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
+    _exhaustUniforms = Uniforms(_exhaustShader!, ExhaustUniform.values);
+  }
+
+  void _initPosition3d() {
     position3d = Position3D(
       position: Vector3(0, 0, 0),
-      scale: _initialScale.clone(), // Use initial scale
-      rotation: Vector3.zero(), // Start with no rotation
+      scale: _initialScale,
     );
 
     // Define local vertices needed for the mixin's size calculation
@@ -78,30 +64,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
       Vector3(half, quarter, half),
       Vector3(-half, quarter, half),
     ];
-    // --- End Position3D Init ---
-
-    try {
-      final program = await ui.FragmentProgram.fromAsset('assets/shaders/voxel3d.frag');
-      _shader = program.fragmentShader();
-      _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
-    } catch (e) {
-      logError('Error loading voxel3d shader: $e');
-    }
-
-    try {
-      final exhaustProgram = await ui.FragmentProgram.fromAsset('assets/shaders/exhaust.frag');
-      _exhaustShader = exhaustProgram.fragmentShader();
-      _exhaustUniforms = Uniforms(_exhaustShader!, ExhaustUniform.values);
-    } catch (e) {
-      logError('Error loading exhaust shader: $e');
-    }
-
-    assert(_shader != null, 'Voxel Shader failed to load.');
-    assert(_uniforms != null, 'Voxel Uniforms failed to initialize.');
-    assert(_exhaustShader != null, 'Exhaust Shader failed to load.');
-    assert(_exhaustUniforms != null, 'Exhaust Uniforms failed to initialize.');
-
-    anchor = Anchor.center;
   }
 
   @override
@@ -116,21 +78,19 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
   }
 
+  final _paint = pixel_paint();
+
   @override
   void render(ui.Canvas canvas) {
-    // Check priority set by 3D system
-    if (priority < 0) {
-      logDebug("Player3D render skipped due to priority < 0");
-      return;
-    }
+    super.render(canvas); // Let mixins run first (Updates2DFrom3D sets position/size)
+    logInfo('Position: ${position3d.position}'); // Log the 3D position
+    logInfo('Pos2D: $position'); // Log the 2D position
 
-    if (_shader == null || _uniforms == null || _exhaustShader == null || _exhaustUniforms == null) {
-      logDebug("Player3D render skipped due to shader initialization failure");
-      return;
-    }
+    assert(isVisible);
+    assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
 
     // --- Pass 1: Render Exhaust Effect to Intermediate Image ---
-    // _renderExhaustPass(); // Keep exhaust logic
+    _renderExhaustPass(); // Keep exhaust logic
 
     // --- Pass 2: Render Voxel Model using Exhaust Output ---
     // The component's position and size are set by the Updates2DFrom3D mixin
@@ -139,18 +99,18 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     if (_exhaustOutputImage != null) {
       _update_uniforms(_shader!, inputImage: _exhaustOutputImage!);
       _shader!.setImageSampler(0, _exhaustOutputImage!); // Use the exhaust output image
-      paint.shader = _shader;
-      canvas.drawRect(size.toRect(), paint);
+      _paint.shader = _shader;
+      canvas.drawRect(size.toRect(), _paint);
     } else {
       // logDebug("shade size: $size");
       // Fallback or initial frame: render directly from original atlas
       _update_uniforms(_shader!, inputImage: _voxelImage);
       _shader!.setImageSampler(0, _voxelImage);
-      paint.shader = _shader;
+      _paint.shader = _shader;
       // size.setAll(100);
       // paint.style = ui.PaintingStyle.fill;
       // paint.color = const ui.Color(0x8000FF00); // Fallback color
-      canvas.drawRect(size.toRect(), paint);
+      canvas.drawRect(size.toRect(), _paint);
     }
 
     // Draw a BLUE CIRCLE:
@@ -172,8 +132,8 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     _updateExhaustUniforms(_exhaustShader!);
     _exhaustShader!.setImageSampler(0, _voxelImage);
     final targetRect = ui.Rect.fromLTWH(0, 0, _voxelImage.width.toDouble(), _voxelImage.height.toDouble());
-    _exhaustPaint.shader = _exhaustShader;
-    canvas.drawRect(targetRect, _exhaustPaint);
+    _paint.shader = _exhaustShader;
+    canvas.drawRect(targetRect, _paint);
     final picture = recorder.endRecording();
     _exhaustOutputImage?.dispose();
     _exhaustOutputImage = picture.toImageSync(_voxelImage.width, _voxelImage.height);

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flame/components.dart';
 import 'package:stardash/game/has_position_3d.dart';
@@ -8,10 +9,18 @@ import 'package:vector_math/vector_math_64.dart';
 mixin HasLightedFaces on HasPosition3D {
   // Faces defined as indices into position3d.localVertices
   List<List<int>> localFaces = [];
+
   // Normals corresponding to each face in local space
   List<Vector3> faceNormals = [];
+
   // Calculated light intensity per face (0.0 to 1.0)
   List<double> faceLightIntensities = [];
+
+  // Positions: 3 vertices per face, 2 coordinates (x, y) per vertex
+  late final Float32List positions;
+
+  // Colors: 3 vertices per face, 1 color (int) per vertex
+  late final Int32List colors;
 
   // Temporary variables for calculation to avoid reallocation
   final Matrix3 _normalMatrix = Matrix3.identity();
@@ -40,8 +49,7 @@ mixin HasLightedFaces on HasPosition3D {
       final double intensity = max(0.0, _worldNormal.dot(-lightDirection));
 
       // Combine ambient and directional light
-      faceLightIntensities[i] =
-          ambientLightLevel + (1.0 - ambientLightLevel) * intensity;
+      faceLightIntensities[i] = ambientLightLevel + (1.0 - ambientLightLevel) * intensity;
     }
   }
-} 
+}

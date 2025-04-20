@@ -24,12 +24,10 @@ class MutableOffset extends Offset {
 @Deprecated('Use `MutRect` instead')
 class MutableRect extends Rect {
   /// Construct a rectangle from its left, top, right, and bottom edges.
-  MutableRect.fromLTRB(this.left, this.top, this.right, this.bottom)
-      : super.fromLTRB(left, top, right, bottom);
+  MutableRect.fromLTRB(this.left, this.top, this.right, this.bottom) : super.fromLTRB(left, top, right, bottom);
 
   /// Create a new instance from [other].
-  factory MutableRect.fromRect(Rect other) =>
-      MutableRect.fromLTRB(other.left, other.top, other.right, other.bottom);
+  factory MutableRect.fromRect(Rect other) => MutableRect.fromLTRB(other.left, other.top, other.right, other.bottom);
 
   /// The offset of the left edge of this rectangle from the x axis.
   @override
@@ -173,11 +171,8 @@ class MutRect implements Rect {
   Offset get topRight => Offset(right, top);
 
   @override
-  Rect translate(double translateX, double translateY) => MutRect(
-      left + translateX,
-      top + translateY,
-      right + translateX,
-      bottom + translateY);
+  Rect translate(double translateX, double translateY) =>
+      MutRect(left + translateX, top + translateY, right + translateX, bottom + translateY);
 
   @override
   double get width => (right - left).abs();
@@ -220,6 +215,10 @@ class MutableColor {
     r = color.red;
     g = color.green;
     b = color.blue;
+  }
+
+  int toARGB32() {
+    return (a << 24) | (r << 16) | (g << 8) | b;
   }
 
   Color toColor() {

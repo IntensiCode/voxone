@@ -1,8 +1,9 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui; // Ensure you have this import alias
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:stardash/core/common.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
@@ -51,6 +52,8 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
       // Bottom face (Y = -half)
       [4, 5, 1], [4, 1, 0],
     ];
+    positions = Float32List(localFaces.length * 3 * 2);
+    colors = Int32List(localFaces.length * 3);
 
     // Calculate face normals (using localVertices from position3d)
     faceNormals = List.generate(localFaces.length, (_) => Vector3.zero());
@@ -94,42 +97,67 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
     _renderFaces(canvas);
   }
 
-  void _renderFaces(Canvas canvas) {
-    final path = Path();
+  void _renderFaces(ui.Canvas canvas) {
     final projected = position3d.projectedVertices;
+    if (projected.isEmpty) return;
+
+    int vertexIndex = 0; // Tracks current position in the lists
+
     for (int i = 0; i < localFaces.length; i++) {
       final faceIndices = localFaces[i];
       final intensity = faceLightIntensities[i];
 
-      // Get projected vertices for the triangle
       final v0 = projected[faceIndices[0]];
       final v1 = projected[faceIndices[1]];
       final v2 = projected[faceIndices[2]];
 
-      v0.sub(position);
-      v1.sub(position);
-      v2.sub(position);
-
-      // Simple backface culling: Check winding order
+      // Simple backface culling
       if ((v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x) < 0) {
-        continue;
+        continue; // Skip this face
       }
 
-      // Set paint color based on light intensity
+      // Calculate face color
       _mutableFaceColor.setLerpKeepAlpha(_baseColor, Colors.black, 1.0 - intensity, 255);
-      _facePaint.color = _mutableFaceColor.toColor();
 
-      // Draw the triangle
-      path.reset();
-      path.moveTo(v0.x, v0.y);
-      path.lineTo(v1.x, v1.y);
-      path.lineTo(v2.x, v2.y);
-      path.close();
-      canvas.drawPath(path, _facePaint);
+      // Add positions (x, y for v0, v1, v2)
+      final int posBaseIndex = vertexIndex * 2;
+      positions[posBaseIndex] = v0.x;
+      positions[posBaseIndex + 1] = v0.y;
+      positions[posBaseIndex + 2] = v1.x;
+      positions[posBaseIndex + 3] = v1.y;
+      positions[posBaseIndex + 4] = v2.x;
+      positions[posBaseIndex + 5] = v2.y;
+
+      final int colorValue = _mutableFaceColor.toARGB32();
+
+      // Add colors (same color for all 3 vertices of the triangle)
+      final int colorBaseIndex = vertexIndex;
+      colors[colorBaseIndex] = colorValue;
+      colors[colorBaseIndex + 1] = colorValue;
+      colors[colorBaseIndex + 2] = colorValue;
+
+      vertexIndex += 3; // Move to the next triangle's vertices
+    }
+
+    // Only draw if we added any vertices
+    if (vertexIndex > 0) {
+      // Create Vertices object - Use sublists if not all faces were drawn
+      final vertices = ui.Vertices.raw(
+        ui.VertexMode.triangles,
+        // Use sublist view to only include added vertices
+        Float32List.sublistView(positions, 0, vertexIndex * 2),
+        colors: Int32List.sublistView(colors, 0, vertexIndex),
+        // No indices needed as positions are already ordered per triangle
+      );
+
+      // Draw all triangles in one call
+      // The paint's style, blend mode etc. are still used,
+      // but vertex colors override paint.color
+      canvas.drawVertices(vertices, ui.BlendMode.srcOver, _facePaint);
     }
   }
 
   static final _baseColor = Colors.green;
-  static final _facePaint = pixel_paint()..style = PaintingStyle.fill;
+  static final _facePaint = ui.Paint();
   static final _mutableFaceColor = MutableColor(0, 0, 0, 0);
 }

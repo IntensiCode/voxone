@@ -24,8 +24,8 @@ class Scene3d extends Component with HasContext {
     await add(world);
 
     // Add the Player
-    // await world.add(Player3D());
-    await world.add(Test3D());
+    await world.add(Player3D());
+    // await world.add(Test3D());
 
     // Initial cubes
     // await world.add(Cube3D(initialPosition: Vector3.zero()));
