@@ -2,9 +2,10 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:stardash/game/position_component_3d.dart'; // Use correct package name
+import 'package:stardash/game/position3d.dart';
+import 'package:stardash/game/position_component_3d.dart';
 
-class Cube3D extends PositionComponent3D {
+class Cube3D extends PositionComponent with HasPosition3D {
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
   final double _pulseSpeed = pi; // One full pulse cycle every 2 seconds
   final double _minScale = 0.9;
@@ -12,12 +13,14 @@ class Cube3D extends PositionComponent3D {
 
   double _time = 0.0;
 
-  Cube3D({required Vector3 initialPosition}) : super(initialPosition) {
+  Cube3D({required Vector3 initialPosition}) {
+    position3d = Position3D(position: initialPosition, size: Vector3.all(20));
+
     // Cube spans from -10 to +10 on each axis (size 20)
     const double half = 10.0;
 
     // Define its vertices relative to position3D (center)
-    localVertices = [
+    position3d.localVertices = [
       Vector3(-half, -half, -half), // 0: bottom-left-near
       Vector3(half, -half, -half), // 1: bottom-right-near
       Vector3(half, half, -half), // 2: top-right-near
@@ -47,9 +50,9 @@ class Cube3D extends PositionComponent3D {
 
     // Render wireframe by connecting projected vertices
     for (final edge in _edges) {
-      final p1 = projectedVertices[edge[0]];
-      final p2 = projectedVertices[edge[1]];
-      canvas.drawLine(p1.toOffset(), p2.toOffset(), _paint);
+      final pair = position3d.projectedEdge(edge[0], edge[1]);
+      if (pair == null) continue;
+      canvas.drawLine(pair.first, pair.second, _paint);
     }
   }
 
@@ -57,12 +60,12 @@ class Cube3D extends PositionComponent3D {
   void update(double dt) {
     _time += dt;
 
-    rotation.z = (_time * _rotationSpeed) % (2 * pi);
+    position3d.rotation.z = (_time * _rotationSpeed) % (2 * pi);
 
     var delta = (_maxScale - _minScale);
     var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
     final scale = _minScale + delta * variance; // Pulse effect
-    scale3D.setValues(scale, scale, scale);
+    position3d.scale.setValues(scale, scale, scale);
 
     super.update(dt);
   }

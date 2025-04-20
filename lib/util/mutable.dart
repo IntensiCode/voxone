@@ -24,10 +24,12 @@ class MutableOffset extends Offset {
 @Deprecated('Use `MutRect` instead')
 class MutableRect extends Rect {
   /// Construct a rectangle from its left, top, right, and bottom edges.
-  MutableRect.fromLTRB(this.left, this.top, this.right, this.bottom) : super.fromLTRB(left, top, right, bottom);
+  MutableRect.fromLTRB(this.left, this.top, this.right, this.bottom)
+      : super.fromLTRB(left, top, right, bottom);
 
   /// Create a new instance from [other].
-  factory MutableRect.fromRect(Rect other) => MutableRect.fromLTRB(other.left, other.top, other.right, other.bottom);
+  factory MutableRect.fromRect(Rect other) =>
+      MutableRect.fromLTRB(other.left, other.top, other.right, other.bottom);
 
   /// The offset of the left edge of this rectangle from the x axis.
   @override
@@ -171,8 +173,11 @@ class MutRect implements Rect {
   Offset get topRight => Offset(right, top);
 
   @override
-  Rect translate(double translateX, double translateY) =>
-      MutRect(left + translateX, top + translateY, right + translateX, bottom + translateY);
+  Rect translate(double translateX, double translateY) => MutRect(
+      left + translateX,
+      top + translateY,
+      right + translateX,
+      bottom + translateY);
 
   @override
   double get width => (right - left).abs();
@@ -184,4 +189,16 @@ class MutRect implements Rect {
         top = t,
         right = r,
         bottom = b;
+}
+
+class MutablePair<A, B> {
+  A first;
+  B second;
+
+  MutablePair(this.first, this.second);
+
+  void setFrom(A a, B b) {
+    first = a;
+    second = b;
+  }
 }

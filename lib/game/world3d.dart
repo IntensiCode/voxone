@@ -20,32 +20,39 @@ class World3d {
         );
   }
 
-  void projectChildren(List<PositionComponent3D> children) {
-    for (final child in children) {
+  void projectChildren(List<HasPosition3D> children) {
+    for (final it in children) {
+      final child = it.position3d;
+
       // Reset matrices
       _scaleMatrix.setIdentity();
       _rotationMatrix.setIdentity();
       _translationMatrix.setIdentity();
 
-      _scaleMatrix.scale(child.scale3D);
+      _scaleMatrix.scale(child.scale);
 
       _rotationMatrix.rotateZ(child.rotation.z);
       _rotationMatrix.rotateY(child.rotation.y);
       _rotationMatrix.rotateX(child.rotation.x);
 
-      _translationMatrix.translate(child.position3D);
+      _translationMatrix.translate(child.position);
 
       _worldModelMatrix.setFrom(_translationMatrix);
       _worldModelMatrix.multiply(_rotationMatrix);
       _worldModelMatrix.multiply(_scaleMatrix);
 
-      _projectChild(child);
+      // Store the final world transform on the child
+      child.worldTransform.setFrom(_worldModelMatrix);
+
+      _projectChild(it);
     }
   }
 
   final Vector3 _transformedVertex = Vector3.zero();
 
-  void _projectChild(PositionComponent3D child) {
+  void _projectChild(HasPosition3D it) {
+    final child = it.position3d;
+
     double totalNdcZ = 0;
     int visibleVertexCount = 0;
 
@@ -70,10 +77,10 @@ class World3d {
     // Priority calculation
     if (visibleVertexCount == child.localVertices.length) {
       final averageNdcZ = totalNdcZ / visibleVertexCount;
-      child.priority = Camera3D.depthToPriority(averageNdcZ);
+      it.priority = Camera3D.depthToPriority(averageNdcZ);
     } else {
       // (Ab)use -1 as "not visible in world":
-      child.priority = -1;
+      it.priority = -1;
     }
   }
 }

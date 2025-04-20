@@ -1,0 +1,58 @@
+import 'dart:ui';
+
+import 'package:dart_minilog/dart_minilog.dart';
+import 'package:stardash/util/mutable.dart';
+import 'package:vector_math/vector_math_64.dart';
+
+class Position3D {
+  final Vector3 position;
+  final Vector3 size;
+  final Vector3 scale; // = Vector3.all(1.0);
+  final Vector3 rotation; // = Vector3.zero(); // Euler angles (X, Y, Z)
+
+  // Local transform relative to parent (if any) or world origin
+  final Matrix4 transform = Matrix4.identity();
+
+  // Final transform in world space after parent transforms are applied
+  final Matrix4 worldTransform = Matrix4.identity();
+
+  // Vertices defined relative to this position
+  List<Vector3> localVertices = [];
+
+  // Projected 2D screen coordinates corresponding to world vertices
+  List<Vector2> projectedVertices = [];
+
+  Vector3 get center => position + (size / 2);
+
+  Position3D({
+    required this.position,
+    Vector3? size,
+    Vector3? scale,
+    Vector3? rotation,
+  })  : size = size ?? Vector3.zero(),
+        scale = scale ?? Vector3.all(1.0),
+        rotation = rotation ?? Vector3.zero();
+
+  final _o1 = MutableOffset(0, 0);
+  final _o2 = MutableOffset(0, 0);
+  final _pair = MutablePair<Offset, Offset>(Offset.zero, Offset.zero);
+
+  MutablePair<Offset, Offset>? projectedEdge(int a, int b) {
+    if (a >= projectedVertices.length) {
+      logDebug('projectedEdge: a out of range: $a > ${projectedVertices.length}');
+      return null;
+    }
+    if (b >= projectedVertices.length) {
+      logDebug('projectedEdge: b out of range: $b > ${projectedVertices.length}');
+      return null;
+    }
+    final p1 = projectedVertices[a];
+    final p2 = projectedVertices[b];
+    _o1.setFrom(p1);
+    _o2.setFrom(p2);
+    _pair.setFrom(_o1, _o2);
+    return _pair;
+  }
+
+// Potential future methods for transform updates, etc.
+}

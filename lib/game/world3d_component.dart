@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:stardash/game/camera3d.dart';
+import 'package:stardash/game/position3d.dart';
 import 'package:stardash/game/position_component_3d.dart';
 import 'package:stardash/game/world3d.dart';
 
@@ -19,7 +20,7 @@ class World3DComponent extends Component {
 
     // Then, delegate projection logic to the World3d instance
     // Pass only the PositionComponent3D children to it
-    final children3d = children.whereType<PositionComponent3D>().toList();
+    final children3d = children.whereType<HasPosition3D>().toList();
     _world.projectChildren(children3d);
   }
 }
