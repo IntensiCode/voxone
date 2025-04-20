@@ -101,6 +101,12 @@ extension ListExtensions<T> on List<T> {
   }
 
   List<T> operator -(List<T> other) => whereNot((it) => other.contains(it)).toList();
+
+  void ensureSize(int size, T Function() generator) {
+    if (length < size) {
+      addAll(List.generate(size - length, (_) => generator()));
+    }
+  }
 }
 
 extension FragmentShaderExtensions on FragmentShader {

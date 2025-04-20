@@ -1,14 +1,14 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
 
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
 import 'package:stardash/util/mutable.dart';
 
-class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
+class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLightedFaces {
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
   final double _pulseSpeed = pi; // One full pulse cycle every 2 seconds
   final double _minScale = 0.9;
@@ -96,8 +96,7 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
       }
 
       // Set paint color based on light intensity
-      _mutableFaceColor.setLerpKeepAlpha(
-          _baseColor, Colors.black, 1.0 - intensity, 255);
+      _mutableFaceColor.setLerpKeepAlpha(_baseColor, Colors.black, 1.0 - intensity, 255);
       _facePaint.color = _mutableFaceColor.toColor();
 
       // Draw the triangle

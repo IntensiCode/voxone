@@ -74,19 +74,7 @@ enum ExhaustUniform {
 }
 
 // Class definition order fixed: with before implements
-class Player3D extends PositionComponent
-    with
-        HasUpdate2D,
-        HasContext,
-        HasPaint // with first
-    implements
-        HasPosition3D {
-  // implements second
-
-  // Need to explicitly declare position3d due to implements
-  @override
-  late final Position3D position3d;
-
+class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
   double _time = 0.0;
 
   late ui.Image _voxelImage;
