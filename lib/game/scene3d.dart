@@ -1,7 +1,6 @@
-import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
-import 'package:stardash/game/world3d.dart';
+import 'package:stardash/game/world3d_component.dart';
 
 class Scene3d extends Component {
   late World3DComponent world;
