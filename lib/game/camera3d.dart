@@ -1,4 +1,5 @@
 import 'package:flame/game.dart'; // Required for Vector2
+import 'package:vector_math/vector_math_64.dart';
 
 class Camera3D {
   final Vector2 screenSize;
@@ -50,33 +51,32 @@ class Camera3D {
       nearPlane,
       farPlane,
     );
-
-    // Combined matrix (more efficient)
-    viewProjectionMatrix.setFrom(projectionMatrix * viewMatrix);
+    viewProjectionMatrix.setFrom(projectionMatrix);
+    viewProjectionMatrix.multiply(viewMatrix);
   }
 
-  // Reusable input point for projection
   final Vector4 _point4 = Vector4.zero();
-
-  // Reusable output NDC vector
+  final Vector4 _clipPoint = Vector4.zero();
   final Vector3 _ndc = Vector3.zero();
 
   // Projects a 3D world point to normalized device coordinates (NDC) [-1, 1]
   // Returns null if the point is behind the camera's near plane (or very close)
   Vector3? projectWorldToNdc(Vector3 worldPoint) {
     _point4.setValues(worldPoint.x, worldPoint.y, worldPoint.z, 1.0);
-    final clipPoint = viewProjectionMatrix.transform(_point4);
+    viewProjectionMatrix.transformed(_point4, _clipPoint);
 
     // Perspective division
-    if (clipPoint.w.abs() < 0.0001) {
+    if (_clipPoint.w.abs() < 0.0001) {
       return null; // Avoid division by zero/very small numbers
     }
 
-    _ndc.setValues(
-      clipPoint.x / clipPoint.w,
-      clipPoint.y / clipPoint.w,
-      clipPoint.z / clipPoint.w,
-    );
+    // _ndc.setValues(
+    //   _clipPoint.x / _clipPoint.w,
+    //   _clipPoint.y / _clipPoint.w,
+    //   _clipPoint.z / _clipPoint.w,
+    // );
+    _ndc.setFrom4(_clipPoint);
+    _ndc.scale(1.0 / _clipPoint.w);
 
     // Basic clipping check (z is enough for near plane)
     // Note: Full frustum clipping involves checking x and y against w as well.
@@ -86,7 +86,7 @@ class Camera3D {
     }
 
     // Optional: Far plane clipping (if needed)
-    // if (ndc.z > 1.0) { // Beyond far plane in NDC
+    // if (_ndc.z > 1.0) { // Beyond far plane in NDC
     //    return null;
     // }
 
@@ -115,5 +115,13 @@ class Camera3D {
     final double invertedDepth = 1.0 - normalizedDepth;
     // Scale to integer range (higher value = higher priority = rendered last)
     return (invertedDepth * 1000000).toInt();
+  }
+}
+
+extension on Vector3 {
+  void setFrom4(Vector4 other) {
+    x = other.x;
+    y = other.y;
+    z = other.z;
   }
 }
