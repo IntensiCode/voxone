@@ -25,13 +25,7 @@ mixin HasUpdate2D on PositionComponent implements HasPosition3D {
     if (!isVisible) return;
 
     assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
-
-    // Adjust anchor if needed based on how position/size are used.
-    // Since we set position to center and size to bounds, anchor should be center.
-    if (anchor != Anchor.center) {
-      logWarn('Anchor is not center. Adjusting to center.');
-      anchor = Anchor.center;
-    }
+    assert(anchor == Anchor.center, 'Anchor must be center for now.');
 
     position = position3d.projectedOrigin;
 
@@ -53,7 +47,12 @@ mixin HasUpdate2D on PositionComponent implements HasPosition3D {
     }
 
     // Update 2D size based on the bounding box dimensions
-    size.x = _maxBounds.x - _minBounds.x;
-    size.y = _maxBounds.y - _minBounds.y;
+    // size.x = _maxBounds.x - _minBounds.x;
+    // size.y = _maxBounds.y - _minBounds.y;
+
+    // Update 2D position to center the component
+    // for (final v in vs) {
+    //   v.sub(position);
+    // }
   }
 }

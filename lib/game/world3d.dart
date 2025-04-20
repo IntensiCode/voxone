@@ -1,8 +1,10 @@
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
+import 'package:stardash/game/position3d.dart';
 import 'package:stardash/util/extensions.dart';
 import 'package:vector_math/vector_math_64.dart';
 
@@ -31,28 +33,6 @@ class World3d {
 
   void projectChildren(Iterable<HasPosition3D> children) {
     for (final it in children) {
-      final child = it.position3d;
-
-      // Reset matrices
-      _scaleMatrix.setIdentity();
-      _rotationMatrix.setIdentity();
-      _translationMatrix.setIdentity();
-
-      _scaleMatrix.scale(child.scale);
-
-      _rotationMatrix.rotateZ(child.rotation.z);
-      _rotationMatrix.rotateY(child.rotation.y);
-      _rotationMatrix.rotateX(child.rotation.x);
-
-      _translationMatrix.translate(child.position);
-
-      _worldModelMatrix.setFrom(_translationMatrix);
-      _worldModelMatrix.multiply(_rotationMatrix);
-      _worldModelMatrix.multiply(_scaleMatrix);
-
-      // Store the final world transform on the child
-      child.worldTransform.setFrom(_worldModelMatrix);
-
       _projectChild(it);
     }
   }
@@ -67,10 +47,15 @@ class World3d {
   void _projectChild(HasPosition3D it) {
     final child = it.position3d;
 
+    _worldModelMatrix.setIdentity();
+
     final zPos = _project(child.position, child.projectedOrigin);
     if (zPos == null) {
+      logInfo('Origin not visible => Child is not visible: $it');
       return it.markInvisible();
     }
+
+    _initChildTransform(child);
 
     final _in = child.localVertices;
     final out = child.projectedVertices;
@@ -97,5 +82,28 @@ class World3d {
     // Convert NDC to screen coordinates
     to.setFrom(camera.ndcToScreen(ndc));
     return ndc.z;
+  }
+
+  void _initChildTransform(Position3D child) {
+    _scaleMatrix
+      ..setIdentity()
+      ..scale(child.scale);
+
+    _rotationMatrix
+      ..setIdentity()
+      ..rotateZ(child.rotation.z)
+      ..rotateY(child.rotation.y)
+      ..rotateX(child.rotation.x);
+
+    _translationMatrix
+      ..setIdentity()
+      ..translate(child.position);
+
+    _worldModelMatrix
+      ..setFrom(_translationMatrix)
+      ..multiply(_rotationMatrix)
+      ..multiply(_scaleMatrix);
+
+    child.worldTransform.setFrom(_worldModelMatrix);
   }
 }

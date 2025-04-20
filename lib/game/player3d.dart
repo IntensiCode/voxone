@@ -34,9 +34,12 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   final _renderSize = 256;
 
+  Player3D() {
+    anchor = Anchor.center;
+  }
+
   @override
   Future<void> onLoad() async {
-    anchor = Anchor.center;
     await _initShaders();
     _initPosition3d();
   }
@@ -119,7 +122,8 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
   }
 
-  final _paint = pixel_paint();
+  late final _paint = pixel_paint();
+  late final _offset = MutableOffset(-_renderSize / 2, -_renderSize / 2);
 
   @override
   void render(ui.Canvas canvas) {
@@ -130,7 +134,10 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
     _renderExhaust();
     _renderVoxelModel();
-    canvas.drawImage(_shaderBuffer!, Offset.zero, _paint);
+
+    _offset.dx = -64;
+    _offset.dy = -64;
+    canvas.drawImage(_shaderBuffer!, _offset, _paint);
   }
 
   final _shaderRect = MutRect(0, 0, 0, 0);

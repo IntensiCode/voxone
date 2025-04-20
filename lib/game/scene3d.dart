@@ -4,17 +4,16 @@ import 'package:flame/components.dart';
 import 'package:stardash/game/cube3d.dart';
 import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
-import 'package:stardash/game/test3d.dart';
 import 'package:stardash/game/world3d_component.dart';
 
 class Scene3d extends Component with HasContext {
   late World3DComponent world;
   double _elapsedTime = 0;
-  final double _cameraRotationSpeed = 0.1; // Radians per second (kept slow)
-  final double _minCameraRadius = 50.0;
-  final double _maxCameraRadius = 200.0;
+  final double _cameraRotationSpeed = 0.5; // Radians per second (kept slow)
+  final double _minCameraRadius = 000.0;
+  final double _maxCameraRadius = 500.0;
   final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
-  final double _ambientPulseSpeed = 0.3; // Slower pulse for ambient light
+  final double _ambientPulseSpeed = 1.0; // Slower pulse for ambient light
 
   @override
   Future<void> onLoad() async {
@@ -61,8 +60,8 @@ class Scene3d extends Component with HasContext {
     world.camera.moveTo(Vector3(camX, 0, camZ));
 
     // Update ambient light level (oscillating between 0.1 and 0.3)
-    final double baseAmbient = 0.2;
-    final double ambientAmplitude = 0.1;
+    final double baseAmbient = 0.3;
+    final double ambientAmplitude = 0.3;
     final double ambientOscillation = sin(_elapsedTime * _ambientPulseSpeed);
     world.world.ambientLightLevel = // Access public world instance
         baseAmbient + ambientAmplitude * ambientOscillation;

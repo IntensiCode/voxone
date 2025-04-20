@@ -13,12 +13,14 @@ import 'package:stardash/util/mutable.dart';
 class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLightedFaces, HasUpdate2D {
   static const double _rotationSpeed = pi / 8; // 90 degrees per second around Z
   static const double _pulseSpeed = pi * 4; // One full pulse cycle every 2 seconds
-  static const double _minScale = 0.9;
-  static const double _maxScale = 1.1;
+  static const double _minScale = 1.0;
+  static const double _maxScale = 1.0;
 
   double _time = 0.0;
 
   Cube3D({required Vector3 initialPosition}) {
+    anchor = Anchor.center;
+
     position3d = Position3D(position: initialPosition);
 
     // Cube spans from -10 to +10 on each axis (size 20)
@@ -77,7 +79,9 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
 
     _time += dt;
 
-    position3d.rotation.z = (_time * _rotationSpeed) % (2 * pi);
+    position3d.rotation.x = (_time * _rotationSpeed * 1.0) % (2 * pi);
+    position3d.rotation.y = (_time * _rotationSpeed * 2.2) % (2 * pi);
+    position3d.rotation.z = (_time * _rotationSpeed * 3.4) % (2 * pi);
 
     var delta = (_maxScale - _minScale);
     var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
@@ -94,10 +98,13 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
     assert(localFaces.length == 12);
     assert(faceLightIntensities.length == 12);
 
+    canvas.translate(-position.x, -position.y);
     _renderFaces(canvas);
+    canvas.translate(position.x, position.y);
   }
 
   void _renderFaces(ui.Canvas canvas) {
+
     final projected = position3d.projectedVertices;
     if (projected.isEmpty) return;
 

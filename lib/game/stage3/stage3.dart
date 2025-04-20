@@ -16,7 +16,7 @@ class Stage3 extends GameScreen with HasContext {
     // add(TunnelPlayer());
     // shadows.isVisible = false;
 
-    add(MantaComponent());
+    // add(MantaComponent());
     add(Scene3d());
   }
 }

@@ -86,7 +86,7 @@ class Camera3D {
     _ndc.scale(1.0 / w);
 
     // Check final NDC X/Y against tolerance
-    const double xyNdcTolerance = 5.0; // Check final NDC x/y within +/- this range
+    const double xyNdcTolerance = 50.0; // Check final NDC x/y within +/- this range
     if (_ndc.x.abs() > xyNdcTolerance || _ndc.y.abs() > xyNdcTolerance) {
       // logDebug('Camera3D: Point rejected by NDC X/Y tolerance check. NDC: $_ndc');
       return null; // Point projects too far outside the standard [-1, 1] view
