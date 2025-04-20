@@ -6,7 +6,6 @@ import 'package:vector_math/vector_math_64.dart';
 
 class Position3D {
   final Vector3 position;
-  final Vector3 size;
   final Vector3 scale; // = Vector3.all(1.0);
   final Vector3 rotation; // = Vector3.zero(); // Euler angles (X, Y, Z)
 
@@ -19,20 +18,17 @@ class Position3D {
   // Vertices defined relative to this position
   List<Vector3> localVertices = [];
 
-  // Projected 2D screen coordinates corresponding to world vertices
+  // Projected screen coord of origin
+  final Vector2 projectedOrigin = Vector2.zero();
+
+  // Projected 2D screen coordinates corresponding world vertices
   List<Vector2> projectedVertices = [];
-
-  final Vector2 projectedOrigin = Vector2.zero(); // Projected screen coord of origin
-
-  Vector3 get center => position + (size / 2);
 
   Position3D({
     required this.position,
-    Vector3? size,
     Vector3? scale,
     Vector3? rotation,
-  })  : size = size ?? Vector3.zero(),
-        scale = scale ?? Vector3.all(1.0),
+  })  : scale = scale ?? Vector3.all(1.0),
         rotation = rotation ?? Vector3.zero();
 
   final _o1 = MutableOffset(0, 0);
@@ -55,6 +51,4 @@ class Position3D {
     _pair.setFrom(_o1, _o2);
     return _pair;
   }
-
-// Potential future methods for transform updates, etc.
 }

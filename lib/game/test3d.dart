@@ -11,16 +11,16 @@ import 'package:stardash/game/update2d.dart';
 import 'package:stardash/util/uniforms.dart';
 
 // Class definition order fixed: with before implements
-class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
+class Test3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext, HasPaint {
   double _time = 0.0;
 
   late ui.Image _voxelImage;
 
   ui.FragmentShader? _shader;
-  Uniforms<Voxel3dUniform>? _uniforms;
+  UniformsExt<Voxel3dUniform>? _uniforms;
 
   ui.FragmentShader? _exhaustShader;
-  Uniforms<ExhaustUniform>? _exhaustUniforms;
+  UniformsExt<ExhaustUniform>? _exhaustUniforms;
   ui.Image? _exhaustOutputImage;
   late final ui.Paint _exhaustPaint = ui.Paint();
 
@@ -37,7 +37,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   // Added: Base size for 3D object representation
   final double _base3dSize = 20.0;
 
-  Player3D() {
+  Test3D() {
     // Renamed constructor
     paint.isAntiAlias = false;
     paint.filterQuality = ui.FilterQuality.none;
@@ -47,9 +47,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   @override
   Future<void> onLoad() async {
-    logInfo('Loading Player3D'); // Updated log
-    logInfo('Loading Player3D'); // Updated log
-    logInfo('Loading Player3D'); // Updated log
+    logInfo('Loading Test3D'); // Updated log
     try {
       _voxelImage = await game.images.load('interstellar_15.png');
     } catch (e) {
@@ -83,7 +81,17 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     try {
       final program = await ui.FragmentProgram.fromAsset('assets/shaders/voxel3d.frag');
       _shader = program.fragmentShader();
-      _uniforms = Uniforms(_shader!, Voxel3dUniform.values);
+      _uniforms = UniformsExt<Voxel3dUniform>(_shader!, {
+        Voxel3dUniform.dstOrigin: Vector2,           // Index 0, 1
+        Voxel3dUniform.dstSize: Vector2,            // Index 2, 3
+        Voxel3dUniform.srcOrigin: Vector2,          // Index 4, 5
+        Voxel3dUniform.atlasSize: Vector2,          // Index 6, 7
+        Voxel3dUniform.frames: double,              // Index 8
+        Voxel3dUniform.frameSize: Vector2,          // Index 9, 10
+        Voxel3dUniform.modelMatrixInverse: Matrix4, // Index 11-26
+        Voxel3dUniform.lightDirection: Vector3,     // Index 27-29
+        Voxel3dUniform.renderMode: double,          // Index 30
+      });
     } catch (e) {
       logError('Error loading voxel3d shader: $e');
     }
@@ -91,7 +99,18 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     try {
       final exhaustProgram = await ui.FragmentProgram.fromAsset('assets/shaders/exhaust.frag');
       _exhaustShader = exhaustProgram.fragmentShader();
-      _exhaustUniforms = Uniforms(_exhaustShader!, ExhaustUniform.values);
+      _exhaustUniforms = UniformsExt<ExhaustUniform>(_exhaustShader!, {
+        ExhaustUniform.resolution: Vector2,
+        ExhaustUniform.time: double,
+        ExhaustUniform.targetColor: Vector4,
+        ExhaustUniform.colorVariance: double,
+        ExhaustUniform.exhaustLength: double,
+        ExhaustUniform.color0: Vector3,
+        ExhaustUniform.color1: Vector3,
+        ExhaustUniform.color2: Vector3,
+        ExhaustUniform.color3: Vector3,
+        ExhaustUniform.color4: Vector3,
+      });
     } catch (e) {
       logError('Error loading exhaust shader: $e');
     }
@@ -120,12 +139,12 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   void render(ui.Canvas canvas) {
     // Check priority set by 3D system
     if (priority < 0) {
-      logDebug("Player3D render skipped due to priority < 0");
+      logDebug("Test3D render skipped due to priority < 0");
       return;
     }
 
     if (_shader == null || _uniforms == null || _exhaustShader == null || _exhaustUniforms == null) {
-      logDebug("Player3D render skipped due to shader initialization failure");
+      logDebug("Test3D render skipped due to shader initialization failure");
       return;
     }
 
@@ -137,14 +156,14 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // The canvas origin is already translated to component.position by Flame
     // We draw the shader rect covering the component's size (updated by mixin)
     if (_exhaustOutputImage != null) {
-      _update_uniforms(_shader!, inputImage: _exhaustOutputImage!);
+      _update_uniforms(inputImage: _exhaustOutputImage!);
       _shader!.setImageSampler(0, _exhaustOutputImage!); // Use the exhaust output image
       paint.shader = _shader;
       canvas.drawRect(size.toRect(), paint);
     } else {
       // logDebug("shade size: $size");
       // Fallback or initial frame: render directly from original atlas
-      _update_uniforms(_shader!, inputImage: _voxelImage);
+      _update_uniforms(inputImage: _voxelImage);
       _shader!.setImageSampler(0, _voxelImage);
       paint.shader = _shader;
       // size.setAll(100);
@@ -162,14 +181,14 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     //     ..style = ui.PaintingStyle.fill,
     // );
 
-    // logDebug("Player3D 2D position: ${position.x}, ${position.y}"); // Log the 2D position
+    // logDebug("Test3D 2D position: ${position.x}, ${position.y}"); // Log the 2D position
   }
 
   // Exhaust Pass Rendering - unchanged
   void _renderExhaustPass() {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
-    _updateExhaustUniforms(_exhaustShader!);
+    _updateExhaustUniforms();
     _exhaustShader!.setImageSampler(0, _voxelImage);
     final targetRect = ui.Rect.fromLTWH(0, 0, _voxelImage.width.toDouble(), _voxelImage.height.toDouble());
     _exhaustPaint.shader = _exhaustShader;
@@ -180,41 +199,25 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     picture.dispose();
   }
 
-  // Update Exhaust Shader Uniforms - unchanged
-  void _updateExhaustUniforms(ui.FragmentShader shader) {
-    // ... unchanged logic ...
+  // Update Exhaust Shader Uniforms - changed to use UniformsExt with compound types
+  void _updateExhaustUniforms() {
     final uniforms = _exhaustUniforms!;
-    uniforms.switch_shader(shader);
     final imageSize = Vector2(_voxelImage.width.toDouble(), _voxelImage.height.toDouble());
-    uniforms.set(ExhaustUniform.resolutionX, imageSize.x);
-    uniforms.set(ExhaustUniform.resolutionY, imageSize.y);
-    uniforms.set(ExhaustUniform.time, _time);
-    uniforms.set(ExhaustUniform.targetColorR, 1.0); // Red target
-    uniforms.set(ExhaustUniform.targetColorG, 0.2);
-    uniforms.set(ExhaustUniform.targetColorB, 0.0);
-    uniforms.set(ExhaustUniform.targetColorA, 1.0);
-    uniforms.set(ExhaustUniform.colorVariance, 0.1);
-    uniforms.set(ExhaustUniform.exhaustLength, 8.0);
+    uniforms[ExhaustUniform.resolution] = imageSize;
+    uniforms[ExhaustUniform.time] = _time;
+    uniforms[ExhaustUniform.targetColor] = Vector4(1.0, 0.2, 0.0, 1.0); // Red target
+    uniforms[ExhaustUniform.colorVariance] = 0.1;
+    uniforms[ExhaustUniform.exhaustLength] = 8.0;
     // Flame colors
-    uniforms.set(ExhaustUniform.color0R, 1.0);
-    uniforms.set(ExhaustUniform.color0G, 0.0);
-    uniforms.set(ExhaustUniform.color0B, 0.0);
-    uniforms.set(ExhaustUniform.color1R, 1.0);
-    uniforms.set(ExhaustUniform.color1G, 1.0);
-    uniforms.set(ExhaustUniform.color1B, 0.0);
-    uniforms.set(ExhaustUniform.color2R, 1.0);
-    uniforms.set(ExhaustUniform.color2G, 0.0);
-    uniforms.set(ExhaustUniform.color2B, 0.0);
-    uniforms.set(ExhaustUniform.color3R, 0.5);
-    uniforms.set(ExhaustUniform.color3G, 0.0);
-    uniforms.set(ExhaustUniform.color3B, 0.0);
-    uniforms.set(ExhaustUniform.color4R, 0.5);
-    uniforms.set(ExhaustUniform.color4G, 0.0);
-    uniforms.set(ExhaustUniform.color4B, 0.0);
+    uniforms[ExhaustUniform.color0] = Vector3(1.0, 0.0, 0.0);
+    uniforms[ExhaustUniform.color1] = Vector3(1.0, 1.0, 0.0);
+    uniforms[ExhaustUniform.color2] = Vector3(1.0, 0.0, 0.0);
+    uniforms[ExhaustUniform.color3] = Vector3(0.5, 0.0, 0.0);
+    uniforms[ExhaustUniform.color4] = Vector3(0.5, 0.0, 0.0);
   }
 
-  // Modified to use position3d.worldTransform for matrix calculation
-  void _update_uniforms(ui.FragmentShader shader, {required ui.Image inputImage}) {
+  // Modified to use position3d.worldTransform for matrix calculation and UniformsExt with compound types
+  void _update_uniforms({required ui.Image inputImage}) {
     // --- START: Matrix Calculation ---
     // 1. Get the world transform calculated by World3d system
     final Matrix4 finalMatrix = position3d.worldTransform;
@@ -225,7 +228,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // --- END: Matrix Calculation ---
 
     final uniforms = _uniforms!;
-    uniforms.switch_shader(shader);
 
     // --- Set Uniforms (uses _matrixData calculated above) ---
     final frameSizeVec = Vector2(inputImage.width.toDouble(), inputImage.height.toDouble() / _frames);
@@ -235,25 +237,16 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // Use component's size (updated by mixin) for dstSize
     final dstSizeVec = size;
 
-    uniforms.set(Voxel3dUniform.dstOriginX, dstOriginVec.x);
-    uniforms.set(Voxel3dUniform.dstOriginY, dstOriginVec.y);
-    uniforms.set(Voxel3dUniform.dstSizeX, dstSizeVec.x);
-    uniforms.set(Voxel3dUniform.dstSizeY, dstSizeVec.y);
-    uniforms.set(Voxel3dUniform.srcOriginX, srcOriginVec.x);
-    uniforms.set(Voxel3dUniform.srcOriginY, srcOriginVec.y);
-    uniforms.set(Voxel3dUniform.atlasSizeX, atlasSizeVec.x);
-    uniforms.set(Voxel3dUniform.atlasSizeY, atlasSizeVec.y);
-    uniforms.set(Voxel3dUniform.frames, _frames.toDouble());
-    uniforms.set(Voxel3dUniform.frameX, frameSizeVec.x);
-    uniforms.set(Voxel3dUniform.frameY, frameSizeVec.y);
-    uniforms.set(Voxel3dUniform.lightX, _lightDirection.x);
-    uniforms.set(Voxel3dUniform.lightY, _lightDirection.y);
-    uniforms.set(Voxel3dUniform.lightZ, _lightDirection.z);
+    uniforms[Voxel3dUniform.dstOrigin] = dstOriginVec;
+    uniforms[Voxel3dUniform.dstSize] = dstSizeVec;
+    uniforms[Voxel3dUniform.srcOrigin] = srcOriginVec;
+    uniforms[Voxel3dUniform.atlasSize] = atlasSizeVec;
+    uniforms[Voxel3dUniform.frameSize] = frameSizeVec;
+    uniforms[Voxel3dUniform.frames] = _frames.toDouble();
+    uniforms[Voxel3dUniform.lightDirection] = _lightDirection;
     // Set the matrix uniform
-    for (int i = 0; i < 16; i++) {
-      uniforms.set(Voxel3dUniform.values[Voxel3dUniform.mat0.index + i], _matrixData[i].toDouble());
-    }
-    uniforms.set(Voxel3dUniform.renderMode, 0.0);
+    uniforms[Voxel3dUniform.modelMatrixInverse] = _modelMatrixInverse;
+    uniforms[Voxel3dUniform.renderMode] = 0.0;
   }
 
   @override
@@ -266,65 +259,29 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 // Remove makeViewMatrix helper - no longer needed here
 // Matrix4 makeViewMatrix(...) { ... }
 
-// Voxel3dUniform enum remains the same
+// Voxel3dUniform enum updated for compound types
 enum Voxel3dUniform {
-  dstOriginX,
-  dstOriginY,
-  dstSizeX,
-  dstSizeY,
-  srcOriginX,
-  srcOriginY,
-  atlasSizeX,
-  atlasSizeY,
-  frames,
-  frameX,
-  frameY,
-  mat0,
-  mat1,
-  mat2,
-  mat3,
-  mat4,
-  mat5,
-  mat6,
-  mat7,
-  mat8,
-  mat9,
-  mat10,
-  mat11,
-  mat12,
-  mat13,
-  mat14,
-  mat15,
-  lightX,
-  lightY,
-  lightZ,
-  renderMode,
+  dstOrigin,     // Vector2
+  dstSize,       // Vector2
+  srcOrigin,     // Vector2
+  atlasSize,     // Vector2
+  frames,        // double
+  frameSize,     // Vector2
+  modelMatrixInverse, // Matrix4
+  lightDirection, // Vector3
+  renderMode,    // double
 }
 
-// ExhaustUniform enum remains the same
+// ExhaustUniform enum updated for compound types
 enum ExhaustUniform {
-  resolutionX,
-  resolutionY,
-  time,
-  targetColorR,
-  targetColorG,
-  targetColorB,
-  targetColorA,
-  colorVariance,
-  exhaustLength,
-  color0R,
-  color0G,
-  color0B,
-  color1R,
-  color1G,
-  color1B,
-  color2R,
-  color2G,
-  color2B,
-  color3R,
-  color3G,
-  color3B,
-  color4R,
-  color4G,
-  color4B,
-}
+  resolution,    // Vector2
+  time,          // double
+  targetColor,   // Vector4
+  colorVariance, // double
+  exhaustLength, // double
+  color0,        // Vector3 (RGB)
+  color1,        // Vector3 (RGB)
+  color2,        // Vector3 (RGB)
+  color3,        // Vector3 (RGB)
+  color4,        // Vector3 (RGB)
+} 

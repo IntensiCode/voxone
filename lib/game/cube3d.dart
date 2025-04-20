@@ -6,18 +6,19 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
+import 'package:stardash/game/update2d.dart';
 import 'package:stardash/util/mutable.dart';
 
-class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLightedFaces {
-  final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
-  final double _pulseSpeed = pi; // One full pulse cycle every 2 seconds
-  final double _minScale = 0.9;
-  final double _maxScale = 1.1;
+class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLightedFaces, HasUpdate2D {
+  static const double _rotationSpeed = pi / 8; // 90 degrees per second around Z
+  static const double _pulseSpeed = pi * 4; // One full pulse cycle every 2 seconds
+  static const double _minScale = 0.9;
+  static const double _maxScale = 1.1;
 
   double _time = 0.0;
 
   Cube3D({required Vector3 initialPosition}) {
-    position3d = Position3D(position: initialPosition, size: Vector3.all(20));
+    position3d = Position3D(position: initialPosition);
 
     // Cube spans from -10 to +10 on each axis (size 20)
     const double half = 10.0;
@@ -68,9 +69,24 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
   }
 
   @override
-  void render(Canvas canvas) {
-    if (priority < 0) return;
+  void update(double dt) {
+    super.update(dt);
 
+    _time += dt;
+
+    position3d.rotation.z = (_time * _rotationSpeed) % (2 * pi);
+
+    var delta = (_maxScale - _minScale);
+    var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
+    final scale = _minScale + delta * variance; // Pulse effect
+    position3d.scale.setValues(scale, scale, scale);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+
+    assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
     assert(position3d.projectedVertices.length == 8);
     assert(localFaces.length == 12);
     assert(faceLightIntensities.length == 12);
@@ -89,6 +105,10 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
       final v0 = projected[faceIndices[0]];
       final v1 = projected[faceIndices[1]];
       final v2 = projected[faceIndices[2]];
+
+      v0.sub(position);
+      v1.sub(position);
+      v2.sub(position);
 
       // Simple backface culling: Check winding order
       if ((v1.x - v0.x) * (v2.y - v0.y) - (v1.y - v0.y) * (v2.x - v0.x) < 0) {
@@ -112,18 +132,4 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
   static final _baseColor = Colors.green;
   static final _facePaint = pixel_paint()..style = PaintingStyle.fill;
   static final _mutableFaceColor = MutableColor(0, 0, 0, 0);
-
-  @override
-  void update(double dt) {
-    _time += dt;
-
-    position3d.rotation.z = (_time * _rotationSpeed) % (2 * pi);
-
-    var delta = (_maxScale - _minScale);
-    var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
-    final scale = 1.0; // _minScale + delta * variance; // Pulse effect
-    position3d.scale.setValues(scale, scale, scale);
-
-    super.update(dt);
-  }
 }
