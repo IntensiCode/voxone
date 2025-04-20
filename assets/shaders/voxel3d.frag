@@ -32,7 +32,7 @@ float calculateShadowFactor(vec3 pos, vec3 lightDirection);
 void main() {
     vec2 uv = FlutterFragCoord().xy;
     vec2 screenUV = calculateScreenUV(FlutterFragCoord().xy);
-    screenUV.y = -screenUV.y;// Invert Y coordinate for OpenGL
+    screenUV.y = -screenUV.y;// Invert to match Camera3D
 
     // Start slightly randomized in depth: (Attempted fix for shading noise. Working only badly.)
     float rnd = random(screenUV) * 0.0025;

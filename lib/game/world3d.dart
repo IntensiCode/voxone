@@ -148,6 +148,8 @@ class World3d {
         row.normalize();
         rotationOnly.setRow(i, row);
       }
+      // Invert rotY for shader
+      rotationOnly.setColumn(1, -rotationOnly.getColumn(1));
 
       // Invert the rotation (transpose for orthogonal matrix)
       rotationOnly.transpose();
@@ -157,7 +159,8 @@ class World3d {
       pureRotationInverse.setRotation(rotationOnly);
 
       // Apply to render transform
-      it.setFrom(_worldModelMatrix);
+      // it.setFrom(_worldModelMatrix);
+      it.setIdentity();
       it.multiply(pureRotationInverse);
 
       // logInfo('rot: ${it.getRotation()}');
