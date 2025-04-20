@@ -1,11 +1,10 @@
-import 'package:flame/components.dart'; // For Vector3, Matrix4
-import 'package:stardash/core/common.dart'; // For game_width/height
+import 'package:flame/components.dart';
+import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
 import 'package:stardash/game/position_component_3d.dart';
 
 class World3d {
   late final Camera3D camera;
-  late Vector2 _screenSize = Vector2(game_width, game_height);
 
   final Matrix4 _scaleMatrix = Matrix4.identity();
   final Matrix4 _rotationMatrix = Matrix4.identity();
@@ -15,19 +14,12 @@ class World3d {
   World3d({Camera3D? camera}) {
     this.camera = camera ??
         Camera3D(
+          screenSize: Vector2(game_width, game_height),
           initialPosition: Vector3(0, 0, 100),
           initialTarget: Vector3(0, 0, 0),
         );
-
-    _updateCameraAspectRatio();
   }
 
-  void _updateCameraAspectRatio() {
-    final double aspect = game_width / game_height;
-    camera.updateAspectRatio(aspect);
-  }
-
-  // Method to perform the projection logic for a list of 3D children
   void projectChildren(List<PositionComponent3D> children) {
     for (final child in children) {
       // Reset matrices
