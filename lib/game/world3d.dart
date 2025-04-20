@@ -11,7 +11,7 @@ class World3d {
 
   // World properties
   double ambientLightLevel = 0.2;
-  final Vector3 lightDirection = Vector3(0.5, -0.75, -1.0)..normalize();
+  final Vector3 _lightDirection = Vector3(0.5, 0.75, -1.0)..normalize();
 
   final Matrix4 _scaleMatrix = Matrix4.identity();
   final Matrix4 _rotationMatrix = Matrix4.identity();
@@ -58,7 +58,7 @@ class World3d {
   /// To be called after projectChildren.
   void lightChildren(Iterable<HasLightedFaces> children) {
     for (final it in children) {
-      it.calculateLighting(lightDirection, ambientLightLevel);
+      it.calculateLighting(_lightDirection, ambientLightLevel);
     }
   }
 
