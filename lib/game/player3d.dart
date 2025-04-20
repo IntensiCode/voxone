@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:stardash/core/common.dart';
@@ -16,34 +17,54 @@ import 'package:stardash/util/uniforms.dart';
 class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasUpdate2D, HasContext {
   double _time = 0.0;
 
-  late final int _frames;
-  late final ui.Image _voxelImage;
+  static late final int _frames;
+  static late final ui.Image _voxelImage;
 
-  late final ui.FragmentShader _shader;
-  late final ui.FragmentShader _exhaustShader;
-  late final UniformsExt<Voxel3dUniform> _uniforms;
-  late final UniformsExt<ExhaustUniform> _exhaustUniforms;
+  static late final ui.FragmentShader _shader;
+  static late final ui.FragmentShader _exhaustShader;
+  static late final UniformsExt<Voxel3dUniform> _uniforms;
+  static late final UniformsExt<ExhaustUniform> _exhaustUniforms;
 
-  ui.Image? _shaderBuffer;
+  static ui.Image? _shaderBuffer;
 
   final Matrix4 _modelMatrixInverse = Matrix4.identity(); // Needed for shader
   final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize(); // Keep shader light
 
   final _renderSize = 256;
 
-  // Reusable identity matrix
-  final Matrix4 _identityMatrix = Matrix4.identity();
-
   final Vector3 _localLightDirection = Vector3.zero();
 
-  Player3D() {
+  Player3D({required Vector3 initialPosition}) {
+    logInfo('Player3D: $initialPosition');
+
     anchor = Anchor.center;
+
+    position3d = Position3D(position: initialPosition);
+    position3d.needsFullTransform = true;
+
+    // Define local vertices matching the shader's unit cube space
+    // This is needed for correct depth calculation and potentially shader internal logic
+    const double half = 10.0;
+    const double height = 10.0;
+    const double length = 10.0;
+    position3d.localVertices = [
+      Vector3(-half, -height, -length),
+      Vector3(half, -height, -length),
+      Vector3(half, height, -length),
+      Vector3(-half, height, -length),
+      Vector3(-half, -height, length),
+      Vector3(half, -height, length),
+      Vector3(half, height, length),
+      Vector3(-half, height, length),
+    ];
   }
+
+  static Future? _await_shaders;
 
   @override
   Future<void> onLoad() async {
-    await _initShaders();
-    _initPosition3d();
+    final it = _await_shaders ??= _initShaders();
+    await it;
   }
 
   Future<void> _initShaders() async {
@@ -91,27 +112,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     u[ExhaustUniform.color4] = Vector3(0.5, 0.0, 0.0);
   }
 
-  void _initPosition3d() {
-    position3d = Position3D(position: Vector3.zero());
-    position3d.needsFullTransform = true;
-
-    // Define local vertices matching the shader's unit cube space
-    // This is needed for correct depth calculation and potentially shader internal logic
-    const double half = 10.0;
-    const double height = 10.0;
-    const double length = 10.0;
-    position3d.localVertices = [
-      Vector3(-half, -height, -length),
-      Vector3(half, -height, -length),
-      Vector3(half, height, -length),
-      Vector3(-half, height, -length),
-      Vector3(-half, -height, length),
-      Vector3(half, -height, length),
-      Vector3(half, height, length),
-      Vector3(-half, height, length),
-    ];
-  }
-
   @override
   void update(double dt) {
     super.update(dt); // Let mixins run first (Updates2DFrom3D sets position/size)
@@ -148,7 +148,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // position3d.projectedVertices
     canvas.save();
     canvas.translate(size.x / 2, size.y / 2);
-    final s = max(size.x, size.y);
     canvas.translate(-_renderSize / 2, -_renderSize / 2);
     _dstRect.setSize(_renderSize * 1.0, _renderSize * 1.0);
     // _dstRect.left = -position.x;
@@ -174,7 +173,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   void _renderVoxelModel() {
     final img = pixelate(_renderSize, _renderSize, (canvas) {
       _updateUniforms(_shader);
-      _shader.setImageSampler(0, _shaderBuffer!);
+      _shader.setImageSampler(0, _shaderBuffer ?? _voxelImage);
       _paint.shader = _shader;
       _shaderRect.setSizeInt(_renderSize, _renderSize);
       canvas.drawRect(_shaderRect, _paint);
