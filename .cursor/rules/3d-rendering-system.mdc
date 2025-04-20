@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 3D Rendering System Structure
+
+This document outlines the structure and key components of the simple 3D rendering system.
+
+## Core Components
+
+*   **`World3DComponent` ([lib/game/world3d_component.dart](mdc:lib/game/world3d_component.dart))**: The main Flame component that manages the 3D world. It holds references to `World3d` and `Camera3D`. Its primary role in `updateTree` is to orchestrate the projection and lighting passes for its children.
+*   **`World3d` ([lib/game/world3d.dart](mdc:lib/game/world3d.dart))**: Handles the core 3D logic.
+    *   `projectChildren`: Calculates world transforms and projects 3D vertices to 2D screen coordinates for components with `HasPosition3D`.
+    *   `lightChildren`: Iterates through components with `HasLightedFaces` and calls their `calculateLighting` method, providing the world's light direction.
+*   **`Camera3D` ([lib/game/camera3d.dart](mdc:lib/game/camera3d.dart))**: Defines the virtual camera's position, target, and projection parameters used by `World3d` for projection.
+*   **`Position3D` ([lib/game/position3d.dart](mdc:lib/game/position3d.dart))**: A data class holding 3D position, size, scale, rotation, vertices (local and projected), and world transform matrix. It does *not* contain lighting-specific data.
+
+## Mixins and Interfaces
+
+Located in [lib/game/position3d_component.dart](mdc:lib/game/position3d_component.dart):
+
+*   **`HasPosition3D`**: A mixin for Flame `PositionComponent`s that need a 3D representation. It requires the component to provide a `Position3D` instance.
+*   **`HasLightedFaces`**: A mixin for components (usually also using `HasPosition3D`) that have faces requiring lighting calculations. It defines:
+    *   `localFaces`: Vertex indices defining the component's faces.
+    *   `faceNormals`: Pre-calculated normal vectors for each face.
+    *   `faceLightIntensities`: Stores the calculated light intensity for each face.
+    *   `calculateLighting(Vector3 lightDirection)`: Method responsible for calculating the light intensity for each face based on its normal and the provided light direction.
+
+## Example Implementation
+
+*   **`Cube3D` ([lib/game/cube3d.dart](mdc:lib/game/cube3d.dart))**: An example `PositionComponent` using both `HasPosition3D` and `HasLightedFaces` to render a simple, lighted cube. It initializes its `Position3D` and the lighting-related fields required by `HasLightedFaces`.
+
+## Rendering Flow
+
+1.  `World3DComponent.updateTree` calls `World3d.projectChildren`.
+2.  `World3d.projectChildren` iterates through `HasPosition3D` children, calculates their `worldTransform`, and projects their `localVertices` into `projectedVertices` using `Camera3D`.
+3.  `World3DComponent.updateTree` calls `World3d.lightChildren`.
+4.  `World3d.lightChildren` iterates through `HasLightedFaces` children and calls their `calculateLighting` method.
+5.  Each component's `render` method (e.g., `Cube3D.render`) uses the `projectedVertices` and `faceLightIntensities` to draw the object onto the canvas.

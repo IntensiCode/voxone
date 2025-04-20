@@ -1,10 +1,15 @@
 import 'dart:math';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'package:flame/components.dart';
 import 'package:stardash/core/common.dart';
+import 'package:stardash/game/has_lighted_faces.dart';
+import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
 import 'package:stardash/game/position3d_component.dart';
+import 'package:vector_math/vector_math_64.dart';
 
 class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z

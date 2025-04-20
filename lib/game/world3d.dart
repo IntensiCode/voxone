@@ -1,19 +1,22 @@
 import 'package:flame/components.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
+import 'package:stardash/game/has_lighted_faces.dart';
+import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d_component.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 class World3d {
   late final Camera3D camera;
 
+  // World properties
+  double ambientLightLevel = 0.2;
+  final Vector3 _lightDirection = Vector3(0.5, -0.75, -1.0)..normalize();
+
   final Matrix4 _scaleMatrix = Matrix4.identity();
   final Matrix4 _rotationMatrix = Matrix4.identity();
   final Matrix4 _translationMatrix = Matrix4.identity();
   final Matrix4 _worldModelMatrix = Matrix4.identity();
-
-  // Simple directional light source (kept here as world property)
-  final Vector3 _lightDirection = Vector3(0.5, -0.75, -1.0)..normalize();
 
   World3d({Camera3D? camera}) {
     this.camera = camera ??
@@ -55,7 +58,7 @@ class World3d {
   /// To be called after projectChildren.
   void lightChildren(Iterable<HasLightedFaces> children) {
     for (final it in children) {
-      it.calculateLighting(_lightDirection);
+      it.calculateLighting(_lightDirection, ambientLightLevel);
     }
   }
 
