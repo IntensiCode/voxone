@@ -66,31 +66,32 @@ class Camera3D {
     _point4.setValues(worldPoint.x, worldPoint.y, worldPoint.z, 1.0);
     viewProjectionMatrix.transformed(_point4, _clipPoint);
 
-    // Perspective division
+    // Check W first
     if (_clipPoint.w.abs() < 0.0001) {
-      return null; // Avoid division by zero/very small numbers
-    }
-
-    // _ndc.setValues(
-    //   _clipPoint.x / _clipPoint.w,
-    //   _clipPoint.y / _clipPoint.w,
-    //   _clipPoint.z / _clipPoint.w,
-    // );
-    _ndc.setFrom4(_clipPoint);
-    _ndc.scale(1.0 / _clipPoint.w);
-
-    // Basic clipping check (z is enough for near plane)
-    // Note: Full frustum clipping involves checking x and y against w as well.
-    if (_ndc.z < -1.0) {
-      // Behind near plane in NDC
-      logDebug('Camera3D: Point is behind near plane: $_ndc');
+      logDebug('Camera3D: Point rejected due to near-zero W: ${_clipPoint.w}');
       return null;
     }
 
-    // Optional: Far plane clipping (if needed)
-    // if (_ndc.z > 1.0) { // Beyond far plane in NDC
-    //    return null;
-    // }
+    // --- Modified Frustum Clipping Check (in Clip Space) ---
+    final w = _clipPoint.w;
+    const double xyTolerance = 2.0; // Allow x/y to be up to 2*w
+
+    // Z check remains strict (Near/Far planes)
+    if (_clipPoint.z.abs() > w) {
+      // logDebug('Camera3D: Point rejected by Z frustum check. ClipZ: ${_clipPoint.z}, W: $w');
+      return null;
+    }
+
+    // X/Y check allows some tolerance (Left/Right/Top/Bottom planes)
+    if (_clipPoint.x.abs() > w * xyTolerance || _clipPoint.y.abs() > w * xyTolerance) {
+       // logDebug('Camera3D: Point rejected by relaxed X/Y frustum check. ClipX: ${_clipPoint.x}, ClipY: ${_clipPoint.y}, W: $w');
+       return null; // Point is too far outside the X/Y view
+    }
+    // --- End Frustum Check ---
+
+    // Perspective division to get NDC
+    _ndc.setFrom4(_clipPoint);
+    _ndc.scale(1.0 / w);
 
     return _ndc;
   }
