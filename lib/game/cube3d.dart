@@ -6,6 +6,7 @@ import 'package:stardash/core/common.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
+import 'package:stardash/util/mutable.dart';
 
 class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
   final double _rotationSpeed = pi / 8; // 90 degrees per second around Z
@@ -66,9 +67,6 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
     faceLightIntensities = List.filled(localFaces.length, 0.0);
   }
 
-  static final _baseColor = Colors.red;
-  static final _facePaint = pixel_paint()..style = PaintingStyle.fill;
-
   @override
   void render(Canvas canvas) {
     if (priority < 0) return;
@@ -98,11 +96,9 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
       }
 
       // Set paint color based on light intensity
-      // TODO lerp allocates! do our own lerp!
-      // TODO create a MutableColor in mutable.dart
-      final Color faceColor =
-          Color.lerp(_baseColor, Colors.black, 1.0 - intensity)!;
-      _facePaint.color = faceColor.withAlpha(128);
+      _mutableFaceColor.setLerpKeepAlpha(
+          _baseColor, Colors.black, 1.0 - intensity, 255);
+      _facePaint.color = _mutableFaceColor.toColor();
 
       // Draw the triangle
       path.reset();
@@ -113,6 +109,10 @@ class Cube3D extends PositionComponent with HasPosition3D, HasLightedFaces {
       canvas.drawPath(path, _facePaint);
     }
   }
+
+  static final _baseColor = Colors.green;
+  static final _facePaint = pixel_paint()..style = PaintingStyle.fill;
+  static final _mutableFaceColor = MutableColor(0, 0, 0, 0);
 
   @override
   void update(double dt) {

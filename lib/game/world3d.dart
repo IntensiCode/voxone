@@ -68,13 +68,11 @@ class World3d {
 
     double totalNdcZ = 0;
     int visibleVertexCount = 0;
-    Vector2 projectedCenter = Vector2.zero(); // Accumulate projected center
 
     final _in = child.localVertices;
     final out = child.projectedVertices;
     for (int i = 0; i < _in.length; i++) {
-      final localVertex = _in[i];
-      child.worldTransform.transformed3(localVertex, _transformedVertex);
+      child.worldTransform.transformed3(_in[i], _transformedVertex);
 
       final Vector3? ndc = camera.projectWorldToNdc(_transformedVertex);
       if (ndc == null) {
@@ -82,19 +80,18 @@ class World3d {
         break;
       }
 
-      final screenPos = camera.ndcToScreen(ndc);
-      projectedCenter.add(screenPos); // Accumulate screen positions
-
       totalNdcZ += ndc.z;
       visibleVertexCount++;
 
       // Allocate enough only once:
       if (out.length < i + 1) out.add(Vector2.zero());
-      out[i].setFrom(screenPos);
+
+      out[i].setFrom(camera.ndcToScreen(ndc));
     }
 
-    // Priority and Position calculation
-    if (visibleVertexCount == child.localVertices.length) {
+    // Priority and Position calculation: If a vertex is not visible, we consider the whole invisible!
+    // Empty children are considered invisible for now!
+    if (visibleVertexCount > 0) {
       // Calculate average Z for priority
       final averageNdcZ = totalNdcZ / visibleVertexCount;
       it.priority = Camera3D.depthToPriority(averageNdcZ);

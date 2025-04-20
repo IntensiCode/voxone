@@ -222,10 +222,9 @@ class Player3D extends PositionComponent
       _shader!.setImageSampler(0, _voxelImage);
       paint.shader = _shader;
       // size.setAll(100);
-      paint.style = ui.PaintingStyle.fill;
-      paint.color = const ui.Color(0x8000FF00); // Fallback color
+      // paint.style = ui.PaintingStyle.fill;
+      // paint.color = const ui.Color(0x8000FF00); // Fallback color
       canvas.drawRect(size.toRect(), paint);
-      canvas.drawRect(ui.Rect.fromPoints(ui.Offset.zero, size.toOffset()), paint);
     }
 
     // Draw a BLUE CIRCLE:

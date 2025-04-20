@@ -202,3 +202,49 @@ class MutablePair<A, B> {
     second = b;
   }
 }
+
+class MutableColor {
+  late int a;
+  late int r;
+  late int g;
+  late int b;
+
+  MutableColor(this.a, this.r, this.g, this.b);
+
+  MutableColor.fromColor(Color color) {
+    setFrom(color);
+  }
+
+  void setFrom(Color color) {
+    a = color.alpha;
+    r = color.red;
+    g = color.green;
+    b = color.blue;
+  }
+
+  Color toColor() {
+    return Color.fromARGB(a, r, g, b);
+  }
+
+  // Performs lerp(a, b, t) and stores the result in this object
+  void setLerp(Color aColor, Color bColor, double t) {
+    final double clampedT = t.clamp(0.0, 1.0);
+    final double oneMinusT = 1.0 - clampedT;
+
+    a = (aColor.alpha * oneMinusT + bColor.alpha * clampedT).round();
+    r = (aColor.red * oneMinusT + bColor.red * clampedT).round();
+    g = (aColor.green * oneMinusT + bColor.green * clampedT).round();
+    b = (aColor.blue * oneMinusT + bColor.blue * clampedT).round();
+  }
+
+  // Helper for lerping with a fixed alpha
+  void setLerpKeepAlpha(Color aColor, Color bColor, double t, int alpha) {
+    final double clampedT = t.clamp(0.0, 1.0);
+    final double oneMinusT = 1.0 - clampedT;
+
+    a = alpha; // Keep alpha constant
+    r = (aColor.red * oneMinusT + bColor.red * clampedT).round();
+    g = (aColor.green * oneMinusT + bColor.green * clampedT).round();
+    b = (aColor.blue * oneMinusT + bColor.blue * clampedT).round();
+  }
+}
