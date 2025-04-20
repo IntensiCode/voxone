@@ -10,7 +10,7 @@ class World3DComponent extends Component {
 
   World3DComponent({Camera3D? camera}) {
     this.camera = camera ?? Camera3D(
-      initialPosition: Vector3(100, 0, 0), // Start at (100,0,0) for animation cycle
+      initialPosition: Vector3(0, 0, 100), // Static camera position
       initialTarget: Vector3(0, 0, 0),
     );
     _updateCameraAspectRatio(); // Use static size for aspect ratio
@@ -38,31 +38,50 @@ class World3DComponent extends Component {
     // logInfo('World3D updateTree after super.updateTree');
 
     // --- Projection Step ---
-    // Now that children have updated their 3D positions, project their vertices.
     for (final child in children) {
       if (child is PositionComponent3D) {
+
+        // Declare matrices INSIDE the loop for guaranteed freshness per child
+        final Matrix4 scaleMatrix = Matrix4.identity()..scale(child.scale3D);
+        final Matrix4 rotationMatrix = Matrix4.identity();
+        final Matrix4 translationMatrix = Matrix4.identity()..translate(child.position3D);
+        final Matrix4 worldModelMatrix = Matrix4.identity();
+
+        // Build Rotation Matrix (R)
+        final rotX = Matrix4.rotationX(child.rotation.x);
+        final rotY = Matrix4.rotationY(child.rotation.y);
+        final rotZ = Matrix4.rotationZ(child.rotation.z);
+        rotationMatrix.multiply(rotZ);
+        rotationMatrix.multiply(rotY);
+        rotationMatrix.multiply(rotX);
+
+        // Combine into worldModelMatrix (T * R * S)
+        // Note: Matrix multiplication order is right-to-left application
+        worldModelMatrix.setFrom(translationMatrix);
+        worldModelMatrix.multiply(rotationMatrix);
+        worldModelMatrix.multiply(scaleMatrix);
+
         child.projectedVertices.clear();
         double totalNdcZ = 0;
         int visibleVertexCount = 0;
 
         for (final localVertex in child.localVertices) {
-          final worldVertex = child.position3D + localVertex;
+          final worldVertex = worldModelMatrix.transform3(localVertex);
           final Vector3? ndc = camera.projectWorldToNdc(worldVertex);
-          Vector2? screenPos = null;
+          Vector2? screenPos;
           if (ndc != null) {
             screenPos = camera.ndcToScreen(ndc, _screenSize);
             totalNdcZ += ndc.z;
             visibleVertexCount++;
           }
-          child.projectedVertices.add(screenPos); // Add null if clipped
+          child.projectedVertices.add(screenPos);
         }
 
-        // --- Update Child's Priority based on average depth ---
+        // Priority calculation
         if (visibleVertexCount > 0) {
           final averageNdcZ = totalNdcZ / visibleVertexCount;
           child.priority = Camera3D.depthToPriority(averageNdcZ);
         } else {
-          // All vertices clipped or child has no vertices
           child.priority = -1;
         }
 

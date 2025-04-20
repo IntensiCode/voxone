@@ -13,10 +13,10 @@ class Scene3d extends Component {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    world = World3DComponent();
+    world = World3DComponent(); // Camera defaults to (100,0,0) looking at (0,0,0)
     await add(world);
 
-    final cube = Cube3D(initialPosition: Vector3.zero());
+    final cube = Cube3D(initialPosition: Vector3.zero()); // Place at origin
     await world.add(cube);
 
     // final cube2 = Cube3D(initialPosition: Vector3(20, 10, -30));
@@ -26,6 +26,8 @@ class Scene3d extends Component {
   @override
   void update(double dt) {
     super.update(dt);
+    // Comment out camera animation for now
+    /*
     _elapsedTime += dt;
 
     // Calculate new camera position on the XZ plane circle
@@ -34,6 +36,6 @@ class Scene3d extends Component {
     final newPosition = Vector3(camX, 0, camZ); // Keep Y at 0 for now
 
     world.camera.moveTo(newPosition);
-    // Camera target remains (0,0,0) as set initially in World3DComponent
+    */
   }
 }
