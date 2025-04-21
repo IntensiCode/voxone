@@ -132,47 +132,39 @@ class World3d {
       ..translate(child.position);
 
     _worldModelMatrix
-      ..setFrom(_translationMatrix)
-      ..multiply(_scaleMatrix)
-      ..multiply(_rotationMatrix);
+          ..setIdentity()
+          ..multiply(_scaleMatrix) //
+          ..multiply(_translationMatrix) //
+          ..multiply(_rotationMatrix) //
+        ;
 
     // As of now this is used only for lighting
     child.modelTransform.setFrom(_worldModelMatrix);
   }
 
   void _initRenderTransform(Position3D child) {
+    // We can only use rotation reliably for the render transform.
+
+    // Grab rotation from camera:
+    camera.viewMatrix.copyRotation(_rotMat);
+    _tmpMat.setIdentity();
+    _tmpMat.setRotation(_rotMat);
+    _tmpMat.transpose();
+
+    // Combine model transform with camera rotation:
     final it = child.renderTransform;
+    it.setFrom(child.modelTransform);
+    // it.setIdentity();
+    it.multiply(_tmpMat);
 
-    // Create model matrix with object's transformations
-    it.setFrom(_worldModelMatrix);
-
-    // Get camera's view matrix
-    Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
-
-    // Calculate distance for scaling
+    // Calculate separate distance for scaling:
     double distance = (camera.position - child.position).length;
-
-    // Create a clean transform with correct scaling first
-    Matrix4 cameraScaleRot = Matrix4.identity();
-
-    // Apply scale directly to base matrix (before inversion)
-    // Use inverse scale - closer means larger
     double scaleFactor = 100.0 / distance;
-    cameraScaleRot.scale(scaleFactor);
-
-    // Copy rotation from view matrix
-    Matrix3 rotationOnly = Matrix3.identity();
-    viewMatrix.copyRotation(rotationOnly);
-    cameraScaleRot.setRotation(rotationOnly);
-
-    // Now invert the entire matrix (rotation + scale)
-    Matrix4 cameraInverse = Matrix4.identity();
-    cameraInverse.copyInverse(cameraScaleRot);
-
-    // Apply to render transform
-    it.multiply(cameraInverse);
-
     child.scaleFactor = scaleFactor;
+
+    // Translation is already handled by origin transform. Children
+    // may have to compensate for that. Otherwise, the modelTransform
+    // plus origin transform apply translate twice!
   }
 
   final _rotMat = Matrix3.identity();

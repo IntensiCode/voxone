@@ -184,9 +184,12 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   final _tmpMat = Matrix4.identity();
 
   void _updateUniforms(ui.FragmentShader shader) {
+    // To fix the voxel model proportions we scale again:
     _tmpMat.setIdentity();
-    _tmpMat.scale(1.0, 2.0, 1.0); // to fix the voxel model proportions
+    _tmpMat.scale(1.0, 2.0, 1.0);
     _tmpMat.multiply(position3d.renderTransform);
+    _tmpMat.setTranslationRaw(0,0,0);
+
     _uniforms[Voxel3dUniform.lightDirection] = position3d.lightDirection;
     _uniforms[Voxel3dUniform.modelMatrixInverse] = _tmpMat;
   }
