@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui; // Ensure you have this import alias
 
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:stardash/game/has_lighted_faces.dart';
@@ -80,14 +79,14 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
 
     _time += dt;
 
-    // position3d.rotation.x = (_time * _rotationSpeed * 1.0) % (2 * pi);
-    // position3d.rotation.y = (_time * _rotationSpeed * 2.2) % (2 * pi);
-    // position3d.rotation.z = (_time * _rotationSpeed * 3.4) % (2 * pi);
+    position3d.rotation.x = (_time * _rotationSpeed * 1.0) % (2 * pi);
+    position3d.rotation.y = (_time * _rotationSpeed * 2.2) % (2 * pi);
+    position3d.rotation.z = (_time * _rotationSpeed * 3.4) % (2 * pi);
 
     var delta = (_maxScale - _minScale);
     var variance = 0.5 * (1 + sin(_time * _pulseSpeed));
     final scale = _minScale + delta * variance; // Pulse effect
-    // position3d.scale.setValues(scale, scale, scale);
+    position3d.scale.setValues(scale, scale, scale);
   }
 
   @override
@@ -99,9 +98,6 @@ class Cube3D extends PositionComponent with HasVisibility, HasPosition3D, HasLig
     assert(localFaces.length == 12);
     assert(faceLightIntensities.length == 12);
 
-    // logInfo('Cube3D.render: ${position3d.projectedOrigin.y}');
-
-    // \_('')_/
     canvas.translate(size.x / 2, size.y / 2);
     _renderFaces(canvas);
     canvas.translate(-size.x / 2, -size.y / 2);
