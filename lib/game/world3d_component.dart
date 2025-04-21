@@ -1,6 +1,5 @@
 import 'package:flame/components.dart';
 import 'package:stardash/game/camera3d.dart';
-import 'package:stardash/game/has_lighted_faces.dart';
 import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/world3d.dart';
 
@@ -17,6 +16,6 @@ class World3DComponent extends Component {
   void updateTree(double dt) {
     super.updateTree(dt);
     world.projectChildren(children.whereType<HasPosition3D>());
-    world.lightChildren(children.whereType<HasLightedFaces>());
+    world.lightChildren(children.whereType<HasPosition3D>());
   }
 }
