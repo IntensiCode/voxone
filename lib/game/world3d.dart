@@ -10,7 +10,6 @@ import 'package:vector_math/vector_math_64.dart';
 class World3d {
   late final Camera3D camera;
 
-  // World properties
   double ambientLightLevel = 0.2;
   final Vector3 lightDirection = Vector3(0.5, 0.75, -1.0)..normalize();
 
@@ -37,9 +36,13 @@ class World3d {
   }
 
   /// To be called after projectChildren.
-  void lightChildren(Iterable<HasLightedFaces> children) {
+  void lightChildren(Iterable<HasPosition3D> children) {
     for (final it in children) {
-      it.calculateLighting(lightDirection, ambientLightLevel);
+      if (it is HasLightedFaces) {
+        it.calculateLighting(lightDirection, ambientLightLevel);
+      }
+      it.position3d.lightDirection.setFrom(lightDirection);
+      it.position3d.ambientLightLevel = ambientLightLevel;
     }
   }
 

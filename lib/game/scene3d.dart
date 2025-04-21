@@ -5,6 +5,7 @@ import 'package:stardash/game/cube3d.dart';
 import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
+import 'package:stardash/util/extensions.dart';
 
 class Scene3d extends Component with HasContext {
   late World3DComponent world;
@@ -19,28 +20,19 @@ class Scene3d extends Component with HasContext {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    world = World3DComponent();
-    await add(world);
-
-    // Add the Player
+    world = added(World3DComponent());
     await world.add(Player3D(initialPosition: Vector3.zero()));
-    // await world.add(MantaComponent());
+    await world.add(Cube3D(initialPosition: Vector3.all(100)));
 
-    // Initial cubes
-    // await world.add(Cube3D(initialPosition: Vector3.zero()));
-    await world.add(Cube3D(initialPosition: Vector3(20, 10, -30)));
-
-    // Add 50 more cubes in a larger circle
-    const int numExtraCubes = 10;
+    const int numExtraCubes = 0;
     const double extraCubeRadius = 150.0;
     for (int i = 0; i < numExtraCubes; i++) {
       final angle = (2 * pi / numExtraCubes) * i;
       final x = cos(angle) * extraCubeRadius;
       final z = sin(angle) * extraCubeRadius;
       // Stagger Y position slightly for visual interest
-      final y = (i % 5 - 2) * 15.0;
+      final y = (i % 5 - 2) * 25.0;
       await world.add(Cube3D(initialPosition: Vector3(x, y, z)));
-      await world.add(Player3D(initialPosition: Vector3(x, y + 50, z)));
     }
   }
 
@@ -58,7 +50,8 @@ class Scene3d extends Component with HasContext {
     // Update camera position using oscillating radius and slow rotation
     final double camX = cos(_elapsedTime * _cameraRotationSpeed) * currentRadius;
     final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * currentRadius;
-    world.camera.moveTo(Vector3(camX, camZ, camZ));
+    world.camera.moveTo(Vector3(camX, camZ / 4, camZ));
+    world.camera.lookAt(Vector3(0, camZ / 4, 0));
 
     // Update ambient light level (oscillating between 0.1 and 0.3)
     final double baseAmbient = 0.3;

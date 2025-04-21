@@ -21,14 +21,14 @@ class Position3D {
   // Direct scale factor
   double scaleFactor = 1.0;
 
-  // Flag indicating if renderTransform should include camera view
+  // Flag indicating if renderTransform should be provided
   bool needsFullTransform = false;
 
   // Depth of the projected origin in Normalized Device Coordinates [-1, 1] (calculated by World3d)
-  double ndcDepth = 0.0;
+  double ndcDepth = 0.0; // TODO: Not needed anymore?
 
   // W component of the projected origin in Clip Space (calculated by World3d)
-  double clipW = 1.0;
+  double clipW = 1.0; // TODO: Not needed anymore?
 
   // Vertices defined relative to this position
   List<Vector3> localVertices = [];
@@ -38,6 +38,11 @@ class Position3D {
 
   // Projected 2D screen coordinates corresponding world vertices
   List<Vector2> projectedVertices = [];
+
+  // Light direction in world space
+  final Vector3 lightDirection = Vector3.zero();
+
+  double ambientLightLevel = 0.0;
 
   Position3D({
     required this.position,
