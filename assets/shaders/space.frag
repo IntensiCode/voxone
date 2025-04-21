@@ -42,7 +42,7 @@ void main()
     // Apply camera offset (scaled) before time-based drift
     // Apply separate x and y offsets
     uv.x -= u_cam_x;
-//    uv.y -= u_cam_y;
+    uv.y -= u_cam_y;
 
     uv.x += iTime / 20.0;
     uv.y -= iTime / 38.0;
