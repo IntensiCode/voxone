@@ -114,11 +114,11 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     super.update(dt);
     _time += dt;
 
-    position3d.scale.setValues(1.4, 2.8, 1.4);
+    position3d.scale.setValues(1.4, 1.4, 1.4);
 
-    const double a = 14;
-    const double b = 1.0 * 2.8;
-    const double c = 14;
+    const double a = 13;
+    const double b = 13;
+    const double c = 13;
     position3d.localVertices = [
       Vector3(-a, -b, -c),
       Vector3(a, -b, -c),
@@ -197,9 +197,14 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     _shaderBuffer = img;
   }
 
+  final _tmpMat = Matrix4.identity();
+
   void _updateUniforms(ui.FragmentShader shader) {
+    _tmpMat.setIdentity();
+    _tmpMat.scale(1.0, 2.0, 1.0);
+    _tmpMat.multiply(position3d.renderTransform);
     _uniforms[Voxel3dUniform.lightDirection] = position3d.lightDirection;
-    _uniforms[Voxel3dUniform.modelMatrixInverse] = position3d.renderTransform;
+    _uniforms[Voxel3dUniform.modelMatrixInverse] = _tmpMat;
   }
 
   @override
