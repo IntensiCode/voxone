@@ -12,7 +12,7 @@ class Scene3d extends Component with HasContext {
   double _elapsedTime = 0;
   final double _cameraRotationSpeed = 0.5; // Radians per second (kept slow)
   final double _minCameraRadius = 100.0;
-  final double _maxCameraRadius = 1000.0;
+  final double _maxCameraRadius = 100.0;
   final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
   final double _ambientPulseSpeed = 1.0; // Slower pulse for ambient light
 
