@@ -46,16 +46,20 @@ class Scene3d extends Component with HasContext {
     final double radiusRange = _maxCameraRadius - _minCameraRadius;
     final double radiusOscillation = (sin(_elapsedTime * _cameraZoomSpeed) + 1.0) * 0.5; // Range [0, 1]
     final double currentRadius = _minCameraRadius + radiusRange * radiusOscillation;
-    final double cameraAngle = _elapsedTime * _cameraRotationSpeed;
+    final double cameraAngle = -_elapsedTime * _cameraRotationSpeed;
     final double camX = cos(cameraAngle) * currentRadius;
     final double camZ = sin(cameraAngle) * currentRadius;
-    world.camera.moveTo(Vector3(camX, camZ / 4, camZ));
-    world.camera.lookAt(Vector3(0, camZ / 4, 0));
+    final cameraPos = Vector3(camX, camZ / 4, camZ); // Store position
+    final cameraTarget = Vector3(0, camZ / 4, 0);   // Store target
+    world.camera.moveTo(cameraPos);
+    world.camera.lookAt(cameraTarget);
 
     // --- Update Space Background Offset ---
-    // Calculate offset based on negative angle for inverse effect
-    final double offsetX = -sin(cameraAngle);
-    final double offsetY = -cos(cameraAngle);
+    // Use the total accumulated camera angle for continuous scrolling.
+    // The negative sign provides the inverse effect.
+    // Add a scale factor (e.g., 0.1) to control sensitivity.
+    final double offsetX = -cameraAngle * 0.1;
+    const double offsetY = 0.0; // Y offset is currently disabled in shader
     known_space.setCameraOffset(offsetX, offsetY);
 
     // --- Ambient Light ---

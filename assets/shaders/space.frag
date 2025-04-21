@@ -7,7 +7,9 @@ precision highp float;
 uniform vec2 iResolution;
 uniform float iTime;
 uniform float iRescale;
-uniform vec2 u_cameraOffset;
+// Use separate floats matching space.dart
+uniform float u_cam_x;
+uniform float u_cam_y;
 
 out vec4 fragColor;
 
@@ -38,7 +40,9 @@ void main()
     uv.y *= iResolution.y / iResolution.x;
 
     // Apply camera offset (scaled) before time-based drift
-    uv -= u_cameraOffset;
+    // Apply separate x and y offsets
+    uv.x -= u_cam_x;
+//    uv.y -= u_cam_y;
 
     uv.x += iTime / 20.0;
     uv.y -= iTime / 38.0;

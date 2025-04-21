@@ -93,7 +93,7 @@ class Space extends Component with AutoDispose, HasPaint {
 
   void setCameraOffset(double camX, double camY) {
     _uniforms?.set(Uniform.cam_x, camX);
-    // _uniforms?.set(Uniform.cam_y, -camY);
+    _uniforms?.set(Uniform.cam_y, camY);
   }
 
   @override
