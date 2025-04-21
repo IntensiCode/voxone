@@ -32,27 +32,27 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   Player3D({required Vector3 initialPosition}) {
     logInfo('Player3D: $initialPosition');
-
     anchor = Anchor.center;
+    _initPosition3d(initialPosition);
+  }
 
-    // This scale makes the model fit inside the _renderSize when voxelized
-    position3d = Position3D(position: initialPosition, scale: Vector3(1.3, 1.3, 1.3));
+  void _initPosition3d(Vector3 initialPosition) {
+    // Scale to fit voxel data into render box
+    position3d = Position3D(position: initialPosition, scale: Vector3.all(1.4));
     position3d.needsFullTransform = true;
 
-    // Define local vertices matching the shader's unit cube space
-    // This is needed for correct depth calculation and potentially shader internal logic
-    const double half = 15.0;
-    const double height = 15.0;
-    const double length = 15.0;
+    const double a = 13;
+    const double b = 13;
+    const double c = 13;
     position3d.localVertices = [
-      Vector3(-half, -height, -length),
-      Vector3(half, -height, -length),
-      Vector3(half, height, -length),
-      Vector3(-half, height, -length),
-      Vector3(-half, -height, length),
-      Vector3(half, -height, length),
-      Vector3(half, height, length),
-      Vector3(-half, height, length),
+      Vector3(-a, -b, -c),
+      Vector3(a, -b, -c),
+      Vector3(a, b, -c),
+      Vector3(-a, b, -c),
+      Vector3(-a, -b, c),
+      Vector3(a, -b, c),
+      Vector3(a, b, c),
+      Vector3(-a, b, c),
     ];
   }
 
@@ -113,22 +113,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   void update(double dt) {
     super.update(dt);
     _time += dt;
-
-    position3d.scale.setValues(1.4, 1.4, 1.4);
-
-    const double a = 13;
-    const double b = 13;
-    const double c = 13;
-    position3d.localVertices = [
-      Vector3(-a, -b, -c),
-      Vector3(a, -b, -c),
-      Vector3(a, b, -c),
-      Vector3(-a, b, -c),
-      Vector3(-a, -b, c),
-      Vector3(a, -b, c),
-      Vector3(a, b, c),
-      Vector3(-a, b, c),
-    ];
 
     if (autoRotate) {
       position3d.rotation.x += dt * 0.6;
@@ -201,7 +185,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   void _updateUniforms(ui.FragmentShader shader) {
     _tmpMat.setIdentity();
-    _tmpMat.scale(1.0, 2.0, 1.0);
+    _tmpMat.scale(1.0, 2.0, 1.0); // to fix the voxel model proportions
     _tmpMat.multiply(position3d.renderTransform);
     _uniforms[Voxel3dUniform.lightDirection] = position3d.lightDirection;
     _uniforms[Voxel3dUniform.modelMatrixInverse] = _tmpMat;
