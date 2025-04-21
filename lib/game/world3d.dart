@@ -140,35 +140,28 @@ class World3d {
   void _initRenderTransform(Position3D child) {
     final it = child.renderTransform;
 
-    // Start with the view matrix
+    // Create model matrix with object's transformations
+    it.setFrom(_worldModelMatrix);
+
+    // Get camera's view matrix for rotation
     Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
+    viewMatrix.setColumn(3, Vector4(0, 0, 0, 1));
+    viewMatrix.setRow(3, Vector4(0, 0, 0, 1));
 
-    // Extract only rotation (preserving pure rotation, eliminating scale)
-    Matrix3 rotationOnly = Matrix3.identity();
-    viewMatrix.copyRotation(rotationOnly);
+    // Get inverse view rotation
+    Matrix4 viewRotInverse = Matrix4.identity();
+    viewRotInverse.copyInverse(viewMatrix);
 
-    // Ensure pure rotation by normalizing each row/column
-    for (int i = 0; i < 3; i++) {
-      Vector3 row = Vector3(rotationOnly.entry(i, 0), rotationOnly.entry(i, 1), rotationOnly.entry(i, 2));
-      row.normalize();
-      rotationOnly.setRow(i, row);
-    }
-    // Invert rotY for shader
-    rotationOnly.setColumn(1, -rotationOnly.getColumn(1));
+    // Calculate distance from camera to object
+    double distance = (camera.position - child.position).length;
 
-    // Invert the rotation (transpose for orthogonal matrix)
-    rotationOnly.transpose();
+    // Apply scaling based on perspective FOV and distance
+    // Adjust this constant based on your scene scale
+    double fovScale = 100.0 / distance;
+    viewRotInverse.scale(fovScale, fovScale, fovScale);
 
-    // Build final matrix with only pure rotation
-    Matrix4 pureRotationInverse = Matrix4.identity();
-    pureRotationInverse.setRotation(rotationOnly);
-
-    // Apply to render transform
-    // it.setFrom(_worldModelMatrix);
-    it.setIdentity();
-    it.multiply(pureRotationInverse);
-
-    // logInfo('rot: ${it.getRotation()}');
+    // Apply both rotation and scale
+    it.multiply(viewRotInverse);
   }
 
   final _rotMat = Matrix3.identity();

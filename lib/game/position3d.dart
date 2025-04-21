@@ -15,8 +15,11 @@ class Position3D {
   // Transform of position, scale and rotation
   final Matrix4 modelTransform = Matrix4.identity();
 
-  // Inverted world camera view transform
+  // Inverted world camera view transform (rotation only atm)
   final Matrix4 renderTransform = Matrix4.identity();
+
+  // Direct scale factor
+  double scaleFactor = 1.0;
 
   // Flag indicating if renderTransform should include camera view
   bool needsFullTransform = false;

@@ -120,7 +120,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // Update 3D rotation using position3d
     // position3d.rotation.x = _time * 0.6;
     // position3d.rotation.y = _time * 0.5;
-    // position3d.rotation.z = _time * 1.4;
+    position3d.rotation.z = _time * 1.4;
     // position3d.rotation.z = pi;
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
 
