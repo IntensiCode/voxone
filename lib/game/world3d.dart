@@ -133,8 +133,8 @@ class World3d {
 
     _worldModelMatrix
       ..setFrom(_translationMatrix)
-      ..multiply(_rotationMatrix)
-      ..multiply(_scaleMatrix);
+      ..multiply(_scaleMatrix)
+      ..multiply(_rotationMatrix);
 
     // As of now this is used only for lighting
     child.modelTransform.setFrom(_worldModelMatrix);

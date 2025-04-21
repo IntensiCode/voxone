@@ -22,7 +22,7 @@ class Scene3d extends Component with HasContext {
 
     world = added(World3DComponent());
     await world.add(Player3D(initialPosition: Vector3.zero()));
-    // await world.add(Cube3D(initialPosition: Vector3.all(100)));
+    await world.add(Cube3D(initialPosition: Vector3.all(100)));
 
     const int numExtraCubes = 0;
     const double extraCubeRadius = 150.0;
@@ -30,7 +30,6 @@ class Scene3d extends Component with HasContext {
       final angle = (2 * pi / numExtraCubes) * i;
       final x = cos(angle) * extraCubeRadius;
       final z = sin(angle) * extraCubeRadius;
-      // Stagger Y position slightly for visual interest
       final y = (i % 5 - 2) * 25.0;
       await world.add(Cube3D(initialPosition: Vector3(x, y, z)));
     }

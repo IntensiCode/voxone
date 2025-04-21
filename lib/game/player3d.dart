@@ -9,6 +9,7 @@ import 'package:stardash/game/has_position_3d.dart';
 import 'package:stardash/game/position3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/update2d.dart';
+import 'package:stardash/input/keys.dart';
 import 'package:stardash/util/mutable.dart';
 import 'package:stardash/util/pixelate.dart';
 import 'package:stardash/util/uniforms.dart';
@@ -27,26 +28,22 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   static ui.Image? _shaderBuffer;
 
-  final Matrix4 _modelMatrixInverse = Matrix4.identity(); // Needed for shader
-  final Vector3 _lightDirection = Vector3(0.577, 0.577, -0.577)..normalize(); // Keep shader light
-
   final _renderSize = 256;
-
-  final Vector3 _localLightDirection = Vector3.zero();
 
   Player3D({required Vector3 initialPosition}) {
     logInfo('Player3D: $initialPosition');
 
     anchor = Anchor.center;
 
-    position3d = Position3D(position: initialPosition);
+    // This scale makes the model fit inside the _renderSize when voxelized
+    position3d = Position3D(position: initialPosition, scale: Vector3(1.3, 1.3, 1.3));
     position3d.needsFullTransform = true;
 
     // Define local vertices matching the shader's unit cube space
     // This is needed for correct depth calculation and potentially shader internal logic
-    const double half = 10.0;
-    const double height = 10.0;
-    const double length = 10.0;
+    const double half = 15.0;
+    const double height = 15.0;
+    const double length = 15.0;
     position3d.localVertices = [
       Vector3(-half, -height, -length),
       Vector3(half, -height, -length),
@@ -114,21 +111,40 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
   @override
   void update(double dt) {
-    super.update(dt); // Let mixins run first (Updates2DFrom3D sets position/size)
+    super.update(dt);
     _time += dt;
 
-    // Update 3D rotation using position3d
-    // position3d.rotation.x = _time * 0.6;
-    // position3d.rotation.y = _time * 0.5;
-    position3d.rotation.z = _time * 1.4;
-    // position3d.rotation.z = pi;
-    // Scale could also be updated here if needed: position3d.scale.setValues(...)
+    position3d.scale.setValues(1.4, 2.8, 1.4);
 
-    // TODO: Does World3d need/use this?
-    position3d.scale.setValues(1.5, 1.5, 1.5);
+    const double a = 14;
+    const double b = 1.0 * 2.8;
+    const double c = 14;
+    position3d.localVertices = [
+      Vector3(-a, -b, -c),
+      Vector3(a, -b, -c),
+      Vector3(a, b, -c),
+      Vector3(-a, b, -c),
+      Vector3(-a, -b, c),
+      Vector3(a, -b, c),
+      Vector3(a, b, c),
+      Vector3(-a, b, c),
+    ];
 
-    // logInfo('renderTransform: ${position3d.renderTransform}');
+    if (autoRotate) {
+      position3d.rotation.x += dt * 0.6;
+      position3d.rotation.y += dt * 0.5;
+    }
+    position3d.rotation.z += dt * 0.4;
+
+    const speed = pi / 2;
+    if (keys.check(GameKey.down)) position3d.rotation.x -= dt * speed;
+    if (keys.check(GameKey.up)) position3d.rotation.x += dt * speed;
+    if (keys.check(GameKey.left)) position3d.rotation.y += dt * speed;
+    if (keys.check(GameKey.right)) position3d.rotation.y -= dt * speed;
+    if (keys.check(GameKey.a_button)) autoRotate = !autoRotate;
   }
+
+  bool autoRotate = true;
 
   late final _paint = pixel_paint();
   late final _srcRect = Rect.fromLTWH(0, 0, _renderSize * 1.0, _renderSize * 1.0);
@@ -141,19 +157,14 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     assert(isVisible);
     assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
 
-    // logInfo('P3D: $position $size');
-
     _renderExhaust();
     _renderVoxelModel();
 
-    // position3d.projectedVertices
     canvas.save();
     canvas.translate(size.x / 2, size.y / 2);
     canvas.scale(position3d.scaleFactor);
     canvas.translate(-_renderSize / 2, -_renderSize / 2);
     _dstRect.setSize(_renderSize * 1.0, _renderSize * 1.0);
-    // _dstRect.left = -position.x;
-    // _dstRect.top = -size.y / 4;
     canvas.drawImageRect(_shaderBuffer!, _srcRect, _dstRect, _paint);
 
     canvas.restore();
@@ -187,32 +198,8 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   }
 
   void _updateUniforms(ui.FragmentShader shader) {
-    final _scaleMatrix = Matrix4.identity()
-      ..scale(
-        position3d.scale.x,
-        4,
-        position3d.scale.z,
-      );
-
-    final _rotationMatrix = Matrix4.identity()
-      ..rotateZ(position3d.rotation.z)
-      ..rotateY(position3d.rotation.y)
-      ..rotateX(position3d.rotation.x);
-
-    final _translationMatrix = Matrix4.identity()..translate(position3d.position);
-
-    final _worldModelMatrix = Matrix4.identity()
-      ..setFrom(_translationMatrix)
-      ..multiply(_scaleMatrix)
-      ..multiply(_rotationMatrix);
-
-    _modelMatrixInverse.setFrom(_worldModelMatrix);
-    _modelMatrixInverse.multiply(position3d.renderTransform);
-
-    // --- Use static light for now ---
-    final u = _uniforms;
-    u[Voxel3dUniform.lightDirection] = _lightDirection; // Static light
-    u[Voxel3dUniform.modelMatrixInverse] = _modelMatrixInverse;
+    _uniforms[Voxel3dUniform.lightDirection] = position3d.lightDirection;
+    _uniforms[Voxel3dUniform.modelMatrixInverse] = position3d.renderTransform;
   }
 
   @override
