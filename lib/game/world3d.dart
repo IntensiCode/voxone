@@ -143,25 +143,33 @@ class World3d {
     // Create model matrix with object's transformations
     it.setFrom(_worldModelMatrix);
 
-    // Get camera's view matrix for rotation
+    // Get camera's view matrix
     Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
-    viewMatrix.setColumn(3, Vector4(0, 0, 0, 1));
-    viewMatrix.setRow(3, Vector4(0, 0, 0, 1));
 
-    // Get inverse view rotation
-    Matrix4 viewRotInverse = Matrix4.identity();
-    viewRotInverse.copyInverse(viewMatrix);
-
-    // Calculate distance from camera to object
+    // Calculate distance for scaling
     double distance = (camera.position - child.position).length;
 
-    // Apply scaling based on perspective FOV and distance
-    // Adjust this constant based on your scene scale
-    double fovScale = 100.0 / distance;
-    viewRotInverse.scale(fovScale, fovScale, fovScale);
+    // Create a clean transform with correct scaling first
+    Matrix4 cameraScaleRot = Matrix4.identity();
 
-    // Apply both rotation and scale
-    it.multiply(viewRotInverse);
+    // Apply scale directly to base matrix (before inversion)
+    // Use inverse scale - closer means larger
+    double scaleFactor = 100.0 / distance;
+    cameraScaleRot.scale(scaleFactor);
+
+    // Copy rotation from view matrix
+    Matrix3 rotationOnly = Matrix3.identity();
+    viewMatrix.copyRotation(rotationOnly);
+    cameraScaleRot.setRotation(rotationOnly);
+
+    // Now invert the entire matrix (rotation + scale)
+    Matrix4 cameraInverse = Matrix4.identity();
+    cameraInverse.copyInverse(cameraScaleRot);
+
+    // Apply to render transform
+    it.multiply(cameraInverse);
+
+    child.scaleFactor = scaleFactor;
   }
 
   final _rotMat = Matrix3.identity();

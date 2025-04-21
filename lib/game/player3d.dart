@@ -124,6 +124,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // position3d.rotation.z = pi;
     // Scale could also be updated here if needed: position3d.scale.setValues(...)
 
+    // TODO: Does World3d need/use this?
     position3d.scale.setValues(1.5, 1.5, 1.5);
 
     // logInfo('renderTransform: ${position3d.renderTransform}');
@@ -148,6 +149,7 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     // position3d.projectedVertices
     canvas.save();
     canvas.translate(size.x / 2, size.y / 2);
+    canvas.scale(position3d.scaleFactor);
     canvas.translate(-_renderSize / 2, -_renderSize / 2);
     _dstRect.setSize(_renderSize * 1.0, _renderSize * 1.0);
     // _dstRect.left = -position.x;
