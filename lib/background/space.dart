@@ -14,14 +14,19 @@ enum Uniform {
   scr_height,
   time,
   rescale,
+  cam_x,
+  cam_y,
 }
 
 Space? _space;
 
+/// CAREFUL: Removes from current parent!
 Space get space {
   _space?.removeFromParent();
   return _space ??= Space._();
 }
+
+Space get known_space => _space ??= space;
 
 class Space extends Component with AutoDispose, HasPaint {
   static FragmentShader? _shader;
@@ -86,6 +91,11 @@ class Space extends Component with AutoDispose, HasPaint {
     _animate = bg_anim;
   }
 
+  void setCameraOffset(double camX, double camY) {
+    _uniforms?.set(Uniform.cam_x, camX);
+    // _uniforms?.set(Uniform.cam_y, -camY);
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -106,7 +116,9 @@ class Space extends Component with AutoDispose, HasPaint {
         canvas.drawRect(_src, _paint!);
       });
     }
-    canvas.drawImageRect(_last!, _src, _dst, paint);
+    if (_last != null) {
+      canvas.drawImageRect(_last!, _src, _dst, paint);
+    }
   }
 
   static final _src = MutRect(0, 0, game_width / 4, game_height / 4);

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:stardash/game/cube3d.dart';
+import 'package:stardash/background/space.dart'; // Import space
 import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
@@ -31,7 +31,7 @@ class Scene3d extends Component with HasContext {
       final x = cos(angle) * extraCubeRadius;
       final z = sin(angle) * extraCubeRadius;
       final y = (i % 5 - 2) * 25.0;
-      await world.add(Player3D(initialPosition: Vector3(x,y,-z)));
+      await world.add(Player3D(initialPosition: Vector3(x, y, -z)));
       // await world.add(Cube3D(initialPosition: Vector3(x, y, z)));
     }
   }
@@ -42,18 +42,23 @@ class Scene3d extends Component with HasContext {
 
     _elapsedTime += dt;
 
-    // Calculate oscillating radius
+    // --- Camera Movement ---
     final double radiusRange = _maxCameraRadius - _minCameraRadius;
     final double radiusOscillation = (sin(_elapsedTime * _cameraZoomSpeed) + 1.0) * 0.5; // Range [0, 1]
     final double currentRadius = _minCameraRadius + radiusRange * radiusOscillation;
-
-    // Update camera position using oscillating radius and slow rotation
-    final double camX = cos(_elapsedTime * _cameraRotationSpeed) * currentRadius;
-    final double camZ = sin(_elapsedTime * _cameraRotationSpeed) * currentRadius;
+    final double cameraAngle = _elapsedTime * _cameraRotationSpeed;
+    final double camX = cos(cameraAngle) * currentRadius;
+    final double camZ = sin(cameraAngle) * currentRadius;
     world.camera.moveTo(Vector3(camX, camZ / 4, camZ));
     world.camera.lookAt(Vector3(0, camZ / 4, 0));
 
-    // Update ambient light level (oscillating between 0.1 and 0.3)
+    // --- Update Space Background Offset ---
+    // Calculate offset based on negative angle for inverse effect
+    final double offsetX = -sin(cameraAngle);
+    final double offsetY = -cos(cameraAngle);
+    known_space.setCameraOffset(offsetX, offsetY);
+
+    // --- Ambient Light ---
     final double baseAmbient = 0.3;
     final double ambientAmplitude = 0.3;
     final double ambientOscillation = sin(_elapsedTime * _ambientPulseSpeed);

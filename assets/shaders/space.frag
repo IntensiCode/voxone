@@ -7,6 +7,7 @@ precision highp float;
 uniform vec2 iResolution;
 uniform float iTime;
 uniform float iRescale;
+uniform vec2 u_cameraOffset;
 
 out vec4 fragColor;
 
@@ -35,6 +36,10 @@ void main()
     //get coords and direction
     vec2 uv = fragCoord.xy / iResolution.xy;
     uv.y *= iResolution.y / iResolution.x;
+
+    // Apply camera offset (scaled) before time-based drift
+    uv -= u_cameraOffset;
+
     uv.x += iTime / 20.0;
     uv.y -= iTime / 38.0;
     vec3 dir=vec3(uv*zoom, 2.);
