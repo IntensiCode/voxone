@@ -26,10 +26,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   static late final UniformsExt<Voxel3dUniform> _uniforms;
   static late final UniformsExt<ExhaustUniform> _exhaustUniforms;
 
-  static ui.Image? _shaderBuffer;
-
-  final _renderSize = 256;
-
   Player3D({required Vector3 initialPosition}) {
     logInfo('Player3D: $initialPosition');
     anchor = Anchor.center;
@@ -57,11 +53,12 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   }
 
   static Future? _await_shaders;
+  late final bool _leader;
 
   @override
   Future<void> onLoad() async {
-    final it = _await_shaders ??= _initShaders();
-    await it;
+    _leader = _await_shaders == null;
+    await (_await_shaders ??= _initShaders());
   }
 
   Future<void> _initShaders() async {
@@ -89,7 +86,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
 
     final u = _uniforms;
     u[Voxel3dUniform.dstOrigin] = Vector2.zero();
-    u[Voxel3dUniform.dstSize] = Vector2.all(_renderSize.toDouble());
     u[Voxel3dUniform.srcOrigin] = Vector2.zero();
     u[Voxel3dUniform.atlasSize] = atlasSize;
     u[Voxel3dUniform.frames] = _frames.toDouble();
@@ -131,8 +127,15 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   bool autoRotate = true;
 
   late final _paint = pixel_paint();
-  late final _srcRect = Rect.fromLTWH(0, 0, _renderSize * 1.0, _renderSize * 1.0);
-  late final _dstRect = MutRect(0, 0, 0, 0);
+
+  final _srcRect = MutRect(0, 0, 0, 0);
+  final _dstRect = MutRect(0, 0, 0, 0);
+  final _shaderRect = MutRect(0, 0, 0, 0);
+
+  static ui.Image? _exhaustBuffer;
+  static ui.Image? _shaderBuffer;
+
+  var _renderSize = 128;
 
   @override
   void render(ui.Canvas canvas) {
@@ -141,9 +144,13 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     assert(isVisible);
     assert(priority != HasPosition3D.INVISIBILITY_PRIORITY);
 
-    _renderExhaust();
+    _renderSize = min(size.x, size.y).toInt().clamp(16, 256);
+    _srcRect.setSize(_renderSize * 1.0, _renderSize * 1.0);
+
+    if (_leader) _renderExhaust();
     _renderVoxelModel();
 
+    _renderSize = 256;
     canvas.save();
     canvas.translate(size.x / 2, size.y / 2);
     canvas.scale(position3d.scaleFactor);
@@ -154,11 +161,9 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     canvas.restore();
   }
 
-  final _shaderRect = MutRect(0, 0, 0, 0);
-
   void _renderExhaust() {
-    _shaderBuffer?.dispose();
-    _shaderBuffer = pixelate(_voxelImage.width, _voxelImage.height, (canvas) {
+    _exhaustBuffer?.dispose();
+    _exhaustBuffer = pixelate(_voxelImage.width, _voxelImage.height, (canvas) {
       _exhaustUniforms[ExhaustUniform.time] = _time;
       _paint.shader = _exhaustShader;
       _shaderRect.setFromImage(_voxelImage);
@@ -170,7 +175,6 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
   void _renderVoxelModel() {
     final img = pixelate(_renderSize, _renderSize, (canvas) {
       _updateUniforms(_shader);
-      _shader.setImageSampler(0, _shaderBuffer ?? _voxelImage);
       _paint.shader = _shader;
       _shaderRect.setSizeInt(_renderSize, _renderSize);
       canvas.drawRect(_shaderRect, _paint);
@@ -188,10 +192,13 @@ class Player3D extends PositionComponent with HasVisibility, HasPosition3D, HasU
     _tmpMat.setIdentity();
     _tmpMat.scale(1.0, 2.0, 1.0);
     _tmpMat.multiply(position3d.renderTransform);
-    _tmpMat.setTranslationRaw(0,0,0);
+    _tmpMat.setTranslationRaw(0, 0, 0);
 
+    _uniforms[Voxel3dUniform.dstSize] = Vector2.all(_renderSize.toDouble());
     _uniforms[Voxel3dUniform.lightDirection] = position3d.lightDirection;
     _uniforms[Voxel3dUniform.modelMatrixInverse] = _tmpMat;
+
+    _shader.setImageSampler(0, _exhaustBuffer ?? _voxelImage);
   }
 
   @override

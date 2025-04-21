@@ -11,8 +11,8 @@ class Scene3d extends Component with HasContext {
   late World3DComponent world;
   double _elapsedTime = 0;
   final double _cameraRotationSpeed = 0.5; // Radians per second (kept slow)
-  final double _minCameraRadius = 50.0;
-  final double _maxCameraRadius = 500.0;
+  final double _minCameraRadius = 100.0;
+  final double _maxCameraRadius = 1000.0;
   final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
   final double _ambientPulseSpeed = 1.0; // Slower pulse for ambient light
 
@@ -24,7 +24,7 @@ class Scene3d extends Component with HasContext {
     await world.add(Player3D(initialPosition: Vector3.all(-50)));
     // await world.add(Cube3D(initialPosition: Vector3.all(100)));
 
-    const int numExtraCubes = 100;
+    const int numExtraCubes = 10;
     const double extraCubeRadius = 150.0;
     for (int i = 0; i < numExtraCubes; i++) {
       final angle = (2 * pi / numExtraCubes) * i;

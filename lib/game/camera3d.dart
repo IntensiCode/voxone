@@ -8,7 +8,7 @@ class Camera3D {
   final double fieldOfView = 60.0; // Degrees
   final double aspectRatio;
   final double nearPlane = 0.1;
-  final double farPlane = 1000.0;
+  final double farPlane = 10000.0;
 
   final Vector3 position = Vector3.zero();
   final Vector3 target = Vector3(0, 0, -1); // Looking down negative Z
