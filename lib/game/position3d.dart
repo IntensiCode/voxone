@@ -12,7 +12,10 @@ class Position3D {
   // Local transform relative to parent (if any) or world origin
   final Matrix4 transform = Matrix4.identity();
 
-  // Transform passed to component's rendering (may include camera view)
+  // Transform of position, scale and rotation
+  final Matrix4 modelTransform = Matrix4.identity();
+
+  // Inverted world camera view transform
   final Matrix4 renderTransform = Matrix4.identity();
 
   // Flag indicating if renderTransform should include camera view

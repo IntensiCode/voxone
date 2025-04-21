@@ -1,4 +1,3 @@
-import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
 import 'package:stardash/core/common.dart';
 import 'package:stardash/game/camera3d.dart';
@@ -47,6 +46,7 @@ class World3d {
   void _projectChild(HasPosition3D it) {
     final child = it.position3d;
 
+    // To project origin, no model transform must be applied.
     _worldModelMatrix.setIdentity();
 
     // Project origin AND store its NDC depth and Clip W
@@ -70,7 +70,7 @@ class World3d {
     }
     child.ndcDepth = originNdcZ; // Store depth
 
-    _initChildTransform(child); // Calculates worldTransform and renderTransform
+    _initChildTransform(child);
 
     final _in = child.localVertices;
     final out = child.projectedVertices;
@@ -84,6 +84,9 @@ class World3d {
     it.isVisible = true;
     // Use the stored depth for priority calculation
     it.priority = Camera3D.depthToPriority(child.ndcDepth);
+
+    // Set the render transform if needed
+    if (child.needsFullTransform) _initRenderTransform(child);
   }
 
   /// Projects a 3D point into 2D screen coordinates.
@@ -98,13 +101,14 @@ class World3d {
     // Get clipW if clipPoint is available
     final double? clipW = clipPoint?.w;
 
-    // If NDC is null, projection failed for screen coords, but clipW might be valid
-    if (ndc == null) {
-      return (null, clipW);
+    // If NDC is null, projection failed for screen coordinates. No clipW we don't like either.
+    if (ndc == null || clipW == null) {
+      return (null, null);
     }
 
     // Convert NDC to screen coordinates
     to.setFrom(camera.ndcToScreen(ndc));
+
     // Return both NDC Z and Clip W
     return (ndc.z, clipW);
   }
@@ -129,44 +133,42 @@ class World3d {
       ..multiply(_rotationMatrix)
       ..multiply(_scaleMatrix);
 
+    // As of now this is used only for lighting
+    child.modelTransform.setFrom(_worldModelMatrix);
+  }
+
+  void _initRenderTransform(Position3D child) {
     final it = child.renderTransform;
-    if (child.needsFullTransform) {
-      // Start with the view matrix
-      Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
 
-      // Extract only rotation (preserving pure rotation, eliminating scale)
-      Matrix3 rotationOnly = Matrix3.identity();
-      viewMatrix.copyRotation(rotationOnly);
+    // Start with the view matrix
+    Matrix4 viewMatrix = Matrix4.copy(camera.viewMatrix);
 
-      // Ensure pure rotation by normalizing each row/column
-      for (int i = 0; i < 3; i++) {
-        Vector3 row = Vector3(
-            rotationOnly.entry(i, 0),
-            rotationOnly.entry(i, 1),
-            rotationOnly.entry(i, 2)
-        );
-        row.normalize();
-        rotationOnly.setRow(i, row);
-      }
-      // Invert rotY for shader
-      rotationOnly.setColumn(1, -rotationOnly.getColumn(1));
+    // Extract only rotation (preserving pure rotation, eliminating scale)
+    Matrix3 rotationOnly = Matrix3.identity();
+    viewMatrix.copyRotation(rotationOnly);
 
-      // Invert the rotation (transpose for orthogonal matrix)
-      rotationOnly.transpose();
-
-      // Build final matrix with only pure rotation
-      Matrix4 pureRotationInverse = Matrix4.identity();
-      pureRotationInverse.setRotation(rotationOnly);
-
-      // Apply to render transform
-      // it.setFrom(_worldModelMatrix);
-      it.setIdentity();
-      it.multiply(pureRotationInverse);
-
-      // logInfo('rot: ${it.getRotation()}');
-    } else {
-      child.renderTransform.setFrom(_worldModelMatrix);
+    // Ensure pure rotation by normalizing each row/column
+    for (int i = 0; i < 3; i++) {
+      Vector3 row = Vector3(rotationOnly.entry(i, 0), rotationOnly.entry(i, 1), rotationOnly.entry(i, 2));
+      row.normalize();
+      rotationOnly.setRow(i, row);
     }
+    // Invert rotY for shader
+    rotationOnly.setColumn(1, -rotationOnly.getColumn(1));
+
+    // Invert the rotation (transpose for orthogonal matrix)
+    rotationOnly.transpose();
+
+    // Build final matrix with only pure rotation
+    Matrix4 pureRotationInverse = Matrix4.identity();
+    pureRotationInverse.setRotation(rotationOnly);
+
+    // Apply to render transform
+    // it.setFrom(_worldModelMatrix);
+    it.setIdentity();
+    it.multiply(pureRotationInverse);
+
+    // logInfo('rot: ${it.getRotation()}');
   }
 
   final _rotMat = Matrix3.identity();
