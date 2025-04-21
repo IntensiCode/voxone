@@ -1,21 +1,24 @@
 import 'dart:math';
 
+import 'package:dart_minilog/dart_minilog.dart';
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:stardash/background/space.dart'; // Import space
 import 'package:stardash/game/player3d.dart';
 import 'package:stardash/game/shared/has_context.dart';
 import 'package:stardash/game/world3d_component.dart';
 import 'package:stardash/util/extensions.dart';
-import 'package:vector_math/vector_math_64.dart';
 
-class Scene3d extends Component with HasContext {
+class Scene3d extends Component with HasContext, PointerMoveCallbacks {
   late World3DComponent world;
   double _elapsedTime = 0;
-  final double _cameraRotationSpeed = 0.5; // Radians per second (kept slow)
   final double _minCameraRadius = 100.0;
   final double _maxCameraRadius = 100.0;
   final double _cameraZoomSpeed = 0.8; // Speed for in/out motion
   final double _ambientPulseSpeed = 1.0; // Slower pulse for ambient light
+  final double _mouseSensitivity = 0.002;
+  double _cameraAzimuth = 0.0;
+  double _cameraElevation = 0.0;
 
   @override
   Future<void> onLoad() async {
@@ -45,13 +48,15 @@ class Scene3d extends Component with HasContext {
 
     // --- Camera Movement ---
     final double radiusRange = _maxCameraRadius - _minCameraRadius;
-    final double radiusOscillation = (sin(_elapsedTime * _cameraZoomSpeed) + 1.0) * 0.5; // Range [0, 1]
-    final double currentRadius = _minCameraRadius + radiusRange * radiusOscillation;
-    final double cameraAngle = _elapsedTime * _cameraRotationSpeed;
-    final double camX = cos(cameraAngle) * currentRadius;
-    final double camZ = sin(cameraAngle) * currentRadius;
-    final cameraPos = Vector3(camX, camZ, camZ); // Store position
-    final cameraTarget = Vector3(0, 0, 0);   // Store target
+    final double radiusOscillation =
+        (sin(_elapsedTime * _cameraZoomSpeed) + 1.0) * 0.5; // Range [0, 1]
+    final double currentRadius =
+        _minCameraRadius + radiusRange * radiusOscillation;
+    final double camX = cos(_cameraAzimuth) * currentRadius;
+    final double camZ = sin(_cameraAzimuth) * currentRadius;
+    final double camY = sin(_cameraElevation) * currentRadius;
+    final cameraPos = Vector3(camX, camY, camZ); // Store position
+    final cameraTarget = Vector3(0, 0, 0); // Store target
     world.camera.moveTo(cameraPos);
     world.camera.lookAt(cameraTarget);
 
@@ -71,7 +76,8 @@ class Scene3d extends Component with HasContext {
     // Apply scaling and negation for inverse effect.
     const double scale = 0.5;
     final double offsetX = -yaw * scale;
-    final double offsetY = -pitch * scale; // Negate pitch for inverse vertical shift
+    final double offsetY =
+        -pitch * scale; // Negate pitch for inverse vertical shift
 
     known_space.setCameraOffset(-offsetX, -offsetY);
 
@@ -81,5 +87,25 @@ class Scene3d extends Component with HasContext {
     final double ambientOscillation = sin(_elapsedTime * _ambientPulseSpeed);
     world.world.ambientLightLevel = // Access public world instance
         baseAmbient + ambientAmplitude * ambientOscillation;
+  }
+
+  @override
+  bool containsLocalPoint(Vector2 point) => true;
+
+  @override
+  void onPointerMove(PointerMoveEvent event) {
+    logInfo('onPointerMove: ${event.delta}');
+
+    // Update camera angles based on mouse delta
+    _cameraAzimuth -= event.delta.x * _mouseSensitivity;
+    _cameraElevation -= event.delta.y * _mouseSensitivity;
+
+    // Clamp elevation to avoid flipping over the poles
+    _cameraElevation = _cameraElevation.clamp(-pi / 2, pi / 2);
+
+    // Keep azimuth within 0 to 2*pi range (optional, helps with debugging)
+    _cameraAzimuth %= (2 * pi);
+
+    super.onPointerMove(event); // Call super for PointerMoveCallbacks
   }
 }
